@@ -29,8 +29,8 @@ resolver:
 #   subdirs:
 #   - auto-update
 #   - wai
-packages:
-- .
+packages: []
+
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
@@ -40,7 +40,7 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
+extra-deps: ["hoogle", "discord-haskell", "emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273"]
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
