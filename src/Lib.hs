@@ -7,7 +7,7 @@ module Lib
 import Data.List (isPrefixOf)
 import Data.Char (toLower)
 
-import Hoogle
+-- import Hoogle
 
 cmds :: [String]
 cmds = ["thm", "theorem", "def", "definition", "lem", "lemma",

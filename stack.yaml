@@ -17,8 +17,8 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/21.yaml
+resolver: lts-16.20
+  #url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/21.yaml
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -29,7 +29,8 @@ resolver:
 #   subdirs:
 #   - auto-update
 #   - wai
-packages: []
+packages:
+  - .
 
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
@@ -40,7 +41,10 @@ packages: []
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-extra-deps: ["hoogle", "discord-haskell", "emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273"]
+extra-deps:
+  - hoogle-5.0.18
+  - discord-haskell-1.8.1
+  - emoji-0.1.0.2
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
