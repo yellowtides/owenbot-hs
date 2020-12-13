@@ -37,7 +37,6 @@ library
     , discord-haskell
     , regex-tdfa
     , text
-    , unliftio
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -53,7 +52,6 @@ executable owenbot-exe
     , owenbot
     , regex-tdfa
     , text
-    , unliftio
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -70,5 +68,4 @@ test-suite owenbot-test
     , owenbot
     , regex-tdfa
     , text
-    , unliftio
   default-language: Haskell2010
