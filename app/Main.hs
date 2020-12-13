@@ -1,41 +1,81 @@
-{-# LANGUAGE OverloadedStrings #-}  -- allows "string literals" to be Text
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
-import Control.Monad (when)
-import Data.Text (isPrefixOf, toLower, Text)
+import Control.Monad (forM_, when)
+import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-
-import UnliftIO
+import Text.Regex.TDFA 
+import Text.Regex.TDFA.Text () 
 
 import Discord
+import qualified Discord.Requests as R  
 import Discord.Types
-import qualified Discord.Requests as R
 
-import Lib
+import UnliftIO (liftIO)
+import UnliftIO.Concurrent
 
 -- | Replies "pong" to every message that starts with "ping"
 pingpongExample :: IO ()
-pingpongExample = do userFacingError <- runDiscord $ def
-                                            { discordToken = "Bot ZZZZZZZZZZZZZZZZZZZ"
+pingpongExample = do 
+        t <- token
+        userFacingError <- runDiscord $ def
+                                            { discordToken = T.pack t
                                             , discordOnEvent = eventHandler }
-                     TIO.putStrLn userFacingError
+        TIO.putStrLn userFacingError
 
 eventHandler :: Event -> DiscordHandler ()
 eventHandler event = case event of
-       MessageCreate m -> when (not (fromBot m) && isPing (messageText m)) $ do
-               _ <- restCall (R.CreateReaction (messageChannel m, messageId m) "eyes")
-               threadDelay (4 * 10^6)
-               _ <- restCall (R.CreateMessage (messageChannel m) "Pong!")
-               pure ()
+       MessageCreate m -> when (not (fromBot m) && isCall (messageText m)) $ do
+             _ <- commands m  --send messages with  _ <- restCall (R.CreateMessage (messageChannel m) ("Pong!"))
+             pure ()
        _ -> pure ()
 
 fromBot :: Message -> Bool
 fromBot m = userIsBot (messageAuthor m)
 
-isPing :: Text -> Bool
-isPing = ("ping" `isPrefixOf`) . toLower
+commands :: Message -> DiscordHandler (Either RestCallErrorCode Message)
+commands m = checkReg (T.unpack $ messageText m) 
+        where 
+            checkReg x
+                | ((x =~ thmRE) :: Bool) = test
+                | ((x =~ defRE) :: Bool) = test
+                | ((x =~ lemmaRE) :: Bool) = test
+                | ((x =~ textbookRE) :: Bool) = test
+                | ((x =~ syllogismsRE) :: Bool) = test
+                | ((x =~ booleanRE) :: Bool) = test
+                | ((x =~ hoogleInfRE) :: Bool) = test
+                | ((x =~ helpRE) :: Bool) = test
+            
+            test = restCall (R.CreateMessage (messageChannel m) ("Message received"))
+
+isCall :: T.Text -> Bool
+isCall m = or $ map ( ((T.unpack m) =~) :: String -> Bool) regex --map through all regex's and see if any of them match
+
+regex :: [String] --List of all regexs 
+regex = [thmRE, defRE, lemmaRE, textbookRE, syllogismsRE, booleanRE, hoogleInfRE, helpRE]
+
+-- individual regexs for each command
+thmRE, defRE, lemmaRE, textbookRE, syllogismsRE, booleanRE, hoogleInfRE, helpRE :: String
+thmRE = ":(thm|theorem) *([0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2})" -- :thm
+defRE = "^:(def|definition) *([0-9]{1,2}\\.[0-9]{1,2})"                    -- :def
+lemmaRE = ":(lem|lemma) *([0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2})"           -- :lemma
+textbookRE = ":textbook *"                                                 -- :textbook
+syllogismsRE = ":(syllogisms|syl) *"                                     -- :syllogisms
+booleanRE = ":(boolean|bool) *"                                          -- :boolean
+hoogleInfRE = "^:doc [a-z']+"                                                 -- :doc
+helpRE = "^:helpme *"             
+
+token :: IO String
+token = do
+  r <- readFile "../.token.txt"
+  return r
 
 main :: IO ()
 main = do
-    putStrLn "starting bot"
+  putStrLn "starting Owen"
+  t <- token
+  putStrLn ("Token:" ++ t)
+  pingpongExample
+    
