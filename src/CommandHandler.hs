@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module CommandHandler (handleCommand, isCommand) where
@@ -14,21 +13,21 @@ import OwenRegex
 
 -- map through all the regexes and see if any of them match
 isCommand :: T.Text -> Bool
-isCommand m = any (T.unpack m =~) owenRegex 
+isCommand m = any (m =~) commandREs 
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
-handleCommand m = checkReg (T.unpack $ messageText m) 
-        where
-            channel = messageChannel m
-            checkReg x
-                | x =~ thmRE        = test channel
-                | x =~ defRE        = test channel
-                | x =~ lemmaRE      = test channel
-                | x =~ textbookRE   = test channel
-                | x =~ syllogismsRE = test channel
-                | x =~ booleanRE    = test channel
-                | x =~ hoogleInfRE  = test channel
-                | x =~ helpRE       = test channel
+handleCommand m
+    | content =~ thmRE        = test channel
+    | content =~ defRE        = test channel
+    | content =~ lemmaRE      = test channel
+    | content =~ textbookRE   = test channel
+    | content =~ syllogismsRE = test channel
+    | content =~ booleanRE    = test channel
+    | content =~ hoogleInfRE  = test channel
+    | content =~ helpRE       = test channel
+    where
+        content = messageText m
+        channel = messageChannel m
             
 test :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
 test c = restCall (R.CreateMessage c "Message received")

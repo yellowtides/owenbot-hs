@@ -5,7 +5,7 @@ import qualified Data.Text.IO as TIO
 
 import Discord
 
-import EventHandler
+import EventHandler (handleEvent)
 
 token :: IO String
 token = readFile "../.token.txt"

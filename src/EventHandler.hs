@@ -4,19 +4,29 @@ import Discord.Types
 import Discord
 import qualified Data.Text as T
 import Text.Regex.TDFA
-import Control.Monad (when)
+import Control.Monad (when, guard, unless)
 
 import CommandHandler (handleCommand, isCommand)
+import MiscHandler (handleOwoify, isOwoifiable)
+
+import System.Random (randomR, mkStdGen)
+import Data.Hashable (hash)
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-       MessageCreate m -> when (and [not       $ isFromBot m, 
-                                     isCommand $ messageText m]) 
+       MessageCreate m -> let content = messageText m in
+                          unless (isFromBot m)  
                           $ do
-                                handleCommand m  
-                                pure ()
+                              when (isCommand content)   
+                                   (handleCommand m >> pure ())
+                              guard . not $ isCommand content
+
+                              let randStr = hash . show $ event 
+                              let seed    = mkStdGen randStr
+                              let roll    = fst $ randomR ((1, 10) :: (Int, Int)) seed
+                              when (isOwoifiable content && roll == 1) 
+                                   (handleOwoify  m >> pure ())
        _               -> pure ()
-       

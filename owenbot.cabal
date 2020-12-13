@@ -27,7 +27,9 @@ library
   exposed-modules:
       CommandHandler
       EventHandler
+      MiscHandler
       OwenRegex
+      Owoifier
   other-modules:
       Paths_owenbot
   hs-source-dirs:
@@ -35,6 +37,8 @@ library
   build-depends:
       base >=4.7 && <5
     , discord-haskell
+    , hashable
+    , random
     , regex-tdfa
     , text
   default-language: Haskell2010
@@ -49,7 +53,9 @@ executable owenbot-exe
   build-depends:
       base >=4.7 && <5
     , discord-haskell
+    , hashable
     , owenbot
+    , random
     , regex-tdfa
     , text
   default-language: Haskell2010
@@ -65,7 +71,9 @@ test-suite owenbot-test
   build-depends:
       base >=4.7 && <5
     , discord-haskell
+    , hashable
     , owenbot
+    , random
     , regex-tdfa
     , text
   default-language: Haskell2010

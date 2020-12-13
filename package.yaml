@@ -24,6 +24,8 @@ dependencies:
 - text
 - discord-haskell
 - regex-tdfa
+- random
+- hashable
 
 library:
   source-dirs: src
