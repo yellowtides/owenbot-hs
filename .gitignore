@@ -1,5 +1,6 @@
 .stack-work/
 dist-newstyle/
-token.txt
+.token.txt
+.ghc*
 *~
 test.hs
