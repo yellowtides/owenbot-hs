@@ -5,11 +5,14 @@ module CommandHandler (handleCommand, isCommand) where
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-import System.IO.Unsafe ( unsafePerformIO )
+import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.ByteString as B
 import qualified Data.Text as T
-import Text.Regex.TDFA ( (=~) )
-import Data.Char ( isAlpha, isSpace )
+import Text.Regex.TDFA ((=~))
+import Data.Char (isAlpha, isSpace)
+import Control.Exception (catch, IOException)
+import Data.Maybe (fromJust)
+
 import OwenRegex
 
 -- map through all the regexes and see if any of them match
@@ -33,13 +36,21 @@ handleCommand m
 sendMessage :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendMessage c xs = restCall (R.CreateMessage c xs)
 
-
 sendImage :: ChannelId -> T.Text -> FilePath -> DiscordHandler (Either RestCallErrorCode Message)
-sendImage c t f= do
-    restCall (R.CreateMessageUploadFile c t $ unsafeFileOpen f)
+sendImage c t f 
+    | fileContent == Nothing = sendMessage c "iw cannow be foun uwu"
+    | otherwise              = restCall (R.CreateMessageUploadFile c t . fromJust $ unsafeFileOpen f)
+    where
+        fileContent = unsafeFileOpen f
 
-unsafeFileOpen :: FilePath -> B.ByteString
-unsafeFileOpen f = unsafePerformIO $ B.readFile f
+unsafeFileOpen :: FilePath -> Maybe B.ByteString
+unsafeFileOpen = unsafePerformIO . safeRead
+
+safeRead :: FilePath -> IO (Maybe B.ByteString)
+safeRead path = catch (Just <$> B.readFile path) putNothing
+            where
+                putNothing :: IOException -> IO (Maybe B.ByteString) 
+                putNothing = const $ pure Nothing
 
 getVal :: T.Text -> String
-getVal xs= (dropWhile (\x -> isAlpha x||isSpace x) $drop 1 $ T.unpack xs ) ++ ".png"
+getVal xs = (dropWhile (\x -> isAlpha x || isSpace x) . drop 1 $ T.unpack xs) ++ ".png"
