@@ -42,6 +42,7 @@ library
     , random
     , regex-tdfa
     , text
+    , unliftio
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -60,6 +61,7 @@ executable owenbot-exe
     , random
     , regex-tdfa
     , text
+    , unliftio
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -79,4 +81,5 @@ test-suite owenbot-test
     , random
     , regex-tdfa
     , text
+    , unliftio
   default-language: Haskell2010

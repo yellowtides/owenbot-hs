@@ -27,6 +27,7 @@ dependencies:
 - random
 - hashable
 - bytestring
+- unliftio
 
 library:
   source-dirs: src
