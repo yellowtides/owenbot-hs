@@ -21,7 +21,7 @@ owen t = do
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    tok <- TIO.readFile "../.token.txt"  
+    tok <- TIO.readFile ".token.txt"  
     putStrLn ("Token:" ++ T.unpack tok)
     owen tok   
     
