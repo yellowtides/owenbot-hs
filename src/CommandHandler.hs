@@ -21,8 +21,8 @@ handleCommand m
     | content =~ thmRE        = sendMessage channel
     | content =~ defRE        = sendMessage channel
     | content =~ lemmaRE      = sendMessage channel
-    | content =~ textbookRE   = restCall (R.CreateMessageUploadFile channel "uwu" $ unsafeFileOpen "./assets/test.txt")
-    | content =~ syllogismsRE = restCall (R.CreateMessageUploadFile channel "uwu" "E")
+    | content =~ textbookRE   = sendImage channel "Textbook.pdf" "./assets/cl/INF1A-2020-11-30.pdf"
+    | content =~ syllogismsRE = sendImage channel "Id-smash-aristotle.png" "./assets/cl/syllogisms.png"
     | content =~ booleanRE    = sendMessage channel
     | content =~ hoogleInfRE  = sendMessage channel
     | content =~ helpRE       = sendMessage channel
