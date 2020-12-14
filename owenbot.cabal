@@ -40,6 +40,7 @@ library
     , discord-haskell
     , hashable
     , random
+    , raw-strings-qq
     , regex-tdfa
     , text
     , unliftio
@@ -59,6 +60,7 @@ executable owenbot-exe
     , hashable
     , owenbot
     , random
+    , raw-strings-qq
     , regex-tdfa
     , text
     , unliftio
@@ -79,6 +81,7 @@ test-suite owenbot-test
     , hashable
     , owenbot
     , random
+    , raw-strings-qq
     , regex-tdfa
     , text
     , unliftio
