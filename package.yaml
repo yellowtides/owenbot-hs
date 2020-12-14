@@ -26,6 +26,7 @@ dependencies:
 - regex-tdfa
 - random
 - hashable
+- bytestring
 
 library:
   source-dirs: src

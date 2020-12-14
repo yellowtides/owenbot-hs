@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import qualified Data.Text as T
@@ -7,20 +9,20 @@ import Discord
 
 import EventHandler (handleEvent)
 
-token :: IO String
-token = readFile "../.token.txt"
-
 -- | UWU
-owen :: String -> IO ()
+owen :: T.Text -> IO ()
 owen t = do
-    userFacingError <- runDiscord $ def { discordToken   = T.pack t
-                                        , discordOnEvent = handleEvent }
+    
+    userFacingError <- runDiscord $ def { discordToken   = t
+                                        , discordOnEvent = handleEvent
+                                        , discordOnLog = \s -> TIO.putStrLn s >> TIO.putStrLn "" }
     TIO.putStrLn userFacingError
 
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    t <- token
-    putStrLn ("Token:" ++ t)
-    owen t
+    tok <- TIO.readFile "../.token.txt"  
+    putStrLn ("Token:" ++ T.unpack tok)
+    owen tok   
+    
     

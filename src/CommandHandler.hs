@@ -5,9 +5,10 @@ module CommandHandler (handleCommand, isCommand) where
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-
+import System.IO.Unsafe ( unsafePerformIO )
+import qualified Data.ByteString as B
 import qualified Data.Text as T
-import Text.Regex.TDFA
+import Text.Regex.TDFA ( (=~) )
 
 import OwenRegex
 
@@ -17,17 +18,25 @@ isCommand m = any (m =~) commandREs
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
-    | content =~ thmRE        = test channel
-    | content =~ defRE        = test channel
-    | content =~ lemmaRE      = test channel
-    | content =~ textbookRE   = test channel
-    | content =~ syllogismsRE = test channel
-    | content =~ booleanRE    = test channel
-    | content =~ hoogleInfRE  = test channel
-    | content =~ helpRE       = test channel
+    | content =~ thmRE        = sendMessage channel
+    | content =~ defRE        = sendMessage channel
+    | content =~ lemmaRE      = sendMessage channel
+    | content =~ textbookRE   = restCall (R.CreateMessageUploadFile channel "uwu" $ unsafeFileOpen "./assets/test.txt")
+    | content =~ syllogismsRE = restCall (R.CreateMessageUploadFile channel "uwu" "E")
+    | content =~ booleanRE    = sendMessage channel
+    | content =~ hoogleInfRE  = sendMessage channel
+    | content =~ helpRE       = sendMessage channel
     where
         content = messageText m
         channel = messageChannel m
             
-test :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
-test c = restCall (R.CreateMessage c "Message received")
+sendMessage :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
+sendMessage c = restCall (R.CreateMessage c "Message received")
+
+
+sendImage :: ChannelId -> T.Text -> FilePath -> DiscordHandler (Either RestCallErrorCode Message)
+sendImage c t f= do
+    restCall (R.CreateMessageUploadFile c t $ unsafeFileOpen f)
+
+unsafeFileOpen :: FilePath -> B.ByteString
+unsafeFileOpen f = unsafePerformIO $ B.readFile f
