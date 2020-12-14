@@ -5,13 +5,14 @@ module CommandHandler (handleCommand, isCommand) where
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.ByteString as B
 import qualified Data.Text as T
 import Text.Regex.TDFA ((=~))
 import Data.Char (isAlpha, isSpace)
 import Control.Exception (catch, IOException)
+import Control.Monad (when)
 import Data.Maybe (fromJust)
+import UnliftIO (liftIO)
 
 import OwenRegex
 
@@ -42,14 +43,11 @@ sendMessage :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode M
 sendMessage c xs = restCall (R.CreateMessage c xs)
 
 sendFile :: ChannelId -> T.Text -> FilePath -> DiscordHandler (Either RestCallErrorCode Message)
-sendFile c t f 
-    | fileContent == Nothing = sendMessage c "iw cannow be foun uwu"
-    | otherwise              = restCall (R.CreateMessageUploadFile c t . fromJust $ fileContent)
-    where
-        fileContent = unsafeFileOpen f
-
-unsafeFileOpen :: FilePath -> Maybe B.ByteString
-unsafeFileOpen = unsafePerformIO . safeRead
+sendFile c t f = do
+    mFileContent <- liftIO $ safeRead f
+    case mFileContent of 
+        Nothing          -> sendMessage c "iw cannow be foun uwu"
+        Just fileContent -> restCall (R.CreateMessageUploadFile c t $ fileContent)
 
 safeRead :: FilePath -> IO (Maybe B.ByteString)
 safeRead path = catch (Just <$> B.readFile path) putNothing

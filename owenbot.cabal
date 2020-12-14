@@ -40,8 +40,10 @@ library
     , discord-haskell
     , hashable
     , random
+    , raw-strings-qq
     , regex-tdfa
     , text
+    , unliftio
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -58,8 +60,10 @@ executable owenbot-exe
     , hashable
     , owenbot
     , random
+    , raw-strings-qq
     , regex-tdfa
     , text
+    , unliftio
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -77,6 +81,8 @@ test-suite owenbot-test
     , hashable
     , owenbot
     , random
+    , raw-strings-qq
     , regex-tdfa
     , text
+    , unliftio
   default-language: Haskell2010
