@@ -2,12 +2,13 @@
 
 module ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan) where
 
-import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-
-import CommandHandler (sendMessageChan, sendFileChan)
+import qualified Data.Text as T
 import Data.Bifunctor (first)
+import Data.Char (isAlpha, isSpace)
+
+import Senders (sendMessageChan, sendFileChan)
 
 sendThmChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendThmChan chan content = sendFileChan chan ("Theorem "                      <> parse content)
@@ -21,14 +22,14 @@ sendLemChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode M
 sendLemChan chan content = sendFileChan chan ("Lemma "                        <> parse content)
                                              ("./src/assets/ila/lemmas/"      ++ parseStr content)
 
-sendTextbookChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendTextbookChan chan = sendFileChan chan "Textbook.pdf" "./src/assets/textbooks/ila-textbook.pdf"
+sendTextbookChan :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
+sendTextbookChan chan = sendFileChan chan "ila-textbook.pdf" "./src/assets/textbooks/ila-textbook.pdf"
 
 parseStr :: T.Text -> String
 parseStr = T.unpack . parse
 
 parse :: T.Text -> T.Text
-parse = uncurry (<>) . first padZeroes 2 . breakOn "." .
+parse = uncurry (<>) . first (padZeroes 2) . T.breakOn "." .
         T.intercalate "." . map rmZeroes . T.splitOn "." . rmFuncText
 
 rmZeroes :: T.Text -> T.Text
@@ -39,5 +40,5 @@ rmZeroes digits = case T.dropWhile (== '0') digits of
 padZeroes :: Int -> T.Text -> T.Text
 padZeroes newLen digits = T.replicate (newLen - T.length digits) "0" <> digits
                 
-rmFuncText :: T.Text -> String
+rmFuncText :: T.Text -> T.Text
 rmFuncText = T.dropWhile (\x -> isAlpha x || isSpace x) . T.tail

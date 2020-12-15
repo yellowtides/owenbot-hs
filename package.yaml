@@ -31,7 +31,9 @@ dependencies:
 - unliftio
 
 library:
-  source-dirs: src
+  source-dirs: 
+    - src
+    - src/commands
 
 executables:
   owenbot-exe:
