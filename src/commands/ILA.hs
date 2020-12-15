@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module ILA (handleCommand, isCommand) where
+module ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbook) where
 
 import CommandHandler (sendMessageChan, sendFileChan)
 import Data.Bifunctor (first)
@@ -17,8 +17,8 @@ sendLemChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode M
 sendLemChan chan content = sendFileChan chan ("Lemma "                    <> parse content)
                                              ("./src/assets/lemmas/"      ++ parseStr content)
 
-sendTextbook :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendTextbook chan = sendFileChan chan "Textbook.pdf" "./src/assets/textbook/nichol.pdf"
+sendTextbookChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+sendTextbookChan chan = sendFileChan chan "Textbook.pdf" "./src/assets/textbook/nichol.pdf"
 
 parseStr :: T.Text -> String
 parseStr = T.unpack . parse
