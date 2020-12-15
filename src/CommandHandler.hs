@@ -5,16 +5,13 @@ import Discord.Types
 import Discord
 
 import qualified Data.Text as T
-
 import Text.Regex.TDFA ((=~))
-import Control.Exception (catch, IOException)
 
 import qualified ILA    as ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
 import qualified Inf1A  as I1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan)
 import qualified Helpme as HLP (sendHelpDM)
 import OwenRegex
 
--- map through all the regexes and see if any of them match
 isCommand :: T.Text -> Bool
 isCommand m = any (m =~) commandREs
 
