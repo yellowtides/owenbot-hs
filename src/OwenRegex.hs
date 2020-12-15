@@ -14,7 +14,7 @@ defRE        = "^:def(inition)?" `T.append` twoDigit    -- :def
 lemmaRE      = "^:lem(ma)?"      `T.append` threeDigit  -- :lemma
 textbookRE   = "^:textbook"                             -- :textbook
 syllogismsRE = "^:syl(logisms)?"                        -- :syllogisms
-booleanRE    = "^:bool(ean)?"                          -- :boolean
+booleanRE    = "^:bool(ean)?"                           -- :boolean
 hoogleInfRE  = "^:doc [a-z']+"                          -- :doc
 helpRE       = "^:he(l|w)pme"                           -- :help
 
