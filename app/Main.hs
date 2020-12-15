@@ -12,7 +12,6 @@ import EventHandler (handleEvent)
 -- | UWU
 owen :: T.Text -> IO ()
 owen t = do
-    
     userFacingError <- runDiscord $ def { discordToken   = t
                                         , discordOnEvent = handleEvent
                                         , discordOnLog = \s -> TIO.putStrLn s >> TIO.putStrLn "" }
@@ -23,6 +22,4 @@ main = do
     putStrLn "starting Owen"
     tok <- TIO.readFile ".token.txt"  
     putStrLn ("Token:" ++ T.unpack tok)
-    owen tok   
-    
-    
+    owen tok
