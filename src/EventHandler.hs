@@ -28,7 +28,7 @@ handleEvent event = case event of
 
                               let randStr = hash . show $ event
                               let seed    = mkStdGen randStr
-                              let roll    = fst $ randomR ((1, 10) :: (Int, Int)) seed
+                              let roll    = fst $ randomR ((1, 500) :: (Int, Int)) seed
                               when (isOwoifiable content && roll == 1)
                                    (handleOwoify  m >> pure ())
        _               -> pure ()
