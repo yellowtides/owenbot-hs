@@ -29,7 +29,7 @@ parseStr :: T.Text -> String
 parseStr = T.unpack . parse
 
 parse :: T.Text -> T.Text
-parse = uncurry (<>) . first (padZeroes 2) . T.breakOn "." .
+parse = (<> ".png") . uncurry (<>) . first (padZeroes 2) . T.breakOn "." .
         T.intercalate "." . map rmZeroes . T.splitOn "." . rmFuncText
 
 rmZeroes :: T.Text -> T.Text
