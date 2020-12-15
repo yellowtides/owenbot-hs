@@ -6,18 +6,22 @@ module OwenRegex where
 import qualified Data.Text as T
 import Text.RawString.QQ
 
+twoDigit, threeDigit :: T.Text
+twoDigit   = "([0-9]{1,2}\\.[0-9]{1,2})"
+threeDigit = "([0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2})"
+
 thmRE, defRE, lemmaRE, textbookRE, syllogismsRE, booleanRE, hoogleInfRE, helpRE :: T.Text
-thmRE        = ":(thm|theorem) *([0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2})"         -- :thm
-defRE        = "^:(def|definition) *([0-9]{1,2}\\.[0-9]{1,2})"                  -- :def
-lemmaRE      = ":(lem|lemma) *([0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2})"           -- :lemma
+thmRE        = ":(thm|theorem) *" `T.append` threeDigit                                 -- :thm
+defRE        = "^:def(inition)? *" `T.append` twoDigit                                  -- :def
+lemmaRE      = ":lem(ma)? *" `T.append` threeDigit                                      -- :lemma
 textbookRE   = ":textbook *"                                                    -- :textbook
-syllogismsRE = ":(syllogisms|syl) *"                                            -- :syllogisms
-booleanRE    = ":(boolean|bool) *"                                              -- :boolean
+syllogismsRE = ":syl(logisms)? *"                                               -- :syllogisms
+booleanRE    = ":bool(ean)? *"                                                  -- :boolean
 hoogleInfRE  = "^:doc [a-z']+"                                                  -- :doc
-helpRE       = "^:helpme *"                                                     -- :help
+helpRE       = "^:he(l|w)pme *"                                                 -- :help
 
 owoifiableRE :: T.Text
 owoifiableRE  = "[lrLR]|[nNmM][oO]"
 
-commandREs :: [T.Text] -- list of all command regexes 
+commandREs :: [T.Text] -- list of all command regexes
 commandREs = [thmRE, defRE, lemmaRE, textbookRE, syllogismsRE, booleanRE, hoogleInfRE, helpRE]
