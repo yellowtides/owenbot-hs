@@ -1,24 +1,28 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbook) where
+module ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan) where
+
+import qualified Discord.Requests as R
+import Discord.Types
+import Discord
 
 import CommandHandler (sendMessageChan, sendFileChan)
 import Data.Bifunctor (first)
 
 sendThmChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendThmChan chan content = sendFileChan chan ("Theorem "                  <> parse content)
-                                             ("./src/assets/theorems/"    ++ parseStr content)
+sendThmChan chan content = sendFileChan chan ("Theorem "                      <> parse content)
+                                             ("./src/assets/ila/theorems/"    ++ parseStr content)
 
 sendDefChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendDefChan chan content = sendFileChan chan ("Definition "               <> parse content)
-                                             ("./src/assets/definitions/" ++ parseStr content)
+sendDefChan chan content = sendFileChan chan ("Definition "                   <> parse content)
+                                             ("./src/assets/ila/definitions/" ++ parseStr content)
 
 sendLemChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendLemChan chan content = sendFileChan chan ("Lemma "                    <> parse content)
-                                             ("./src/assets/lemmas/"      ++ parseStr content)
+sendLemChan chan content = sendFileChan chan ("Lemma "                        <> parse content)
+                                             ("./src/assets/ila/lemmas/"      ++ parseStr content)
 
 sendTextbookChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendTextbookChan chan = sendFileChan chan "Textbook.pdf" "./src/assets/textbook/nichol.pdf"
+sendTextbookChan chan = sendFileChan chan "Textbook.pdf" "./src/assets/textbooks/ila-textbook.pdf"
 
 parseStr :: T.Text -> String
 parseStr = T.unpack . parse
