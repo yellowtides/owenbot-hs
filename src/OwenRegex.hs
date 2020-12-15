@@ -1,10 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
 
 module OwenRegex where
 
 import qualified Data.Text as T
-import Text.RawString.QQ
 
 twoDigit, threeDigit :: T.Text
 twoDigit   = "([0-9]{1,2}\\.[0-9]{1,2})"
