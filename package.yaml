@@ -27,7 +27,7 @@ dependencies:
 - random
 - hashable
 - bytestring
-- raw-strings-qq
+# - raw-strings-qq
 - unliftio
 
 library:
