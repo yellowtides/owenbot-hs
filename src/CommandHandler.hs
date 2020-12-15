@@ -4,10 +4,15 @@ module CommandHandler (handleCommand, isCommand) where
 
 import qualified Discord.Requests as R
 import Discord.Types
-import Discord.Internal.Rest.User
-import Discord.Internal.Rest.Prelude
+    ( Message(messageText, messageChannel, messageAuthor),
+      ChannelId,
+      User(userId),
+      Channel(channelId),
+      UserId )
+import Discord.Internal.Rest.User ()
+import Discord.Internal.Rest.Prelude ()
 
-import Discord
+import Discord ( DiscordHandler, RestCallErrorCode, restCall )
 
 import qualified Data.ByteString as B
 import qualified Data.Text as T
@@ -16,8 +21,7 @@ import qualified Data.Text.IO as TIO
 import Text.Regex.TDFA ((=~))
 import Data.Char (isAlpha, isSpace)
 import Control.Exception (catch, IOException)
-import Control.Monad (when)
-import Data.Maybe (fromJust)
+
 import UnliftIO (liftIO)
 
 import OwenRegex

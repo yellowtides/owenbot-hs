@@ -1,9 +1,11 @@
 module EventHandler (handleEvent) where 
 
 import Discord.Types
-import Discord
-import qualified Data.Text as T
-import Text.Regex.TDFA
+    ( Message(messageAuthor, messageText),
+      Event(MessageCreate),
+      User(userIsBot) )
+import Discord ( DiscordHandler )
+
 import Control.Monad (when, guard, unless)
 
 import CommandHandler (handleCommand, isCommand)
