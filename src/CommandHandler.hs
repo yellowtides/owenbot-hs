@@ -4,9 +4,15 @@ module CommandHandler (handleCommand, isCommand) where
 
 import qualified Discord.Requests as R
 import Discord.Types
+import Discord.Internal.Rest.User
+import Discord.Internal.Rest.Prelude
+
 import Discord
+
 import qualified Data.ByteString as B
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
+
 import Text.Regex.TDFA ((=~))
 import Data.Char (isAlpha, isSpace)
 import Control.Exception (catch, IOException)
@@ -33,14 +39,20 @@ handleCommand m
     | content =~ syllogismsRE = sendFile channel "Id-smash-aristotle.png"     "./src/assets/cl/syllogisms.png"
     | content =~ booleanRE    = sendFile channel "literally-satan.png"        "./src/assets/cl/Bool.png"
     | content =~ hoogleInfRE  = sendMessage channel "test"
-    | content =~ helpRE       = sendMessage channel "test"
+    | content =~ helpRE       = (liftIO $ TIO.readFile "./src/assets/help.txt") >>= sendDM (userId user)
     where
         content   = messageText m
         channel   = messageChannel m
         simTyping = (>>) $ restCall (R.TriggerTypingIndicator channel)
+        user = messageAuthor m
 
 sendMessage :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendMessage c xs = restCall (R.CreateMessage c xs)
+
+sendDM :: UserId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+sendDM u t = do
+     Right chan <- restCall $ R.CreateDM u --Gets the right value from the Either which in this case is the Channel we want to send to
+     sendMessage (channelId chan) t
 
 sendFile :: ChannelId -> T.Text -> FilePath -> DiscordHandler (Either RestCallErrorCode Message)
 sendFile c t f = do
