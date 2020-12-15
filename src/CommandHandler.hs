@@ -24,17 +24,17 @@ import OwenRegex
 
 -- map through all the regexes and see if any of them match
 isCommand :: T.Text -> Bool
-isCommand m = any (m =~) commandREs 
+isCommand m = any (m =~) commandREs
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
-    | content =~ thmRE        = sendFile channel ("Theorem "                  <> T.pack (getVal content)) 
+    | content =~ thmRE        = sendFile channel ("Theorem "                  <> T.pack (getVal content))
                                                  ("./src/assets/theorems/"    ++ getVal content)
-    | content =~ defRE        = sendFile channel ("Definition "               <> T.pack (getVal content)) 
+    | content =~ defRE        = sendFile channel ("Definition "               <> T.pack (getVal content))
                                                  ("./src/assets/definitions/" ++ getVal content)
-    | content =~ lemmaRE      = sendFile channel ("Lemma "                    <> T.pack (getVal content)) 
+    | content =~ lemmaRE      = sendFile channel ("Lemma "                    <> T.pack (getVal content))
                                                  ("./src/assets/lemmas/"      ++ getVal content)
-    | content =~ textbookRE   = simTyping $ 
+    | content =~ textbookRE   = simTyping $
                                 sendFile channel "Textbook.pdf"               "./src/assets/textbook/nichol.pdf"
     | content =~ syllogismsRE = sendFile channel "Id-smash-aristotle.png"     "./src/assets/cl/syllogisms.png"
     | content =~ booleanRE    = sendFile channel "literally-satan.png"        "./src/assets/cl/Bool.png"
@@ -57,14 +57,14 @@ sendDM u t = do
 sendFile :: ChannelId -> T.Text -> FilePath -> DiscordHandler (Either RestCallErrorCode Message)
 sendFile c t f = do
     mFileContent <- liftIO $ safeRead f
-    case mFileContent of 
+    case mFileContent of
         Nothing          -> sendMessage c "iw cannow be foun uwu"
         Just fileContent -> restCall (R.CreateMessageUploadFile c t $ fileContent)
 
 safeRead :: FilePath -> IO (Maybe B.ByteString)
 safeRead path = catch (Just <$> B.readFile path) putNothing
             where
-                putNothing :: IOException -> IO (Maybe B.ByteString) 
+                putNothing :: IOException -> IO (Maybe B.ByteString)
                 putNothing = const $ pure Nothing
 
 getVal :: T.Text -> String
