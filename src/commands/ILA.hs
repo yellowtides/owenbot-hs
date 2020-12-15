@@ -1,10 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.Bifunctor (first)
-
 module ILA (handleCommand, isCommand) where
 
 import CommandHandler (sendMessageChan, sendFileChan)
+import Data.Bifunctor (first)
 
 sendThmChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendThmChan chan content = sendFileChan chan ("Theorem "                  <> parse content)
