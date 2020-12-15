@@ -1,0 +1,14 @@
+H-hewwo, i'm hewe to hewp u nuzzwes youw necky wecky
+    hewe's a wist of commands chu can use uwu
+    -1.  :helpme.. hehe
+    0.  :textbook (which fetches the couwse textbook)
+    1. :thm/!theorem xx.y.z
+    2. :def/!definition xx.y.z
+    3. :lem/!lemma xx.y.z
+    4. :doc reqwest the Hoogwe documentwatiow
+    5. :syllogisms reqwest the CL syllogism cribsheet
+    (x, y, and z awe digits)
+
+    the cowwesponding theowem/definition/wemma wiww be pwinted fwom nichowson (the 2020 iwa textbook)
+
+    h-have fun!!1
