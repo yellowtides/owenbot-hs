@@ -5,6 +5,7 @@ module Senders (sendMessageChan, sendMessageDM, sendFileChan) where
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
+
 import qualified Data.ByteString as B
 import qualified Data.Text as T
 import Control.Exception (catch, IOException)

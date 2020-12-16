@@ -9,7 +9,8 @@ import Discord ( DiscordHandler )
 import Control.Monad (when, guard, unless)
 
 import CommandHandler (handleCommand, isCommand)
-import MiscHandler (handleOwoify, isOwoifiable)
+import MiscHandler (handleOwoify, isOwoifiable,
+                    handleNietzsche, isNietzsche)
 
 import System.Random (randomR, mkStdGen)
 import Data.Hashable (hash)
@@ -25,6 +26,10 @@ handleEvent event = case event of
                               when (isCommand content)
                                    (handleCommand m >> pure ())
                               guard . not $ isCommand content
+
+                              when (isNietzsche content)
+                                   (handleNietzsche m >> pure())
+                              guard . not $ isNietzsche content
 
                               let randStr = hash . show $ event
                               let seed    = mkStdGen randStr

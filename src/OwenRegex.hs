@@ -19,10 +19,13 @@ hoogleInfRE  = "^:doc [a-z']+"             <> trailingWS         -- :doc
 helpRE       = "^:he(l|w)pme"              <> trailingWS         -- :help
 
 trailingWS :: T.Text
-trailingWS   = "[:space:]*$"
+trailingWS   = " *$"
 
 owoifiableRE :: T.Text
-owoifiableRE  = "[lrLR]|[nNmM][oO]"
+owoifiableRE  = "[lLrR]|[nNmM][oO]"
+
+nietzscheRE :: T.Text
+nietzscheRE = "[gG]od *[iI]s *[dD]ead"
 
 commandREs :: [T.Text] -- list of all command regexes
 commandREs = [thmRE, defRE, lemmaRE, textbookRE, syllogismsRE, booleanRE, hoogleInfRE, helpRE]
