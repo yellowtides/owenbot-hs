@@ -14,16 +14,15 @@ import Text.Regex.TDFA
 
 import Utils (sendMessageChan, sendFileChan, pingAuthorOf)
 import Owoifier (owoify)
-import OwenRegex (owoifiableRE, nietzscheRE)
 
 isOwoifiable :: T.Text -> Bool
-isOwoifiable = (=~ owoifiableRE)
+isOwoifiable = (=~ ("[lLrR]|[nNmM][oO]" :: T.Text))
 
 handleOwoify :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleOwoify m = sendMessageChan (messageChannel m) (pingAuthorOf m <> ": " <> owoify (messageText m))
 
 isNietzsche :: T.Text -> Bool
-isNietzsche = (=~ nietzscheRE)
+isNietzsche = (=~ ("[gG]od *[iI]s *[dD]ead" :: T.Text))
 
 handleNietzsche :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleNietzsche m = liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify

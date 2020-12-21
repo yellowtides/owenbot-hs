@@ -28,12 +28,15 @@ library
       CommandHandler
       EventHandler
       MiscHandler
-      OwenRegex
       Owoifier
       Utils
       Helpme
+      HelpmeRE
       ILA
+      ILARE
       Inf1A
+      Inf1ARE
+      TemplateRE
   other-modules:
       Paths_owenbot
   hs-source-dirs:
