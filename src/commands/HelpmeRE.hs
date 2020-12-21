@@ -6,4 +6,4 @@ import qualified Data.Text as T
 import TemplateRE (trailingWS)
 
 helpRE :: T.Text
-helpRE = "^:he(l|w)pme" <> trailingWS         -- :help
+helpRE = "^:he(l|w)pme" <> trailingWS -- :help
