@@ -5,7 +5,7 @@ module Inf1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan) where
 import Discord.Types
 import Discord
 
-import Senders (sendMessageChan, sendFileChan)
+import Utils (sendMessageChan, sendFileChan)
 
 sendSylChan :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
 sendSylChan chan = sendFileChan chan "id-smash-aristotle.png" 

@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Senders (sendMessageChan, sendMessageDM, sendFileChan) where
+module Utils (sendMessageChan, sendMessageDM, sendFileChan,
+              pingAuthorOf) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -10,6 +11,9 @@ import qualified Data.ByteString as B
 import qualified Data.Text as T
 import Control.Exception (catch, IOException)
 import UnliftIO (liftIO)
+
+pingAuthorOf :: Message -> T.Text
+pingAuthorOf m = "<@" <> T.pack (show . userId $ messageAuthor m) <> ">"
 
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendMessageChan c xs = restCall (R.CreateMessage c xs)

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module MiscHandler (isOwoifiable, handleOwoify,
                     isNietzsche, handleNietzsche) where
 
@@ -10,7 +12,7 @@ import qualified Data.Text as T
 import UnliftIO (liftIO)
 import Text.Regex.TDFA
 
-import Senders (sendMessageChan, sendFileChan)
+import Utils (sendMessageChan, sendFileChan, pingAuthorOf)
 import Owoifier (owoify)
 import OwenRegex (owoifiableRE, nietzscheRE)
 
@@ -18,7 +20,7 @@ isOwoifiable :: T.Text -> Bool
 isOwoifiable = (=~ owoifiableRE)
 
 handleOwoify :: Message -> DiscordHandler (Either RestCallErrorCode Message)
-handleOwoify m = sendMessageChan (messageChannel m) (owoify $ messageText m)
+handleOwoify m = sendMessageChan (messageChannel m) (pingAuthorOf m <> ": " <> owoify (messageText m))
 
 isNietzsche :: T.Text -> Bool
 isNietzsche = (=~ nietzscheRE)

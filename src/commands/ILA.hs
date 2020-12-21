@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import Data.Bifunctor (first)
 import Data.Char (isAlpha, isSpace)
 
-import Senders (sendMessageChan, sendFileChan)
+import Utils (sendMessageChan, sendFileChan)
 
 sendThmChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendThmChan chan content = sendFileChan chan ("Theorem "                      <> parse content)
