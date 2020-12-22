@@ -5,14 +5,14 @@ import Discord.Types
 import Discord
 
 import qualified Data.Text as T
-import Utils ((=~=))
+import Utils ((=~=), isMod, toRoles)
 
 import qualified ILA    as ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
-import ILARE
+import ILARE                   ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
 import qualified Inf1A  as I1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan)
-import Inf1ARE
+import Inf1ARE                 ( i1atextbookRE, syllogismsRE, booleanRE, hoogleInfRE )
 import qualified Helpme as HLP (sendHelpDM)
-import HelpmeRE
+import HelpmeRE                (helpRE )
 
 isCommand :: T.Text -> Bool
 isCommand m = any (m =~=) commandREs

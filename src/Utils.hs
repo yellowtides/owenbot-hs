@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageDM, sendFileChan,
-              pingAuthorOf, isMod, (=~=)) where
+              pingAuthorOf, isMod, (=~=), toRoles) where
 
 import qualified Discord.Requests as R
 import Discord.Types
