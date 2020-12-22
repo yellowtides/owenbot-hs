@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageDM, sendFileChan,
-              pingAuthorOf, (=~=)) where
+              pingAuthorOf, isMod, (=~=)) where
 
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-
+import Control.Monad (guard, unless, when)
 import qualified Data.ByteString as B
 import qualified Data.Text as T
 import Data.Function (on)
@@ -44,3 +44,19 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
             where
                 putNothing :: IOException -> IO (Maybe B.ByteString)
                 putNothing = const $ pure Nothing
+
+
+isMod :: Message -> DiscordHandler Bool
+isMod m = do
+  let Just g = messageGuild m
+  Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
+  filtered <- toRoles (userId $ messageAuthor m) g 
+  return $ "Moderator" `elem` map roleName filtered
+
+  
+toRoles :: UserId -> GuildId -> DiscordHandler [Role]
+toRoles i g= do
+    Right allRole <- restCall $ R.GetGuildRoles g
+    Right userG <- restCall $ R.GetGuildMember g i
+    let filtered = filter (\x -> roleId x `elem` memberRoles userG) allRole
+    return filtered
