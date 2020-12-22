@@ -1,14 +1,17 @@
-H-hewwo, i'm hewe to hewp u nuzzwes youw necky wecky
-    hewe's a wist of commands chu can use uwu
-    -1.  :helpme.. hehe
-    0.  :textbook (which fetches the couwse textbook)
-    1. :thm/!theorem xx.y.z
-    2. :def/!definition xx.y.z
-    3. :lem/!lemma xx.y.z
-    4. :doc reqwest the Hoogwe documentwatiow
-    5. :syllogisms reqwest the CL syllogism cribsheet
-    (x, y, and z awe digits)
+h-hello, i'm here to help you
 
-    the cowwesponding theowem/definition/wemma wiww be pwinted fwom nichowson (the 2020 iwa textbook)
+here's a lil list of **commands** that chu can use on me:
+```md
+[-1]: :helpme                               # whenever you need me <3
+[00]: :textbook     |ila|i1a|               # which fetches the course textbook
+[01]: :th(eore)m    |ila|     {number}      # which fetches the desired thm
+[02]: :lem(ma)      |ila|     {number}      # which fetches the desired lem
+[03]: :def(inition) |ila|     {number}      # which fetches the desired def
+[04]: :doc                    {text}        # query hoogle documentation            [!WIP]
+[05]: :syl(logisms)                         # fetches the aristotelian syls
+[06]: :bool(ean)                            # fetches the boolean laws
 
-    h-have fun!!1
+by the way, i am now [open-source](https://github.com/yellowtides/owenbot-hs)!1!
+..maybe you can spot some secret features? :o
+```
+have fun fren!!1
