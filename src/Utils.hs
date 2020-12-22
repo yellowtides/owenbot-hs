@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageDM, sendFileChan,
-              pingAuthorOf) where
+              pingAuthorOf, (=~=)) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -9,8 +9,15 @@ import Discord
 
 import qualified Data.ByteString as B
 import qualified Data.Text as T
+import Data.Function (on)
+import Text.Regex.TDFA ((=~))
 import Control.Exception (catch, IOException)
 import UnliftIO (liftIO)
+import Owoifier (owoify)
+
+-- | (=~=) is owoify-less (case-less in terms of owoifying)
+(=~=) :: T.Text -> T.Text -> Bool
+(=~=) = (=~) `on` T.dropEnd 4 . owoify
 
 pingAuthorOf :: Message -> T.Text
 pingAuthorOf m = "<@" <> T.pack (show . userId $ messageAuthor m) <> ">"

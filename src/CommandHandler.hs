@@ -5,7 +5,7 @@ import Discord.Types
 import Discord
 
 import qualified Data.Text as T
-import Text.Regex.TDFA ((=~))
+import Utils ((=~=))
 
 import qualified ILA    as ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
 import ILARE
@@ -15,21 +15,21 @@ import qualified Helpme as HLP (sendHelpDM)
 import HelpmeRE
 
 isCommand :: T.Text -> Bool
-isCommand m = any (m =~) commandREs
+isCommand m = any (m =~=) commandREs
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
-    | cmdText =~ ilathmRE      = ILA.sendThmChan channel cmdText
-    | cmdText =~ iladefRE      = ILA.sendDefChan channel cmdText
-    | cmdText =~ ilalemmaRE    = ILA.sendLemChan channel cmdText
-    | cmdText =~ ilatextbookRE = simTyping $ ILA.sendTextbookChan channel
+    | cmdText =~= ilathmRE      = ILA.sendThmChan channel cmdText
+    | cmdText =~= iladefRE      = ILA.sendDefChan channel cmdText
+    | cmdText =~= ilalemmaRE    = ILA.sendLemChan channel cmdText
+    | cmdText =~= ilatextbookRE = simTyping $ ILA.sendTextbookChan channel
     
-    | cmdText =~ syllogismsRE  = I1A.sendSylChan channel
-    | cmdText =~ booleanRE     = I1A.sendBoolChan channel
-    | cmdText =~ hoogleInfRE   = I1A.sendHDocChan channel
-    | cmdText =~ i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
+    | cmdText =~= syllogismsRE  = I1A.sendSylChan channel
+    | cmdText =~= booleanRE     = I1A.sendBoolChan channel
+    | cmdText =~= hoogleInfRE   = I1A.sendHDocChan channel
+    | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
 
-    | cmdText =~ helpRE        = HLP.sendHelpDM user
+    | cmdText =~= helpRE        = HLP.sendHelpDM user
     where
         cmdText   = messageText m
         channel   = messageChannel m
