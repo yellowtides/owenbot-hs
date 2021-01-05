@@ -2,8 +2,8 @@
 
 module ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan) where
 
-import Discord.Types
-import Discord
+import Discord.Types ( ChannelId, Message )
+import Discord ( DiscordHandler, RestCallErrorCode )
 import qualified Data.Text as T
 import Data.Bifunctor (first)
 import Data.Char (isAlpha, isSpace)
