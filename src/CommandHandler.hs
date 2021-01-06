@@ -11,7 +11,7 @@ import ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
 import ILARE                   ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
 import qualified Inf1A  as I1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan)
 import Inf1ARE                 ( i1atextbookRE, syllogismsRE, booleanRE, hoogleInfRE )
-import Calc (sendTextbookChan)
+import Calc as CAP (sendTextbookChan)
 import CalcRE as CRE ( calctextbookRE )
 import qualified Helpme as HLP (sendHelpDM)
 import HelpmeRE                (helpRE )
@@ -33,7 +33,7 @@ handleCommand m
     | cmdText =~= hoogleInfRE   = testRE $ testRE $ I1A.sendHDocChan channel
     | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
     -- TODO: fix calctextbookRE to actually call the command
-    | cmdText =~= CRE.calctextbookRE = testRE $ simTyping $ Calc.sendTextbookChan channel
+    | cmdText =~= calctextbookRE = testRE $ simTyping $ CAP.sendTextbookChan channel
 
     | cmdText =~= helpRE        = HLP.sendHelpDM user
     where
@@ -48,5 +48,6 @@ commandREs = [
                 ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE,      -- ILA
                 i1atextbookRE, syllogismsRE, booleanRE,             -- CL
                 hoogleInfRE,                                        -- FP
+                calctextbookRE,                                     -- CALC
                 helpRE                                              -- HELP  
              ]

@@ -9,4 +9,4 @@ calcRE :: T.Text
 calcRE = "calc *"
 
 calctextbookRE :: T.Text
-calctextbookRE = "^:textbook calc *$"
+calctextbookRE = textbookRE <> calcRE <> trailingWS
