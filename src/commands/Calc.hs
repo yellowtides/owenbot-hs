@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module CALC ( sendTextbookChan) where
+module Calc (sendTextbookChan) where
 
 import Discord.Types ( ChannelId, Message )
 import Discord ( DiscordHandler, RestCallErrorCode )
