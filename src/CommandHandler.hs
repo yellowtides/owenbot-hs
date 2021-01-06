@@ -7,10 +7,12 @@ import Discord
 import qualified Data.Text as T
 import Utils ((=~=), isMod, toRoles)
 
-import qualified ILA    as ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
+import ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
 import ILARE                   ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
 import qualified Inf1A  as I1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan)
 import Inf1ARE                 ( i1atextbookRE, syllogismsRE, booleanRE, hoogleInfRE )
+import Calc (sendTextbookChan)
+import CalcRE as CRE ( calctextbookRE )
 import qualified Helpme as HLP (sendHelpDM)
 import HelpmeRE                (helpRE )
 
@@ -28,6 +30,8 @@ handleCommand m
     | cmdText =~= booleanRE     = I1A.sendBoolChan channel
     | cmdText =~= hoogleInfRE   = I1A.sendHDocChan channel
     | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
+
+    | cmdText =~= calctextbookRE= simTyping $ Calc.sendTextbookChan channel
 
     | cmdText =~= helpRE        = HLP.sendHelpDM user
     where

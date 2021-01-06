@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module CALCRE where
+module CalcRE where
 
 import qualified Data.Text as T
 import TemplateRE (defRE, lemRE, oneDot, textbookRE, thmRE, trailingWS, twoDot)

@@ -36,6 +36,8 @@ library
       ILARE
       Inf1A
       Inf1ARE
+      Calc
+      CalcRE
       TemplateRE
   other-modules:
       Paths_owenbot
