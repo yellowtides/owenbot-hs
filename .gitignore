@@ -4,3 +4,4 @@ dist-newstyle/
 .ghc*
 *~
 test.hs
+src/assets/textbooks/Calc-pdf.pdf

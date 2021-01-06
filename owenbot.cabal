@@ -30,6 +30,8 @@ library
       MiscHandler
       Owoifier
       Utils
+      Calc
+      CalcRE
       Helpme
       HelpmeRE
       ILA

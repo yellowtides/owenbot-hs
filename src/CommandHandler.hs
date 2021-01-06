@@ -5,12 +5,14 @@ import Discord.Types
 import Discord
 
 import qualified Data.Text as T
-import Utils ((=~=), isMod, toRoles)
+import Utils (sendMessageChan, (=~=), isMod, toRoles)
 
-import qualified ILA    as ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
+import ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
 import ILARE                   ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
 import qualified Inf1A  as I1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan)
 import Inf1ARE                 ( i1atextbookRE, syllogismsRE, booleanRE, hoogleInfRE )
+import Calc as CAP (sendTextbookChan)
+import CalcRE as CRE ( calctextbookRE )
 import qualified Helpme as HLP (sendHelpDM)
 import HelpmeRE                (helpRE )
 
@@ -19,15 +21,19 @@ isCommand m = any (m =~=) commandREs
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
-    | cmdText =~= ilathmRE      = ILA.sendThmChan channel cmdText
-    | cmdText =~= iladefRE      = ILA.sendDefChan channel cmdText
-    | cmdText =~= ilalemmaRE    = ILA.sendLemChan channel cmdText
-    | cmdText =~= ilatextbookRE = simTyping $ ILA.sendTextbookChan channel
+
+-- TODO: figure why none of these commands call
+    | cmdText =~= ilathmRE      = testRE $ ILA.sendThmChan channel cmdText
+    | cmdText =~= iladefRE      = testRE $ testRE $ ILA.sendDefChan channel cmdText
+    | cmdText =~= ilalemmaRE    = testRE $ ILA.sendLemChan channel cmdText
+    | cmdText =~= ilatextbookRE = testRE $ simTyping $ ILA.sendTextbookChan channel
     
-    | cmdText =~= syllogismsRE  = I1A.sendSylChan channel
-    | cmdText =~= booleanRE     = I1A.sendBoolChan channel
-    | cmdText =~= hoogleInfRE   = I1A.sendHDocChan channel
+    | cmdText =~= syllogismsRE  = testRE $ I1A.sendSylChan channel
+    | cmdText =~= booleanRE     = testRE $ I1A.sendBoolChan channel
+    | cmdText =~= hoogleInfRE   = testRE $ testRE $ I1A.sendHDocChan channel
     | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
+    -- TODO: fix calctextbookRE to actually call the command
+    | cmdText =~= calctextbookRE = testRE $ simTyping $ CAP.sendTextbookChan channel
 
     | cmdText =~= helpRE        = HLP.sendHelpDM user
     where
@@ -35,11 +41,13 @@ handleCommand m
         channel   = messageChannel m
         user      = messageAuthor m
         simTyping = (>>) $ restCall (R.TriggerTypingIndicator channel)
+        testRE = (>>) $ sendMessageChan channel (T.pack "message received")
 
 commandREs :: [T.Text]
 commandREs = [  
                 ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE,      -- ILA
                 i1atextbookRE, syllogismsRE, booleanRE,             -- CL
                 hoogleInfRE,                                        -- FP
+                calctextbookRE,                                     -- CALC
                 helpRE                                              -- HELP  
              ]
