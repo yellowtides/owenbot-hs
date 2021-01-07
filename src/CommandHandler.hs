@@ -23,17 +23,16 @@ handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
 
 -- TODO: figure why none of these commands call
-    | cmdText =~= ilathmRE      = testRE $ ILA.sendThmChan channel cmdText
-    | cmdText =~= iladefRE      = testRE $ testRE $ ILA.sendDefChan channel cmdText
-    | cmdText =~= ilalemmaRE    = testRE $ ILA.sendLemChan channel cmdText
-    | cmdText =~= ilatextbookRE = testRE $ simTyping $ ILA.sendTextbookChan channel
-    
-    | cmdText =~= syllogismsRE  = testRE $ I1A.sendSylChan channel
-    | cmdText =~= booleanRE     = testRE $ I1A.sendBoolChan channel
-    | cmdText =~= hoogleInfRE   = testRE $ testRE $ I1A.sendHDocChan channel
+    | cmdText =~= ilathmRE      = ILA.sendThmChan channel cmdText
+    | cmdText =~= iladefRE      = testRE $ ILA.sendDefChan channel cmdText
+    | cmdText =~= ilalemmaRE    = ILA.sendLemChan channel cmdText
+    | cmdText =~= ilatextbookRE = simTyping $ ILA.sendTextbookChan channel
+    | cmdText =~= syllogismsRE  = I1A.sendSylChan channel
+    | cmdText =~= booleanRE     = I1A.sendBoolChan channel
+    | cmdText =~= hoogleInfRE   = testRE $ I1A.sendHDocChan channel
     | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
     -- TODO: fix calctextbookRE to actually call the command
-    | cmdText =~= calctextbookRE = testRE $ simTyping $ CAP.sendTextbookChan channel
+    | cmdText =~= calctextbookRE = simTyping $ CAP.sendTextbookChan channel
 
     | cmdText =~= helpRE        = HLP.sendHelpDM user
     where
