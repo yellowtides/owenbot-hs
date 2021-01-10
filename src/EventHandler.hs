@@ -2,7 +2,7 @@ module EventHandler (handleEvent) where
 
 import Discord.Types
     ( Message(messageAuthor, messageText),
-      Event(MessageCreate),
+      Event(MessageCreate, MessageReactionAdd),
       User(userIsBot) )
 import Discord ( DiscordHandler )
 
@@ -11,6 +11,12 @@ import Control.Monad (when, guard, unless)
 import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
                     handleNietzsche, isNietzsche)
+
+import ReactHandler
+    ( notInHallOfFameChannel,
+      isHallOfFameEmote,
+      isEligibleForHallOfFame,
+      handleHallOfFame )
 
 import System.Random (randomR, mkStdGen)
 import Data.Hashable (hash)
@@ -36,4 +42,15 @@ handleEvent event = case event of
                               let roll    = fst $ randomR ((1, 500) :: (Int, Int)) seed
                               when (isOwoifiable content && roll == 1)
                                    (handleOwoify  m >> pure ())
-       _               -> pure ()
+       MessageReactionAdd r -> when (isHallOfFameEmote r && notInHallOfFameChannel r)
+                               $ do
+                                    eligibleM <- isEligibleForHallOfFame r
+                                    case eligibleM of
+                                         Right eligible -> if
+                                                             eligible
+                                                           then
+                                                                handleHallOfFame r >> pure ()
+                                                           else
+                                                                pure ()
+                                         Left err -> pure ()
+       _ -> pure ()

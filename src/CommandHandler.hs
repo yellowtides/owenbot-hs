@@ -7,14 +7,14 @@ import Discord
 import qualified Data.Text as T
 import Utils (sendMessageChan, (=~=), isMod, toRoles)
 
-import ILA (sendThmChan, sendDefChan, sendLemChan, sendTextbookChan)
-import ILARE                   ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
-import qualified Inf1A  as I1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan)
-import Inf1ARE                 ( i1atextbookRE, syllogismsRE, booleanRE, hoogleInfRE )
-import Calc as CAP (sendTextbookChan)
-import CalcRE as CRE ( calctextbookRE )
-import qualified Helpme as HLP (sendHelpDM)
-import HelpmeRE                (helpRE )
+import ILA                      ( sendThmChan, sendDefChan, sendLemChan, sendTextbookChan )
+import ILARE                    ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
+import qualified Inf1A  as I1A  ( sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan )
+import Inf1ARE                  ( i1atextbookRE, syllogismsRE, booleanRE, hoogleInfRE )
+import Calc as CAP              ( sendTextbookChan)
+import CalcRE as CRE            ( calctextbookRE )
+import qualified Helpme as HLP  ( sendHelpDM)
+import HelpmeRE                 ( helpRE )
 
 isCommand :: T.Text -> Bool
 isCommand m = any (m =~=) commandREs

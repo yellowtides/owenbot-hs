@@ -7,12 +7,14 @@ import qualified Discord.Requests as R
 import Discord.Types
 import Discord
 
+import qualified Data.Maybe as M
 import qualified Data.Text.IO as TIO
 import qualified Data.Text as T
 import UnliftIO (liftIO)
 import Text.Regex.TDFA
+import System.IO as S (readFile)
 
-import Utils (sendMessageChan, sendFileChan, pingAuthorOf, (=~=))
+import Utils (sendMessageChan, sendMessageChanEmbed, sendFileChan, pingAuthorOf, linkChannel, getMessageLink, (=~=))
 import Owoifier (owoify)
 
 isOwoifiable :: T.Text -> Bool
