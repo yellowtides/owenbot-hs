@@ -27,7 +27,7 @@ import UnliftIO(liftIO)
 
 
 hallOfFameEmote :: T.Text
-hallOfFameEmote = "\11088"
+hallOfFameEmote = "XREE"
 
 hallOfFameChannel :: Snowflake
 hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
@@ -47,7 +47,7 @@ isEligibleForHallOfFame r = do
   case messM of
     Right mess -> do
       msgIdlist <- liftIO $ openCSV "fame.csv"
-      pure $ Right $ any (\x -> (messageReactionCount x == 4) && (emojiName (messageReactionEmoji x) ==  hallOfFameEmote) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
+      pure $ Right $ any (\x -> (messageReactionCount x >= 4) && (emojiName (messageReactionEmoji x) == hallOfFameEmote) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
     Left err -> pure $ Left err
 
 handleHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
@@ -75,5 +75,5 @@ getHallOfFameEmbed :: Message -> DiscordHandler (Either RestCallErrorCode Create
 getHallOfFameEmbed m = do
   messLinkM <- getMessageLink m
   case messLinkM of
-    Right messLink -> pure $ Right (CreateEmbed "" "" Nothing "New Hall of Fame entry!" messLink (Just (CreateEmbedImageUrl $ getImageFromMessage m)) (getHallOfFameDescription m) [] Nothing (getTimestampFromMessage m) Nothing)
+    Right messLink -> pure $ Right (CreateEmbed "" "" Nothing "best of ouw buwwshit" messLink (Just (CreateEmbedImageUrl $ getImageFromMessage m)) (getHallOfFameDescription m) [] Nothing (getTimestampFromMessage m) Nothing)
     Left err -> pure $ Left err
