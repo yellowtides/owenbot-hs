@@ -5,16 +5,32 @@ import qualified Discord.Requests as R
 import Data.Text as T (pack, Text)
 import Discord ( restCall, DiscordHandler, RestCallErrorCode )
 import Discord.Types
-import MiscHandler
-import Utils 
+    ( Snowflake,
+      Attachment(attachmentUrl),
+      Emoji(emojiName),
+      Message(messageReactions, messageId, messageText, messageChannel,
+              messageAttachments),
+      MessageReaction(messageReactionCount, messageReactionEmoji),
+      CreateEmbed(CreateEmbed),
+      CreateEmbedImage(CreateEmbedImageUrl),
+      ReactionInfo(reactionEmoji, reactionChannelId, reactionMessageId) )
+import MiscHandler ()
+import Utils
+    ( pingAuthorOf,
+      linkChannel,
+      getMessageLink,
+      sendMessageChanEmbed,
+      getTimestampFromMessage,
+      openCSV,
+      addToCSV ) 
 import UnliftIO(liftIO)
-import Control.Monad
+
 
 hallOfFameEmote :: T.Text
 hallOfFameEmote = "\11088"
 
 hallOfFameChannel :: Snowflake
-hallOfFameChannel = 797935173743280191 --the channel id for the hall of fame
+hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
 
 notInHallOfFameChannel :: ReactionInfo -> Bool
 notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
@@ -31,7 +47,7 @@ isEligibleForHallOfFame r = do
   case messM of
     Right mess -> do
       msgIdlist <- liftIO $ openCSV "fame.csv"
-      pure $ Right $ any (\x -> (messageReactionCount x == 1) && (emojiName (messageReactionEmoji x) ==  hallOfFameEmote) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
+      pure $ Right $ any (\x -> (messageReactionCount x == 4) && (emojiName (messageReactionEmoji x) ==  hallOfFameEmote) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
     Left err -> pure $ Left err
 
 handleHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)

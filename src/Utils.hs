@@ -53,7 +53,7 @@ sendFileChan c t f = do
     mFileContent <- liftIO $ safeReadFile f
     case mFileContent of
         Nothing          -> sendMessageChan c "iw cannow be foun uwu"
-        Just fileContent -> restCall (R.CreateMessageUploadFile c t $ fileContent)
+        Just fileContent -> restCall (R.CreateMessageUploadFile c t fileContent)
 
 safeReadFile :: FilePath -> IO (Maybe B.ByteString)
 safeReadFile path = catch (Just <$> B.readFile path) putNothing
