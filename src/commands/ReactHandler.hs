@@ -14,7 +14,7 @@ hallOfFameEmote :: T.Text
 hallOfFameEmote = "\11088"
 
 hallOfFameChannel :: Snowflake
-hallOfFameChannel = 797837507798499329
+hallOfFameChannel = 797935173743280191 --the channel id for the hall of fame
 
 notInHallOfFameChannel :: ReactionInfo -> Bool
 notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
@@ -30,11 +30,8 @@ isEligibleForHallOfFame r = do
   messM <- messageFromReaction r
   case messM of
     Right mess -> do
-      msgIdlist <- liftIO $ openCSV "FilePath"
-      let boolT = show (messageId mess) `elem`  msgIdlist 
-      guard boolT
-      liftIO $ addToCSV "FilePath" (show $ messageId mess) >> pure()
-      pure $ Right $ any (\x -> (messageReactionCount x == 3) && (emojiName (messageReactionEmoji x) == hallOfFameEmote) && not boolT) (messageReactions mess)
+      msgIdlist <- liftIO $ openCSV "fame.csv"
+      pure $ Right $ any (\x -> (messageReactionCount x == 1) && (emojiName (messageReactionEmoji x) ==  hallOfFameEmote) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
     Left err -> pure $ Left err
 
 handleHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
@@ -44,7 +41,8 @@ handleHallOfFame r = do
     Right mess -> do
       embedM <- getHallOfFameEmbed mess
       case embedM of
-        Right embed ->
+        Right embed -> do
+          liftIO $ addToCSV "fame.csv" (show (messageId mess) ++ ", ") >> pure () --adds the message id to the csv to make sure we dont add it multiple times.
           sendMessageChanEmbed hallOfFameChannel "" embed
         Left err -> pure $ Left err
     Left err -> pure $ Left err
