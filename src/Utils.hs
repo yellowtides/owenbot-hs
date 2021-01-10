@@ -16,8 +16,7 @@ import Control.Exception (catch, IOException)
 import UnliftIO (liftIO)
 import Owoifier (owoify)
 import qualified Data.Time.Format as TF
-import Data.List
-import System.IO.Unsafe
+import Data.List.Split ( splitOn )
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool
@@ -88,7 +87,7 @@ openCSV f = do
         Nothing          -> writeFile f "" >> return []
         Just fileContent -> return $ parseCSV fileContent
         where
-            parseCSV = groupBy (\x y -> x /= ',') 
+            parseCSV x  = splitOn ", " x
 
 addToCSV :: FilePath -> String -> IO()
 addToCSV = appendFile
