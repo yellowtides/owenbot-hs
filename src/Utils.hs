@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
-              pingAuthorOf, linkChannel, getMessageLink, isMod, (=~=), toRoles) where
+              pingAuthorOf, linkChannel, getMessageLink, isMod, (=~=), toRoles, getTimestampFromMessage) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -14,6 +14,7 @@ import Text.Regex.TDFA ((=~))
 import Control.Exception (catch, IOException)
 import UnliftIO (liftIO)
 import Owoifier (owoify)
+import qualified Data.Time.Format as TF
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool
@@ -73,3 +74,6 @@ toRoles i g= do
     Right userG <- restCall $ R.GetGuildMember g i
     let filtered = filter (\x -> roleId x `elem` memberRoles userG) allRole
     return filtered
+
+getTimestampFromMessage :: Message -> T.Text
+getTimestampFromMessage m = T.pack $ TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z" (messageTimestamp m)
