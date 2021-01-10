@@ -7,7 +7,8 @@ import Discord ( restCall, DiscordHandler, RestCallErrorCode )
 import Discord.Types
 import MiscHandler
 import Utils 
-
+import UnliftIO(liftIO)
+import Control.Monad
 
 hallOfFameEmote :: T.Text
 hallOfFameEmote = "\11088"
@@ -28,7 +29,12 @@ isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorC
 isEligibleForHallOfFame r = do
   messM <- messageFromReaction r
   case messM of
-    Right mess -> pure $ Right $ any (\x -> (messageReactionCount x == 3) && (emojiName (messageReactionEmoji x) == hallOfFameEmote)) (messageReactions mess)
+    Right mess -> do
+      msgIdlist <- liftIO $ openCSV "FilePath"
+      let boolT = show (messageId mess) `elem`  msgIdlist 
+      guard boolT
+      liftIO $ addToCSV "FilePath" (show $ messageId mess) >> pure()
+      pure $ Right $ any (\x -> (messageReactionCount x == 3) && (emojiName (messageReactionEmoji x) == hallOfFameEmote) && not boolT) (messageReactions mess)
     Left err -> pure $ Left err
 
 handleHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)

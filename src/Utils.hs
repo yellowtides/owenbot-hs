@@ -1,13 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
-              pingAuthorOf, linkChannel, getMessageLink, isMod, (=~=), toRoles, getTimestampFromMessage) where
+              pingAuthorOf, linkChannel, getMessageLink, isMod, (=~=), toRoles, getTimestampFromMessage, openCSV, addToCSV) where
 
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
 import Control.Monad (guard, unless, when)
 import qualified Data.ByteString as B
+import System.IO as Sys
 import qualified Data.Text as T
 import Data.Function (on)
 import Text.Regex.TDFA ((=~))
@@ -15,6 +16,8 @@ import Control.Exception (catch, IOException)
 import UnliftIO (liftIO)
 import Owoifier (owoify)
 import qualified Data.Time.Format as TF
+import Data.List
+import System.IO.Unsafe
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool
@@ -77,3 +80,21 @@ toRoles i g= do
 
 getTimestampFromMessage :: Message -> T.Text
 getTimestampFromMessage m = T.pack $ TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z" (messageTimestamp m)
+
+openCSV :: FilePath -> IO [String]
+openCSV f = do
+    mFileContent <- safeCsvRead f
+    case mFileContent of
+        Nothing          -> writeFile f "" >> return []
+        Just fileContent -> return $ parseCSV fileContent
+        where
+            parseCSV = groupBy (\x y -> x /= ',') 
+
+addToCSV :: FilePath -> String -> IO()
+addToCSV = appendFile
+
+safeCsvRead :: FilePath -> IO (Maybe String)
+safeCsvRead path = catch (Just <$> Sys.readFile path) putNothing
+            where
+                putNothing :: IOException -> IO (Maybe String)
+                putNothing = const $ pure Nothing
