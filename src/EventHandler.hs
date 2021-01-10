@@ -10,8 +10,13 @@ import Control.Monad (when, guard, unless)
 
 import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
-                    handleNietzsche, isNietzsche,
-                    isHallOfFameEmote, isEligibleForHallOfFame, handleHallOfFame, notInHallOfFameChannel)
+                    handleNietzsche, isNietzsche)
+
+import ReactHandler
+    ( notInHallOfFameChannel,
+      isHallOfFameEmote,
+      isEligibleForHallOfFame,
+      handleHallOfFame )
 
 import System.Random (randomR, mkStdGen)
 import Data.Hashable (hash)
@@ -48,4 +53,4 @@ handleEvent event = case event of
                                                            else
                                                                 pure ()
                                          Left err -> pure ()
-       _               -> pure ()
+       _ -> pure ()
