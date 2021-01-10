@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Utils (sendMessageChan, sendMessageDM, sendFileChan,
-              pingAuthorOf, isMod, (=~=), toRoles) where
+module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
+              pingAuthorOf, linkChannel, getMessageLink, isMod, (=~=), toRoles) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -22,8 +22,21 @@ import Owoifier (owoify)
 pingAuthorOf :: Message -> T.Text
 pingAuthorOf m = "<@" <> T.pack (show . userId $ messageAuthor m) <> ">"
 
+linkChannel :: ChannelId  -> T.Text
+linkChannel c = "<#" <> T.pack (show c) <> ">"
+
+getMessageLink :: Message -> DiscordHandler (Either RestCallErrorCode T.Text)
+getMessageLink m = do
+    chanM <- restCall $ R.GetChannel (messageChannel m)
+    case chanM of
+        Right chan -> pure $ Right ("https://discord.com/channels/" <> T.pack (show $ channelGuild chan) <> "/" <> T.pack (show $ messageChannel m) <> "/" <> T.pack (show $ messageId m))
+        Left err -> pure $ Left err
+
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendMessageChan c xs = restCall (R.CreateMessage c xs)
+
+sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler (Either RestCallErrorCode Message)
+sendMessageChanEmbed c xs e = restCall (R.CreateMessageEmbed c xs e)
 
 sendMessageDM :: UserId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 sendMessageDM u t = do
