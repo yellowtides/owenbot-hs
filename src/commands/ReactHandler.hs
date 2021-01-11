@@ -75,5 +75,5 @@ getHallOfFameEmbed :: Message -> DiscordHandler (Either RestCallErrorCode Create
 getHallOfFameEmbed m = do
   messLinkM <- getMessageLink m
   case messLinkM of
-    Right messLink -> pure $ Right (CreateEmbed "" "" Nothing "best of ouw buwwshit" messLink (Just (CreateEmbedImageUrl $ getImageFromMessage m)) (getHallOfFameDescription m) [] Nothing (getTimestampFromMessage m) Nothing)
+    Right messLink -> pure $ Right (CreateEmbed "" "" Nothing "best of ouw buwwshit" messLink Nothing (getHallOfFameDescription m) [] (Just (CreateEmbedImageUrl $ getImageFromMessage m)) (getTimestampFromMessage m) Nothing)
     Left err -> pure $ Left err
