@@ -40,6 +40,7 @@ library
       Inf1ARE
       TemplateRE
       ReactHandler
+      ReactHandlerRE
   other-modules:
       Paths_owenbot
   hs-source-dirs:
