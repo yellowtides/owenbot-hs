@@ -2,7 +2,7 @@
 module ReactHandler where
 
 import qualified Discord.Requests as R
-import Data.Text as T (pack, Text)
+import Data.Text as T (pack, toUpper, Text)
 import Discord ( restCall, DiscordHandler, RestCallErrorCode )
 import Discord.Types
     ( Snowflake,
@@ -26,8 +26,8 @@ import Utils
 import UnliftIO(liftIO)
 
 
-hallOfFameEmote :: T.Text
-hallOfFameEmote = "XREE"
+hallOfFameEmotes :: [T.Text]
+hallOfFameEmotes = ["XREE", "KEKW"] --capitalise emotes
 
 hallOfFameChannel :: Snowflake
 hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
@@ -36,7 +36,7 @@ notInHallOfFameChannel :: ReactionInfo -> Bool
 notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
 
 isHallOfFameEmote :: ReactionInfo -> Bool
-isHallOfFameEmote r = emojiName (reactionEmoji r) == hallOfFameEmote
+isHallOfFameEmote r = toUpper (emojiName (reactionEmoji r)) `elem` hallOfFameEmotes
 
 messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
 messageFromReaction r = restCall (R.GetChannelMessage (reactionChannelId r, reactionMessageId r))
@@ -47,7 +47,7 @@ isEligibleForHallOfFame r = do
   case messM of
     Right mess -> do
       msgIdlist <- liftIO $ openCSV "fame.csv"
-      pure $ Right $ any (\x -> (messageReactionCount x >= 4) && (emojiName (messageReactionEmoji x) == hallOfFameEmote) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
+      pure $ Right $ any (\x -> (messageReactionCount x >= 4) && (toUpper (emojiName (messageReactionEmoji x)) `elem` hallOfFameEmotes) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
     Left err -> pure $ Left err
 
 handleHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
