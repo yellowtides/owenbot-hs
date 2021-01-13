@@ -5,7 +5,7 @@ import Discord.Types
 import Discord
 
 import qualified Data.Text as T
-import Utils (sendMessageChan, (=~=), isMod, toRoles)
+import Utils (rmFuncText, sendMessageChan, (=~=), isMod, isRole)
 
 import ILA                      ( sendThmChan, sendDefChan, sendLemChan, sendTextbookChan )
 import ILARE                    ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
@@ -14,6 +14,8 @@ import Inf1ARE                  ( i1atextbookRE, syllogismsRE, booleanRE, hoogle
 import Calc as CAP              ( sendTextbookChan)
 import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
+import ReactHandler
+import ReactHandlerRE
 import HelpmeRE                 ( helpRE )
 
 isCommand :: T.Text -> Bool
@@ -32,11 +34,12 @@ handleCommand m
     | cmdText =~= hoogleInfRE   = testRE $ I1A.sendHDocChan channel
     | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
     -- TODO: fix calctextbookRE to actually call the command
-    | cmdText =~= calctextbookRE = simTyping $ CAP.sendTextbookChan channel
-
+    | cmdText =~= calctextbookRE= simTyping $ CAP.sendTextbookChan channel
+    | cmdText =~= reactLimitRE  = setLimit m $ read $ T.unpack noCommandText
     | cmdText =~= helpRE        = HLP.sendHelpDM user
     where
         cmdText   = messageText m
+        noCommandText     = rmFuncText cmdText
         channel   = messageChannel m
         user      = messageAuthor m
         simTyping = (>>) $ restCall (R.TriggerTypingIndicator channel)
@@ -48,5 +51,6 @@ commandREs = [
                 i1atextbookRE, syllogismsRE, booleanRE,             -- CL
                 hoogleInfRE,                                        -- FP
                 calctextbookRE,                                     -- CALC
+                reactLimitRE,                                       -- Reaction settings
                 helpRE                                              -- HELP  
              ]
