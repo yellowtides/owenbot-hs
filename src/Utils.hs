@@ -2,7 +2,7 @@
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
-               getTimestampFromMessage, openCSV, addToCSV) where
+               getTimestampFromMessage, openCSV, addToCSV, rmFuncText) where
 
 import qualified Discord.Requests as R
 import Discord.Types
