@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
-              pingAuthorOf, linkChannel, getMessageLink, isMod, (=~=), toRoles, getTimestampFromMessage, openCSV, addToCSV) where
+              pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
+               getTimestampFromMessage, openCSV, addToCSV) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -17,6 +18,7 @@ import UnliftIO (liftIO)
 import Owoifier (owoify)
 import qualified Data.Time.Format as TF
 import Data.List.Split ( splitOn )
+import Data.Char (isSpace, isAlpha)
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool
@@ -61,15 +63,16 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
                 putNothing :: IOException -> IO (Maybe B.ByteString)
                 putNothing = const $ pure Nothing
 
-
 isMod :: Message -> DiscordHandler Bool
-isMod m = do
+isMod m = isRole m "Moderator"
+
+isRole :: Message -> T.Text -> DiscordHandler Bool 
+isRole m r= do
   let Just g = messageGuild m
   Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
   filtered <- toRoles (userId $ messageAuthor m) g 
-  return $ "Moderator" `elem` map roleName filtered
+  return $ r `elem` map roleName filtered
 
-  
 toRoles :: UserId -> GuildId -> DiscordHandler [Role]
 toRoles i g= do
     Right allRole <- restCall $ R.GetGuildRoles g
@@ -97,3 +100,6 @@ safeCsvRead path = catch (Just <$> Sys.readFile path) putNothing
             where
                 putNothing :: IOException -> IO (Maybe String)
                 putNothing = const $ pure Nothing
+
+rmFuncText :: T.Text -> T.Text
+rmFuncText = T.dropWhile isAlpha . T.tail
