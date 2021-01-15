@@ -23,8 +23,6 @@ isCommand m = any (m =~=) commandREs
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
-
--- TODO: figure why none of these commands call
     | cmdText =~= ilathmRE      = ILA.sendThmChan channel cmdText
     | cmdText =~= iladefRE      = testRE $ ILA.sendDefChan channel cmdText
     | cmdText =~= ilalemmaRE    = ILA.sendLemChan channel cmdText
@@ -38,12 +36,12 @@ handleCommand m
     | cmdText =~= reactLimitRE  = setLimit m $ read $ T.unpack noCommandText
     | cmdText =~= helpRE        = HLP.sendHelpDM user
     where
-        cmdText   = messageText m
-        noCommandText     = rmFuncText cmdText
-        channel   = messageChannel m
-        user      = messageAuthor m
-        simTyping = (>>) $ restCall (R.TriggerTypingIndicator channel)
-        testRE = (>>) $ sendMessageChan channel (T.pack "message received")
+        cmdText       = messageText m
+        noCommandText = rmFuncText cmdText
+        channel       = messageChannel m
+        user          = messageAuthor m
+        simTyping     = (>>) $ restCall (R.TriggerTypingIndicator channel)
+        testRE        = (>>) $ sendMessageChan channel (T.pack "message received")
 
 commandREs :: [T.Text]
 commandREs = [  
