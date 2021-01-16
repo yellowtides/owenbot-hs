@@ -53,7 +53,7 @@ handleRoleAssign r = do
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let newRoleId = fromJust desiredRole
-    restCall $ AddGuildMemberRole 768810076201811989 (reactionUserId r) newRoleId
+    restCall $ AddGuildMemberRole 755798054455738489 (reactionUserId r) newRoleId
     -- the number is the fixed Guild/Server ID. 
     -- TODO: put the number in a config file.
 
@@ -61,7 +61,7 @@ handleRoleAssign r = do
         $ owoify "Added your desired role! Hurray!"
     
 -- | TODO: remove the repetition in handleRoleAssign/handleRoleRemove by
--- modularizing better (i.e., the sanity check).
+-- modularizing thingies better (i.e., the sanity check).
 handleRoleRemove :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
 handleRoleRemove r = do
     validMessages <- liftIO getAssignMessageIds
@@ -78,7 +78,7 @@ handleRoleRemove r = do
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let oldRoleId = fromJust desiredRole
-    restCall $ RemoveGuildMemberRole 768810076201811989 (reactionUserId r) oldRoleId
+    restCall $ RemoveGuildMemberRole 755798054455738489 (reactionUserId r) oldRoleId
     -- the number is the fixed Guild/Server ID. 
     -- TODO: put the number in a config file.
 
