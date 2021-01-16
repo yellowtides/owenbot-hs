@@ -22,11 +22,14 @@ import RoleSelfAssign
      ( handleRoleAssign,
        handleRoleRemove )
 
-import System.Random (randomR, mkStdGen)
-import Data.Hashable (hash)
+import System.Random ( randomR, getStdRandom )
+import UnliftIO (liftIO)
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
+
+roll500 :: IO Int
+roll500 = getStdRandom $ randomR (1, 500)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
@@ -41,9 +44,7 @@ handleEvent event = case event of
                                    (handleNietzsche m >> pure ())
                               guard . not $ isNietzsche content
 
-                              let randStr = hash . show $ event
-                              let seed    = mkStdGen randStr
-                              let roll    = fst $ randomR ((1, 500) :: (Int, Int)) seed
+                              roll <- liftIO roll500
                               when (isOwoifiable content && roll == 1)
                                    (handleOwoify  m >> pure ())
        MessageReactionAdd r -> do
