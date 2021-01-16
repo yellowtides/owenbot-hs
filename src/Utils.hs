@@ -67,14 +67,14 @@ isMod :: Message -> DiscordHandler Bool
 isMod m = isRole m "Moderator"
 
 isRole :: Message -> T.Text -> DiscordHandler Bool 
-isRole m r= do
+isRole m r = do
   let Just g = messageGuild m
   Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
   filtered <- toRoles (userId $ messageAuthor m) g 
   return $ r `elem` map roleName filtered
 
 toRoles :: UserId -> GuildId -> DiscordHandler [Role]
-toRoles i g= do
+toRoles i g = do
     Right allRole <- restCall $ R.GetGuildRoles g
     Right userG <- restCall $ R.GetGuildMember g i
     let filtered = filter (\x -> roleId x `elem` memberRoles userG) allRole
@@ -92,7 +92,7 @@ openCSV f = do
         where
             parseCSV x  = splitOn ", " x
 
-addToCSV :: FilePath -> String -> IO()
+addToCSV :: FilePath -> String -> IO ()
 addToCSV = appendFile
 
 safeCsvRead :: FilePath -> IO (Maybe String)

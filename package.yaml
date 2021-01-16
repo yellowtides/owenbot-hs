@@ -29,6 +29,8 @@ dependencies:
 - bytestring
 # - raw-strings-qq
 - unliftio
+- split
+- time
 
 library:
   source-dirs: 

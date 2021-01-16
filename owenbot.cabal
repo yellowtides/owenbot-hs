@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.3.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: de4ed34151eea34a88382b812dd0713254884acd10c547483a6f533b08ba72e8
 
 name:           owenbot
 version:        0.1.0.0
@@ -38,9 +40,10 @@ library
       ILARE
       Inf1A
       Inf1ARE
-      TemplateRE
       ReactHandler
       ReactHandlerRE
+      RoleSelfAssign
+      TemplateRE
   other-modules:
       Paths_owenbot
   hs-source-dirs:
@@ -53,10 +56,10 @@ library
     , hashable
     , random
     , regex-tdfa
+    , split
     , text
     , time
     , unliftio
-    , split
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -74,10 +77,10 @@ executable owenbot-exe
     , owenbot
     , random
     , regex-tdfa
+    , split
     , text
     , time
     , unliftio
-    , split
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -96,8 +99,8 @@ test-suite owenbot-test
     , owenbot
     , random
     , regex-tdfa
+    , split
     , text
     , time
     , unliftio
-    , split
   default-language: Haskell2010

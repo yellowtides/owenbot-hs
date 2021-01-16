@@ -2,7 +2,7 @@ module EventHandler (handleEvent) where
 
 import Discord.Types
     ( Message(messageAuthor, messageText),
-      Event(MessageCreate, MessageReactionAdd),
+      Event(MessageCreate, MessageReactionAdd, MessageReactionRemove),
       User(userIsBot) )
 import Discord ( DiscordHandler )
 
@@ -17,6 +17,10 @@ import ReactHandler
       isHallOfFameEmote,
       isEligibleForHallOfFame,
       handleHallOfFame )
+
+import RoleSelfAssign 
+     ( handleRoleAssign,
+       handleRoleRemove )
 
 import System.Random (randomR, mkStdGen)
 import Data.Hashable (hash)
@@ -34,7 +38,7 @@ handleEvent event = case event of
                               guard . not $ isCommand content
 
                               when (isNietzsche content)
-                                   (handleNietzsche m >> pure())
+                                   (handleNietzsche m >> pure ())
                               guard . not $ isNietzsche content
 
                               let randStr = hash . show $ event
@@ -42,15 +46,18 @@ handleEvent event = case event of
                               let roll    = fst $ randomR ((1, 500) :: (Int, Int)) seed
                               when (isOwoifiable content && roll == 1)
                                    (handleOwoify  m >> pure ())
-       MessageReactionAdd r -> when (isHallOfFameEmote r && notInHallOfFameChannel r)
-                               $ do
-                                    eligibleM <- isEligibleForHallOfFame r
-                                    case eligibleM of
-                                         Right eligible -> if
-                                                             eligible
-                                                           then
-                                                                handleHallOfFame r >> pure ()
-                                                           else
-                                                                pure ()
-                                         Left err -> pure ()
+       MessageReactionAdd r -> do
+                                   handleRoleAssign r
+
+                                   guard $ isHallOfFameEmote r && notInHallOfFameChannel r
+                                   eligibleM <- isEligibleForHallOfFame r
+                                   case eligibleM of
+                                        Right eligible -> if
+                                                            eligible
+                                                       then
+                                                            handleHallOfFame r >> pure ()
+                                                       else
+                                                            pure ()
+                                        Left err -> pure ()
+       MessageReactionRemove r -> handleRoleRemove r >> pure ()
        _ -> pure ()
