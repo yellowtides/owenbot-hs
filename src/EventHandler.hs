@@ -20,10 +20,11 @@ import ReactHandler
 
 import RoleSelfAssign 
      ( handleRoleAssign,
-       handleRoleRemove )
+       handleRoleRemove,
+       isOnAssignMessage )
 
 import System.Random ( randomR, getStdRandom )
-import UnliftIO (liftIO)
+import UnliftIO ( liftIO )
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
@@ -48,17 +49,21 @@ handleEvent event = case event of
                               when (isOwoifiable content && roll == 1)
                                    (handleOwoify  m >> pure ())
        MessageReactionAdd r -> do
-                                   handleRoleAssign r
+                                   isSelfAssign <- liftIO $ isOnAssignMessage r
+                                   when isSelfAssign
+                                        (handleRoleAssign r >> pure ())
+                                   guard . not $ isSelfAssign
 
-                                   guard $ isHallOfFameEmote r && notInHallOfFameChannel r
-                                   eligibleM <- isEligibleForHallOfFame r
-                                   case eligibleM of
-                                        Right eligible -> if
-                                                            eligible
-                                                       then
-                                                            handleHallOfFame r >> pure ()
-                                                       else
-                                                            pure ()
-                                        Left err -> pure ()
+                                   when (isHallOfFameEmote r && notInHallOfFameChannel r)
+                                        (do
+                                             eligibleM <- isEligibleForHallOfFame r
+                                             case eligibleM of
+                                                  Right eligible -> if
+                                                                      eligible
+                                                                 then
+                                                                      handleHallOfFame r >> pure ()
+                                                                 else
+                                                                      pure ()
+                                                  Left err -> pure ())
        MessageReactionRemove r -> handleRoleRemove r >> pure ()
        _ -> pure ()

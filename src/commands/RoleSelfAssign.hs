@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module RoleSelfAssign ( handleRoleRemove, handleRoleAssign ) where
+module RoleSelfAssign ( handleRoleRemove, handleRoleAssign, isOnAssignMessage ) where
 
 import Data.List.Split (splitOn)
 import Discord ( restCall, DiscordHandler, RestCallErrorCode )
@@ -36,14 +36,16 @@ import Utils
       rmFuncText,
       sendMessageDM )
 
--- `handleRoleAssign` handles role assignments.
-handleRoleAssign :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
-handleRoleAssign r = do
+isOnAssignMessage :: ReactionInfo -> IO Bool
+isOnAssignMessage r = do
     validMessages <- liftIO getAssignMessageIds
-    guard (reactionMessageId r `elem` validMessages)
+    pure $ reactionMessageId r `elem` validMessages
     -- make sure the message being reacted is a role assignment message
     -- (prevents the config from being opened very often / every sent message)
 
+-- `handleRoleAssign` handles role assignments.
+handleRoleAssign :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
+handleRoleAssign r = do
     assFileName <- liftIO $ getRoleListIndex r
     roleMap <- liftIO $ getRoleMap (fromJust assFileName)
     let desiredRole = lookup (T.toUpper . emojiName $ reactionEmoji r) roleMap
