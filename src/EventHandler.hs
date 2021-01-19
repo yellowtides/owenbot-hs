@@ -6,11 +6,13 @@ import Discord.Types
       User(userIsBot) )
 import Discord ( DiscordHandler )
 
+import Data.Maybe ( isJust, fromJust )
 import Control.Monad (when, guard, unless)
 
 import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
-                    handleNietzsche, isNietzsche)
+                    handleNietzsche, isNietzsche,
+                    handleDadJoke, isDadJoke )
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -43,6 +45,11 @@ handleEvent event = case event of
 
                               when (isNietzsche content)
                                    (handleNietzsche m >> pure ())
+                              guard . not $ isNietzsche content
+
+                              let isDadJokeM = isDadJoke content
+                              when (isJust isDadJokeM)
+                                   (handleDadJoke m (fromJust isDadJokeM) >> pure ())
                               guard . not $ isNietzsche content
 
                               roll <- liftIO roll500

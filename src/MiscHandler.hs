@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module MiscHandler (isOwoifiable, handleOwoify,
-                    isNietzsche, handleNietzsche) where
+                    isNietzsche, handleNietzsche,
+                    isDadJoke, handleDadJoke ) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -28,3 +29,12 @@ isNietzsche = (=~= ("[gG]od *[iI]s *[dD]ead" :: T.Text))
 
 handleNietzsche :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleNietzsche m = liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify
+
+isDadJoke :: T.Text -> Maybe T.Text
+isDadJoke t = let match = t =~ ("[iI]'?[Mm] +[a-zA-Z]+[, ]*" :: T.Text) in
+              case match of
+                  "" -> Nothing
+                  e  -> Just . T.dropWhile (== ' ') $ T.dropWhile (/= ' ') match
+
+handleDadJoke :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+handleDadJoke m t = sendMessageChan (messageChannel m) $ owoify ("hello " <> t <> ", i'm owen")
