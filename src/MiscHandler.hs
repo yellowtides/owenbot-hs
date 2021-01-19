@@ -15,6 +15,8 @@ import UnliftIO (liftIO)
 import Text.Regex.TDFA
 import System.IO as S (readFile)
 
+import Data.Char ( isAlpha )
+
 import Utils (sendMessageChan, sendMessageChanEmbed, sendFileChan, pingAuthorOf, linkChannel, getMessageLink, (=~=))
 import Owoifier (owoify)
 
@@ -34,7 +36,8 @@ isDadJoke :: T.Text -> Maybe T.Text
 isDadJoke t = let match = t =~ ("[iI]'?[Mm] +[a-zA-Z]+[, ]*" :: T.Text) in
               case match of
                   "" -> Nothing
-                  e  -> Just . T.dropWhile (== ' ') $ T.dropWhile (/= ' ') match
+                  e  -> Just . T.takeWhile (\x -> x `elem` ("'*" :: [Char]) || isAlpha x) 
+                             . T.dropWhile (== ' ') $ T.dropWhile (/= ' ') match
 
 handleDadJoke :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 handleDadJoke m t = sendMessageChan (messageChannel m) $ owoify ("hello " <> t <> ", i'm owen")
