@@ -6,7 +6,7 @@ import Discord.Types
       User(userIsBot) )
 import Discord ( DiscordHandler )
 
-import Data.Maybe ( isJust, fromJust )
+import Data.Maybe ( isJust, fromJust, isNothing )
 import Control.Monad (when, guard, unless)
 
 import CommandHandler (handleCommand, isCommand)
@@ -51,7 +51,6 @@ handleEvent event = case event of
                               let isDadJokeM = isDadJoke content
                               when (isJust isDadJokeM && roll10 == 1)
                                    (handleDadJoke m (fromJust isDadJokeM) >> pure ())
-                              guard . not $ isNietzsche content
 
                               roll500 <- liftIO $ roll 500
                               when (isOwoifiable content && roll500 == 1)
