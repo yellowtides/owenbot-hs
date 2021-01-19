@@ -31,8 +31,8 @@ import UnliftIO ( liftIO )
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
-roll500 :: IO Int
-roll500 = getStdRandom $ randomR (1, 500)
+roll :: Int -> IO Int
+roll n = getStdRandom $ randomR (1, n)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
@@ -47,13 +47,14 @@ handleEvent event = case event of
                                    (handleNietzsche m >> pure ())
                               guard . not $ isNietzsche content
 
+                              roll10 <- liftIO $ roll 10
                               let isDadJokeM = isDadJoke content
-                              when (isJust isDadJokeM)
+                              when (isJust isDadJokeM && roll10 == 1)
                                    (handleDadJoke m (fromJust isDadJokeM) >> pure ())
                               guard . not $ isNietzsche content
 
-                              roll <- liftIO roll500
-                              when (isOwoifiable content && roll == 1)
+                              roll500 <- liftIO $ roll 500
+                              when (isOwoifiable content && roll500 == 1)
                                    (handleOwoify  m >> pure ())
        MessageReactionAdd r -> do
                                    isSelfAssign <- liftIO $ isOnAssignMessage r
