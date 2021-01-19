@@ -27,6 +27,7 @@ import RoleSelfAssign
 
 import System.Random ( randomR, getStdRandom )
 import UnliftIO ( liftIO )
+import qualified Data.Text as T ( length )
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
@@ -47,9 +48,10 @@ handleEvent event = case event of
                                    (handleNietzsche m >> pure ())
                               guard . not $ isNietzsche content
 
-                              roll10 <- liftIO $ roll 10
+                              roll10 <- liftIO $ roll 15
                               let isDadJokeM = isDadJoke content
-                              when (isJust isDadJokeM && roll10 == 1)
+                              when (isJust isDadJokeM && roll10 == 1
+                                    && (T.length (fromJust isDadJokeM) >= 3))
                                    (handleDadJoke m (fromJust isDadJokeM) >> pure ())
 
                               roll500 <- liftIO $ roll 500
