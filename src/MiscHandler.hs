@@ -33,7 +33,7 @@ handleNietzsche :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleNietzsche m = liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify
 
 isDadJoke :: T.Text -> Maybe T.Text
-isDadJoke t = let match = t =~ ("[iI]'?[Mm] +[a-zA-Z'*]+[!;():., ]*" :: T.Text) in
+isDadJoke t = let match = t =~ ("^[iI]'?[Mm] +[a-zA-Z'*]+[!;():., ]*" :: T.Text) in
               case match of
                   "" -> Nothing
                   e  -> Just . T.takeWhile (\x -> x `elem` ("'*" :: [Char]) || isAlpha x) 
