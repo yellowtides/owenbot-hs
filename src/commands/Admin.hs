@@ -22,8 +22,12 @@ sendInstanceChan m = do
 
 gitLocal, gitRemote, commitsAhead :: IO T.Text 
 gitLocal = captureCommandOutput "git" ["rev-parse", "HEAD"]
-gitRemote = captureCommandOutput "git" ["rev-parse", "origin/main"]
-commitsAhead = captureCommandOutput "git" ["rev-list", "--count", "HEAD", "^origin/main"]
+gitRemote = do
+  captureCommandOutput "git" ["fetch"]
+  captureCommandOutput "git" ["rev-parse", "origin/main"]
+commitsAhead = do
+  captureCommandOutput "git" ["fetch"]
+  captureCommandOutput "git" ["rev-list", "--count", "HEAD", "^origin/main"]
 
 sendInstanceInfo :: ChannelId  -> DiscordHandler (Either RestCallErrorCode Message)
 sendInstanceInfo chan = do
