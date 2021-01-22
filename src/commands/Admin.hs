@@ -20,14 +20,15 @@ sendInstanceChan m = do
       sendInstanceInfo $ messageChannel m
     else sendMessageChan (messageChannel m) "Insufficient privileges."
 
-gitLocal, gitRemote, commitsAhead :: IO T.Text 
-gitLocal = captureCommandOutput "git" ["rev-parse", "HEAD"]
+gitLocal, gitRemote, commitsAhead, currentDir :: IO T.Text 
+gitLocal = captureCommandOutput "git rev-parse HEAD"
 gitRemote = do
-  captureCommandOutput "git" ["fetch"]
-  captureCommandOutput "git" ["rev-parse", "origin/main"]
+  captureCommandOutput "git fetch"
+  captureCommandOutput "git rev-parse origin/main"
 commitsAhead = do
-  captureCommandOutput "git" ["fetch"]
-  captureCommandOutput "git" ["rev-list", "--count", "HEAD", "^origin/main"]
+  captureCommandOutput "git fetch"
+  captureCommandOutput "git rev-list --count HEAD ^origin/main"
+currentDir = captureCommandOutput "pwd"
 
 sendInstanceInfo :: ChannelId  -> DiscordHandler (Either RestCallErrorCode Message)
 sendInstanceInfo chan = do

@@ -105,9 +105,12 @@ safeCsvRead path = catch (Just <$> Sys.readFile path) putNothing
 rmFuncText :: T.Text -> T.Text
 rmFuncText = T.dropWhile isAlpha . T.tail
 
-captureCommandOutput :: String -> [String] -> IO T.Text
-captureCommandOutput command args = do
-    output <- Process.readProcess command args []
+captureCommandOutput :: String -> IO T.Text
+captureCommandOutput command = do
+    let (executable:args) = splitOn " " command
+    output <- Process.readCreateProcess ((Process.proc executable args) {
+        cwd = Just "."
+    }) ""
     return $ T.pack output
 
 restart :: IO()
