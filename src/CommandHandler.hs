@@ -37,7 +37,7 @@ handleCommand m
     | cmdText =~= reactLimitRE    = setLimit m $ read $ T.unpack noCommandText
     | cmdText =~= helpRE          = HLP.sendHelpDM user
     | cmdText =~= instanceRE      = simTyping $ Admin.sendInstanceChan m
-    | cmdText =~= restartRE       = restartOwen m
+    | cmdText =~= restartRE       = restartOwen m 
     where
         cmdText       = messageText m
         noCommandText = rmFuncText cmdText
