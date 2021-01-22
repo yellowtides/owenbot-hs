@@ -2,7 +2,7 @@
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
-               getTimestampFromMessage, openCSV, addToCSV, rmFuncText) where
+               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -10,6 +10,7 @@ import Discord
 import Control.Monad (guard, unless, when)
 import qualified Data.ByteString as B
 import System.IO as Sys
+import System.Process as Process
 import qualified Data.Text as T
 import Data.Function (on)
 import Text.Regex.TDFA ((=~))
@@ -103,3 +104,8 @@ safeCsvRead path = catch (Just <$> Sys.readFile path) putNothing
 
 rmFuncText :: T.Text -> T.Text
 rmFuncText = T.dropWhile isAlpha . T.tail
+
+captureCommandOutput :: String -> [String] -> IO T.Text
+captureCommandOutput command args = do
+    output <- Process.readProcess command args []
+    return $ T.pack output

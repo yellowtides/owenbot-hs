@@ -43,6 +43,8 @@ library
       ReactHandler
       ReactHandlerRE
       RoleSelfAssign
+      Admin
+      AdminRE
       TemplateRE
   other-modules:
       Paths_owenbot
@@ -55,6 +57,7 @@ library
     , discord-haskell
     , hashable
     , random
+    , process
     , regex-tdfa
     , split
     , text
@@ -76,6 +79,7 @@ executable owenbot-exe
     , hashable
     , owenbot
     , random
+    , process
     , regex-tdfa
     , split
     , text
@@ -98,6 +102,7 @@ test-suite owenbot-test
     , hashable
     , owenbot
     , random
+    , process
     , regex-tdfa
     , split
     , text

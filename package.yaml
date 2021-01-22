@@ -25,6 +25,7 @@ dependencies:
 - discord-haskell
 - regex-tdfa
 - random
+- process
 - hashable
 - bytestring
 # - raw-strings-qq

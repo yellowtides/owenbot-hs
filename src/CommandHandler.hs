@@ -16,6 +16,8 @@ import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
 import ReactHandler
 import ReactHandlerRE
+import Admin                    ( sendInstanceChan )
+import AdminRE                  ( instanceRE )
 import HelpmeRE                 ( helpRE )
 
 isCommand :: T.Text -> Bool
@@ -23,18 +25,19 @@ isCommand m = any (m =~=) commandREs
 
 handleCommand :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleCommand m
-    | cmdText =~= ilathmRE      = ILA.sendThmChan channel cmdText
-    | cmdText =~= iladefRE      = testRE $ ILA.sendDefChan channel cmdText
-    | cmdText =~= ilalemmaRE    = ILA.sendLemChan channel cmdText
-    | cmdText =~= ilatextbookRE = simTyping $ ILA.sendTextbookChan channel
-    | cmdText =~= syllogismsRE  = I1A.sendSylChan channel
-    | cmdText =~= booleanRE     = I1A.sendBoolChan channel
-    | cmdText =~= hoogleInfRE   = testRE $ I1A.sendHDocChan channel
-    | cmdText =~= i1atextbookRE = simTyping $ I1A.sendTextbookChan channel
+    | cmdText =~= ilathmRE        = ILA.sendThmChan channel cmdText
+    | cmdText =~= iladefRE        = testRE $ ILA.sendDefChan channel cmdText
+    | cmdText =~= ilalemmaRE      = ILA.sendLemChan channel cmdText
+    | cmdText =~= ilatextbookRE   = simTyping $ ILA.sendTextbookChan channel
+    | cmdText =~= syllogismsRE    = I1A.sendSylChan channel
+    | cmdText =~= booleanRE       = I1A.sendBoolChan channel
+    | cmdText =~= hoogleInfRE     = testRE $ I1A.sendHDocChan channel
+    | cmdText =~= i1atextbookRE   = simTyping $ I1A.sendTextbookChan channel
     -- TODO: fix calctextbookRE to actually call the command
-    | cmdText =~= calctextbookRE= simTyping $ CAP.sendTextbookChan channel
-    | cmdText =~= reactLimitRE  = setLimit m $ read $ T.unpack noCommandText
-    | cmdText =~= helpRE        = HLP.sendHelpDM user
+    | cmdText =~= calctextbookRE  = simTyping $ CAP.sendTextbookChan channel
+    | cmdText =~= reactLimitRE    = setLimit m $ read $ T.unpack noCommandText
+    | cmdText =~= helpRE          = HLP.sendHelpDM user
+    | cmdText =~= instanceRE      = simTyping $ Admin.sendInstanceChan m
     where
         cmdText       = messageText m
         noCommandText = rmFuncText cmdText
@@ -50,5 +53,6 @@ commandREs = [
                 hoogleInfRE,                                        -- FP
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
-                helpRE                                              -- HELP  
+                helpRE,                                             -- HELP  
+                instanceRE                                          -- Instance check
              ]
