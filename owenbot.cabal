@@ -69,7 +69,28 @@ executable owenbot-exe
   main-is: Main.hs
   other-modules:
       Paths_owenbot
+      CommandHandler
+      EventHandler
+      MiscHandler
+      Owoifier
+      Utils
+      Calc
+      CalcRE
+      Helpme
+      HelpmeRE
+      ILA
+      ILARE
+      Inf1A
+      Inf1ARE
+      ReactHandler
+      ReactHandlerRE
+      RoleSelfAssign
+      Admin
+      AdminRE
+      TemplateRE
   hs-source-dirs:
+      src
+      src/commands
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
