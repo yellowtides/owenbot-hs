@@ -44,6 +44,7 @@ restartOwen m = do
   b1 <- isRole m "OwenDev"
   if b1
     then do
-      _ <- liftIO restart
       sendMessageChan (messageChannel m) "Restarting"
+      _ <- liftIO restart
+      sendMessageChan (messageChannel m) "Failed"
     else sendMessageChan (messageChannel m) "Insufficient privileges."
