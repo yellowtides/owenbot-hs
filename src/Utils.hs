@@ -2,7 +2,7 @@
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
-               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput) where
+               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput, restart) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -109,3 +109,6 @@ captureCommandOutput :: String -> [String] -> IO T.Text
 captureCommandOutput command args = do
     output <- Process.readProcess command args []
     return $ T.pack output
+
+restart :: IO()
+restart = Process.callCommand "./restart.sh"

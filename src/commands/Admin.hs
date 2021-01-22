@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin (sendInstanceChan, gitLocal, gitRemote, commitsAhead, sendInstanceInfo) where
+module Admin (sendInstanceChan, gitLocal, gitRemote, commitsAhead, sendInstanceInfo, restartOwen) where
 import Data.Text as T
 import Discord.Types (ChannelId, Message(messageChannel) )
 import Discord ( DiscordHandler, RestCallErrorCode )
-import Utils (sendMessageChan, isRole, captureCommandOutput)
+import Utils (sendMessageChan, isRole, captureCommandOutput, restart)
 import UnliftIO(liftIO)
 import Discord.Internal.Types (Channel(channelId))
 import Data.Char (isSpace)
@@ -34,3 +34,12 @@ sendInstanceInfo chan = do
                         "Local at: " <> loc <>  --as all things returned by captureCommandOuput has a newline at the end
                         "Remote at: " <> remote <>
                         "Remote is " <> rstrip commits <> " commits ahead")
+
+restartOwen :: Message -> DiscordHandler (Either RestCallErrorCode Message)
+restartOwen m = do
+  b1 <- isRole m "OwenDev"
+  if b1
+    then do
+      _ <- liftIO restart
+      sendMessageChan (messageChannel m) "Restarting"
+    else sendMessageChan (messageChannel m) "Insufficient privileges."

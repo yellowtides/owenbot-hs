@@ -16,8 +16,8 @@ import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
 import ReactHandler
 import ReactHandlerRE
-import Admin                    ( sendInstanceChan )
-import AdminRE                  ( instanceRE )
+import Admin                    ( sendInstanceChan, restartOwen )
+import AdminRE                 
 import HelpmeRE                 ( helpRE )
 
 isCommand :: T.Text -> Bool
@@ -33,11 +33,11 @@ handleCommand m
     | cmdText =~= booleanRE       = I1A.sendBoolChan channel
     | cmdText =~= hoogleInfRE     = testRE $ I1A.sendHDocChan channel
     | cmdText =~= i1atextbookRE   = simTyping $ I1A.sendTextbookChan channel
-    -- TODO: fix calctextbookRE to actually call the command
     | cmdText =~= calctextbookRE  = simTyping $ CAP.sendTextbookChan channel
     | cmdText =~= reactLimitRE    = setLimit m $ read $ T.unpack noCommandText
     | cmdText =~= helpRE          = HLP.sendHelpDM user
     | cmdText =~= instanceRE      = simTyping $ Admin.sendInstanceChan m
+    | cmdText =~= restartRE       = restartOwen m
     where
         cmdText       = messageText m
         noCommandText = rmFuncText cmdText
@@ -54,5 +54,5 @@ commandREs = [
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
                 helpRE,                                             -- HELP  
-                instanceRE                                          -- Instance check
+                instanceRE, restartRE                               -- Instance check
              ]

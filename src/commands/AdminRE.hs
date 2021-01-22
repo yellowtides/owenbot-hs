@@ -1,9 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module AdminRE (instanceRE) where
+module AdminRE (instanceRE, restartRE) where
 
 import qualified Data.Text as T
 import TemplateRE (trailingWS)
 
-instanceRE :: T.Text
+instanceRE, restartRE :: T.Text
 instanceRE = "^:instance" <> trailingWS -- :instance
+restartRE  = "^:restart" <> trailingWS
