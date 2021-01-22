@@ -111,4 +111,4 @@ captureCommandOutput command args = do
     return $ T.pack output
 
 restart :: IO()
-restart = Process.callCommand "./restart.sh"
+restart = Process.callCommand "./.restartWithin.sh"
