@@ -4,14 +4,18 @@ module Main where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import Control.Monad 
 import Discord.Requests as R
-import Control.Monad (forM_, when)
 import Discord
+    ( restCall,
+      runDiscord,
+      def,
+      DiscordHandler,
+      RunDiscordOpts(discordToken, discordOnStart, discordOnEvent,
+                     discordOnLog) )
+import Discord.Types ( ChannelId, Channel(ChannelText) )
 import EventHandler (handleEvent)
-
-import qualified Discord.Requests as R
-import Discord.Types
-
+import Admin (sendInstanceInfo)
 
 -- | UWU
 owen :: T.Text -> IO ()
@@ -26,6 +30,7 @@ startHandler :: DiscordHandler ()
 startHandler = do
     let chan = 801763198792368129 ::ChannelId --this channel is the bot-start channel on the test server, change to point towards your channel.
     _ <- restCall $ R.CreateMessage chan "@here Hewwo, I am bawck! UwU"
+    _ <- sendInstanceInfo chan
     pure ()
 
 isTextChannel :: Channel -> Bool
