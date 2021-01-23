@@ -55,5 +55,5 @@ commandREs = [
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
                 helpRE,                                             -- HELP  
-                gitRE, instanceRE, restartRE                               -- Instance check
+                gitRE, instanceRE, restartRE                        -- Various admin stuff
              ]
