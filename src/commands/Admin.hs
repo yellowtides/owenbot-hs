@@ -26,15 +26,17 @@ pidOf = captureCommandOutput "pidof owenbot-exe"
 sendGitInfo :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 sendGitInfo m = do
   isDev <- isRole m "OwenDev"
-  guard isDev
-  sendGitInfoChan (messageChannel m)
+  if isDev then do
+    sendGitInfoChan $ messageChannel m
+  else do
+    sendMessageDM (userId $ messageAuthor m) ("Insufficient Privileges." :: T.Text)
 
 sendGitInfoChan :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
 sendGitInfoChan chan = do
   loc <- liftIO gitLocal
   remote <- liftIO gitRemote
   commits <- liftIO commitsAhead
-  sendMessageChan chan ("Git Status Info: \n"
+  sendMessageChan chan ("Git Status Info: \n" <>
                         "Local at: " <> loc <>  --as all things returned by captureCommandOutput has a newline at the end
                         "Remote at: " <> remote <>
                         "Remote is " <> rstrip commits <> " commits ahead")
@@ -57,10 +59,10 @@ sendInstanceInfoChan chan = do
 
 restartOwen :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 restartOwen m = do
-  b1 <- isRole m "OwenDev"
-  if b1
-    then do
+  isDev <- isRole m "OwenDev"
+  if isDev then do
       sendMessageChan (messageChannel m) "Restarting"
       _ <- liftIO restart
       sendMessageChan (messageChannel m) "Failed"
-    else sendMessageChan (messageChannel m) "Insufficient privileges."
+  else do
+    sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
