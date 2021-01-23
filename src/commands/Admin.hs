@@ -2,11 +2,10 @@
 
 module Admin (sendGitInfo, sendGitInfoChan, gitLocal, gitRemote, commitsAhead, sendInstanceInfo, restartOwen) where
 import Data.Text as T
-import Discord.Types (ChannelId, Message(messageChannel) )
+import Discord.Types (ChannelId, Message(messageChannel, messageAuthor), User(userId), Channel(channelId))
 import Discord ( DiscordHandler, RestCallErrorCode )
-import Utils (sendMessageChan, isRole, captureCommandOutput, restart)
+import Utils (sendMessageChan, sendMessageDM, isRole, captureCommandOutput, restart)
 import UnliftIO(liftIO)
-import Discord.Internal.Types (Channel(channelId))
 import Data.Char (isSpace)
 import Control.Monad (guard)
 
@@ -35,7 +34,7 @@ sendGitInfoChan chan = do
   loc <- liftIO gitLocal
   remote <- liftIO gitRemote
   commits <- liftIO commitsAhead
-  sendMessageChan chan ("Git Status Info: \n")
+  sendMessageChan chan ("Git Status Info: \n"
                         "Local at: " <> loc <>  --as all things returned by captureCommandOutput has a newline at the end
                         "Remote at: " <> remote <>
                         "Remote is " <> rstrip commits <> " commits ahead")
@@ -43,8 +42,10 @@ sendGitInfoChan chan = do
 sendInstanceInfo :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 sendInstanceInfo m = do
   isDev <- isRole m "OwenDev"
-  guard isDev
-  sendInstanceInfoChan (messageChannel m)
+  if isDev then do
+    sendInstanceInfoChan $ messageChannel m
+  else do
+    sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges" :: T.Text)
 
 sendInstanceInfoChan :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
 sendInstanceInfoChan chan = do
