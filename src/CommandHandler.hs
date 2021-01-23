@@ -16,7 +16,7 @@ import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
 import ReactHandler
 import ReactHandlerRE
-import Admin                    ( sendInstanceChan, restartOwen )
+import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen )
 import AdminRE                 
 import HelpmeRE                 ( helpRE )
 
@@ -36,7 +36,8 @@ handleCommand m
     | cmdText =~= calctextbookRE  = simTyping $ CAP.sendTextbookChan channel
     | cmdText =~= reactLimitRE    = setLimit m $ read $ T.unpack noCommandText
     | cmdText =~= helpRE          = HLP.sendHelpDM user
-    | cmdText =~= instanceRE      = simTyping $ Admin.sendInstanceChan m
+    | cmdText =~= gitRE           = simTyping $ Admin.sendGitInfo m
+    | cmdText =~= instanceRE      = Admin.sendInstanceInfo m
     | cmdText =~= restartRE       = restartOwen m 
     where
         cmdText       = messageText m
@@ -54,5 +55,5 @@ commandREs = [
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
                 helpRE,                                             -- HELP  
-                instanceRE, restartRE                               -- Instance check
+                gitRE, instanceRE, restartRE                               -- Instance check
              ]

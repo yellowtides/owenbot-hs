@@ -1,10 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module AdminRE (instanceRE, restartRE) where
+module AdminRE (gitRE, instanceRE, restartRE) where
 
 import qualified Data.Text as T
 import TemplateRE (trailingWS)
 
-instanceRE, restartRE :: T.Text
-instanceRE = "^:instance" <> trailingWS -- :instance
+gitRE, instanceRE, restartRE :: T.Text
+gitRE      = "^:git" <> trailingWS
+instanceRE = "^:instance" <> trailingWS
 restartRE  = "^:restart" <> trailingWS
