@@ -6,6 +6,6 @@ import qualified Data.Text as T
 import TemplateRE (trailingWS)
 
 gitRE, instanceRE, restartRE :: T.Text
-gitRE      = "^:git" <> trailingWS
+gitRE      = "^:repo" <> trailingWS
 instanceRE = "^:instance" <> trailingWS
 restartRE  = "^:restart" <> trailingWS
