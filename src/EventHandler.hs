@@ -48,7 +48,7 @@ handleEvent event = case event of
                                    (handleNietzsche m >> pure ())
                               guard . not $ isNietzsche content
 
-                              roll10 <- liftIO $ roll 15
+                              roll10 <- liftIO $ roll 50
                               let isDadJokeM = isDadJoke content
                               when (isJust isDadJokeM && roll10 == 1
                                     && (T.length (fromJust isDadJokeM) >= 3))
