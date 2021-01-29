@@ -13,21 +13,25 @@ import Utils (openCSV)
 
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'
+-- Although we revert to defaults if enums don't match, the caller of this function
+-- should always check first on their own and provide approriate error messages.
 updateStatus :: String -> String -> String -> Discord.DiscordHandler ()
 updateStatus statusStatus statusType statusName =
     let
-        statusTypeParsed = case statusType of
-            "playing" -> ActivityTypeGame
-            "watching" -> ActivityTypeWatching
-            "streaming" -> ActivityTypeStreaming
-            "listening" -> ActivityTypeListening
         statusStatusParsed = case statusStatus of
             "online" -> UpdateStatusOnline
             "dnd" -> UpdateStatusDoNotDisturb
             "idle" -> UpdateStatusAwayFromKeyboard
             "invisible" -> UpdateStatusInvisibleOffline
-    in
-        updateStatus' statusName statusTypeParsed statusStatusParsed
+            _ -> UpdateStatusOnline -- revert to online if not match
+        statusTypeParsed = case statusType of
+            "playing" -> ActivityTypeGame
+            "watching" -> ActivityTypeWatching
+            "streaming" -> ActivityTypeStreaming
+            "listening" -> ActivityTypeListening
+            _ -> ActivityTypeGame -- revert to playing if not match
+     in
+        updateStatus' statusStatusParsed statusTypeParsed statusName
 
 -- | Sets the Discord status
 updateStatus' :: UpdateStatusType -> ActivityType -> String -> Discord.DiscordHandler ()
