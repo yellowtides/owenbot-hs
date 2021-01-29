@@ -8,7 +8,7 @@ import Discord.Internal.Types.Gateway
 import Discord (
     sendCommand,
     DiscordHandler )
-
+import UnliftIO(liftIO)
 import Utils (openCSV)
 
 -- | Convert intuitive strings into the respective DataTypes
@@ -30,7 +30,7 @@ updateStatus statusStatus statusType statusName =
             "streaming" -> ActivityTypeStreaming
             "listening" -> ActivityTypeListening
             _ -> ActivityTypeGame -- revert to playing if not match
-     in
+     in do
         updateStatus' statusStatusParsed statusTypeParsed statusName
 
 -- | Sets the Discord status
@@ -46,8 +46,16 @@ updateStatus' statusStatus statusType statusName = sendCommand (UpdateStatus (Up
     updateStatusOptsAFK = False 
     }))
 
-editStatus :: String -> IO ()
-editStatus = writeFile "src/config/status.conf"
+-- | Sets the status from file on bot launch
+-- Should be called only once.
+setStatusFromFile :: Discord.DiscordHandler()
+setStatusFromFile = do
+    line <- liftIO readStatusFile
+    let parts = Prelude.words line
+    updateStatus (head parts) ((head.tail) parts) (unwords $ (tail.tail) parts)
 
-readStatus :: IO String
-readStatus = openCSV "src/config/status.conf" <&> head
+editStatusFile :: String -> IO ()
+editStatusFile = writeFile "src/config/status.conf"
+
+readStatusFile :: IO String
+readStatusFile = openCSV "src/config/status.conf" <&> head

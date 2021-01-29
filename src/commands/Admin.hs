@@ -9,7 +9,7 @@ import Data.Char (isSpace)
 import Control.Monad (guard)
 import Text.Regex.TDFA ((=~))
 import Utils (sendMessageChan, sendMessageDM, isRole, captureCommandOutput, restart)
-import Status (updateStatus)
+import Status (updateStatus, editStatusFile)
 import AdminRE (correctStatusRE)
 
 rstrip :: Text -> Text
@@ -80,6 +80,7 @@ prepareStatus m text = do
     if isDev then do
         if (Prelude.length captures == 3) then do
             updateStatus statusStatus statusType statusName
+            liftIO $ editStatusFile (Prelude.unwords [statusStatus, statusType, statusName])
             sendMessageChan (messageChannel m) "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
         else do
             sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
