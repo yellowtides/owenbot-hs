@@ -75,8 +75,7 @@ restartOwen m = do
 -- If correct, pass onto Status.updateStatus
 prepareStatus :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 prepareStatus m text = do
-    -- isDev <- isRole m "OwenDev"
-    let isDev = True
+    isDev <- isRole m "OwenDev"
     if isDev then do
         if (Prelude.length captures == 3) then do
             updateStatus statusStatus statusType statusName
