@@ -32,6 +32,7 @@ library
       MiscHandler
       Owoifier
       Utils
+      Status
       Calc
       CalcRE
       Helpme
@@ -74,6 +75,7 @@ executable owenbot-exe
       MiscHandler
       Owoifier
       Utils
+      Status
       Calc
       CalcRE
       Helpme
