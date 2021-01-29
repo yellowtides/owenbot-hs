@@ -16,7 +16,7 @@ import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
 import ReactHandler
 import ReactHandlerRE
-import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen )
+import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen, prepareStatus )
 import AdminRE                 
 import HelpmeRE                 ( helpRE )
 
@@ -38,7 +38,8 @@ handleCommand m
     | cmdText =~= helpRE          = HLP.sendHelpDM user
     | cmdText =~= gitRE           = simTyping $ Admin.sendGitInfo m
     | cmdText =~= instanceRE      = Admin.sendInstanceInfo m
-    | cmdText =~= restartRE       = restartOwen m 
+    | cmdText =~= restartRE       = restartOwen m
+    | cmdText =~= statusRE        = Admin.prepareStatus m cmdText
     where
         cmdText       = messageText m
         noCommandText = rmFuncText cmdText
@@ -55,5 +56,5 @@ commandREs = [
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
                 helpRE,                                             -- HELP  
-                gitRE, instanceRE, restartRE                        -- Various admin stuff
+                gitRE, instanceRE, restartRE, statusRE              -- Various admin stuff
              ]

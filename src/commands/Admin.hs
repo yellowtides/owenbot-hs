@@ -1,13 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin (sendGitInfo, sendGitInfoChan, gitLocal, gitRemote, commitsAhead, sendInstanceInfo, restartOwen) where
-import Data.Text as T
+module Admin (sendGitInfo, sendGitInfoChan, gitLocal, gitRemote, commitsAhead, sendInstanceInfo, restartOwen, prepareStatus) where
+import Data.Text as T hiding (head, tail)
 import Discord.Types (ChannelId, Message(messageChannel, messageAuthor), User(userId), Channel(channelId))
 import Discord ( DiscordHandler, RestCallErrorCode )
-import Utils (sendMessageChan, sendMessageDM, isRole, captureCommandOutput, restart)
 import UnliftIO(liftIO)
 import Data.Char (isSpace)
 import Control.Monad (guard)
+import Text.Regex.TDFA ((=~))
+import Utils (sendMessageChan, sendMessageDM, isRole, captureCommandOutput, restart)
+import Status (updateStatus)
+import AdminRE (correctStatusRE)
 
 rstrip :: Text -> Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
@@ -66,3 +69,27 @@ restartOwen m = do
       sendMessageChan (messageChannel m) "Failed"
   else do
     sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
+
+-- | Checks the input against the correct version of :status
+-- If incorrect, return appropriate messages
+-- If correct, pass onto Status.updateStatus
+prepareStatus :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+prepareStatus m text = do
+    -- isDev <- isRole m "OwenDev"
+    let isDev = True
+    if isDev then do
+        if (Prelude.length captures == 3) then do
+            updateStatus statusStatus statusType statusName
+            sendMessageChan (messageChannel m) "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
+        else do
+            sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
+    else do
+       sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
+
+    where
+        match :: (String, String, String, [String])
+        match@(_, _, _, captures) = unpack text =~ correctStatusRE
+
+        statusStatus = head captures
+        statusType = (head . tail) captures
+        statusName = (head . tail . tail) captures
