@@ -14,7 +14,7 @@ import Utils (openCSV)
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'
 updateStatus :: String -> String -> String -> Discord.DiscordHandler ()
-updateStatus statusName statusType statusStatus =
+updateStatus statusStatus statusType statusName =
     let
         statusTypeParsed = case statusType of
             "playing" -> ActivityTypeGame
@@ -30,8 +30,8 @@ updateStatus statusName statusType statusStatus =
         updateStatus' statusName statusTypeParsed statusStatusParsed
 
 -- | Sets the Discord status
-updateStatus' :: String -> ActivityType -> UpdateStatusType -> Discord.DiscordHandler ()
-updateStatus' statusName statusType statusStatus = sendCommand (UpdateStatus (UpdateStatusOpts {
+updateStatus' :: UpdateStatusType -> ActivityType -> String -> Discord.DiscordHandler ()
+updateStatus' statusStatus statusType statusName = sendCommand (UpdateStatus (UpdateStatusOpts {
     updateStatusOptsSince = Nothing,
     updateStatusOptsGame = Just (Activity {
         activityName = T.pack statusName,

@@ -32,7 +32,7 @@ startHandler = do
     let chan = 801763198792368129 ::ChannelId --this channel is the bot-start channel on the test server, change to point towards your channel.
     _ <- restCall $ R.CreateMessage chan "Hewwo, I am bawck! UwU"
     _ <- sendGitInfoChan chan
-    _ <- updateStatus ":helpme for help!" "streaming" "online"
+    _ <- updateStatus "online" "playing" ":helpme for help!"
     pure ()
 
 isTextChannel :: Channel -> Bool
