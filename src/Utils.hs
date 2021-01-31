@@ -68,11 +68,13 @@ isMod :: Message -> DiscordHandler Bool
 isMod m = isRole m "Moderator"
 
 isRole :: Message -> T.Text -> DiscordHandler Bool 
-isRole m r = do
-  let Just g = messageGuild m
-  Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
-  filtered <- toRoles (userId $ messageAuthor m) g 
-  return $ r `elem` map roleName filtered
+isRole m r = case (messageGuild m) of
+               Nothing -> pure False
+               Just g -> do 
+                   let Just g = messageGuild m
+                   Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
+                   filtered <- toRoles (userId $ messageAuthor m) g 
+                   return $ r `elem` map roleName filtered
 
 toRoles :: UserId -> GuildId -> DiscordHandler [Role]
 toRoles i g = do
