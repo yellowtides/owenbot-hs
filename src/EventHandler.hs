@@ -2,12 +2,15 @@ module EventHandler (handleEvent) where
 
 import Discord.Types
     ( Message(messageAuthor, messageText),
-      Event(MessageCreate, MessageReactionAdd, MessageReactionRemove),
+      Event(Ready, MessageCreate, MessageReactionAdd, MessageReactionRemove),
       User(userIsBot) )
 import Discord ( DiscordHandler )
 
 import Data.Maybe ( isJust, fromJust, isNothing )
 import Control.Monad (when, guard, unless)
+import System.Random ( randomR, getStdRandom )
+import UnliftIO ( liftIO )
+import qualified Data.Text as T ( length )
 
 import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
@@ -25,9 +28,7 @@ import RoleSelfAssign
        handleRoleRemove,
        isOnAssignMessage )
 
-import System.Random ( randomR, getStdRandom )
-import UnliftIO ( liftIO )
-import qualified Data.Text as T ( length )
+import Status (setStatusFromFile)
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
@@ -37,6 +38,7 @@ roll n = getStdRandom $ randomR (1, n)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
+       Ready i u ch ungu sess_id -> setStatusFromFile >> pure ()
        MessageCreate m -> let content = messageText m in
                           unless (isFromBot m)
                           $ do
