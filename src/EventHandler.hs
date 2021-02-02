@@ -15,6 +15,7 @@ import qualified Data.Text as T ( length )
 import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
                     handleNietzsche, isNietzsche,
+                    handleThatcher, isThatcher,
                     handleDadJoke, isDadJoke )
 
 import ReactHandler
@@ -49,6 +50,10 @@ handleEvent event = case event of
                               when (isNietzsche content)
                                    (handleNietzsche m >> pure ())
                               guard . not $ isNietzsche content
+                              
+                              when (isThatcher content)
+                                   (handleThatcher m >> pure ())
+                              guard . not $ isThatcher content
 
                               roll10 <- liftIO $ roll 20
                               let isDadJokeM = isDadJoke content
