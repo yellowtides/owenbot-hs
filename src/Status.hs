@@ -26,9 +26,9 @@ updateStatus statusStatus statusType statusName =
             _ -> UpdateStatusOnline -- revert to online if not match
         statusTypeParsed = case statusType of
             "playing" -> ActivityTypeGame
-            "watching" -> ActivityTypeWatching
             "streaming" -> ActivityTypeStreaming
             "listening" -> ActivityTypeListening
+            "competing" -> ActivityTypeCompeting
             _ -> ActivityTypeGame -- revert to playing if not match
      in do
         updateStatus' statusStatusParsed statusTypeParsed statusName
