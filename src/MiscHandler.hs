@@ -2,6 +2,7 @@
 
 module MiscHandler (isOwoifiable, handleOwoify,
                     isNietzsche, handleNietzsche,
+                    isThatcher, handleThatcher,
                     isDadJoke, handleDadJoke ) where
 
 import qualified Discord.Requests as R
