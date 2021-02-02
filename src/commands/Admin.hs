@@ -82,7 +82,7 @@ prepareStatus m text = do
             liftIO $ editStatusFile (Prelude.unwords [statusStatus, statusType, statusName])
             sendMessageChan (messageChannel m) "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
         else do
-            sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
+            sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening> <custom text...>`"
     else do
        sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
 

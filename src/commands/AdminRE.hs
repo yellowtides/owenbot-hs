@@ -15,4 +15,4 @@ statusRE = "^:status(.*)$"
 
 -- This is matched when giving the user correct syntax
 correctStatusRE :: String
-correctStatusRE = "^:status (online|idle|dnd|invisible) (playing|streaming|listening|watching) (.*)$"
+correctStatusRE = "^:status (online|idle|dnd|invisible) (playing|streaming|listening|competing) (.*)$"
