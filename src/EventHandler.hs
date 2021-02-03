@@ -5,9 +5,8 @@ import Discord.Types
       Event(Ready, MessageCreate, MessageReactionAdd, MessageReactionRemove),
       User(userIsBot) )
 import Discord ( DiscordHandler )
-
 import Data.Maybe ( isJust, fromJust, isNothing )
-import Control.Monad (when, guard, unless)
+import Control.Monad (when, guard, unless, mplus)
 import System.Random ( randomR, getStdRandom )
 import UnliftIO ( liftIO )
 import qualified Data.Text as T ( length )
@@ -29,7 +28,6 @@ import RoleSelfAssign
      ( handleRoleAssign,
        handleRoleRemove,
        isOnAssignMessage )
-
 import Status (setStatusFromFile)
 
 isFromBot :: Message -> Bool
@@ -43,7 +41,7 @@ handleEvent event = case event of
        Ready i u ch ungu sess_id -> setStatusFromFile >> pure ()
        MessageCreate m -> let content = messageText m in
                           unless (isFromBot m)
-                          $ do
+                          $ (do 
                               when (isCommand content)
                                    (handleCommand m >> pure ())
                               guard . not $ isCommand content
@@ -69,6 +67,7 @@ handleEvent event = case event of
                               roll500 <- liftIO $ roll 500
                               when (isOwoifiable content && roll500 == 1)
                                    (handleOwoify  m >> pure ())
+                              ) `mplus` (pure ())
        MessageReactionAdd r -> do
                                    isSelfAssign <- liftIO $ isOnAssignMessage r
                                    when isSelfAssign
