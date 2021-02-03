@@ -4,4 +4,3 @@ pkill owenbot-exe;
 cd ~/owenbot-hs;
 git pull;
 stack run & disown;
-"
