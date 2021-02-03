@@ -3,7 +3,8 @@
 module MiscHandler (isOwoifiable, handleOwoify,
                     isNietzsche, handleNietzsche,
                     isThatcher, handleThatcher,
-                    isDadJoke, handleDadJoke ) where
+                    isDadJoke, handleDadJoke,
+                    isFortune, handleFortune ) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -20,6 +21,8 @@ import Data.Char ( isAlpha )
 
 import Utils (sendMessageChan, sendMessageChanEmbed, sendFileChan, pingAuthorOf, linkChannel, getMessageLink, (=~=))
 import Owoifier (owoify)
+
+import qualified System.Process as SP
 
 isOwoifiable :: T.Text -> Bool
 isOwoifiable = (=~= ("[lLrR]|[nNmM][oO]" :: T.Text))
@@ -49,3 +52,19 @@ isDadJoke t = case captures of
 
 handleDadJoke :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 handleDadJoke m t = sendMessageChan (messageChannel m) $ owoify ("hello " <> t <> ", i'm owen")
+
+fortune :: IO String
+fortune = SP.readProcess "fortune" [] []
+
+fortuneCow :: IO String
+fortuneCow = do
+    f <- T.pack <$> fortune
+    SP.readProcess "cowsay" [] . T.unpack $ owoify f
+
+isFortune :: T.Text -> Bool
+isFortune = (=~= ("^:fortune *$" :: T.Text))
+
+handleFortune :: Message -> DiscordHandler (Either RestCallErrorCode Message)
+handleFortune m = do
+    cowText <- liftIO fortuneCow 
+    sendMessageChan (messageChannel m) ("```" <> T.pack cowText <> "```")

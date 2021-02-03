@@ -115,5 +115,5 @@ captureCommandOutput command = do
     }) ""
     return $ T.pack output
 
-restart :: IO()
-restart = Process.callCommand "~/owenbot-hs/.restartWithin.hs"
+restart :: IO ()
+restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"

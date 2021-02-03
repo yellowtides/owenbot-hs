@@ -16,7 +16,8 @@ import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
                     handleNietzsche, isNietzsche,
                     handleThatcher, isThatcher,
-                    handleDadJoke, isDadJoke )
+                    handleDadJoke, isDadJoke,
+                    handleFortune, isFortune )
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -54,6 +55,10 @@ handleEvent event = case event of
                               when (isThatcher content)
                                    (handleThatcher m >> pure ())
                               guard . not $ isThatcher content
+
+                              when (isFortune content)
+                                   (handleFortune m >> pure ())
+                              guard . not $ isFortune content
 
                               roll10 <- liftIO $ roll 20
                               let isDadJokeM = isDadJoke content

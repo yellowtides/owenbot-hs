@@ -12,12 +12,12 @@ packages:
   original:
     hackage: hoogle-5.0.18
 - completed:
-    hackage: discord-haskell-1.8.1@sha256:86d8777ce02ed404c81d02c7b9b0fd5f870e52c6e3a07d98ce3681a7873f7e0e,3562
+    hackage: discord-haskell-1.8.2@sha256:33eb0341af81ed424ea703b1b29a570479484caf875dbcb8d788a5b7b0d2c65a,3562
     pantry-tree:
       size: 2107
-      sha256: cfb24b8f065a15db36b7bdb442970cddf36f7c91f18eb2fca4a835f94f24f9a1
+      sha256: eb001167d963c3720661a04d65330165ba0b3d581d07fa6e459ec0d5e8416edb
   original:
-    hackage: discord-haskell-1.8.1
+    hackage: discord-haskell-1.8.2
 - completed:
     hackage: emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
     pantry-tree:
