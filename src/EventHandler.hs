@@ -16,7 +16,8 @@ import MiscHandler (handleOwoify, isOwoifiable,
                     handleNietzsche, isNietzsche,
                     handleThatcher, isThatcher,
                     handleDadJoke, isDadJoke,
-                    handleFortune, isFortune )
+                    handleFortune, isFortune,
+                    handleMovie, isMovie )
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -54,6 +55,10 @@ handleEvent event = case event of
                                    (handleThatcher m >> pure ())
                               guard . not $ isThatcher content
 
+                              when (isMovie content)
+                                   (handleMovie m >> pure ())
+                              guard . not $ isMovie content
+
                               when (isFortune content)
                                    (handleFortune m >> pure ())
                               guard . not $ isFortune content
@@ -67,7 +72,7 @@ handleEvent event = case event of
                               roll500 <- liftIO $ roll 500
                               when (isOwoifiable content && roll500 == 1)
                                    (handleOwoify  m >> pure ())
-                              ) `mplus` (pure ())
+                              ) `mplus` pure ()
        MessageReactionAdd r -> do
                                    isSelfAssign <- liftIO $ isOnAssignMessage r
                                    when isSelfAssign
