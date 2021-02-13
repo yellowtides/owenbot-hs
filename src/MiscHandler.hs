@@ -5,7 +5,7 @@ module MiscHandler (isOwoifiable, handleOwoify,
                     isThatcher, handleThatcher,
                     isDadJoke, handleDadJoke,
                     isFortune, handleFortune,
-                    isMovie, handleMovie ) where
+                    isADA, handleADA) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -20,9 +20,12 @@ import System.IO as S (readFile)
 
 import Data.Char ( isAlpha )
 
+import ADAPriceFetcher ( fetchADADetails )
+
 import Utils (sendMessageChan, sendMessageChanEmbed, sendFileChan, pingAuthorOf, linkChannel, getMessageLink, (=~=))
 import Owoifier (owoify)
 
+import qualified System.Exit as SE
 import qualified System.Process as SP
 
 isOwoifiable :: T.Text -> Bool
@@ -36,12 +39,6 @@ isNietzsche = (=~= ("[gG]od *[iI]s *[dD]ead" :: T.Text))
 
 handleNietzsche :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleNietzsche m = liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify
-
-isMovie :: T.Text -> Bool
-isMovie = (=~= ("which movie should we watch" :: T.Text))
-
-handleMovie :: Message -> DiscordHandler (Either RestCallErrorCode Message)
-handleMovie m = sendMessageChan (messageChannel m) "**MEGAMIND**" 
 
 isThatcher :: T.Text -> Bool
 isThatcher = (=~= ("which movie should we watch" :: T.Text))
@@ -75,3 +72,13 @@ handleFortune :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleFortune m = do
     cowText <- liftIO fortuneCow 
     sendMessageChan (messageChannel m) ("```" <> T.pack cowText <> "```")
+
+isADA :: T.Text -> Bool
+isADA = (=~= ("^:ada24h *$" :: T.Text))
+
+handleADA :: Message -> DiscordHandler (Either RestCallErrorCode Message)
+handleADA m = do
+    adaAnnouncementM <- liftIO fetchADADetails
+    case adaAnnouncementM of
+        Left err           -> pure . Left $ RestCallErrorCode 400 "Cannot fetch ADA details from Binance." (T.pack err) 
+        Right announcement -> sendMessageChan (messageChannel m) (owoify $ T.pack announcement)

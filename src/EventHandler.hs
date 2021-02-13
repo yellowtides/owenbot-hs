@@ -17,7 +17,7 @@ import MiscHandler (handleOwoify, isOwoifiable,
                     handleThatcher, isThatcher,
                     handleDadJoke, isDadJoke,
                     handleFortune, isFortune,
-                    handleMovie, isMovie )
+                    handleADA, isADA)
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -55,9 +55,9 @@ handleEvent event = case event of
                                    (handleThatcher m >> pure ())
                               guard . not $ isThatcher content
 
-                              when (isMovie content)
-                                   (handleMovie m >> pure ())
-                              guard . not $ isMovie content
+                              when (isADA content)
+                                   (handleADA m >> pure ())
+                              guard . not $ isADA content
 
                               when (isFortune content)
                                    (handleFortune m >> pure ())

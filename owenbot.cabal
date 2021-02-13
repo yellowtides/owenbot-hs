@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: de4ed34151eea34a88382b812dd0713254884acd10c547483a6f533b08ba72e8
+-- hash: 3179a62a490b5d54310588414b7bcf3cc539a4bab9912efd7b50b79f7f75100a
 
 name:           owenbot
 version:        0.1.0.0
@@ -31,8 +31,11 @@ library
       EventHandler
       MiscHandler
       Owoifier
-      Utils
       Status
+      Utils
+      ADAPriceFetcher
+      Admin
+      AdminRE
       Calc
       CalcRE
       Helpme
@@ -44,8 +47,6 @@ library
       ReactHandler
       ReactHandlerRE
       RoleSelfAssign
-      Admin
-      AdminRE
       TemplateRE
   other-modules:
       Paths_owenbot
@@ -53,12 +54,14 @@ library
       src
       src/commands
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , bytestring
     , discord-haskell
     , hashable
-    , random
+    , http-conduit
     , process
+    , random
     , regex-tdfa
     , split
     , text
@@ -70,39 +73,19 @@ executable owenbot-exe
   main-is: Main.hs
   other-modules:
       Paths_owenbot
-      CommandHandler
-      EventHandler
-      MiscHandler
-      Owoifier
-      Utils
-      Status
-      Calc
-      CalcRE
-      Helpme
-      HelpmeRE
-      ILA
-      ILARE
-      Inf1A
-      Inf1ARE
-      ReactHandler
-      ReactHandlerRE
-      RoleSelfAssign
-      Admin
-      AdminRE
-      TemplateRE
   hs-source-dirs:
-      src
-      src/commands
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , bytestring
     , discord-haskell
     , hashable
+    , http-conduit
     , owenbot
-    , random
     , process
+    , random
     , regex-tdfa
     , split
     , text
@@ -119,13 +102,15 @@ test-suite owenbot-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , bytestring
     , discord-haskell
     , hashable
+    , http-conduit
     , owenbot
-    , random
     , process
+    , random
     , regex-tdfa
     , split
     , text
