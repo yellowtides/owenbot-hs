@@ -5,7 +5,7 @@ import Discord.Types
 import Discord
 
 import qualified Data.Text as T
-import Utils (rmFuncText, sendMessageChan, (=~=), isMod, isRole)
+import Utils (rmFuncText, sendMessageChan, (=~=), isMod, isRole, strToSnowflake)
 
 import ILA                      ( sendThmChan, sendDefChan, sendLemChan, sendTextbookChan )
 import ILARE                    ( ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE )
@@ -16,7 +16,7 @@ import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
 import ReactHandler
 import ReactHandlerRE
-import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen, prepareStatus )
+import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen, prepareStatus, addDevs )
 import AdminRE                 
 import HelpmeRE                 ( helpRE )
 
@@ -39,6 +39,7 @@ handleCommand m
     | cmdText =~= gitRE           = simTyping $ Admin.sendGitInfo m
     | cmdText =~= instanceRE      = Admin.sendInstanceInfo m
     | cmdText =~= restartRE       = restartOwen m
+    | cmdText =~= addDevsRE       = testRE $ addDevs m (T.unpack noCommandText)
     | cmdText =~= statusRE        = Admin.prepareStatus m cmdText
     where
         cmdText       = messageText m
@@ -56,5 +57,5 @@ commandREs = [
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
                 helpRE,                                             -- HELP  
-                gitRE, instanceRE, restartRE, statusRE              -- Various admin stuff
+                gitRE, instanceRE, restartRE, statusRE, addDevsRE     -- Various admin stuff
              ]
