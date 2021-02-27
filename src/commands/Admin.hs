@@ -33,7 +33,7 @@ pidOf = captureCommandOutput "pidof owenbot-exe"
 sendGitInfo :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 sendGitInfo m = do
   isDev <- checkRoleIDs m
-  if isDev then do
+  if or isDev then do
     sendGitInfoChan $ messageChannel m
   else do
     sendMessageDM (userId $ messageAuthor m) ("Insufficient Privileges." :: T.Text)
@@ -50,8 +50,8 @@ sendGitInfoChan chan = do
 
 sendInstanceInfo :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 sendInstanceInfo m = do
-  isDev <- checkRoleIDs m
-  if isDev then do
+  isDev <- checkRoleIDs m 
+  if or isDev then do
     sendInstanceInfoChan $ messageChannel m
   else do
     sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges" :: T.Text)
@@ -67,7 +67,7 @@ sendInstanceInfoChan chan = do
 restartOwen :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 restartOwen m = do
   bool <- checkRoleIDs m
-  if bool then do
+  if or bool then do
       sendMessageChan (messageChannel m) "Restarting"
       _ <- liftIO restart
       sendMessageChan (messageChannel m) "Failed"
@@ -77,7 +77,7 @@ restartOwen m = do
 addDevs :: Message -> String  -> DiscordHandler (Either RestCallErrorCode Message)
 addDevs m s = do
   bool <- checkRoleIDs m
-  if bool then do
+  if or bool then do
     _ <- liftIO $ appendFile devIDs (show s ++ ", ")
     sendMessageChan (messageChannel m) "Success!"
   else do
@@ -89,7 +89,7 @@ addDevs m s = do
 prepareStatus :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 prepareStatus m text = do
     isDev <- checkRoleIDs m
-    if isDev then do
+    if or isDev then do
         if Prelude.length captures == 3 then do
             updateStatus statusStatus statusType statusName
             liftIO $ editStatusFile (Prelude.unwords [statusStatus, statusType, statusName])

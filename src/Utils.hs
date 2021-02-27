@@ -8,7 +8,7 @@ module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-import Control.Monad (guard, unless, when)
+import Control.Monad (guard, unless, when, join)
 import qualified Data.ByteString as B
 import System.IO as Sys
 import System.Process as Process
@@ -83,19 +83,23 @@ isRole m r = case messageGuild m of
 exists :: Eq a => [a] -> [a] -> Bool
 exists x y = or $ (==) <$> x <*> y
 
-isRoleID :: Message -> [Snowflake] -> DiscordHandler Bool
+isRoleID :: Message -> Snowflake -> DiscordHandler Bool
 isRoleID m r = case messageGuild m of
   Nothing -> pure False
   Just g -> do
     let Just g = messageGuild m
     Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
     filtered <- toRoles (userId $ messageAuthor m) g
-    return $ r `exists` map roleId filtered
+    return $ r `elem` map roleId filtered
 
-checkRoleIDs :: Message -> DiscordHandler Bool
-checkRoleIDs m = do
-  let test = Prelude.map strToSnowflake <$> openCSV devIDs
-  isRoleID m =<< liftIO test
+mapRoleID :: Message -> IO [DiscordHandler Bool]
+mapRoleID m = do
+    snow <- Prelude.map (\x -> read x :: Snowflake) <$> openCSV devIDs
+    let rolesCheck = Prelude.map (isRoleID m) snow
+    return rolesCheck
+
+checkRoleIDs :: Message -> DiscordHandler [Bool]
+checkRoleIDs m = join $ liftIO $ sequence <$> mapRoleID m 
 
 strToSnowflake :: String -> Snowflake
 strToSnowflake = read
