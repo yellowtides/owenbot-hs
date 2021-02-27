@@ -1,21 +1,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin (sendGitInfo, sendGitInfoChan, gitLocal, gitRemote, commitsAhead, sendInstanceInfo, restartOwen, prepareStatus) where
+module Admin (sendGitInfo, sendGitInfoChan, gitLocal, gitRemote,
+              commitsAhead, sendInstanceInfo, restartOwen, prepareStatus,
+              addDevs, devIDs) where
 import Data.Text as T hiding (head, tail)
-import Discord.Types (ChannelId, Message(messageChannel, messageAuthor), User(userId), Channel(channelId))
+import Discord.Types (ChannelId, Message(messageChannel, messageAuthor, messageId), User(userId), Channel(channelId), Snowflake)
 import Discord ( DiscordHandler, RestCallErrorCode )
-import UnliftIO(liftIO)
+import UnliftIO(liftIO, retrySTM,UnliftIO (unliftIO))
 import Data.Char (isSpace)
 import Control.Monad (guard)
 import Text.Regex.TDFA ((=~))
-import Utils (sendMessageChan, sendMessageDM, isRole, captureCommandOutput, restart)
+import Utils (sendMessageChan, sendMessageDM, isRole, captureCommandOutput, devIDs, restart, checkRoleIDs, openCSV, addToCSV)
 import Status (updateStatus, editStatusFile)
 import AdminRE (correctStatusRE)
+
+
 
 rstrip :: Text -> Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
-gitLocal, gitRemote, commitsAhead, uName, pidOf :: IO T.Text 
+gitLocal, gitRemote, commitsAhead, uName, pidOf :: IO T.Text
 gitLocal = captureCommandOutput "git rev-parse HEAD"
 gitRemote = do
   captureCommandOutput "git fetch"
@@ -28,7 +32,7 @@ pidOf = captureCommandOutput "pidof owenbot-exe"
 
 sendGitInfo :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 sendGitInfo m = do
-  isDev <- isRole m "OwenDev"
+  isDev <- checkRoleIDs m
   if isDev then do
     sendGitInfoChan $ messageChannel m
   else do
@@ -46,7 +50,7 @@ sendGitInfoChan chan = do
 
 sendInstanceInfo :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 sendInstanceInfo m = do
-  isDev <- isRole m "OwenDev"
+  isDev <- checkRoleIDs m
   if isDev then do
     sendInstanceInfoChan $ messageChannel m
   else do
@@ -57,32 +61,41 @@ sendInstanceInfoChan chan = do
   host <- liftIO uName
   pid <- liftIO pidOf
   sendMessageChan chan ("Instance Info: \n" <>
-                        "Host: " <> host <> 
+                        "Host: " <> host <>
                         "Process ID: " <> pid)
 
 restartOwen :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 restartOwen m = do
-  isDev <- isRole m "OwenDev"
-  if isDev then do
+  bool <- checkRoleIDs m
+  if bool then do
       sendMessageChan (messageChannel m) "Restarting"
       _ <- liftIO restart
       sendMessageChan (messageChannel m) "Failed"
   else do
     sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
 
+addDevs :: Message -> String  -> DiscordHandler (Either RestCallErrorCode Message)
+addDevs m s = do
+  bool <- checkRoleIDs m
+  if bool then do
+    _ <- liftIO $ appendFile devIDs (show s ++ ", ")
+    sendMessageChan (messageChannel m) "Success!"
+  else do
+    sendMessageChan (messageChannel m) "Insufficient Permissions"
+
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
 prepareStatus :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
 prepareStatus m text = do
-    isDev <- isRole m "OwenDev"
+    isDev <- checkRoleIDs m
     if isDev then do
-        if (Prelude.length captures == 3) then do
+        if Prelude.length captures == 3 then do
             updateStatus statusStatus statusType statusName
             liftIO $ editStatusFile (Prelude.unwords [statusStatus, statusType, statusName])
             sendMessageChan (messageChannel m) "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
         else do
-            sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening> <custom text...>`"
+            sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
     else do
        sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
 

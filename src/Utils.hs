@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
-              pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
-               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput, restart) where
+              pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, checkRoleIDs, (=~=),
+               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput,
+               strToSnowflake, restart, devIDs) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -15,11 +16,14 @@ import qualified Data.Text as T
 import Data.Function (on)
 import Text.Regex.TDFA ((=~))
 import Control.Exception (catch, IOException)
-import UnliftIO (liftIO)
+import UnliftIO (liftIO,UnliftIO (unliftIO), stringException)
 import Owoifier (owoify)
 import qualified Data.Time.Format as TF
 import Data.List.Split ( splitOn )
 import Data.Char (isSpace, isAlpha)
+
+devIDs :: FilePath
+devIDs = "src/config/devs.conf"
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool
@@ -67,14 +71,34 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
 isMod :: Message -> DiscordHandler Bool
 isMod m = isRole m "Moderator"
 
-isRole :: Message -> T.Text -> DiscordHandler Bool 
-isRole m r = case (messageGuild m) of
+isRole :: Message -> T.Text -> DiscordHandler Bool
+isRole m r = case messageGuild m of
                Nothing -> pure False
-               Just g -> do 
+               Just g -> do
                    let Just g = messageGuild m
                    Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
-                   filtered <- toRoles (userId $ messageAuthor m) g 
+                   filtered <- toRoles (userId $ messageAuthor m) g
                    return $ r `elem` map roleName filtered
+
+exists :: Eq a => [a] -> [a] -> Bool
+exists x y = or $ (==) <$> x <*> y
+
+isRoleID :: Message -> [Snowflake] -> DiscordHandler Bool
+isRoleID m r = case messageGuild m of
+  Nothing -> pure False
+  Just g -> do
+    let Just g = messageGuild m
+    Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
+    filtered <- toRoles (userId $ messageAuthor m) g
+    return $ r `exists` map roleId filtered
+
+checkRoleIDs :: Message -> DiscordHandler Bool
+checkRoleIDs m = do
+  let test = Prelude.map strToSnowflake <$> openCSV devIDs
+  isRoleID m =<< liftIO test
+
+strToSnowflake :: String -> Snowflake
+strToSnowflake = read
 
 toRoles :: UserId -> GuildId -> DiscordHandler [Role]
 toRoles i g = do
