@@ -41,10 +41,10 @@ handleNietzsche :: Message -> DiscordHandler (Either RestCallErrorCode Message)
 handleNietzsche m = liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify
 
 isThatcher :: T.Text -> Bool
-isThatcher = (=~= ("which movie should we watch" :: T.Text))
+isThatcher = (=~= ("[tT]hatcher *[Ii]s *[Dd]ead" :: T.Text))
 
 handleThatcher :: Message -> DiscordHandler (Either RestCallErrorCode Message)
-handleThatcher m = sendMessageChan (messageChannel m) "**MEGAMIND**" 
+handleThatcher m = sendMessageChan (messageChannel m) "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
 isDadJoke :: T.Text -> Maybe T.Text
 isDadJoke t = case captures of
