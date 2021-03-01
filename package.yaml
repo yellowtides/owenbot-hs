@@ -29,6 +29,8 @@ dependencies:
 - hashable
 - bytestring
 # - raw-strings-qq
+- http-conduit 
+- aeson
 - unliftio
 - split
 - time

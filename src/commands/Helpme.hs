@@ -10,5 +10,5 @@ import Data.Char (isAlpha, isSpace)
 import Owoifier (owoify)
 import Utils (sendMessageDM)
 
-sendHelpDM :: User -> DiscordHandler (Either RestCallErrorCode Message)
+sendHelpDM :: User -> DiscordHandler ()
 sendHelpDM user = liftIO (TIO.readFile "./src/assets/help.txt") >>= sendMessageDM (userId user) . owoify

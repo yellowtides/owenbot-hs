@@ -7,3 +7,4 @@ test.hs
 src/assets/textbooks/Calc-pdf.pdf
 fame.csv
 src/config/status.conf
+.DS_Store

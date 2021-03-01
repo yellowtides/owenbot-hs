@@ -44,7 +44,7 @@ isOnAssignMessage r = do
     -- (prevents the config from being opened very often / every sent message)
 
 -- `handleRoleAssign` handles role assignments.
-handleRoleAssign :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
+handleRoleAssign :: ReactionInfo -> DiscordHandler ()
 handleRoleAssign r = do
     assFileName <- liftIO $ getRoleListIndex r
     roleMap <- liftIO $ getRoleMap (fromJust assFileName)
@@ -64,7 +64,7 @@ handleRoleAssign r = do
     
 -- | TODO: remove the repetition in handleRoleAssign/handleRoleRemove by
 -- modularizing thingies better (i.e., the sanity check).
-handleRoleRemove :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
+handleRoleRemove :: ReactionInfo -> DiscordHandler ()
 handleRoleRemove r = do
     validMessages <- liftIO getAssignMessageIds
     guard (reactionMessageId r `elem` validMessages)

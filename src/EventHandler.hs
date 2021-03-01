@@ -17,7 +17,8 @@ import MiscHandler (handleOwoify, isOwoifiable,
                     handleNietzsche, isNietzsche,
                     handleThatcher, isThatcher,
                     handleDadJoke, isDadJoke,
-                    handleFortune, isFortune )
+                    handleFortune, isFortune,
+                    handleADA, isADA)
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -31,10 +32,10 @@ import RoleSelfAssign
        isOnAssignMessage )
 import Status (setStatusFromFile)
 
-messageReceivers :: [Message -> DiscordHandler (Either RestCallErrorCode Message)]
+messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat [Admin.receivers]
 
-reactionReceivers :: [ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)]
+reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = concat []
 
 isFromBot :: Message -> Bool
@@ -47,7 +48,7 @@ handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
        MessageCreate m -> let content = messageText m
                           in
-                              unless (isFromBot m) $ void (mapM ($ m) allReceivers)
+                              unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
 
                          --  $ (do 
                          --      when (isCommand content)
@@ -62,9 +63,13 @@ handleEvent event = case event of
                          --           (handleThatcher m >> pure ())
                          --      guard . not $ isThatcher content
 
-                         --      when (isFortune content)
-                         --           (handleFortune m >> pure ())
-                         --      guard . not $ isFortune content
+                              -- when (isADA content)
+                              --      (handleADA m >> pure ())
+                              -- guard . not $ isADA content
+
+                              -- when (isFortune content)
+                              --      (handleFortune m >> pure ())
+                              -- guard . not $ isFortune content
 
                          --      roll10 <- liftIO $ roll 20
                          --      let isDadJokeM = isDadJoke content
@@ -72,10 +77,10 @@ handleEvent event = case event of
                          --            && (T.length (fromJust isDadJokeM) >= 3))
                          --           (handleDadJoke m (fromJust isDadJokeM) >> pure ())
 
-                         --      roll500 <- liftIO $ roll 500
-                         --      when (isOwoifiable content && roll500 == 1)
-                         --           (handleOwoify  m >> pure ())
-                         --      ) `mplus` (pure ())
+                              -- roll500 <- liftIO $ roll 500
+                              -- when (isOwoifiable content && roll500 == 1)
+                              --      (handleOwoify  m >> pure ())
+                              -- ) `mplus` pure ()
        MessageReactionAdd r -> do
                                    isSelfAssign <- liftIO $ isOnAssignMessage r
                                    when isSelfAssign

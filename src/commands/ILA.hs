@@ -10,19 +10,19 @@ import Data.Char (isAlpha, isSpace)
 
 import Utils (sendMessageChan, sendFileChan)
 
-sendThmChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+sendThmChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendThmChan chan content = sendFileChan chan ("Theorem "                      <> parse content)
                                              ("./src/assets/ila/theorems/"    ++ parseStr content)
 
-sendDefChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+sendDefChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendDefChan chan content = sendFileChan chan ("Definition "                   <> parse content)
                                              ("./src/assets/ila/definitions/" ++ parseStr content)
 
-sendLemChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+sendLemChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendLemChan chan content = sendFileChan chan ("Lemma "                        <> parse content)
                                              ("./src/assets/ila/lemmas/"      ++ parseStr content)
 
-sendTextbookChan :: ChannelId -> DiscordHandler (Either RestCallErrorCode Message)
+sendTextbookChan :: ChannelId -> DiscordHandler ()
 sendTextbookChan chan = sendFileChan chan "ila-textbook.pdf" "./src/assets/textbooks/ila-textbook.pdf"
 
 parseStr :: T.Text -> String

@@ -17,14 +17,14 @@ import Discord.Types
       ReactionInfo(reactionEmoji, reactionChannelId, reactionMessageId) )
 import MiscHandler ()
 import Utils
-    (sendMessageChan, isRole,  pingAuthorOf,
+    (sendMessageChan, checkRoleIDs,  pingAuthorOf,
       linkChannel,
       getMessageLink,
       sendMessageChanEmbed,
       getTimestampFromMessage,
       openCSV,
       addToCSV,
-      rmFuncText ) 
+      rmFuncText )
 import UnliftIO(liftIO)
 import Control.Monad (guard)
 
@@ -54,7 +54,7 @@ isEligibleForHallOfFame r = do
       pure $ Right $ any (\x -> (messageReactionCount x >= limit) && (toUpper (emojiName (messageReactionEmoji x)) `elem` hallOfFameEmotes) && (show (messageId mess) `notElem` msgIdlist)) (messageReactions mess)
     Left err -> pure $ Left err
 
-handleHallOfFame :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
+handleHallOfFame :: ReactionInfo -> DiscordHandler ()
 handleHallOfFame r = do
   messM <- messageFromReaction r --gets contents of message that was reacted to.
   case messM of
@@ -64,8 +64,8 @@ handleHallOfFame r = do
         Right embed -> do
           liftIO $ addToCSV "fame.csv" (show (messageId mess) ++ ", ") >> pure () --adds the message id to the csv to make sure we dont add it multiple times.
           sendMessageChanEmbed hallOfFameChannel "" embed
-        Left err -> pure $ Left err
-    Left err -> pure $ Left err
+        Left err -> pure ()
+    Left err -> pure ()
 
 getHallOfFameDescription :: Message -> T.Text
 getHallOfFameDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel (messageChannel m)
@@ -79,22 +79,21 @@ getHallOfFameEmbed :: Message -> DiscordHandler (Either RestCallErrorCode Create
 getHallOfFameEmbed m = do
   messLinkM <- getMessageLink m
   case messLinkM of
-    Right messLink -> pure $ Right (CreateEmbed "" "" Nothing "👑 best of ouw buwwshit" "" Nothing ((getHallOfFameDescription m) <> "\n\n[Original Message](" <> messLink <> ")") [] (Just (CreateEmbedImageUrl $ getImageFromMessage m)) (getTimestampFromMessage m) Nothing)
+    Right messLink -> pure $ Right (CreateEmbed "" "" Nothing "👑 best of ouw buwwshit" "" Nothing (getHallOfFameDescription m <> "\n\n[Original Message](" <> messLink <> ")") [] (Just (CreateEmbedImageUrl $ getImageFromMessage m)) (getTimestampFromMessage m) Nothing)
     Left err -> pure $ Left err
 
 -- setLimit :: Message -> Int -> IO()
 -- setLimit :: Message -> Int -> DiscordHandler ()
-setLimit :: Message -> Int -> DiscordHandler (Either RestCallErrorCode Message)
-setLimit m i = do 
-  b1 <- isRole m "OwenDev"
-  if b1 
-    then do 
+setLimit :: Message -> Int -> DiscordHandler ()
+setLimit m i = do
+  b1 <- checkRoleIDs m
+  if or b1 then do
       liftIO $ editLimit i
       sendMessageChan (messageChannel m) "New Limit Set"
     else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
 
 editLimit :: Int -> IO()
-editLimit = writeFile "src/config/reactLim.conf" . show 
+editLimit = writeFile "src/config/reactLim.conf" . show
 
 readLimit :: IO Int
 readLimit = openCSV "src/config/reactLim.conf" <&> (read . head)

@@ -3,12 +3,12 @@
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
                getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput,
-               restart, wrapCommand) where
+               strToSnowflake, restart, checkRoleIDs, devIDs, wrapCommand) where
 
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-import Control.Monad (guard, unless, when)
+import Control.Monad (guard, unless, when, join)
 import qualified Data.ByteString as B
 import System.IO as Sys
 import System.Process as Process
@@ -16,11 +16,14 @@ import qualified Data.Text as T
 import Data.Function (on)
 import Text.Regex.TDFA ((=~))
 import Control.Exception (catch, IOException)
-import UnliftIO (liftIO)
+import UnliftIO (liftIO,UnliftIO (unliftIO), stringException)
 import Owoifier (owoify)
 import qualified Data.Time.Format as TF
 import Data.List.Split ( splitOn )
 import Data.Char (isSpace, isAlpha)
+
+devIDs :: FilePath
+devIDs = "src/config/devs.conf"
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool
@@ -39,25 +42,25 @@ getMessageLink m = do
         Right chan -> pure $ Right ("https://discord.com/channels/" <> T.pack (show $ channelGuild chan) <> "/" <> T.pack (show $ messageChannel m) <> "/" <> T.pack (show $ messageId m))
         Left err -> pure $ Left err
 
-sendMessageChan :: ChannelId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
-sendMessageChan c xs = restCall (R.CreateMessage c xs)
+sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
+sendMessageChan c xs = restCall (R.CreateMessage c xs) >> pure ()
 
-sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler (Either RestCallErrorCode Message)
-sendMessageChanEmbed c xs e = restCall (R.CreateMessageEmbed c xs e)
+sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
+sendMessageChanEmbed c xs e = restCall (R.CreateMessageEmbed c xs e) >> pure ()
 
-sendMessageDM :: UserId -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
+sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
 sendMessageDM u t = do
     chanM <- restCall $ R.CreateDM u
     case chanM of
         Right chan -> sendMessageChan (channelId chan) t
-        Left  err  -> pure $ Left err
+        Left  err  -> pure () -- sorry, ignoring errors
 
-sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler (Either RestCallErrorCode Message)
+sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
 sendFileChan c t f = do
     mFileContent <- liftIO $ safeReadFile f
     case mFileContent of
         Nothing          -> sendMessageChan c "iw cannow be foun uwu"
-        Just fileContent -> restCall (R.CreateMessageUploadFile c t fileContent)
+        Just fileContent -> restCall (R.CreateMessageUploadFile c t fileContent) >> pure ()
 
 safeReadFile :: FilePath -> IO (Maybe B.ByteString)
 safeReadFile path = catch (Just <$> B.readFile path) putNothing
@@ -68,14 +71,38 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
 isMod :: Message -> DiscordHandler Bool
 isMod m = isRole m "Moderator"
 
-isRole :: Message -> T.Text -> DiscordHandler Bool 
-isRole m r = case (messageGuild m) of
+isRole :: Message -> T.Text -> DiscordHandler Bool
+isRole m r = case messageGuild m of
                Nothing -> pure False
-               Just g -> do 
+               Just g -> do
                    let Just g = messageGuild m
                    Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
-                   filtered <- toRoles (userId $ messageAuthor m) g 
+                   filtered <- toRoles (userId $ messageAuthor m) g
                    return $ r `elem` map roleName filtered
+
+exists :: Eq a => [a] -> [a] -> Bool
+exists x y = or $ (==) <$> x <*> y
+
+isRoleID :: Message -> Snowflake -> DiscordHandler Bool
+isRoleID m r = case messageGuild m of
+  Nothing -> pure False
+  Just g -> do
+    let Just g = messageGuild m
+    Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
+    filtered <- toRoles (userId $ messageAuthor m) g
+    return $ r `elem` map roleId filtered
+
+mapRoleID :: Message -> IO [DiscordHandler Bool]
+mapRoleID m = do
+    snow <- Prelude.map (\x -> read x :: Snowflake) <$> openCSV devIDs
+    let rolesCheck = Prelude.map (isRoleID m) snow
+    return rolesCheck
+
+checkRoleIDs :: Message -> DiscordHandler [Bool]
+checkRoleIDs m = join $ liftIO $ sequence <$> mapRoleID m 
+
+strToSnowflake :: String -> Snowflake
+strToSnowflake = read
 
 toRoles :: UserId -> GuildId -> DiscordHandler [Role]
 toRoles i g = do
@@ -119,9 +146,13 @@ captureCommandOutput command = do
 restart :: IO ()
 restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"
 
-wrapCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler (Either RestCallErrorCode Message)) -> DiscordHandler (Either RestCallErrorCode Message)
-wrapCommand msg cmd fun = let
-  match :: (T.Text, T.Text, T.Text, [T.Text])
-  match@(_, _, _, captures) = messageText msg =~ (T.append ":" cmd)
+wrapCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler ()) -> DiscordHandler ()
+wrapCommand msg cmd fun =
+  let
+    match :: (T.Text, T.Text, T.Text, [T.Text])
+    match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ (T.append ":" cmd)
   in
-    fun captures
+    do
+        unless (shouldNotBeEmpty == "") $ do
+            liftIO $ putStrLn (show match)
+            fun captures
