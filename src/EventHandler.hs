@@ -1,16 +1,17 @@
 module EventHandler (handleEvent) where 
 
-import Discord.Types
-    ( Message(messageAuthor, messageText),
-      Event(Ready, MessageCreate, MessageReactionAdd, MessageReactionRemove),
-      User(userIsBot) )
-import Discord ( DiscordHandler )
+import Discord.Types( Message(messageAuthor, messageText),
+                      ReactionInfo(reactionEmoji, reactionUserId, reactionMessageId),
+                      Event(MessageCreate, MessageReactionAdd, MessageReactionRemove),
+                      User(userIsBot) )
+import Discord ( DiscordHandler, RestCallErrorCode )
 import Data.Maybe ( isJust, fromJust, isNothing )
-import Control.Monad (when, guard, unless, mplus)
+import Control.Monad (when, guard, unless, void )
 import System.Random ( randomR, getStdRandom )
 import UnliftIO ( liftIO )
 import qualified Data.Text as T ( length )
 
+import qualified Admin
 import CommandHandler (handleCommand, isCommand)
 import MiscHandler (handleOwoify, isOwoifiable,
                     handleNietzsche, isNietzsche,
@@ -30,6 +31,12 @@ import RoleSelfAssign
        isOnAssignMessage )
 import Status (setStatusFromFile)
 
+messageReceivers :: [Message -> DiscordHandler (Either RestCallErrorCode Message)]
+messageReceivers = concat [Admin.receivers]
+
+reactionReceivers :: [ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)]
+reactionReceivers = concat []
+
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
@@ -38,36 +45,37 @@ roll n = getStdRandom $ randomR (1, n)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-       Ready i u ch ungu sess_id -> setStatusFromFile >> pure ()
-       MessageCreate m -> let content = messageText m in
-                          unless (isFromBot m)
-                          $ (do 
-                              when (isCommand content)
-                                   (handleCommand m >> pure ())
-                              guard . not $ isCommand content
+       MessageCreate m -> let content = messageText m
+                          in
+                              unless (isFromBot m) $ void (mapM ($ m) allReceivers)
 
-                              when (isNietzsche content)
-                                   (handleNietzsche m >> pure ())
-                              guard . not $ isNietzsche content
+                         --  $ (do 
+                         --      when (isCommand content)
+                         --           (handleCommand m >> pure ())
+                         --      guard . not $ isCommand content
+
+                         --      when (isNietzsche content)
+                         --           (handleNietzsche m >> pure ())
+                         --      guard . not $ isNietzsche content
                               
-                              when (isThatcher content)
-                                   (handleThatcher m >> pure ())
-                              guard . not $ isThatcher content
+                         --      when (isThatcher content)
+                         --           (handleThatcher m >> pure ())
+                         --      guard . not $ isThatcher content
 
-                              when (isFortune content)
-                                   (handleFortune m >> pure ())
-                              guard . not $ isFortune content
+                         --      when (isFortune content)
+                         --           (handleFortune m >> pure ())
+                         --      guard . not $ isFortune content
 
-                              roll10 <- liftIO $ roll 20
-                              let isDadJokeM = isDadJoke content
-                              when (isJust isDadJokeM && roll10 == 1
-                                    && (T.length (fromJust isDadJokeM) >= 3))
-                                   (handleDadJoke m (fromJust isDadJokeM) >> pure ())
+                         --      roll10 <- liftIO $ roll 20
+                         --      let isDadJokeM = isDadJoke content
+                         --      when (isJust isDadJokeM && roll10 == 1
+                         --            && (T.length (fromJust isDadJokeM) >= 3))
+                         --           (handleDadJoke m (fromJust isDadJokeM) >> pure ())
 
-                              roll500 <- liftIO $ roll 500
-                              when (isOwoifiable content && roll500 == 1)
-                                   (handleOwoify  m >> pure ())
-                              ) `mplus` (pure ())
+                         --      roll500 <- liftIO $ roll 500
+                         --      when (isOwoifiable content && roll500 == 1)
+                         --           (handleOwoify  m >> pure ())
+                         --      ) `mplus` (pure ())
        MessageReactionAdd r -> do
                                    isSelfAssign <- liftIO $ isOnAssignMessage r
                                    when isSelfAssign

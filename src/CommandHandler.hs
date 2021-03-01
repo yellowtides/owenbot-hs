@@ -16,8 +16,8 @@ import CalcRE as CRE            ( calctextbookRE )
 import qualified Helpme as HLP  ( sendHelpDM)
 import ReactHandler
 import ReactHandlerRE
-import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen, prepareStatus )
-import AdminRE                 
+-- import Admin                    ( sendGitInfo, sendInstanceInfo, restartOwen, prepareStatus )
+-- import AdminRE                 
 import HelpmeRE                 ( helpRE )
 
 isCommand :: T.Text -> Bool
@@ -36,10 +36,10 @@ handleCommand m
     | cmdText =~= calctextbookRE  = simTyping $ CAP.sendTextbookChan channel
     | cmdText =~= reactLimitRE    = setLimit m $ read $ T.unpack noCommandText
     | cmdText =~= helpRE          = HLP.sendHelpDM user
-    | cmdText =~= gitRE           = simTyping $ Admin.sendGitInfo m
-    | cmdText =~= instanceRE      = Admin.sendInstanceInfo m
-    | cmdText =~= restartRE       = restartOwen m
-    | cmdText =~= statusRE        = Admin.prepareStatus m cmdText
+    -- | cmdText =~= gitRE           = simTyping $ Admin.sendGitInfo m
+    -- | cmdText =~= instanceRE      = Admin.sendInstanceInfo m
+    -- | cmdText =~= restartRE       = restartOwen m
+    -- | cmdText =~= statusRE        = Admin.prepareStatus m cmdText
     where
         cmdText       = messageText m
         noCommandText = rmFuncText cmdText
@@ -55,6 +55,6 @@ commandREs = [
                 hoogleInfRE,                                        -- FP
                 calctextbookRE,                                     -- CALC
                 reactLimitRE,                                       -- Reaction settings
-                helpRE,                                             -- HELP  
-                gitRE, instanceRE, restartRE, statusRE              -- Various admin stuff
+                helpRE                                             -- HELP  
+                -- gitRE, instanceRE, restartRE, statusRE              -- Various admin stuff
              ]

@@ -2,7 +2,8 @@
 
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
-               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput, restart) where
+               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput,
+               restart, wrapCommand) where
 
 import qualified Discord.Requests as R
 import Discord.Types
@@ -117,3 +118,10 @@ captureCommandOutput command = do
 
 restart :: IO ()
 restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"
+
+wrapCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler (Either RestCallErrorCode Message)) -> DiscordHandler (Either RestCallErrorCode Message)
+wrapCommand msg cmd fun = let
+  match :: (T.Text, T.Text, T.Text, [T.Text])
+  match@(_, _, _, captures) = messageText msg =~ (T.append ":" cmd)
+  in
+    fun captures
