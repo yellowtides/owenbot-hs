@@ -3,9 +3,10 @@
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
                getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput,
-               strToSnowflake, restart, checkRoleIDs, devIDs, wrapCommand) where
+               strToSnowflake, restart, checkRoleIDs, devIDs, newCommand) where
 
 import qualified Discord.Requests as R
+import TemplateRE (trailingWS)
 import Discord.Types
 import Discord
 import Control.Monad (guard, unless, when, join)
@@ -146,11 +147,11 @@ captureCommandOutput command = do
 restart :: IO ()
 restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"
 
-wrapCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler ()) -> DiscordHandler ()
-wrapCommand msg cmd fun =
+newCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler ()) -> DiscordHandler ()
+newCommand msg cmd fun =
   let
     match :: (T.Text, T.Text, T.Text, [T.Text])
-    match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ (T.append ":" cmd)
+    match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ ("^:" <> cmd <> trailingWS)
   in
     do
         unless (shouldNotBeEmpty == "") $ do

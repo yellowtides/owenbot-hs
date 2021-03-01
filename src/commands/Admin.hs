@@ -3,13 +3,29 @@
 module Admin (receivers) where
 
 import qualified Data.Text as T hiding (head, tail)
-import Discord.Types (ChannelId, Message(messageChannel, messageAuthor, messageId), User(userId), Channel(channelId), Snowflake)
+import Discord.Types ( ChannelId,
+                       Message(messageChannel, messageAuthor, messageId, messageText),
+                       User(userId),
+                       Channel(channelId),
+                       Snowflake )
 -- addDevs, devIDs) where
-import Discord ( DiscordHandler, RestCallErrorCode )
-import UnliftIO(liftIO, retrySTM,UnliftIO (unliftIO))
+import Discord (DiscordHandler)
+import UnliftIO (liftIO)
 import Data.Char (isSpace)
-import Control.Monad (guard)
-import Utils (wrapCommand, sendMessageChan, sendMessageDM, isRole, captureCommandOutput, devIDs, restart, checkRoleIDs, openCSV, addToCSV)
+import Control.Monad (guard, when)
+
+import Utils (
+    newCommand,
+    sendMessageChan,
+    sendMessageDM,
+    isRole,
+    captureCommandOutput,
+    devIDs,
+    restart,
+    checkRoleIDs,
+    openCSV,
+    addToCSV,
+    (=~=) )
 import Status (updateStatus, editStatusFile)
 
 receivers :: [Message -> DiscordHandler ()]
@@ -19,9 +35,10 @@ rstrip :: T.Text -> T.Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
 thatcherIsDead :: Message -> DiscordHandler ()
-thatcherIsDead m = wrapCommand m "thatcher is (dead)" $ \captures -> do 
-  _ <- liftIO $ putStrLn "hewwo"
-  sendMessageChan (messageChannel m) "owo"
+thatcherIsDead m = do
+  when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do 
+    _ <- liftIO $ putStrLn "hewwo"
+    sendMessageChan (messageChannel m) "owo"
 
 gitLocal, gitRemote, commitsAhead, uName, pidOf :: IO T.Text
 gitLocal = captureCommandOutput "git rev-parse HEAD"
@@ -35,7 +52,7 @@ uName = captureCommandOutput "uname -n"
 pidOf = captureCommandOutput "pidof owenbot-exe"
 
 sendGitInfo :: Message -> DiscordHandler ()
-sendGitInfo m = do
+sendGitInfo m = newCommand m "repo" $ \_ -> do
   isDev <- checkRoleIDs m
   if or isDev then do
     sendGitInfoChan $ messageChannel m
@@ -53,7 +70,7 @@ sendGitInfoChan chan = do
                         "Remote is " <> rstrip commits <> " commits ahead")
 
 sendInstanceInfo :: Message -> DiscordHandler ()
-sendInstanceInfo m = do
+sendInstanceInfo m = newCommand m "instance" $ \_ -> do
   isDev <- checkRoleIDs m 
   if or isDev then do
     sendInstanceInfoChan $ messageChannel m
@@ -69,7 +86,7 @@ sendInstanceInfoChan chan = do
                         "Process ID: " <> pid)
 
 restartOwen :: Message -> DiscordHandler ()
-restartOwen m = do
+restartOwen m = newCommand m "restart" $ \_ -> do
   bool <- checkRoleIDs m
   if or bool then do
       sendMessageChan (messageChannel m) "Restarting"
