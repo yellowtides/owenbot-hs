@@ -3,10 +3,7 @@
 module HallOfFame ( reactionReceivers, messageReceivers ) where
 
 import qualified Discord.Requests as R
-import qualified Data.Text as T         ( pack
-                                        , toUpper
-                                        , Text
-                                        )
+import qualified Data.Text as T
 import           Data.Functor           ( (<&>) )
 import           Discord                ( restCall
                                         , DiscordHandler
@@ -45,6 +42,7 @@ import           Utils                  ( sendMessageChan
                                         , openCSV
                                         , addToCSV
                                         , rmFuncText
+                                        , newCommand
                                         )
 
 
@@ -52,13 +50,12 @@ reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ attemptHallOfFame ]
 
 messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = []
+messageReceivers = [ setLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r = do
     when (isHallOfFameEmote r && notInHallOfFameChannel r) $ do
         eligible <- isEligibleForHallOfFame r
-        liftIO $ putStrLn ("aaaaaa" ++ show eligible)
         when eligible $ putInHallOfFame r >> pure ()
 
 hallOfFameEmotes :: [T.Text]
@@ -87,7 +84,7 @@ isEligibleForHallOfFame r = do
             let reactions = messageReactions mess
             let fulfillCond = \x -> 
                     (messageReactionCount x) >= limit
-                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` map T.upper hallOfFameEmotes
+                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` map T.toUpper hallOfFameEmotes
                     && show (messageId mess) `notElem` msgIdlist
             pure $ any fulfillCond reactions
         Left err -> liftIO (putStrLn (show err)) >> pure False    
@@ -142,14 +139,13 @@ createHallOfFameEmbed m = do
                                       embedFooterIcon )
         Left err -> pure $ Left err
 
--- setLimit :: Message -> Int -> IO()
--- setLimit :: Message -> Int -> DiscordHandler ()
-setLimit :: Message -> Int -> DiscordHandler ()
-setLimit m i = do
-  isDev <- isSenderDeveloper m
-  if isDev then do
-      liftIO $ editLimit i
-      sendMessageChan (messageChannel m) "New Limit Set"
+setLimit :: Message -> DiscordHandler ()
+setLimit m = newCommand m "setLimit ([0-9]{1,3})" $ \captures -> do
+    isDev <- isSenderDeveloper m
+    if isDev then do
+        let i = read (T.unpack $ head captures)
+        liftIO $ editLimit i
+        sendMessageChan (messageChannel m) "New Limit Set"
     else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
 
 editLimit :: Int -> IO()

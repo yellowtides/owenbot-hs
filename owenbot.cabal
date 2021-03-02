@@ -39,7 +39,6 @@ library
       ILA
       Inf1A
       HallOfFame
-      ReactHandlerRE
       RoleSelfAssign
       TemplateRE
   other-modules:
