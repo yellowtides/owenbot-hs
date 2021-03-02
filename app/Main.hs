@@ -15,6 +15,7 @@ import Discord
                      discordOnLog) )
 import Discord.Types ( ChannelId, Channel(ChannelText) )
 import EventHandler (handleEvent)
+import Status (setStatusFromFile)
 -- import Admin (sendGitInfoChan)
 
 -- | UWU
@@ -31,6 +32,7 @@ startHandler = do
     let chan = 801763198792368129 ::ChannelId --this channel is the bot-start channel on the test server, change to point towards your channel.
     _ <- restCall $ R.CreateMessage chan "Hewwo, I am bawck! UwU"
     _ <- sendGitInfoChan chan
+    _ <- setStatusFromFile
     pure ()
 
 isTextChannel :: Channel -> Bool
