@@ -116,14 +116,12 @@ statusRE = ("(online|idle|dnd|invisible) " <>
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
 prepareStatus :: Message -> DiscordHandler ()
-prepareStatus m = newCommand m "status (.*)" $ \captures -> do
+prepareStatus m = newCommand m "status(.*)" $ \captures -> do
     isDev <- isSenderDeveloper m
     let (_, _, _, components) = (head captures =~ statusRE) :: (T.Text, T.Text, T.Text, [T.Text])
     let newStatus = head components
     let newType = (head . tail) components
     let newName = (head . tail . tail) components
-    liftIO $ putStrLn (show captures)
-    liftIO $ putStrLn (show components)
     if isDev
         then
             if length components == 3
