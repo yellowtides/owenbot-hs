@@ -8,7 +8,8 @@ module Utils ( sendMessageChan
              , linkChannel
              , getMessageLink
              , isMod
-             , isRole
+             , hasRoleByName
+             , hasRoleByID
              , (=~=)
              , getTimestampFromMessage
              , openCSV
@@ -100,34 +101,29 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
                 putNothing = const $ pure Nothing
 
 isMod :: Message -> DiscordHandler Bool
-isMod m = isRole m "Moderator"
+isMod m = hasRoleByName m "Moderator"
 
-isRole :: Message -> T.Text -> DiscordHandler Bool
-isRole m r = case messageGuild m of
-               Nothing -> pure False
-               Just g -> do
-                   let Just g = messageGuild m
-                   Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
-                   filtered <- toRoles (userId $ messageAuthor m) g
-                   return $ r `elem` map roleName filtered
+hasRoleByName :: Message -> T.Text -> DiscordHandler Bool
+hasRoleByName m r = case messageGuild m of
+    Nothing -> pure False
+    Just g -> do
+        filtered <- getUser'sRolesInGuild (userId $ messageAuthor m) g
+        return $ r `elem` map roleName filtered
 
 exists :: Eq a => [a] -> [a] -> Bool
 exists x y = or $ (==) <$> x <*> y
 
-isRoleID :: Message -> Snowflake -> DiscordHandler Bool
-isRoleID m r = case messageGuild m of
-  Nothing -> pure False
-  Just g -> do
-    let Just g = messageGuild m
-    Right userRole <- restCall $ R.GetGuildMember g (userId $ messageAuthor m)
-    filtered <- toRoles (userId $ messageAuthor m) g
-    return $ r `elem` map roleId filtered
+hasRoleByID :: Message -> Snowflake -> DiscordHandler Bool
+hasRoleByID m r = case messageGuild m of
+    Nothing -> pure False
+    Just g -> do
+        filtered <- getUser'sRolesInGuild (userId $ messageAuthor m) g
+        return $ r `elem` map roleId filtered
 
 mapRoleID :: Message -> IO [DiscordHandler Bool]
 mapRoleID m = do
     snow <- Prelude.map (\x -> read x :: Snowflake) <$> openCSV devIDs
-    let rolesCheck = Prelude.map (isRoleID m) snow
-    return rolesCheck
+    return $ Prelude.map (hasRoleByID m) snow
 
 isSenderDeveloper :: Message -> DiscordHandler Bool
 isSenderDeveloper m = liftM or $ join $ liftIO $ sequence <$> mapRoleID m
@@ -135,8 +131,8 @@ isSenderDeveloper m = liftM or $ join $ liftIO $ sequence <$> mapRoleID m
 strToSnowflake :: String -> Snowflake
 strToSnowflake = read
 
-toRoles :: UserId -> GuildId -> DiscordHandler [Role]
-toRoles i g = do
+getUser'sRolesInGuild :: UserId -> GuildId -> DiscordHandler [Role]
+getUser'sRolesInGuild i g = do
     Right allRole <- restCall $ R.GetGuildRoles g
     Right userG <- restCall $ R.GetGuildMember g i
     let filtered = filter (\x -> roleId x `elem` memberRoles userG) allRole

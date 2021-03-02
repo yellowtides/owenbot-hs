@@ -40,7 +40,6 @@ import qualified Data.Text.IO as TIO    ( readFile )
 
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageChan
-                                        , isRole
                                         , pingAuthorOf
                                         , linkChannel
                                         , getMessageLink

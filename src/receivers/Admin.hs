@@ -20,7 +20,6 @@ import           Text.Regex.TDFA    ( (=~) )
 import           Utils              ( newCommand
                                     , sendMessageChan
                                     , sendMessageDM
-                                    , isRole
                                     , captureCommandOutput
                                     , devIDs
                                     , restart
