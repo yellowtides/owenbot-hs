@@ -3,20 +3,28 @@
 module Main where
 
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
-import Control.Monad 
-import Discord.Requests as R
-import Discord
-    ( restCall,
-      runDiscord,
-      def,
-      DiscordHandler,
-      RunDiscordOpts(discordToken, discordOnStart, discordOnEvent,
-                     discordOnLog) )
-import Discord.Types ( ChannelId, Channel(ChannelText) )
-import EventHandler (handleEvent)
-import Status (setStatusFromFile)
-import Admin (sendGitInfoChan)
+import           Data.Text.IO
+import           Prelude hiding         ( putStrLn
+                                        , readFile
+                                        )
+import           Control.Monad 
+import           Discord.Requests as R
+import           Discord                ( restCall
+                                        , runDiscord
+                                        , def
+                                        , DiscordHandler
+                                        , RunDiscordOpts ( discordToken
+                                                         , discordOnStart
+                                                         , discordOnEvent
+                                                         , discordOnLog
+                                                         )
+                                        )
+import           Discord.Types          ( ChannelId
+                                        , Channel ( ChannelText )
+                                        )
+import           EventHandler           ( handleEvent )
+import           Status                 ( setStatusFromFile )
+import           Admin                  ( sendGitInfoChan )
 
 -- | UWU
 owen :: T.Text -> IO ()
@@ -24,8 +32,8 @@ owen t = do
     userFacingError <- runDiscord $ def { discordToken   = t
                                         , discordOnStart = startHandler
                                         , discordOnEvent = handleEvent
-                                        , discordOnLog = \s -> TIO.putStrLn s >> TIO.putStrLn "" }
-    TIO.putStrLn userFacingError
+                                        , discordOnLog = \s -> putStrLn s >> putStrLn "" }
+    putStrLn userFacingError
 
 startHandler :: DiscordHandler ()
 startHandler = do
@@ -42,6 +50,6 @@ isTextChannel _ = False
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    tok <- TIO.readFile ".token.txt"  
+    tok <- readFile ".token.txt"  
     putStrLn ("Token:" ++ T.unpack tok)
     owen tok
