@@ -19,16 +19,6 @@ import qualified Inf1A
 import qualified HallOfFame
 import qualified RoleSelfAssign
 
--- import ReactHandler
---     ( notInHallOfFameChannel,
---       isHallOfFameEmote,
---       isEligibleForHallOfFame,
---       handleHallOfFame )
-
--- import RoleSelfAssign ( reactionRemReceivers )
---      ( attemptRoleAssign,
---        handleRoleRemove,
---        isOnAssignMessage )
 import Status (setStatusFromFile)
 
 messageReceivers :: [Message -> DiscordHandler ()]
@@ -60,21 +50,5 @@ handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
      MessageCreate m -> unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
      MessageReactionAdd r -> void (mapM ($ r) reactionAddReceivers)
-                                   -- isSelfAssign <- liftIO $ isOnAssignMessage r
-                                   -- when isSelfAssign
-                                   --      (handleRoleAssign r >> pure ())
-                                   -- guard . not $ isSelfAssign
-
-                                   -- when (isHallOfFameEmote r && notInHallOfFameChannel r)
-                                   --      (do
-                                   --           eligibleM <- isEligibleForHallOfFame r
-                                   --           case eligibleM of
-                                   --                Right eligible -> if
-                                   --                                    eligible
-                                   --                               then
-                                   --                                    handleHallOfFame r >> pure ()
-                                   --                               else
-                                   --                                    pure ()
-                                   --                Left err -> pure ())
      MessageReactionRemove r -> void (mapM ($ r) reactionRemoveReceivers)
      _ -> pure ()
