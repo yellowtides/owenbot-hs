@@ -42,9 +42,7 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-       MessageCreate m -> let content = messageText m
-                          in
-                              unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
+       MessageCreate m -> unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
                               
        MessageReactionAdd r -> do
                                    isSelfAssign <- liftIO $ isOnAssignMessage r
