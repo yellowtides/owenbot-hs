@@ -38,7 +38,7 @@ dependencies:
 library:
   source-dirs: 
     - src
-    - src/commands
+    - src/receivers
 
 executables:
   owenbot-exe:
