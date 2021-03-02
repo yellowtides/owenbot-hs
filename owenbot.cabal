@@ -35,9 +35,7 @@ library
       ADAPriceFetcher
       Admin
       Calc
-      CalcRE
       Helpme
-      HelpmeRE
       ILA
       ILARE
       Inf1A

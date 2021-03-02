@@ -13,6 +13,7 @@ import qualified Data.Text as T ( length )
 import qualified Admin
 import qualified MiscHandler
 import qualified Calc
+import qualified Helpme
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -31,6 +32,7 @@ messageReceivers = concat
      [ Admin.receivers
      , MiscHandler.receivers
      , Calc.receivers
+     , Helpme.receivers
      ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
