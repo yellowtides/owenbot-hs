@@ -16,6 +16,7 @@ import           Discord            ( DiscordHandler )
 import           UnliftIO           ( liftIO )
 import           Data.Char          ( isSpace )
 import           Control.Monad      ( when )
+import           Text.Regex.TDFA    ( (=~) )
 import           Utils              ( newCommand
                                     , sendMessageChan
                                     , sendMessageDM
@@ -37,6 +38,7 @@ receivers =
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen
+    , prepareStatus
     -- , addDevs
     -- , devIDs
     ]
@@ -105,22 +107,32 @@ restartOwen m = newCommand m "restart" $ \_ -> do
 --   else do
 --     sendMessageChan (messageChannel m) "Insufficient Permissions"
 
+statusRE :: T.Text
+statusRE = ("(online|idle|dnd|invisible) " <>
+            "(playing|streaming|listening|competing) " <>
+            "(.*)")
+
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
--- prepareStatus :: Message -> T.Text -> DiscordHandler (Either RestCallErrorCode Message)
--- prepareStatus m text = do
---     isDev <- checkRoleIDs m
---     if or isDev then do
---         if Prelude.length captures == 3 then do
---             updateStatus statusStatus statusType statusName
---             liftIO $ editStatusFile (Prelude.unwords [statusStatus, statusType, statusName])
---             sendMessageChan (messageChannel m) "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
---         else do
---             sendMessageChan (messageChannel m) "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
---     else do
---        sendMessageDM (userId $ messageAuthor m) ("Insufficient privileges." :: T.Text)
-
-
--- randomOwoify :: Message -> DiscordHandler (Either RestCallErrorCode Message)
--- randomOwoify m = sendMessageChan (messageChannel m) (pingAuthorOf m <> ": " <> owoify (messageText m))
+prepareStatus :: Message -> DiscordHandler ()
+prepareStatus m = newCommand m "status (.*)" $ \captures -> do
+    isDev <- isSenderDeveloper m
+    let (_, _, _, components) = (head captures =~ statusRE) :: (T.Text, T.Text, T.Text, [T.Text])
+    let newStatus = head components
+    let newType = (head . tail) components
+    let newName = (head . tail . tail) components
+    liftIO $ putStrLn (show captures)
+    liftIO $ putStrLn (show components)
+    if isDev
+        then
+            if length components == 3
+                then do
+                    updateStatus newStatus newType newName
+                    liftIO $ editStatusFile newStatus newType newName
+                    sendMessageChan (messageChannel m)
+                        $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
+                else
+                    sendMessageChan (messageChannel m) 
+                        $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
+        else sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."

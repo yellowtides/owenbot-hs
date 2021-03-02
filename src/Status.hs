@@ -15,47 +15,51 @@ import Utils (openCSV)
 -- Passes values onto updateStatus'
 -- Although we revert to defaults if enums don't match, the caller of this function
 -- should always check first on their own and provide approriate error messages.
-updateStatus :: String -> String -> String -> Discord.DiscordHandler ()
-updateStatus statusStatus statusType statusName =
+updateStatus :: T.Text -> T.Text -> T.Text -> DiscordHandler ()
+updateStatus newStatus newType newName =
     let
-        statusStatusParsed = case statusStatus of
+        newStatusParsed = case newStatus of
             "online" -> UpdateStatusOnline
             "dnd" -> UpdateStatusDoNotDisturb
             "idle" -> UpdateStatusAwayFromKeyboard
             "invisible" -> UpdateStatusInvisibleOffline
             _ -> UpdateStatusOnline -- revert to online if not match
-        statusTypeParsed = case statusType of
+        newTypeParsed = case newType of
             "playing" -> ActivityTypeGame
             "streaming" -> ActivityTypeStreaming
             "listening" -> ActivityTypeListening
             "competing" -> ActivityTypeCompeting
             _ -> ActivityTypeGame -- revert to playing if not match
      in do
-        updateStatus' statusStatusParsed statusTypeParsed statusName
+        updateStatus' newStatusParsed newTypeParsed newName
 
 -- | Sets the Discord status
-updateStatus' :: UpdateStatusType -> ActivityType -> String -> Discord.DiscordHandler ()
-updateStatus' statusStatus statusType statusName = sendCommand (UpdateStatus (UpdateStatusOpts {
+updateStatus' :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()
+updateStatus' newStatus newType newName = sendCommand (UpdateStatus (UpdateStatusOpts {
     updateStatusOptsSince = Nothing,
     updateStatusOptsGame = Just (Activity {
-        activityName = T.pack statusName,
-        activityType = statusType,
+        activityName = newName,
+        activityType = newType,
         activityUrl = Nothing
         }),
-    updateStatusOptsNewStatus = statusStatus,
+    updateStatusOptsNewStatus = newStatus,
     updateStatusOptsAFK = False 
     }))
 
 -- | Sets the status from file on bot launch
 -- Should be called only once.
-setStatusFromFile :: Discord.DiscordHandler()
+setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
-    let parts = Prelude.words line
-    updateStatus (head parts) ((head.tail) parts) (unwords $ (tail.tail) parts)
+    let parts = T.words line
+    updateStatus
+        (head parts)
+        ((head.tail) parts)
+        (T.unwords $ (tail.tail) parts)
 
-editStatusFile :: String -> IO ()
-editStatusFile = writeFile "src/config/status.conf"
+editStatusFile :: T.Text -> T.Text -> T.Text -> IO ()
+editStatusFile newStatus newType newName = 
+    writeFile "src/config/status.conf" $ T.unpack $ T.unwords [newStatus, newType, newName]
 
-readStatusFile :: IO String
-readStatusFile = openCSV "src/config/status.conf" <&> head
+readStatusFile :: IO T.Text
+readStatusFile = openCSV "src/config/status.conf" <&> head <&> T.pack
