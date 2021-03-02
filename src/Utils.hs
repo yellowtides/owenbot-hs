@@ -122,7 +122,7 @@ openCSV f = do
         Nothing          -> writeFile f "" >> return []
         Just fileContent -> return $ parseCSV fileContent
         where
-            parseCSV x  = splitOn ", " x
+            parseCSV x  = filter (not . null) $ splitOn ", " x
 
 addToCSV :: FilePath -> String -> IO ()
 addToCSV = appendFile
