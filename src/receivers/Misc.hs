@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module MiscHandler ( receivers ) where
+module Misc ( receivers ) where
 
 import qualified Discord.Requests as R
 import           Discord.Types

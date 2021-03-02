@@ -11,7 +11,7 @@ import UnliftIO ( liftIO )
 import qualified Data.Text as T ( length )
 
 import qualified Admin
-import qualified MiscHandler
+import qualified Misc
 import qualified Calc
 import qualified Helpme
 import qualified ILA
@@ -34,7 +34,7 @@ import Status (setStatusFromFile)
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
      [ Admin.receivers
-     , MiscHandler.receivers
+     , Misc.receivers
      , Calc.receivers
      , Helpme.receivers
      , ILA.receivers

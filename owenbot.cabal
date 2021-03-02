@@ -28,7 +28,7 @@ source-repository head
 library
   exposed-modules:
       EventHandler
-      MiscHandler
+      Misc
       Owoifier
       Status
       Utils
