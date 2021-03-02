@@ -2,7 +2,7 @@
 
 module Admin (receivers) where
 
-import qualified Data.Text as T hiding (head, tail)
+import qualified Data.Text as T
 import Discord.Types ( ChannelId,
                        Message(messageChannel, messageAuthor, messageId, messageText),
                        User(userId),
@@ -12,7 +12,7 @@ import Discord.Types ( ChannelId,
 import Discord (DiscordHandler)
 import UnliftIO (liftIO)
 import Data.Char (isSpace)
-import Control.Monad (guard, when)
+import Control.Monad (when)
 
 import Utils (
     newCommand,
@@ -37,7 +37,6 @@ rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 thatcherIsDead :: Message -> DiscordHandler ()
 thatcherIsDead m = do
   when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do 
-    _ <- liftIO $ putStrLn "hewwo"
     sendMessageChan (messageChannel m) "owo"
 
 gitLocal, gitRemote, commitsAhead, uName, pidOf :: IO T.Text

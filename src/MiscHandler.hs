@@ -1,61 +1,75 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module MiscHandler (isOwoifiable, handleOwoify,
-                    isNietzsche, handleNietzsche,
-                    isThatcher, handleThatcher,
-                    isDadJoke, handleDadJoke,
-                    isFortune, handleFortune,
-                    isADA, handleADA) where
+module MiscHandler ( receivers ) where
 
 import qualified Discord.Requests as R
 import Discord.Types
 import Discord
-
 import qualified Data.Maybe as M
 import qualified Data.Text.IO as TIO
 import qualified Data.Text as T
+import Data.Char (isAlpha)
 import UnliftIO (liftIO)
-import Text.Regex.TDFA
+import Text.Regex.TDFA ((=~))
 import System.IO as S (readFile)
-
-import Data.Char ( isAlpha )
-
-import ADAPriceFetcher ( fetchADADetails )
-
-import Utils (sendMessageChan, sendMessageChanEmbed, sendFileChan, pingAuthorOf, linkChannel, getMessageLink, (=~=))
-import Owoifier (owoify)
-
 import qualified System.Exit as SE
 import qualified System.Process as SP
+import Control.Monad (guard, when)
+import System.Random ( randomR, getStdRandom )
 
-isOwoifiable :: T.Text -> Bool
-isOwoifiable = (=~= ("[lLrR]|[nNmM][oO]" :: T.Text))
+import Utils ( sendMessageChan,
+               pingAuthorOf,
+               linkChannel,
+               getMessageLink,
+               (=~=),
+               newCommand )
+import Owoifier (owoify)
+import ADAPriceFetcher (fetchADADetails)
 
-handleOwoify :: Message -> DiscordHandler ()
-handleOwoify m = sendMessageChan (messageChannel m) (pingAuthorOf m <> ": " <> owoify (messageText m))
+receivers :: [Message -> DiscordHandler ()]
+receivers = [owoifyIfPossible, godIsDead, thatcherIsDead, dadJokeIfPossible, handleFortune, handleAda24h]
 
-isNietzsche :: T.Text -> Bool
-isNietzsche = (=~= ("[gG]od *[iI]s *[dD]ead" :: T.Text))
+roll :: Int -> IO Int
+roll n = getStdRandom $ randomR (1, n)
 
-handleNietzsche :: Message -> DiscordHandler ()
-handleNietzsche m = liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify
+owoifyIfPossible :: Message -> DiscordHandler ()
+owoifyIfPossible m = do
+    roll500 <- liftIO $ roll 500
+    when (roll500 == 1 && messageText m =~= "[lLrR]|[nNmM][oO]") $ do
+        sendMessageChan (messageChannel m) (pingAuthorOf m <> ": " <> owoify (messageText m))
 
-isThatcher :: T.Text -> Bool
-isThatcher = (=~= ("thatcher *[Ii]s *[Dd]ead" :: T.Text))
+godIsDead :: Message -> DiscordHandler ()
+godIsDead m = do
+    when (messageText m =~= "[gG]od *[iI]s *[dD]ead") $ do
+        liftIO (TIO.readFile "./src/assets/nietzsche.txt") >>= sendMessageChan (messageChannel m) . owoify
 
-handleThatcher :: Message -> DiscordHandler ()
-handleThatcher m = sendMessageChan (messageChannel m) "https://www.youtube.com/watch?v=ILvd5buCEnU"
+thatcherIsDead :: Message -> DiscordHandler ()
+thatcherIsDead m = do
+  when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do 
+    sendMessageChan (messageChannel m) "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
-isDadJoke :: T.Text -> Maybe T.Text
-isDadJoke t = case captures of
+dadJokeIfPossible :: Message -> DiscordHandler ()
+dadJokeIfPossible m = do
+    let name = attemptParseDadJoke (messageText m)
+    case name of
+        Nothing -> pure ()
+        Just n -> do
+            roll10 <- liftIO $ roll 20
+            when (roll10 == 1 && (T.length n) >= 3) $ do
+                sendMessageChan (messageChannel m) $ owoify ("hello " <> n <> ", i'm owen")
+
+attemptParseDadJoke :: T.Text -> Maybe T.Text
+attemptParseDadJoke t = case captures of
                   [] -> Nothing
                   e  -> Just (head captures :: T.Text)
     where
         match :: (T.Text, T.Text, T.Text, [T.Text])
         match@(_, _, _, captures) = t =~ ("^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)" :: T.Text)
 
-handleDadJoke :: Message -> T.Text -> DiscordHandler ()
-handleDadJoke m t = sendMessageChan (messageChannel m) $ owoify ("hello " <> t <> ", i'm owen")
+handleFortune :: Message -> DiscordHandler ()
+handleFortune m = newCommand m "fortune" $ \_ -> do
+    cowText <- liftIO fortuneCow 
+    sendMessageChan (messageChannel m) ("```" <> T.pack cowText <> "```")
 
 fortune :: IO String
 fortune = SP.readProcess "fortune" [] []
@@ -65,19 +79,8 @@ fortuneCow = do
     f <- T.pack <$> fortune
     SP.readProcess "cowsay" [] . T.unpack $ owoify f
 
-isFortune :: T.Text -> Bool
-isFortune = (=~= ("^:fortune *$" :: T.Text))
-
-handleFortune :: Message -> DiscordHandler ()
-handleFortune m = do
-    cowText <- liftIO fortuneCow 
-    sendMessageChan (messageChannel m) ("```" <> T.pack cowText <> "```")
-
-isADA :: T.Text -> Bool
-isADA = (=~= ("^:ada24h *$" :: T.Text))
-
-handleADA :: Message -> DiscordHandler ()
-handleADA m = do
+handleAda24h :: Message -> DiscordHandler ()
+handleAda24h m = newCommand m "ada24h" $ \_ -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
         Left err           -> liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err) >> pure () 

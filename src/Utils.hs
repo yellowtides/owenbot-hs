@@ -154,6 +154,4 @@ newCommand msg cmd fun =
     match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ ("^:" <> cmd <> trailingWS)
   in
     do
-        unless (shouldNotBeEmpty == "") $ do
-            liftIO $ putStrLn (show match)
-            fun captures
+        unless (shouldNotBeEmpty == "") $ fun captures
