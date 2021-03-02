@@ -1,27 +1,57 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
-              pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
-               getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput,
-               strToSnowflake, restart, isSenderDeveloper, devIDs, newCommand) where
+module Utils ( sendMessageChan
+             , sendMessageChanEmbed
+             , sendMessageDM
+             , sendFileChan
+             , pingAuthorOf
+             , linkChannel
+             , getMessageLink
+             , isMod
+             , isRole
+             , (=~=)
+             , getTimestampFromMessage
+             , openCSV
+             , addToCSV
+             , rmFuncText
+             , captureCommandOutput
+             , strToSnowflake
+             , restart
+             , isSenderDeveloper
+             , devIDs
+             , newCommand
+             ) where
 
 import qualified Discord.Requests as R
-import TemplateRE (trailingWS)
-import Discord.Types
-import Discord
-import Control.Monad (guard, unless, when, join, liftM)
+import           Discord.Types
+import           Discord
+import           Control.Exception      ( catch
+                                        , IOException
+                                        )
+import           Control.Monad          ( guard
+                                        , unless
+                                        , when
+                                        , join
+                                        , liftM
+                                        )
 import qualified Data.ByteString as B
-import System.IO as Sys
-import System.Process as Process
+import           Data.Char              ( isSpace
+                                        , isAlpha
+                                        )
+import           Data.Function          ( on )
+import           Data.List.Split        ( splitOn )
 import qualified Data.Text as T
-import Data.Function (on)
-import Text.Regex.TDFA ((=~))
-import Control.Exception (catch, IOException)
-import UnliftIO (liftIO,UnliftIO (unliftIO), stringException)
-import Owoifier (owoify)
 import qualified Data.Time.Format as TF
-import Data.List.Split ( splitOn )
-import Data.Char (isSpace, isAlpha)
+import           System.IO as Sys
+import           System.Process as Process
+import           Text.Regex.TDFA        ( (=~) )
+import           UnliftIO               ( liftIO
+                                        , UnliftIO ( unliftIO )
+                                        , stringException
+                                        )
+
+import           Owoifier               ( owoify )
+import           TemplateRE             ( trailingWS )
 
 devIDs :: FilePath
 devIDs = "src/config/devs.conf"
