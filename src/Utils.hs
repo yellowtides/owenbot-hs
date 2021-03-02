@@ -3,13 +3,13 @@
 module Utils (sendMessageChan, sendMessageChanEmbed, sendMessageDM, sendFileChan,
               pingAuthorOf, linkChannel, getMessageLink, isMod, isRole, (=~=),
                getTimestampFromMessage, openCSV, addToCSV, rmFuncText, captureCommandOutput,
-               strToSnowflake, restart, checkRoleIDs, devIDs, newCommand) where
+               strToSnowflake, restart, isSenderDeveloper, devIDs, newCommand) where
 
 import qualified Discord.Requests as R
 import TemplateRE (trailingWS)
 import Discord.Types
 import Discord
-import Control.Monad (guard, unless, when, join)
+import Control.Monad (guard, unless, when, join, liftM)
 import qualified Data.ByteString as B
 import System.IO as Sys
 import System.Process as Process
@@ -99,8 +99,8 @@ mapRoleID m = do
     let rolesCheck = Prelude.map (isRoleID m) snow
     return rolesCheck
 
-checkRoleIDs :: Message -> DiscordHandler [Bool]
-checkRoleIDs m = join $ liftIO $ sequence <$> mapRoleID m 
+isSenderDeveloper :: Message -> DiscordHandler Bool
+isSenderDeveloper m = liftM or $ join $ liftIO $ sequence <$> mapRoleID m
 
 strToSnowflake :: String -> Snowflake
 strToSnowflake = read

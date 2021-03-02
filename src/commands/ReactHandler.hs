@@ -17,7 +17,7 @@ import Discord.Types
       ReactionInfo(reactionEmoji, reactionChannelId, reactionMessageId) )
 import MiscHandler ()
 import Utils
-    (sendMessageChan, checkRoleIDs,  pingAuthorOf,
+    (sendMessageChan, isSenderDeveloper,  pingAuthorOf,
       linkChannel,
       getMessageLink,
       sendMessageChanEmbed,
@@ -86,8 +86,8 @@ getHallOfFameEmbed m = do
 -- setLimit :: Message -> Int -> DiscordHandler ()
 setLimit :: Message -> Int -> DiscordHandler ()
 setLimit m i = do
-  b1 <- checkRoleIDs m
-  if or b1 then do
+  isDev <- isSenderDeveloper m
+  if isDev then do
       liftIO $ editLimit i
       sendMessageChan (messageChannel m) "New Limit Set"
     else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
