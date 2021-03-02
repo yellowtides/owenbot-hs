@@ -15,6 +15,7 @@ import qualified MiscHandler
 import qualified Calc
 import qualified Helpme
 import qualified ILA
+import qualified Inf1A
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -35,6 +36,7 @@ messageReceivers = concat
      , Calc.receivers
      , Helpme.receivers
      , ILA.receivers
+     , Inf1A.receivers
      ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]

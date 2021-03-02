@@ -1,23 +1,43 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Inf1A (sendHDocChan, sendBoolChan, sendTextbookChan, sendSylChan) where
+module Inf1A ( receivers ) where
 
-import Discord.Types
-import Discord
+import           Discord.Types
+import           Discord
+import qualified Data.Text as T
+import           UnliftIO           ( liftIO )
+import           Utils              ( sendMessageChan
+                                    , sendFileChan
+                                    , newCommand
+                                    )
+import           TemplateRE         ( textbookRE )
 
-import Utils (sendMessageChan, sendFileChan)
+receivers :: [Message -> DiscordHandler ()]
+receivers =
+    [ sendBool
+    , sendSyl
+    , sendHDoc
+    , sendTextbook
+    ]
 
-sendSylChan :: ChannelId -> DiscordHandler ()
-sendSylChan chan = sendFileChan chan "id-smash-aristotle.png" 
-                                     "./src/assets/cl/syllogisms.png"
+inf1atextbookRE :: T.Text 
+inf1atextbookRE = textbookRE <> "i(nf)?1a"
 
-sendBoolChan :: ChannelId -> DiscordHandler ()
-sendBoolChan chan = sendFileChan chan "literally-satan.png" 
-                                      "./src/assets/cl/Bool.png"
+sendSyl :: Message -> DiscordHandler ()
+sendSyl m = newCommand m "syl(logisms)?" $ \_ ->
+    sendFileChan (messageChannel m) "id-smash-aristotle.png" 
+                                    "./src/assets/cl/syllogisms.png"
 
-sendHDocChan :: ChannelId -> DiscordHandler ()
-sendHDocChan chan = sendMessageChan chan "not yet implemented :^)"
+sendBool :: Message -> DiscordHandler ()
+sendBool m = newCommand m "bool(ean)?" $ \_ ->
+    sendFileChan (messageChannel m) "literally-satan.png" 
+                                    "./src/assets/cl/Bool.png"
 
-sendTextbookChan :: ChannelId -> DiscordHandler ()
-sendTextbookChan chan = sendFileChan chan "the-holy-bible-2.png" 
-                                          "./src/assets/textbooks/i1a-textbook.pdf"
+sendHDoc :: Message -> DiscordHandler ()
+sendHDoc m = newCommand m "doc ([a-z']+)" $ \captures ->
+    sendMessageChan (messageChannel m) "not yet implemented :^)"
+
+sendTextbook :: Message -> DiscordHandler ()
+sendTextbook m = newCommand m inf1atextbookRE $ \_ ->
+    sendFileChan (messageChannel m) "the-holy-bible-2.png" 
+                                    "./src/assets/textbooks/i1a-textbook.pdf"
