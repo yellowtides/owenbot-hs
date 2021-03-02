@@ -39,7 +39,7 @@ receivers =
     , sendInstanceInfo
     , restartOwen
     , prepareStatus
-    -- , addDevs
+    , addDevs
     -- , devIDs
     ]
 
@@ -58,9 +58,10 @@ pidOf = captureCommandOutput "pidof owenbot-exe"
 sendGitInfo :: Message -> DiscordHandler ()
 sendGitInfo m = newCommand m "repo" $ \_ -> do
     isDev <- isSenderDeveloper m
-    if isDev 
-        then sendGitInfoChan $ messageChannel m
-        else sendMessageDM (userId $ messageAuthor m) "Insufficient Privileges."
+    if isDev then
+        sendGitInfoChan $ messageChannel m
+    else
+        sendMessageDM (userId $ messageAuthor m) "Insufficient Privileges."
 
 sendGitInfoChan :: ChannelId -> DiscordHandler ()
 sendGitInfoChan chan = do
@@ -75,9 +76,9 @@ sendGitInfoChan chan = do
 sendInstanceInfo :: Message -> DiscordHandler ()
 sendInstanceInfo m = newCommand m "instance" $ \_ -> do
     isDev <- isSenderDeveloper m 
-    if isDev then do
+    if isDev then
         sendInstanceInfoChan $ messageChannel m
-    else do
+    else
         sendMessageDM (userId $ messageAuthor m) "Insufficient privileges"
 
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
@@ -95,17 +96,19 @@ restartOwen m = newCommand m "restart" $ \_ -> do
         sendMessageChan (messageChannel m) "Restarting"
         _ <- liftIO restart
         sendMessageChan (messageChannel m) "Failed"
-    else do
-      sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."
+    else
+        sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."
 
--- addDevs :: Message -> String  -> DiscordHandler (Either RestCallErrorCode Message)
--- addDevs m s = do
---   bool <- checkRoleIDs m
---   if or bool then do
---     _ <- liftIO $ appendFile devIDs (show s ++ ", ")
---     sendMessageChan (messageChannel m) "Success!"
---   else do
---     sendMessageChan (messageChannel m) "Insufficient Permissions"
+addDevs :: Message -> DiscordHandler ()
+addDevs m = newCommand m "addDev ([0-9]{1,32})" $ \captures -> do
+    isDev <- isSenderDeveloper m
+    if isDev then do
+        liftIO $ putStrLn (show captures)
+        let id = T.unpack $ head captures
+        liftIO $ addToCSV devIDs (id ++ ", ")
+        sendMessageChan (messageChannel m) "Success!"
+    else
+        sendMessageChan (messageChannel m) "Insufficient Permissions"
 
 statusRE :: T.Text
 statusRE = ("(online|idle|dnd|invisible) " <>
@@ -122,15 +125,14 @@ prepareStatus m = newCommand m "status(.*)" $ \captures -> do
     let newStatus = head components
     let newType = (head . tail) components
     let newName = (head . tail . tail) components
-    if isDev
-        then
-            if length components == 3
-                then do
-                    updateStatus newStatus newType newName
-                    liftIO $ editStatusFile newStatus newType newName
-                    sendMessageChan (messageChannel m)
-                        $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
-                else
-                    sendMessageChan (messageChannel m) 
-                        $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
-        else sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."
+    if isDev then
+        if length components == 3 then do
+            updateStatus newStatus newType newName
+            liftIO $ editStatusFile newStatus newType newName
+            sendMessageChan (messageChannel m)
+                $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
+        else
+            sendMessageChan (messageChannel m) 
+                $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
+    else
+        sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."
