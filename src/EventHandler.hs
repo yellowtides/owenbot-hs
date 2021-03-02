@@ -1,14 +1,17 @@
 module EventHandler (handleEvent) where 
 
-import Discord.Types( Message(messageAuthor, messageText),
-                      ReactionInfo(reactionEmoji, reactionUserId, reactionMessageId),
-                      Event(MessageCreate, MessageReactionAdd, MessageReactionRemove),
-                      User(userIsBot) )
-import Discord ( DiscordHandler, RestCallErrorCode )
-import Data.Maybe ( isJust, fromJust, isNothing )
-import Control.Monad (when, guard, unless, void )
-import UnliftIO ( liftIO )
-import qualified Data.Text as T ( length )
+import           Discord.Types     ( Message ( messageAuthor )
+                                   , ReactionInfo
+                                   , Event ( MessageCreate
+                                           , MessageReactionAdd
+                                           , MessageReactionRemove
+                                           )
+                                   , User ( userIsBot )
+                                   )
+import           Discord           ( DiscordHandler )
+import           Control.Monad     ( when
+                                   , unless
+                                   , void )
 
 import qualified Admin
 import qualified Misc
