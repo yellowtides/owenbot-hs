@@ -103,7 +103,7 @@ handleAda24h :: Message -> DiscordHandler ()
 handleAda24h m = newCommand m "ada24h" $ \_ -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
-        Left err           -> 
+        Left err -> 
             liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err)
                 >> pure () 
         Right announcement ->
