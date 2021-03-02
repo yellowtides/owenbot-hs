@@ -5,22 +5,21 @@ module Utils ( sendMessageChan
              , sendMessageDM
              , sendFileChan
              , pingAuthorOf
+             , newCommand
              , linkChannel
              , getMessageLink
-             , isMod
              , hasRoleByName
              , hasRoleByID
+             , isMod
+             , isSenderDeveloper
+             , devIDs
              , (=~=)
              , getTimestampFromMessage
              , openCSV
              , addToCSV
-             , rmFuncText
              , captureCommandOutput
              , strToSnowflake
              , restart
-             , isSenderDeveloper
-             , devIDs
-             , newCommand
              ) where
 
 import qualified Discord.Requests as R
@@ -158,9 +157,6 @@ safeCsvRead path = catch (Just <$> Sys.readFile path) putNothing
             where
                 putNothing :: IOException -> IO (Maybe String)
                 putNothing = const $ pure Nothing
-
-rmFuncText :: T.Text -> T.Text
-rmFuncText = T.dropWhile isAlpha . T.tail
 
 captureCommandOutput :: String -> IO T.Text
 captureCommandOutput command = do

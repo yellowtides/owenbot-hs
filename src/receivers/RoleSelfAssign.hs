@@ -23,7 +23,6 @@ import           Data.Bifunctor         ( first )
 import           Data.Char              ( isDigit
                                         , toUpper
                                         )
-import           Data.List.Split        ( splitOn )
 import           Data.Maybe             ( fromJust
                                         , fromMaybe
                                         , isJust
@@ -41,13 +40,7 @@ import qualified Data.Text.IO as TIO    ( readFile )
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageChan
                                         , pingAuthorOf
-                                        , linkChannel
-                                        , getMessageLink
                                         , sendMessageChanEmbed
-                                        , getTimestampFromMessage
-                                        , openCSV
-                                        , addToCSV
-                                        , rmFuncText
                                         , sendMessageDM
                                         )
 

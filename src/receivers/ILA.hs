@@ -75,6 +75,3 @@ rmZeroes digits = case T.dropWhile (== '0') digits of
                     
 padZeroes :: Int -> T.Text -> T.Text
 padZeroes newLen digits = T.replicate (newLen - T.length digits) "0" <> digits
-                
-rmFuncText :: T.Text -> T.Text
-rmFuncText = T.dropWhile (\x -> isAlpha x || isSpace x) . T.tail

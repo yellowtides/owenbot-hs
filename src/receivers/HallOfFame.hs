@@ -41,7 +41,6 @@ import           Utils              ( sendMessageChan
                                     , getTimestampFromMessage
                                     , openCSV
                                     , addToCSV
-                                    , rmFuncText
                                     , newCommand
                                     )
 

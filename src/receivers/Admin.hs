@@ -24,7 +24,6 @@ import           Utils              ( newCommand
                                     , devIDs
                                     , restart
                                     , isSenderDeveloper
-                                    , openCSV
                                     , addToCSV
                                     , (=~=)
                                     )

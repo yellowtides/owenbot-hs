@@ -8,25 +8,20 @@ import           Discord
 import qualified Data.Maybe as M
 import qualified Data.Text.IO as TIO
 import qualified Data.Text as T
-import           Data.Char              ( isAlpha )
 import           UnliftIO               ( liftIO )
 import           Text.Regex.TDFA        ( (=~) )
 import           System.IO as S         ( readFile )
 import qualified System.Exit as SE
 import qualified System.Process as SP
-import           Control.Monad          ( guard
-                                        , when
-                                        )
+import           Control.Monad          ( when )
 import           System.Random          ( randomR
                                         , getStdRandom
                                         )
 
 import           Utils                  ( sendMessageChan
                                         , pingAuthorOf
-                                        , linkChannel
-                                        , getMessageLink
-                                        , (=~=)
                                         , newCommand
+                                        , (=~=)
                                         )
 import           Owoifier               ( owoify )
 import           ADAPriceFetcher        ( fetchADADetails )
