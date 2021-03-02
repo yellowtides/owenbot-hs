@@ -16,12 +16,13 @@ import qualified Calc
 import qualified Helpme
 import qualified ILA
 import qualified Inf1A
+import qualified HallOfFame
 
-import ReactHandler
-    ( notInHallOfFameChannel,
-      isHallOfFameEmote,
-      isEligibleForHallOfFame,
-      handleHallOfFame )
+-- import ReactHandler
+--     ( notInHallOfFameChannel,
+--       isHallOfFameEmote,
+--       isEligibleForHallOfFame,
+--       handleHallOfFame )
 
 import RoleSelfAssign 
      ( handleRoleAssign,
@@ -37,10 +38,12 @@ messageReceivers = concat
      , Helpme.receivers
      , ILA.receivers
      , Inf1A.receivers
+     , HallOfFame.messageReceivers
      ]
 
-reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
-reactionReceivers = concat []
+reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
+reactionAddReceivers = concat 
+     [ HallOfFame.reactionReceivers ]
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
@@ -50,22 +53,22 @@ handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
        MessageCreate m -> unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
                               
-       MessageReactionAdd r -> do
-                                   isSelfAssign <- liftIO $ isOnAssignMessage r
-                                   when isSelfAssign
-                                        (handleRoleAssign r >> pure ())
-                                   guard . not $ isSelfAssign
+       MessageReactionAdd r -> void (mapM ($ r) reactionAddReceivers)
+                                   -- isSelfAssign <- liftIO $ isOnAssignMessage r
+                                   -- when isSelfAssign
+                                   --      (handleRoleAssign r >> pure ())
+                                   -- guard . not $ isSelfAssign
 
-                                   when (isHallOfFameEmote r && notInHallOfFameChannel r)
-                                        (do
-                                             eligibleM <- isEligibleForHallOfFame r
-                                             case eligibleM of
-                                                  Right eligible -> if
-                                                                      eligible
-                                                                 then
-                                                                      handleHallOfFame r >> pure ()
-                                                                 else
-                                                                      pure ()
-                                                  Left err -> pure ())
+                                   -- when (isHallOfFameEmote r && notInHallOfFameChannel r)
+                                   --      (do
+                                   --           eligibleM <- isEligibleForHallOfFame r
+                                   --           case eligibleM of
+                                   --                Right eligible -> if
+                                   --                                    eligible
+                                   --                               then
+                                   --                                    handleHallOfFame r >> pure ()
+                                   --                               else
+                                   --                                    pure ()
+                                   --                Left err -> pure ())
        MessageReactionRemove r -> handleRoleRemove r >> pure ()
        _ -> pure ()
