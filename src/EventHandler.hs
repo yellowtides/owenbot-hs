@@ -1,4 +1,4 @@
-module EventHandler (handleEvent) where 
+module EventHandler ( handleEvent ) where 
 
 import           Discord.Types     ( Message ( messageAuthor )
                                    , ReactionInfo
@@ -9,8 +9,7 @@ import           Discord.Types     ( Message ( messageAuthor )
                                    , User ( userIsBot )
                                    )
 import           Discord           ( DiscordHandler )
-import           Control.Monad     ( when
-                                   , unless
+import           Control.Monad     ( unless
                                    , void )
 
 import qualified Admin
@@ -21,8 +20,7 @@ import qualified ILA
 import qualified Inf1A
 import qualified HallOfFame
 import qualified RoleSelfAssign
-
-import Status (setStatusFromFile)
+import           Status            ( setStatusFromFile )
 
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
