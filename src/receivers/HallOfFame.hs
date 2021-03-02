@@ -59,7 +59,11 @@ attemptHallOfFame r = do
         when eligible $ putInHallOfFame r >> pure ()
 
 hallOfFameEmotes :: [T.Text]
-hallOfFameEmotes = ["xree", "kekw", "\11088"]
+hallOfFameEmotes = 
+    [ "xree"
+    , "kekw"
+    , "\11088" -- star
+    ] -- These are matched case-insensitively
 
 hallOfFameChannel :: ChannelId
 hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
