@@ -27,7 +27,6 @@ source-repository head
 
 library
   exposed-modules:
-      CommandHandler
       EventHandler
       MiscHandler
       Owoifier
@@ -35,7 +34,6 @@ library
       Utils
       ADAPriceFetcher
       Admin
-      AdminRE
       Calc
       CalcRE
       Helpme

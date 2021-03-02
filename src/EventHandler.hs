@@ -12,7 +12,7 @@ import qualified Data.Text as T ( length )
 
 import qualified Admin
 import qualified MiscHandler
-import CommandHandler (handleCommand, isCommand)
+import qualified Calc
 
 import ReactHandler
     ( notInHallOfFameChannel,
@@ -27,7 +27,11 @@ import RoleSelfAssign
 import Status (setStatusFromFile)
 
 messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = concat [Admin.receivers, MiscHandler.receivers]
+messageReceivers = concat
+     [ Admin.receivers
+     , MiscHandler.receivers
+     , Calc.receivers
+     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = concat []
