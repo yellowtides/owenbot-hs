@@ -15,9 +15,9 @@ trailingWS :: T.Text
 trailingWS = " *$"
 
 textbookRE :: T.Text
-textbookRE = "^:t(ext)?b(ook)? *"
+textbookRE = "t(ext)?b(ook)? *"
 
 thmRE, defRE, lemRE :: T.Text
-thmRE = "^:th(eore)?m *"
-defRE = "^:def(inition)? *"
-lemRE = "^:lem(ma)? *"
+thmRE = "th(eore)?m *"
+defRE = "def(inition)? *"
+lemRE = "lem(ma)? *"
