@@ -4,46 +4,46 @@ module HallOfFame ( reactionReceivers, messageReceivers ) where
 
 import qualified Discord.Requests as R
 import qualified Data.Text as T
-import           Data.Functor           ( (<&>) )
-import           Discord                ( restCall
-                                        , DiscordHandler
-                                        , RestCallErrorCode
-                                        )
-import           Discord.Types          ( ChannelId
-                                        , Snowflake
-                                        , Attachment ( attachmentUrl )
-                                        , Emoji ( emojiName )
-                                        , Message ( messageReactions
-                                                  , messageId
-                                                  , messageText
-                                                  , messageChannel
-                                                  , messageAttachments
-                                                  , messageChannel
-                                                  )
-                                        , MessageReaction ( messageReactionCount
-                                                          , messageReactionEmoji
-                                                          )
-                                        , CreateEmbed ( CreateEmbed )
-                                        , CreateEmbedImage ( CreateEmbedImageUrl )
-                                        , ReactionInfo ( reactionEmoji
-                                                       , reactionChannelId
-                                                       , reactionMessageId
-                                                       )
-                                        )
-import           UnliftIO               ( liftIO )
-import           Control.Monad          ( guard, when )
-import           Utils                  ( sendMessageChan
-                                        , isSenderDeveloper
-                                        , pingAuthorOf
-                                        , linkChannel
-                                        , getMessageLink
-                                        , sendMessageChanEmbed
-                                        , getTimestampFromMessage
-                                        , openCSV
-                                        , addToCSV
-                                        , rmFuncText
-                                        , newCommand
-                                        )
+import           Data.Functor       ( (<&>) )
+import           Discord            ( restCall
+                                    , DiscordHandler
+                                    , RestCallErrorCode
+                                    )
+import           Discord.Types      ( ChannelId
+                                    , Snowflake
+                                    , Attachment ( attachmentUrl )
+                                    , Emoji ( emojiName )
+                                    , Message ( messageReactions
+                                              , messageId
+                                              , messageText
+                                              , messageChannel
+                                              , messageAttachments
+                                              , messageChannel
+                                              )
+                                    , MessageReaction ( messageReactionCount
+                                                      , messageReactionEmoji
+                                                      )
+                                    , CreateEmbed ( CreateEmbed )
+                                    , CreateEmbedImage ( CreateEmbedImageUrl )
+                                    , ReactionInfo ( reactionEmoji
+                                                   , reactionChannelId
+                                                   , reactionMessageId
+                                                   )
+                                    )
+import           UnliftIO           ( liftIO )
+import           Control.Monad      ( guard, when )
+import           Utils              ( sendMessageChan
+                                    , isSenderDeveloper
+                                    , pingAuthorOf
+                                    , linkChannel
+                                    , getMessageLink
+                                    , sendMessageChanEmbed
+                                    , getTimestampFromMessage
+                                    , openCSV
+                                    , addToCSV
+                                    , rmFuncText
+                                    , newCommand
+                                    )
 
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
