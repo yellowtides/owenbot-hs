@@ -17,6 +17,7 @@ import qualified Helpme
 import qualified ILA
 import qualified Inf1A
 import qualified HallOfFame
+import qualified RoleSelfAssign
 
 -- import ReactHandler
 --     ( notInHallOfFameChannel,
@@ -24,10 +25,10 @@ import qualified HallOfFame
 --       isEligibleForHallOfFame,
 --       handleHallOfFame )
 
-import RoleSelfAssign 
-     ( handleRoleAssign,
-       handleRoleRemove,
-       isOnAssignMessage )
+-- import RoleSelfAssign ( reactionRemReceivers )
+--      ( attemptRoleAssign,
+--        handleRoleRemove,
+--        isOnAssignMessage )
 import Status (setStatusFromFile)
 
 messageReceivers :: [Message -> DiscordHandler ()]
@@ -43,7 +44,13 @@ messageReceivers = concat
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = concat 
-     [ HallOfFame.reactionReceivers ]
+     [ HallOfFame.reactionReceivers
+     , RoleSelfAssign.reactionAddReceivers
+     ]
+
+reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
+reactionRemoveReceivers = concat
+     [ RoleSelfAssign.reactionRemReceivers ]
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
@@ -51,9 +58,8 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-       MessageCreate m -> unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
-                              
-       MessageReactionAdd r -> void (mapM ($ r) reactionAddReceivers)
+     MessageCreate m -> unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
+     MessageReactionAdd r -> void (mapM ($ r) reactionAddReceivers)
                                    -- isSelfAssign <- liftIO $ isOnAssignMessage r
                                    -- when isSelfAssign
                                    --      (handleRoleAssign r >> pure ())
@@ -70,5 +76,5 @@ handleEvent event = case event of
                                    --                               else
                                    --                                    pure ()
                                    --                Left err -> pure ())
-       MessageReactionRemove r -> handleRoleRemove r >> pure ()
-       _ -> pure ()
+     MessageReactionRemove r -> void (mapM ($ r) reactionRemoveReceivers)
+     _ -> pure ()

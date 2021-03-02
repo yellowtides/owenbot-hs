@@ -1,51 +1,76 @@
 {-# LANGUAGE OverloadedStrings #-}
-module RoleSelfAssign ( handleRoleRemove, handleRoleAssign, isOnAssignMessage ) where
+module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers ) where
 
-import Data.List.Split (splitOn)
-import Discord ( restCall, DiscordHandler, RestCallErrorCode )
-import Discord.Types
-    ( Emoji(emojiName),
-      ReactionInfo(reactionEmoji, reactionUserId, reactionMessageId),
-      MessageId,
-      RoleId,
-      Message )
-import Discord.Requests
-    ( GuildRequest(RemoveGuildMemberRole, AddGuildMemberRole) )
+import           Discord                ( restCall
+                                        , DiscordHandler
+                                        , RestCallErrorCode
+                                        )
+import           Discord.Types          ( Emoji ( emojiName )
+                                        , ReactionInfo ( reactionEmoji
+                                                       , reactionUserId
+                                                       , reactionMessageId
+                                                       )
+                                        , MessageId
+                                        , RoleId
+                                        , Message
+                                        )
+import           Discord.Requests       ( GuildRequest ( RemoveGuildMemberRole
+                                                       , AddGuildMemberRole
+                                                       ) )
+import           Control.Monad          ( guard )
+import           UnliftIO               ( liftIO )
+import           Data.Bifunctor         ( first )
+import           Data.Char              ( isDigit
+                                        , toUpper
+                                        )
+import           Data.List.Split        ( splitOn )
+import           Data.Maybe             ( fromJust
+                                        , fromMaybe
+                                        , isJust
+                                        )
+import qualified Data.Text as T         ( toUpper
+                                        , unpack
+                                        , Text
+                                        , splitOn
+                                        , breakOn
+                                        , pack
+                                        , tail
+                                        )
+import qualified Data.Text.IO as TIO    ( readFile )
 
-import Data.Bifunctor ( first )
-import Data.Char ( isDigit, toUpper )
+import           Owoifier               ( owoify )
+import           Utils                  ( sendMessageChan
+                                        , isRole
+                                        , pingAuthorOf
+                                        , linkChannel
+                                        , getMessageLink
+                                        , sendMessageChanEmbed
+                                        , getTimestampFromMessage
+                                        , openCSV
+                                        , addToCSV
+                                        , rmFuncText
+                                        , sendMessageDM
+                                        )
 
-import UnliftIO ( liftIO )
-import Control.Monad ( guard )
-import Data.Maybe ( fromJust, fromMaybe, isJust )
-import qualified Data.Text as T 
-    ( toUpper, unpack, Text, splitOn, 
-      breakOn, pack, tail, )
-import qualified Data.Text.IO as TIO (readFile)
+reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
+reactionAddReceivers = [ attemptRoleAssign ]
 
-import Owoifier (owoify)
+reactionRemReceivers :: [ReactionInfo -> DiscordHandler ()]
+reactionRemReceivers = [ handleRoleRemove ]
 
-import Utils
-    (sendMessageChan, isRole,  pingAuthorOf,
-      linkChannel,
-      getMessageLink,
-      sendMessageChanEmbed,
-      getTimestampFromMessage,
-      openCSV,
-      addToCSV,
-      rmFuncText,
-      sendMessageDM )
-
-isOnAssignMessage :: ReactionInfo -> IO Bool
+isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do
     validMessages <- liftIO getAssignMessageIds
     pure $ reactionMessageId r `elem` validMessages
     -- make sure the message being reacted is a role assignment message
     -- (prevents the config from being opened very often / every sent message)
 
--- `handleRoleAssign` handles role assignments.
-handleRoleAssign :: ReactionInfo -> DiscordHandler ()
-handleRoleAssign r = do
+-- `attemptRoleAssign` handles role assignments.
+attemptRoleAssign :: ReactionInfo -> DiscordHandler ()
+attemptRoleAssign r = do
+    validMsg <- isOnAssignMessage r
+    guard validMsg
+    
     assFileName <- liftIO $ getRoleListIndex r
     roleMap <- liftIO $ getRoleMap (fromJust assFileName)
     let desiredRole = lookup (T.toUpper . emojiName $ reactionEmoji r) roleMap
