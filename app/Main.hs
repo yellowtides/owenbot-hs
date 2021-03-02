@@ -16,7 +16,7 @@ import Discord
 import Discord.Types ( ChannelId, Channel(ChannelText) )
 import EventHandler (handleEvent)
 import Status (setStatusFromFile)
--- import Admin (sendGitInfoChan)
+import Admin (sendGitInfoChan)
 
 -- | UWU
 owen :: T.Text -> IO ()
