@@ -5,9 +5,7 @@ module ILA ( receivers ) where
 import           Discord.Types      ( ChannelId
                                     , Message ( messageChannel )
                                     )
-import           Discord            ( DiscordHandler
-                                    , RestCallErrorCode
-                                    )
+import           Discord            ( DiscordHandler )
 import qualified Data.Text as T
 import           Data.Bifunctor     ( first )
 import           Data.Char          ( isAlpha

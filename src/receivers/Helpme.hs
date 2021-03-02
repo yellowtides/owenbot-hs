@@ -1,19 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Helpme ( receivers ) where
-
-import           Discord.Types
-import           Discord
+  
+import           Discord.Types      ( ChannelId
+                                    , Message ( messageAuthor )
+                                    , User ( userId )
+                                    )
+import           Discord            ( DiscordHandler )
 import qualified Data.Text.IO as TIO
-import           UnliftIO               ( liftIO )
-import           Data.Bifunctor         ( first )
-import           Data.Char              ( isAlpha
-                                        , isSpace
-                                        )
+import           UnliftIO           ( liftIO )
 
-import           Owoifier               ( owoify )
-import           Utils                  ( sendMessageDM
-                                        , newCommand )
+import           Owoifier           ( owoify )
+import           Utils              ( sendMessageDM
+                                    , newCommand )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers = [ sendHelpDM ]

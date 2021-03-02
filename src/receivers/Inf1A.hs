@@ -2,10 +2,11 @@
 
 module Inf1A ( receivers ) where
 
-import           Discord.Types
-import           Discord
+import           Discord.Types      ( ChannelId
+                                    , Message ( messageChannel )
+                                    )
+import           Discord            ( DiscordHandler )
 import qualified Data.Text as T
-import           UnliftIO           ( liftIO )
 import           Utils              ( sendMessageChan
                                     , sendFileChan
                                     , newCommand
