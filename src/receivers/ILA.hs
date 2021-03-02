@@ -9,7 +9,6 @@ import           Discord            ( DiscordHandler
                                     , RestCallErrorCode
                                     )
 import qualified Data.Text as T
-import           UnliftIO           ( liftIO )
 import           Data.Bifunctor     ( first )
 import           Data.Char          ( isAlpha
                                     , isSpace
@@ -37,10 +36,10 @@ receivers =
     ]
 
 ilathmRE, iladefRE, ilalemmaRE, ilatextbookRE :: T.Text
-ilathmRE      = thmRE      <> "ila *(" <> twoDot <> ")"
-iladefRE      = defRE      <> "ila *(" <> oneDot <> ")"
-ilalemmaRE    = lemRE      <> "ila *(" <> twoDot <> ")"
-ilatextbookRE = textbookRE <> "ila *"
+ilathmRE      = thmRE      <> "ila (" <> twoDot <> ")"
+iladefRE      = defRE      <> "ila (" <> oneDot <> ")"
+ilalemmaRE    = lemRE      <> "ila (" <> twoDot <> ")"
+ilatextbookRE = textbookRE <> "ila"
 
 sendThm :: Message -> DiscordHandler ()
 sendThm m = newCommand m ilathmRE $ \captures -> do

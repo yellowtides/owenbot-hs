@@ -18,7 +18,7 @@ receivers :: [Message -> DiscordHandler ()]
 receivers = [ sendTextbook ]
 
 calctextbookRE :: T.Text
-calctextbookRE = textbookRE <> "calc *"
+calctextbookRE = textbookRE <> "calc"
 
 sendTextbook :: Message -> DiscordHandler ()
 sendTextbook m = newCommand m calctextbookRE $ \_ ->
