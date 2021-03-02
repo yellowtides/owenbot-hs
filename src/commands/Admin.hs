@@ -40,7 +40,6 @@ receivers =
     , restartOwen
     , prepareStatus
     , addDevs
-    -- , devIDs
     ]
 
 rstrip :: T.Text -> T.Text
