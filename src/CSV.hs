@@ -45,7 +45,7 @@ readCSV :: FilePath -> IO [[T.Text]]
 readCSV path = do
     contents <- readFile path
     case parse csvFile path contents of
-        Left e       -> writeCSV path [] >> print e >> pure []
+        Left e       -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
 
 readSingleColCSV :: FilePath -> IO [T.Text]
