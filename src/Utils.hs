@@ -15,8 +15,6 @@ module Utils ( sendMessageChan
              , devIDs
              , (=~=)
              , getTimestampFromMessage
-             , openCSV
-             , addToCSV
              , captureCommandOutput
              , strToSnowflake
              , restart
@@ -52,6 +50,7 @@ import           UnliftIO               ( liftIO
 
 import           Owoifier               ( owoify )
 import           TemplateRE             ( trailingWS )
+import           CSV                    ( readSingleColCSV )
 
 devIDs :: FilePath
 devIDs = "src/config/devs.conf"
@@ -119,13 +118,14 @@ hasRoleByID m r = case messageGuild m of
         filtered <- getUser'sRolesInGuild (userId $ messageAuthor m) g
         return $ r `elem` map roleId filtered
 
-mapRoleID :: Message -> IO [DiscordHandler Bool]
-mapRoleID m = do
-    snow <- Prelude.map (\x -> read x :: Snowflake) <$> openCSV devIDs
-    return $ Prelude.map (hasRoleByID m) snow
+checkAllIDs :: Message -> IO [DiscordHandler Bool]
+checkAllIDs m = do
+    devFile <- readSingleColCSV devIDs
+    let snow = (\x -> (read . T.unpack) x :: Snowflake) <$> devFile
+    pure $ Prelude.map (hasRoleByID m) $ snow
 
 isSenderDeveloper :: Message -> DiscordHandler Bool
-isSenderDeveloper m = liftM or $ join $ liftIO $ sequence <$> mapRoleID m
+isSenderDeveloper m = liftM or $ join $ liftIO $ sequence <$> checkAllIDs m
 
 strToSnowflake :: String -> Snowflake
 strToSnowflake = read
@@ -139,24 +139,6 @@ getUser'sRolesInGuild i g = do
 
 getTimestampFromMessage :: Message -> T.Text
 getTimestampFromMessage m = T.pack $ TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z" (messageTimestamp m)
-
-openCSV :: FilePath -> IO [String]
-openCSV f = do
-    mFileContent <- safeCsvRead f
-    case mFileContent of
-        Nothing          -> writeFile f "" >> return []
-        Just fileContent -> return $ parseCSV fileContent
-        where
-            parseCSV x  = filter (not . null) $ splitOn ", " x
-
-addToCSV :: FilePath -> String -> IO ()
-addToCSV = appendFile
-
-safeCsvRead :: FilePath -> IO (Maybe String)
-safeCsvRead path = catch (Just <$> Sys.readFile path) putNothing
-            where
-                putNothing :: IOException -> IO (Maybe String)
-                putNothing = const $ pure Nothing
 
 captureCommandOutput :: String -> IO T.Text
 captureCommandOutput command = do

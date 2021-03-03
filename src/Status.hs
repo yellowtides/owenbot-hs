@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Status where
 
+import           Control.Monad          ( when )
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Data.Functor           ( (<&>) )
@@ -9,7 +10,8 @@ import           Discord                ( sendCommand
                                         , DiscordHandler
                                         )
 import           UnliftIO               ( liftIO )
-import           Utils                  ( openCSV )
+import           CSV                    ( readCSV
+                                        , writeCSV )
 
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'
@@ -51,15 +53,19 @@ updateStatus' newStatus newType newName = sendCommand $
 setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
-    let parts = T.words line
-    updateStatus
-        (head parts)
-        ((head.tail) parts)
-        (T.unwords $ (tail . tail) parts)
+    when (length line > 3) $
+        updateStatus
+            (head line)
+            ((head.tail) line)
+            (T.unwords $ (tail . tail) line)
 
 editStatusFile :: T.Text -> T.Text -> T.Text -> IO ()
 editStatusFile newStatus newType newName = 
-    writeFile "src/config/status.conf" $ T.unpack $ T.unwords [newStatus, newType, newName]
+    writeCSV "src/config/status.conf" [[newStatus, newType, newName]]
 
-readStatusFile :: IO T.Text
-readStatusFile = openCSV "src/config/status.conf" <&> head <&> T.pack
+readStatusFile :: IO [T.Text]
+readStatusFile = do
+    contents <- readCSV "src/config/status.conf"
+    if null contents
+        then pure []
+        else pure $ head contents

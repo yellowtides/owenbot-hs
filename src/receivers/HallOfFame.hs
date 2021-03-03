@@ -39,9 +39,10 @@ import           Utils              ( sendMessageChan
                                     , getMessageLink
                                     , sendMessageChanEmbed
                                     , getTimestampFromMessage
-                                    , openCSV
-                                    , addToCSV
                                     , newCommand
+                                    )
+import           CSV                ( readSingleColCSV
+                                    , writeSingleColCSV
                                     )
 
 
@@ -82,13 +83,16 @@ isEligibleForHallOfFame r = do
     messM <- messageFromReaction r
     case messM of
         Right mess -> do
-            msgIdlist <- liftIO $ openCSV "fame.csv"
+            msgIdList <- liftIO $ readSingleColCSV "fame.csv"
+            let msgIdListStr = T.unpack <$> msgIdList
             limit <- liftIO readLimit
+            let existsInHOF = show (messageId mess) `elem` msgIdListStr
             let reactions = messageReactions mess
+            let capsEmotes = map T.toUpper hallOfFameEmotes
             let fulfillCond = \x -> 
                     (messageReactionCount x) >= limit
-                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` map T.toUpper hallOfFameEmotes
-                    && show (messageId mess) `notElem` msgIdlist
+                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` capsEmotes
+                    && not existsInHOF
             pure $ any fulfillCond reactions
         Left err -> liftIO (putStrLn (show err)) >> pure False    
 
@@ -100,7 +104,9 @@ putInHallOfFame r = do
             embedM <- createHallOfFameEmbed mess
             case embedM of
                 Right embed -> do
-                    liftIO $ addToCSV "fame.csv" (show (messageId mess) ++ ", ") --adds the message id to the csv to make sure we dont add it multiple times.
+                    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
+                    liftIO $ writeSingleColCSV "fame.csv" ((T.pack $ show $ messageId mess):msgIdList)
+                    --adds the message id to the csv to make sure we dont add it multiple times.
                     sendMessageChanEmbed hallOfFameChannel "" embed
                 Left err -> liftIO (putStrLn "Couldn't get link to message") >> pure ()
         Left err -> liftIO (putStrLn "Couldn't find associated message") >> pure ()
@@ -151,8 +157,12 @@ setLimit m = newCommand m "setLimit ([0-9]{1,3})" $ \captures -> do
         sendMessageChan (messageChannel m) "New Limit Set"
     else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
 
-editLimit :: Int -> IO()
-editLimit = writeFile "src/config/reactLim.conf" . show
+editLimit :: Int -> IO ()
+editLimit i = writeSingleColCSV "src/config/reactLim.conf" [T.pack $ show i]
 
 readLimit :: IO Int
-readLimit = openCSV "src/config/reactLim.conf" <&> (read . head)
+readLimit = do
+    contents <- readSingleColCSV "src/config/reactLim.conf"
+    if null contents
+        then writeSingleColCSV "src/config/reactLim.conf" ["1"] >> pure 1
+        else pure $ read $ T.unpack $ head contents

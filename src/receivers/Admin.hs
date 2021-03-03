@@ -24,11 +24,13 @@ import           Utils              ( newCommand
                                     , devIDs
                                     , restart
                                     , isSenderDeveloper
-                                    , addToCSV
                                     , (=~=)
                                     )
 import           Status             ( updateStatus
                                     , editStatusFile
+                                    )
+import           CSV                ( readSingleColCSV
+                                    , writeSingleColCSV
                                     )
 
 receivers :: [Message -> DiscordHandler ()]
@@ -100,10 +102,13 @@ addDevs :: Message -> DiscordHandler ()
 addDevs m = newCommand m "addDev ([0-9]{1,32})" $ \captures -> do
     isDev <- isSenderDeveloper m
     if isDev then do
-        liftIO $ putStrLn (show captures)
-        let id = T.unpack $ head captures
-        liftIO $ addToCSV devIDs (id ++ ", ")
-        sendMessageChan (messageChannel m) "Success!"
+        let id = head captures
+        contents <- liftIO $ readSingleColCSV devIDs
+        if null contents
+            then liftIO $ writeSingleColCSV devIDs [id]
+            else do
+                liftIO $ writeSingleColCSV devIDs (id:contents) 
+                sendMessageChan (messageChannel m) "Success!"
     else
         sendMessageChan (messageChannel m) "Insufficient Permissions"
 
