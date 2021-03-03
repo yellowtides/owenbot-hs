@@ -60,7 +60,7 @@ writeCSV :: FilePath -> [[T.Text]] -> IO ()
 writeCSV path contents = TIO.writeFile path
     $ T.unlines
     $ fmap (T.intercalate ",")
-    $ fmap (fmap $ T.replace "\"" "\"\"") contents
+    $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
 
 writeSingleColCSV :: FilePath -> [T.Text] -> IO ()
 writeSingleColCSV path = (writeCSV path) . fmap (\x -> [x])
