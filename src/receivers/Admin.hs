@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin ( receivers ) where
+module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types      ( ChannelId
