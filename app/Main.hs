@@ -1,12 +1,6 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
 import qualified Data.Text as T
-import           Data.Text.IO
-import           Prelude hiding         ( putStrLn
-                                        , readFile
-                                        )
 import           Control.Monad 
 import           Discord.Requests as R
 import           Discord                ( restCall
@@ -27,18 +21,20 @@ import           Status                 ( setStatusFromFile )
 import           Admin                  ( sendGitInfoChan )
 
 -- | UWU
-owen :: T.Text -> IO ()
+owen :: String -> IO ()
 owen t = do
-    userFacingError <- runDiscord $ def { discordToken   = t
+    userFacingError <- runDiscord $ def { discordToken   = T.pack t
                                         , discordOnStart = startHandler
                                         , discordOnEvent = handleEvent
-                                        , discordOnLog = \s -> putStrLn s >> putStrLn "" }
-    putStrLn userFacingError
+                                        , discordOnLog = \s -> 
+                                            putStrLn (T.unpack s) >> putStrLn ""}
+    putStrLn (T.unpack userFacingError)
 
 startHandler :: DiscordHandler ()
 startHandler = do
-    let chan = 801763198792368129 ::ChannelId --this channel is the bot-start channel on the test server, change to point towards your channel.
-    _ <- restCall $ R.CreateMessage chan "Hewwo, I am bawck! UwU"
+    --this channel is the bot-start channel on the test server, change to point towards your channel.
+    let chan = 801763198792368129 :: ChannelId
+    _ <- restCall $ R.CreateMessage chan (T.pack "Hewwo, I am bawck! UwU")
     _ <- sendGitInfoChan chan
     _ <- setStatusFromFile
     pure ()
@@ -51,5 +47,5 @@ main :: IO ()
 main = do
     putStrLn "starting Owen"
     tok <- readFile ".token.txt"  
-    putStrLn ("Token:" ++ T.unpack tok)
+    putStrLn ("Token: " ++ tok)
     owen tok
