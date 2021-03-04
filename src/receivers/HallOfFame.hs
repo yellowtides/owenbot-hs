@@ -56,7 +56,7 @@ attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r = do
     when (isHallOfFameEmote r && notInHallOfFameChannel r) $ do
         eligible <- isEligibleForHallOfFame r
-        when eligible $ putInHallOfFame r >> pure ()
+        when eligible $ putInHallOfFame r
 
 hallOfFameEmotes :: [T.Text]
 hallOfFameEmotes = 
