@@ -3,8 +3,7 @@ module Main where
 import qualified Data.Text as T
 import           Control.Monad 
 import           Discord.Requests as R
-import           Discord                ( restCall
-                                        , runDiscord
+import           Discord                ( runDiscord
                                         , def
                                         , DiscordHandler
                                         , RunDiscordOpts ( discordToken
@@ -13,12 +12,11 @@ import           Discord                ( restCall
                                                          , discordOnLog
                                                          )
                                         )
-import           Discord.Types          ( ChannelId
-                                        , Channel ( ChannelText )
-                                        )
+import           Discord.Types          ( ChannelId )
 import           EventHandler           ( handleEvent )
-import           Status                 ( setStatusFromFile )
 import           Admin                  ( sendGitInfoChan )
+import           Status                 ( setStatusFromFile )
+import           Utils                  ( sendMessageChan )
 
 -- | UWU
 owen :: String -> IO ()
@@ -34,7 +32,7 @@ startHandler :: DiscordHandler ()
 startHandler = do
     --this channel is the bot-start channel on the test server, change to point towards your channel.
     let chan = 801763198792368129 :: ChannelId
-    _ <- restCall $ R.CreateMessage chan (T.pack "Hewwo, I am bawck! UwU")
+    sendMessageChan chan (T.pack "Hewwo, I am bawck! UwU")
     _ <- sendGitInfoChan chan
     _ <- setStatusFromFile
     pure ()
