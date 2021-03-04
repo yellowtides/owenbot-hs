@@ -10,7 +10,9 @@ import           Discord.Types     ( Message ( messageAuthor )
                                    )
 import           Discord           ( DiscordHandler )
 import           Control.Monad     ( unless
-                                   , void )
+                                   , void
+                                   , mplus
+                                   )
 
 import qualified Admin
 import qualified Misc
@@ -49,7 +51,10 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-     MessageCreate m -> unless (isFromBot m) $ void (mapM ($ m) messageReceivers)
-     MessageReactionAdd r -> void (mapM ($ r) reactionAddReceivers)
-     MessageReactionRemove r -> void (mapM ($ r) reactionRemoveReceivers)
+     MessageCreate m -> unless (isFromBot m) $ runAllIgnoringEmpty (fmap ($ m) messageReceivers)
+     MessageReactionAdd r -> runAllIgnoringEmpty (fmap ($ r) reactionAddReceivers)
+     MessageReactionRemove r -> runAllIgnoringEmpty (fmap ($ r) reactionRemoveReceivers)
      _ -> pure ()
+
+runAllIgnoringEmpty :: [DiscordHandler ()] -> DiscordHandler ()
+runAllIgnoringEmpty = foldr mplus (pure ())
