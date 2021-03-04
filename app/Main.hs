@@ -39,10 +39,6 @@ startHandler = do
     _ <- setStatusFromFile
     pure ()
 
-isTextChannel :: Channel -> Bool
-isTextChannel ChannelText {} = True
-isTextChannel _ = False
-
 main :: IO ()
 main = do
     putStrLn "starting Owen"
