@@ -35,13 +35,15 @@ import qualified Data.Text as T         ( toUpper
                                         , pack
                                         , tail
                                         )
-import qualified Data.Text.IO as TIO    ( readFile )
 
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageChan
                                         , pingAuthorOf
                                         , sendMessageChanEmbed
                                         , sendMessageDM
+                                        )
+import           CSV                    ( readCSV
+                                        , readSingleColCSV
                                         )
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -106,29 +108,27 @@ handleRoleRemove r = do
 
 -- | Given a Text @dir@, `getRoleMap` parses the file in "src/config",
 -- converting it into a dictionary. One mapping per line. The map is indicated
--- by a space seperating the emoji name (in UPPERCASE) and the corresponding role
+-- by a comma seperating the emoji name (in UPPERCASE) and the corresponding role
 -- ID. This has to be wrapped in IO.
 getRoleMap :: T.Text -> IO [(T.Text, RoleId)]
 getRoleMap dir = do
-    file <- TIO.readFile . T.unpack $ "src/config/" <> dir
-    let lines = T.splitOn "\n" file
+    contents <- readCSV $ "src/config/" ++ T.unpack dir
     pure $ do
-        line <- lines
-        let pair = T.breakOn " " line
+        line <- contents
+        let pair = (head line, (head . tail) line)
         pure $ fmap (read . T.unpack . T.tail) pair
 
 -- | Given a reaction @r@, `getRoleListIndex` parses the file "src/config/idAssign".
 -- Note: this is a special file that represents a dictionry. Again, one mapping per line,
--- with the map indicated by a space seperating the message ID and the corresponsning role
+-- with the map indicated by a comma seperating the message ID and the corresponsning role
 -- config file in "src/config". It returns a Maybe type representing the existence of such
 -- a config file for the message that is attached to the given reaction.
 getRoleListIndex :: ReactionInfo -> IO (Maybe T.Text)
 getRoleListIndex r = do
-    file <- TIO.readFile "src/config/idAssign.conf"
-    let lines = T.splitOn "\n" file
+    contents <- readCSV "src/config/idAssign.conf"
     pure . lookup (reactionMessageId r) $ do
-        line <- lines
-        let pair = T.breakOn " " line
+        line <- contents
+        let pair = (head line, (head . tail) line)
         pure . fmap T.tail $ first (read . T.unpack) pair
 
 -- | `getAssignMessageIds` returns a list of all message Snowflakes for all messages wnich
@@ -136,6 +136,5 @@ getRoleListIndex r = do
 -- which is also the only file name that mustn't be edited.
 getAssignMessageIds :: IO [MessageId]
 getAssignMessageIds = do
-    file <- TIO.readFile "src/config/idAssign.conf"
-    let lines = T.splitOn "\n" file
+    lines <- readSingleColCSV "src/config/idAssign.conf"
     pure $ map (read . takeWhile isDigit . T.unpack) lines
