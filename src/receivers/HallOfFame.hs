@@ -2,13 +2,16 @@
 
 module HallOfFame ( reactionReceivers, messageReceivers ) where
 
-import qualified Discord.Requests as R
-import qualified Data.Text as T
+import           Control.Monad      ( guard
+                                    , when
+                                    )
 import           Data.Functor       ( (<&>) )
+import qualified Data.Text as T
 import           Discord            ( restCall
                                     , DiscordHandler
                                     , RestCallErrorCode
                                     )
+import qualified Discord.Requests as R
 import           Discord.Types      ( ChannelId
                                     , Snowflake
                                     , Attachment ( attachmentUrl )
@@ -30,8 +33,9 @@ import           Discord.Types      ( ChannelId
                                                    , reactionMessageId
                                                    )
                                     )
+import           Text.Read          ( readMaybe )
 import           UnliftIO           ( liftIO )
-import           Control.Monad      ( guard, when )
+
 import           Utils              ( sendMessageChan
                                     , isSenderDeveloper
                                     , pingAuthorOf
@@ -149,12 +153,18 @@ createHallOfFameEmbed m = do
         Left err -> pure $ Left err
 
 setLimit :: Message -> DiscordHandler ()
-setLimit m = newCommand m "setLimit ([0-9]{1,3})" $ \captures -> do
+setLimit m = newCommand m "setLimit *([0-9]{1,3})?" $ \captures -> do
     isDev <- isSenderDeveloper m
     if isDev then do
-        let i = read (T.unpack $ head captures)
-        liftIO $ editLimit i
-        sendMessageChan (messageChannel m) "New Limit Set"
+        let parsed = readMaybe (T.unpack $ head captures)
+        case parsed of
+            Nothing -> do
+                i <- liftIO $ readLimit
+                sendMessageChan (messageChannel m)
+                    $ "Current limit is at " <> (T.pack $ show i)
+            Just i -> do
+                liftIO $ editLimit i
+                sendMessageChan (messageChannel m) "New Limit Set"
     else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
 
 editLimit :: Int -> IO ()
