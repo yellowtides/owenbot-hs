@@ -1,18 +1,20 @@
 module EventHandler ( handleEvent ) where 
 
-import           Discord.Types     ( Message ( messageAuthor )
-                                   , ReactionInfo
-                                   , Event ( MessageCreate
-                                           , MessageReactionAdd
-                                           , MessageReactionRemove
-                                           )
-                                   , User ( userIsBot )
-                                   )
-import           Discord           ( DiscordHandler )
-import           Control.Monad     ( unless
-                                   , void
-                                   , mplus
-                                   )
+import           Discord.Types          ( Message ( messageAuthor )
+                                        , ReactionInfo
+                                        , Event ( MessageCreate
+                                                , MessageReactionAdd
+                                                , MessageReactionRemove
+                                                )
+                                        , User ( userIsBot )
+                                        )
+import           Discord                ( DiscordHandler )
+import           Control.Monad          ( unless
+                                        , void
+                                        , forM_
+                                        , mplus
+                                        )
+import           Control.Applicative    ( (<|>) )
 
 import qualified Admin
 import qualified Misc
@@ -51,11 +53,10 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-     MessageCreate m -> unless (isFromBot m) $ runAll (fmap ($ m) messageReceivers)
-     MessageReactionAdd r -> runAll (fmap ($ r) reactionAddReceivers)
-     MessageReactionRemove r -> runAll (fmap ($ r) reactionRemoveReceivers)
+     MessageCreate m -> 
+          unless (isFromBot m) $ (forM_ messageReceivers ($ m)) <|> pure ()
+     MessageReactionAdd r -> 
+          (forM_ reactionAddReceivers ($ r)) <|> pure ()
+     MessageReactionRemove r -> 
+          (forM_ reactionRemoveReceivers ($ r)) <|> pure ()
      _ -> pure ()
-
--- | Combines all the Monads ignoring any emitted `empty`s 
-runAll :: [DiscordHandler ()] -> DiscordHandler ()
-runAll = foldr mplus (pure ())
