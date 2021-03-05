@@ -98,7 +98,7 @@ addDevs m = newDevCommand m "addDev ([0-9]{1,32})" $ \captures -> do
     
 statusRE :: T.Text
 statusRE = ("(online|idle|dnd|invisible) " <>
-            "(playing|streaming|listening|competing) " <>
+            "(playing|streaming|competing|listening to) " <>
             "(.*)")
 
 -- | Checks the input against the correct version of :status
@@ -117,4 +117,4 @@ prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
             $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
     else
         sendMessageChan (messageChannel m) 
-            $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
+            $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"

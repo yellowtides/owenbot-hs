@@ -30,7 +30,7 @@ updateStatus newStatus newType newName =
     newTypeParsed = case newType of
         "playing" -> ActivityTypeGame
         "streaming" -> ActivityTypeStreaming
-        "listening" -> ActivityTypeListening
+        "listening to" -> ActivityTypeListening
         "competing" -> ActivityTypeCompeting
         _ -> ActivityTypeGame -- revert to playing if not match    
 
