@@ -112,7 +112,7 @@ handleRoleRemove r = do
 -- ID. This has to be wrapped in IO.
 getRoleMap :: T.Text -> IO [(T.Text, RoleId)]
 getRoleMap dir = do
-    contents <- readCSV $ "src/config/" ++ T.unpack dir
+    contents <- readCSV $ T.unpack dir
     pure $ do
         line <- contents
         let pair = (head line, (head . tail) line)
@@ -125,7 +125,7 @@ getRoleMap dir = do
 -- a config file for the message that is attached to the given reaction.
 getRoleListIndex :: ReactionInfo -> IO (Maybe T.Text)
 getRoleListIndex r = do
-    contents <- readCSV "src/config/idAssign.conf"
+    contents <- readCSV "idAssign.conf"
     pure . lookup (reactionMessageId r) $ do
         line <- contents
         let pair = (head line, (head . tail) line)
@@ -136,5 +136,5 @@ getRoleListIndex r = do
 -- which is also the only file name that mustn't be edited.
 getAssignMessageIds :: IO [MessageId]
 getAssignMessageIds = do
-    lines <- readSingleColCSV "src/config/idAssign.conf"
+    lines <- readSingleColCSV "idAssign.conf"
     pure $ map (read . takeWhile isDigit . T.unpack) lines

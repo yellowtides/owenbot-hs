@@ -61,11 +61,11 @@ setStatusFromFile = do
 
 editStatusFile :: T.Text -> T.Text -> T.Text -> IO ()
 editStatusFile newStatus newType newName = 
-    writeCSV "src/config/status.conf" [[newStatus, newType, newName]]
+    writeCSV "status.conf" [[newStatus, newType, newName]]
 
 readStatusFile :: IO [T.Text]
 readStatusFile = do
-    contents <- readCSV "src/config/status.conf"
+    contents <- readCSV "status.conf"
     if null contents
         then pure []
         else pure $ head contents

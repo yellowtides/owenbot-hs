@@ -6,11 +6,13 @@ module CSV ( readCSV
            , writeSingleColCSV
            ) where
 
+import           Control.Applicative        ( (<|>) )
 import           Data.Functor               ( (<&>) )
 import           Data.List                  ( transpose )
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import           Text.ParserCombinators.Parsec
+import           System.Directory       ( createDirectoryIfMissing )
+import           Text.ParserCombinators.Parsec hiding ( (<|>))
 import           Text.Parsec.Text hiding    ( GenParser )
 
 csvFile :: GenParser Char st [[String]]
@@ -43,7 +45,7 @@ eol = try (string "\n\r")
 -- file with empty contents and returns []
 readCSV :: FilePath -> IO [[T.Text]]
 readCSV path = do
-    contents <- readFile path
+    contents <- readFile (".owen/" <> path) <|> pure ""
     case parse csvFile path contents of
         Left e       -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
@@ -57,10 +59,12 @@ readSingleColCSV path = do
 
 -- | Write CSV from 2-D T.Text list
 writeCSV :: FilePath -> [[T.Text]] -> IO ()
-writeCSV path contents = TIO.writeFile path
-    $ T.unlines
-    $ fmap (T.intercalate ",")
-    $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
+writeCSV path contents = do
+    createDirectoryIfMissing True ".owen"
+    TIO.writeFile (".owen/" <> path)
+        $ T.unlines
+        $ fmap (T.intercalate ",")
+        $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
 
 writeSingleColCSV :: FilePath -> [T.Text] -> IO ()
 writeSingleColCSV path = (writeCSV path) . fmap (\x -> [x])

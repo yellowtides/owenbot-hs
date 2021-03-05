@@ -53,7 +53,7 @@ import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
 devIDs :: FilePath
-devIDs = "src/config/devs.conf"
+devIDs = "devs.conf"
 
 -- | (=~=) is owoify-less (case-less in terms of owoifying)
 (=~=) :: T.Text -> T.Text -> Bool

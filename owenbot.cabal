@@ -48,6 +48,7 @@ library
     , base >=4.7 && <5
     , bytestring
     , discord-haskell
+    , directory
     , hashable
     , http-conduit
     , process
@@ -72,6 +73,7 @@ executable owenbot-exe
     , base >=4.7 && <5
     , bytestring
     , discord-haskell
+    , directory
     , hashable
     , http-conduit
     , owenbot
@@ -99,6 +101,7 @@ test-suite owenbot-test
     , base >=4.7 && <5
     , bytestring
     , discord-haskell
+    , directory
     , hashable
     , http-conduit
     , owenbot
@@ -111,5 +114,4 @@ test-suite owenbot-test
     , unliftio
     , parsec
     , QuickCheck
-    , directory
   default-language: Haskell2010

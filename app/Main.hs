@@ -13,6 +13,8 @@ import           Discord                ( runDiscord
                                                          )
                                         )
 import           Discord.Types          ( ChannelId )
+import           System.Directory       ( createDirectoryIfMissing )
+
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )
@@ -40,6 +42,7 @@ startHandler = do
 main :: IO ()
 main = do
     putStrLn "starting Owen"
+    createDirectoryIfMissing True ".owen"
     tok <- readFile ".token.txt"  
     putStrLn ("Token: " ++ tok)
     owen tok
