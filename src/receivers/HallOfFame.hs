@@ -54,7 +54,7 @@ reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ attemptHallOfFame ]
 
 messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = [ setLimit ]
+messageReceivers = [ reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r = do
@@ -152,8 +152,8 @@ createHallOfFameEmbed m = do
                                       embedFooterIcon )
         Left err -> pure $ Left err
 
-setLimit :: Message -> DiscordHandler ()
-setLimit m = newCommand m "setLimit *([0-9]{1,3})?" $ \captures -> do
+reactLimit :: Message -> DiscordHandler ()
+reactLimit m = newCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
     isDev <- isSenderDeveloper m
     if isDev then do
         let parsed = readMaybe (T.unpack $ head captures)
