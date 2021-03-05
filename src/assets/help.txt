@@ -19,10 +19,10 @@ here's a lil list of **commands** that ou can use on me:
 
 # Admin
 
-[0] :reactLimit {number}                # you won't be able to use them
+[0] :reactLimit   {number}              # you won't be able to use them
 [1] :instance                           # but these are here because the
 [2] :repo                               # devs constantly forget them
-[3] :addDev
+[3] :devs         add|remove {id}
 [4] :status
 
 by the way, i am now [open-source](https://github.com/yellowtides/owenbot-hs)!1!

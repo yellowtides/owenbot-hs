@@ -17,6 +17,7 @@ import           UnliftIO           ( liftIO )
 import           Data.Char          ( isSpace )
 import           Control.Monad      ( when )
 import           Text.Regex.TDFA    ( (=~) )
+
 import           Utils              ( newCommand
                                     , newDevCommand
                                     , sendMessageChan
@@ -39,7 +40,9 @@ receivers =
     , sendInstanceInfo
     , restartOwen
     , prepareStatus
+    , listDevs
     , addDevs
+    , removeDevs
     ]
 
 rstrip :: T.Text -> T.Text
@@ -86,16 +89,34 @@ restartOwen m = newDevCommand m "restart" $ \_ -> do
     _ <- liftIO restart
     sendMessageChan (messageChannel m) "Failed"
     
+listDevs :: Message -> DiscordHandler ()
+listDevs m = newDevCommand m "devs" $ \_ -> do
+    contents <- liftIO $ readSingleColCSV devIDs
+    when (not $ null contents) $ do
+        sendMessageChan (messageChannel m) 
+            $ T.intercalate "\n" contents
+
 addDevs :: Message -> DiscordHandler ()
-addDevs m = newDevCommand m "addDev ([0-9]{1,32})" $ \captures -> do
+addDevs m = newDevCommand m "devs add ([0-9]{1,32})" $ \captures -> do
     let id = head captures
     contents <- liftIO $ readSingleColCSV devIDs
-    if null contents
-        then liftIO $ writeSingleColCSV devIDs [id]
-        else do
-            liftIO $ writeSingleColCSV devIDs (id:contents) 
-            sendMessageChan (messageChannel m) "Success!"
-    
+    if null contents then do
+        liftIO $ writeSingleColCSV devIDs [id]
+        sendMessageChan (messageChannel m) "Added!"
+    else do
+        liftIO $ writeSingleColCSV devIDs (id:contents) 
+        sendMessageChan (messageChannel m) "Added!"
+
+removeDevs :: Message -> DiscordHandler ()
+removeDevs m = newDevCommand m "devs remove ([0-9]{1,32})" $ \captures -> do
+    let id = head captures
+    contents <- liftIO $ readSingleColCSV devIDs
+    if null contents then do
+        sendMessageChan (messageChannel m) "No devs in first place :("
+    else do
+        liftIO $ writeSingleColCSV devIDs (filter (/= id) contents)
+        sendMessageChan (messageChannel m) "Removed!"
+
 statusRE :: T.Text
 statusRE = ("(online|idle|dnd|invisible) " <>
             "(playing|streaming|competing|listening to) " <>
