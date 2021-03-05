@@ -37,13 +37,12 @@ import           Text.Read          ( readMaybe )
 import           UnliftIO           ( liftIO )
 
 import           Utils              ( sendMessageChan
-                                    , isSenderDeveloper
                                     , pingAuthorOf
                                     , linkChannel
                                     , getMessageLink
                                     , sendMessageChanEmbed
                                     , getTimestampFromMessage
-                                    , newCommand
+                                    , newDevCommand
                                     )
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
@@ -153,19 +152,16 @@ createHallOfFameEmbed m = do
         Left err -> pure $ Left err
 
 reactLimit :: Message -> DiscordHandler ()
-reactLimit m = newCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
-    isDev <- isSenderDeveloper m
-    if isDev then do
-        let parsed = readMaybe (T.unpack $ head captures)
-        case parsed of
-            Nothing -> do
-                i <- liftIO $ readLimit
-                sendMessageChan (messageChannel m)
-                    $ "Current limit is at " <> (T.pack $ show i)
-            Just i -> do
-                liftIO $ editLimit i
-                sendMessageChan (messageChannel m) "New Limit Set"
-    else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
+reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
+    let parsed = readMaybe (T.unpack $ head captures)
+    case parsed of
+        Nothing -> do
+            i <- liftIO $ readLimit
+            sendMessageChan (messageChannel m)
+                $ "Current limit is at " <> (T.pack $ show i)
+        Just i -> do
+            liftIO $ editLimit i
+            sendMessageChan (messageChannel m) "New Limit Set"
 
 editLimit :: Int -> IO ()
 editLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]

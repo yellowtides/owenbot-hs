@@ -18,12 +18,12 @@ import           Data.Char          ( isSpace )
 import           Control.Monad      ( when )
 import           Text.Regex.TDFA    ( (=~) )
 import           Utils              ( newCommand
+                                    , newDevCommand
                                     , sendMessageChan
                                     , sendMessageDM
                                     , captureCommandOutput
                                     , devIDs
                                     , restart
-                                    , isSenderDeveloper
                                     , (=~=)
                                     )
 import           Status             ( updateStatus
@@ -55,13 +55,9 @@ uName = captureCommandOutput "uname -n"
 pidOf = captureCommandOutput "pidof owenbot-exe"
 
 sendGitInfo :: Message -> DiscordHandler ()
-sendGitInfo m = newCommand m "repo" $ \_ -> do
-    isDev <- isSenderDeveloper m
-    if isDev then
-        sendGitInfoChan $ messageChannel m
-    else
-        sendMessageDM (userId $ messageAuthor m) "Insufficient Privileges."
-
+sendGitInfo m = newDevCommand m "repo" $ \_ -> do
+    sendGitInfoChan $ messageChannel m
+    
 sendGitInfoChan :: ChannelId -> DiscordHandler ()
 sendGitInfoChan chan = do
     loc <- liftIO gitLocal
@@ -73,13 +69,9 @@ sendGitInfoChan chan = do
                           "Remote is " <> rstrip commits <> " commits ahead")
 
 sendInstanceInfo :: Message -> DiscordHandler ()
-sendInstanceInfo m = newCommand m "instance" $ \_ -> do
-    isDev <- isSenderDeveloper m 
-    if isDev then
-        sendInstanceInfoChan $ messageChannel m
-    else
-        sendMessageDM (userId $ messageAuthor m) "Insufficient privileges"
-
+sendInstanceInfo m = newDevCommand m "instance" $ \_ -> do
+    sendInstanceInfoChan $ messageChannel m
+    
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
 sendInstanceInfoChan chan = do
     host <- liftIO uName
@@ -89,29 +81,21 @@ sendInstanceInfoChan chan = do
                           "Process ID: " <> pid)
 
 restartOwen :: Message -> DiscordHandler ()
-restartOwen m = newCommand m "restart" $ \_ -> do
-    isDev <- isSenderDeveloper m
-    if isDev then do
-        sendMessageChan (messageChannel m) "Restarting"
-        _ <- liftIO restart
-        sendMessageChan (messageChannel m) "Failed"
-    else
-        sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."
-
+restartOwen m = newDevCommand m "restart" $ \_ -> do
+    sendMessageChan (messageChannel m) "Restarting"
+    _ <- liftIO restart
+    sendMessageChan (messageChannel m) "Failed"
+    
 addDevs :: Message -> DiscordHandler ()
-addDevs m = newCommand m "addDev ([0-9]{1,32})" $ \captures -> do
-    isDev <- isSenderDeveloper m
-    if isDev then do
-        let id = head captures
-        contents <- liftIO $ readSingleColCSV devIDs
-        if null contents
-            then liftIO $ writeSingleColCSV devIDs [id]
-            else do
-                liftIO $ writeSingleColCSV devIDs (id:contents) 
-                sendMessageChan (messageChannel m) "Success!"
-    else
-        sendMessageChan (messageChannel m) "Insufficient Permissions"
-
+addDevs m = newDevCommand m "addDev ([0-9]{1,32})" $ \captures -> do
+    let id = head captures
+    contents <- liftIO $ readSingleColCSV devIDs
+    if null contents
+        then liftIO $ writeSingleColCSV devIDs [id]
+        else do
+            liftIO $ writeSingleColCSV devIDs (id:contents) 
+            sendMessageChan (messageChannel m) "Success!"
+    
 statusRE :: T.Text
 statusRE = ("(online|idle|dnd|invisible) " <>
             "(playing|streaming|listening|competing) " <>
@@ -121,20 +105,16 @@ statusRE = ("(online|idle|dnd|invisible) " <>
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
 prepareStatus :: Message -> DiscordHandler ()
-prepareStatus m = newCommand m "status(.*)" $ \captures -> do
-    isDev <- isSenderDeveloper m
+prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
     let (_, _, _, components) = (head captures =~ statusRE) :: (T.Text, T.Text, T.Text, [T.Text])
     let newStatus = head components
     let newType = (head . tail) components
     let newName = (head . tail . tail) components
-    if isDev then
-        if length components == 3 then do
-            updateStatus newStatus newType newName
-            liftIO $ editStatusFile newStatus newType newName
-            sendMessageChan (messageChannel m)
-                $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
-        else
-            sendMessageChan (messageChannel m) 
-                $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"
+    if length components == 3 then do
+        updateStatus newStatus newType newName
+        liftIO $ editStatusFile newStatus newType newName
+        sendMessageChan (messageChannel m)
+            $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
     else
-        sendMessageDM (userId $ messageAuthor m) "Insufficient privileges."
+        sendMessageChan (messageChannel m) 
+            $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|watching|listening> <custom text...>`"

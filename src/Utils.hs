@@ -6,12 +6,12 @@ module Utils ( sendMessageChan
              , sendFileChan
              , pingAuthorOf
              , newCommand
+             , newDevCommand
              , linkChannel
              , getMessageLink
              , hasRoleByName
              , hasRoleByID
              , isMod
-             , isSenderDeveloper
              , devIDs
              , (=~=)
              , getTimestampFromMessage
@@ -159,3 +159,9 @@ newCommand msg cmd fun =
   in
     do
         unless (shouldNotBeEmpty == "") $ fun captures
+
+newDevCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler ()) -> DiscordHandler ()
+newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
+    isDev <- isSenderDeveloper msg
+    if isDev then fun captures
+    else sendMessageDM (userId $ messageAuthor msg) "Insufficient privileges" 
