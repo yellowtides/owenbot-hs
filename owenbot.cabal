@@ -51,6 +51,7 @@ library
     , directory
     , hashable
     , http-conduit
+    , parsec
     , process
     , random
     , regex-tdfa
@@ -58,7 +59,6 @@ library
     , text
     , time
     , unliftio
-    , parsec
   default-language: Haskell2010
 
 executable owenbot-exe

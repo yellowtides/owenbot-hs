@@ -1,10 +1,8 @@
 name:                owenbot
 version:             0.1.0.0
-github:              "githubuser/owenbot"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+github:              "yellowtides/owenbot-hs"
+author:              "Infowmatics Devs"
+copyright:           "2020 Infowmatics Devs"
 
 extra-source-files:
 - README.md
@@ -17,23 +15,24 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/owenbot#readme>
+description:         A neat Discord bot written in Haskell.
 
 dependencies:
-- base >= 4.7 && < 5
-- text
-- discord-haskell
-- regex-tdfa
-- random
-- process
-- hashable
-- bytestring
-# - raw-strings-qq
-- http-conduit 
 - aeson
-- unliftio
+- base >= 4.7 && < 5
+- bytestring
+- discord-haskell
+- directory
+- hashable
+- http-conduit
+- parsec
+- process
+- random
+- regex-tdfa
 - split
 - time
+- text
+- unliftio
 
 library:
   source-dirs: 
@@ -61,3 +60,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - owenbot
+    - QuickCheck
