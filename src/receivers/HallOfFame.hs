@@ -168,11 +168,11 @@ setLimit m = newCommand m "setLimit *([0-9]{1,3})?" $ \captures -> do
     else sendMessageChan (messageChannel m ) "Insufficient Priveledges"
 
 editLimit :: Int -> IO ()
-editLimit i = writeSingleColCSV "reactLim.conf" [T.pack $ show i]
+editLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]
 
 readLimit :: IO Int
 readLimit = do
-    contents <- readSingleColCSV "reactLim.conf"
+    contents <- readSingleColCSV "reactLim.csv"
     if null contents
-        then writeSingleColCSV "reactLim.conf" ["1"] >> pure 1
+        then writeSingleColCSV "reactLim.csv" ["1"] >> pure 1
         else pure $ read $ T.unpack $ head contents

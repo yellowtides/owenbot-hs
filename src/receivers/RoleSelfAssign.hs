@@ -70,7 +70,7 @@ attemptRoleAssign r = do
     let desiredRole = lookup (T.toUpper . emojiName $ reactionEmoji r) roleMap
     guard $ isJust desiredRole
     -- sanity check the desired role (can't be anything other than those which
-    -- are specified in the config; for example, emotePronounMap.conf)
+    -- are specified in the config; for example, emotePronounMap.csv)
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let newRoleId = fromJust desiredRole
@@ -95,7 +95,7 @@ handleRoleRemove r = do
     let desiredRole = lookup (T.toUpper . emojiName $ reactionEmoji r) roleMap
     guard $ isJust desiredRole
     -- sanity check the desired role (can't be anything other than those which
-    -- are specified in the config; for example, emotePronounMap.conf)
+    -- are specified in the config; for example, emotePronounMap.csv)
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let oldRoleId = fromJust desiredRole
@@ -125,7 +125,7 @@ getRoleMap dir = do
 -- a config file for the message that is attached to the given reaction.
 getRoleListIndex :: ReactionInfo -> IO (Maybe T.Text)
 getRoleListIndex r = do
-    contents <- readCSV "idAssign.conf"
+    contents <- readCSV "idAssign.csv"
     pure . lookup (reactionMessageId r) $ do
         line <- contents
         let pair = (head line, (head . tail) line)
@@ -136,5 +136,5 @@ getRoleListIndex r = do
 -- which is also the only file name that mustn't be edited.
 getAssignMessageIds :: IO [MessageId]
 getAssignMessageIds = do
-    lines <- readSingleColCSV "idAssign.conf"
+    lines <- readSingleColCSV "idAssign.csv"
     pure $ map (read . takeWhile isDigit . T.unpack) lines
