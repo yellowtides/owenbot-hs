@@ -1,15 +1,29 @@
 h-hello, i'm here to help you
+here's a lil list of **commands** that ou can use on me:
+```m
+[-1]: :helpme                           # whenever you need me <3
 
-here's a lil list of **commands** that chu can use on me:
-```md
-[-1]: :helpme                               # whenever you need me <3
-[00]: :textbook     |ila|i1a|               # which fetches the course textbook
-[01]: :th(eore)m    |ila|     {number}      # which fetches the desired thm
-[02]: :lem(ma)      |ila|     {number}      # which fetches the desired lem
-[03]: :def(inition) |ila|     {number}      # which fetches the desired def
-[04]: :doc                    {text}        # query hoogle documentation            [!WIP]
-[05]: :syl(logisms)                         # fetches the aristotelian syls
-[06]: :bool(ean)                            # fetches the boolean laws
+# Academics
+
+[0] :textbook     ila|inf1a|calc        # which fetches the course textbook
+[1] :th(eore)m    ila {number}          # which fetches the desired thm
+[2] :lem(ma)      ila {number}          # which fetches the desired lem
+[3] :def(inition) ila {number}          # which fetches the desired def
+[4] :syl(logisms)                       # fetches the aristotelian syls
+[5] :bool(ean)                          # fetches the boolean laws
+
+# Fun
+
+[0] :fortune                            # How are chu feelin' today?
+[1] :ada24h                             # to see philcoin
+
+# Admin
+
+[0] :reactLimit {number}                # you won't be able to use them
+[1] :instance                           # but these are here because the
+[2] :repo                               # devs constantly forget them
+[3] :addDev
+[4] :status
 
 by the way, i am now [open-source](https://github.com/yellowtides/owenbot-hs)!1!
 ..maybe you can spot some secret features? :o

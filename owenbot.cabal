@@ -8,14 +8,10 @@ cabal-version: 1.12
 
 name:           owenbot
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/owenbot#readme>
-homepage:       https://github.com/githubuser/owenbot#readme
-bug-reports:    https://github.com/githubuser/owenbot/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
-license:        BSD3
-license-file:   LICENSE
+description:    A neat Discord bot written in Haskell.
+homepage:       https://github.com/yellowtides/owenbot-hs
+bug-reports:    https://github.com/yellowtides/owenbot-hs/issues
+author:         Infowmatics Devs
 build-type:     Simple
 extra-source-files:
     README.md
@@ -23,43 +19,39 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/owenbot
+  location: https://github.com/yellowtides/owenbot-hs
 
 library
   exposed-modules:
-      CommandHandler
       EventHandler
-      MiscHandler
+      Misc
       Owoifier
       Status
       Utils
       ADAPriceFetcher
       Admin
-      AdminRE
       Calc
-      CalcRE
       Helpme
-      HelpmeRE
       ILA
-      ILARE
       Inf1A
-      Inf1ARE
-      ReactHandler
-      ReactHandlerRE
+      HallOfFame
       RoleSelfAssign
       TemplateRE
+      CSV
   other-modules:
       Paths_owenbot
   hs-source-dirs:
       src
-      src/commands
+      src/receivers
   build-depends:
       aeson
     , base >=4.7 && <5
     , bytestring
     , discord-haskell
+    , directory
     , hashable
     , http-conduit
+    , parsec
     , process
     , random
     , regex-tdfa
@@ -81,6 +73,7 @@ executable owenbot-exe
     , base >=4.7 && <5
     , bytestring
     , discord-haskell
+    , directory
     , hashable
     , http-conduit
     , owenbot
@@ -91,6 +84,7 @@ executable owenbot-exe
     , text
     , time
     , unliftio
+    , parsec
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -98,6 +92,7 @@ test-suite owenbot-test
   main-is: Spec.hs
   other-modules:
       Paths_owenbot
+      TestCSV
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
@@ -106,6 +101,7 @@ test-suite owenbot-test
     , base >=4.7 && <5
     , bytestring
     , discord-haskell
+    , directory
     , hashable
     , http-conduit
     , owenbot
@@ -116,4 +112,6 @@ test-suite owenbot-test
     , text
     , time
     , unliftio
+    , parsec
+    , QuickCheck
   default-language: Haskell2010

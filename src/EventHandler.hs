@@ -1,94 +1,62 @@
-module EventHandler (handleEvent) where 
+module EventHandler ( handleEvent ) where 
 
-import Discord.Types
-    ( Message(messageAuthor, messageText),
-      Event(Ready, MessageCreate, MessageReactionAdd, MessageReactionRemove),
-      User(userIsBot) )
-import Discord ( DiscordHandler )
-import Data.Maybe ( isJust, fromJust, isNothing )
-import Control.Monad (when, guard, unless, mplus)
-import System.Random ( randomR, getStdRandom )
-import UnliftIO ( liftIO )
-import qualified Data.Text as T ( length )
+import           Discord.Types          ( Message ( messageAuthor )
+                                        , ReactionInfo
+                                        , Event ( MessageCreate
+                                                , MessageReactionAdd
+                                                , MessageReactionRemove
+                                                )
+                                        , User ( userIsBot )
+                                        )
+import           Discord                ( DiscordHandler )
+import           Control.Monad          ( unless
+                                        , void
+                                        , forM_
+                                        , mplus
+                                        )
+import           Control.Applicative    ( (<|>) )
 
-import CommandHandler (handleCommand, isCommand)
-import MiscHandler (handleOwoify, isOwoifiable,
-                    handleNietzsche, isNietzsche,
-                    handleThatcher, isThatcher,
-                    handleDadJoke, isDadJoke,
-                    handleFortune, isFortune,
-                    handleADA, isADA)
+import qualified Admin
+import qualified Misc
+import qualified Calc
+import qualified Helpme
+import qualified ILA
+import qualified Inf1A
+import qualified HallOfFame
+import qualified RoleSelfAssign
+import           Status            ( setStatusFromFile )
 
-import ReactHandler
-    ( notInHallOfFameChannel,
-      isHallOfFameEmote,
-      isEligibleForHallOfFame,
-      handleHallOfFame )
+messageReceivers :: [Message -> DiscordHandler ()]
+messageReceivers = concat
+     [ Admin.receivers
+     , Misc.receivers
+     , Calc.receivers
+     , Helpme.receivers
+     , ILA.receivers
+     , Inf1A.receivers
+     , HallOfFame.messageReceivers
+     ]
 
-import RoleSelfAssign 
-     ( handleRoleAssign,
-       handleRoleRemove,
-       isOnAssignMessage )
-import Status (setStatusFromFile)
+reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
+reactionAddReceivers = concat 
+     [ HallOfFame.reactionReceivers
+     , RoleSelfAssign.reactionAddReceivers
+     ]
+
+reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
+reactionRemoveReceivers = concat
+     [ RoleSelfAssign.reactionRemReceivers ]
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
-roll :: Int -> IO Int
-roll n = getStdRandom $ randomR (1, n)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-       Ready i u ch ungu sess_id -> setStatusFromFile >> pure ()
-       MessageCreate m -> let content = messageText m in
-                          unless (isFromBot m)
-                          $ (do 
-                              when (isCommand content)
-                                   (handleCommand m >> pure ())
-                              guard . not $ isCommand content
-
-                              when (isNietzsche content)
-                                   (handleNietzsche m >> pure ())
-                              guard . not $ isNietzsche content
-                              
-                              when (isThatcher content)
-                                   (handleThatcher m >> pure ())
-                              guard . not $ isThatcher content
-
-                              when (isADA content)
-                                   (handleADA m >> pure ())
-                              guard . not $ isADA content
-
-                              when (isFortune content)
-                                   (handleFortune m >> pure ())
-                              guard . not $ isFortune content
-
-                              roll10 <- liftIO $ roll 20
-                              let isDadJokeM = isDadJoke content
-                              when (isJust isDadJokeM && roll10 == 1
-                                    && (T.length (fromJust isDadJokeM) >= 3))
-                                   (handleDadJoke m (fromJust isDadJokeM) >> pure ())
-
-                              roll500 <- liftIO $ roll 500
-                              when (isOwoifiable content && roll500 == 1)
-                                   (handleOwoify  m >> pure ())
-                              ) `mplus` pure ()
-       MessageReactionAdd r -> do
-                                   isSelfAssign <- liftIO $ isOnAssignMessage r
-                                   when isSelfAssign
-                                        (handleRoleAssign r >> pure ())
-                                   guard . not $ isSelfAssign
-
-                                   when (isHallOfFameEmote r && notInHallOfFameChannel r)
-                                        (do
-                                             eligibleM <- isEligibleForHallOfFame r
-                                             case eligibleM of
-                                                  Right eligible -> if
-                                                                      eligible
-                                                                 then
-                                                                      handleHallOfFame r >> pure ()
-                                                                 else
-                                                                      pure ()
-                                                  Left err -> pure ())
-       MessageReactionRemove r -> handleRoleRemove r >> pure ()
-       _ -> pure ()
+     MessageCreate m -> 
+          unless (isFromBot m) $ (forM_ messageReceivers ($ m)) <|> pure ()
+     MessageReactionAdd r -> 
+          (forM_ reactionAddReceivers ($ r)) <|> pure ()
+     MessageReactionRemove r -> 
+          (forM_ reactionRemoveReceivers ($ r)) <|> pure ()
+     _ -> pure ()
