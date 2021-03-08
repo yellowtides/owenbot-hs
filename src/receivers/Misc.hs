@@ -19,6 +19,7 @@ import           System.Random          ( randomR
                                         )
 
 import           Utils                  ( sendMessageChan
+                                        , sendFileChan
                                         , pingAuthorOf
                                         , newCommand
                                         , (=~=)
@@ -31,6 +32,7 @@ receivers =
     [ owoifyIfPossible
     , godIsDead
     , thatcherIsDead
+    , thatcherIsAlive
     , dadJokeIfPossible
     , handleFortune
     , handleAda24h
@@ -56,9 +58,15 @@ godIsDead m = do
 
 thatcherIsDead :: Message -> DiscordHandler ()
 thatcherIsDead m = do
-  when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do 
-    sendMessageChan (messageChannel m)
-        $ "https://www.youtube.com/watch?v=ILvd5buCEnU"
+    when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do 
+        sendMessageChan (messageChannel m)
+            $ "https://www.youtube.com/watch?v=ILvd5buCEnU"
+
+thatcherIsAlive :: Message -> DiscordHandler ()
+thatcherIsAlive m = do
+    when (messageText m =~= "thatcher *[Ii]s *[Aa]live") $ do
+        sendFileChan (messageChannel m)
+            "god_help_us_all.mp4" "./src/assets/god_help_us_all.mp4"
 
 dadJokeIfPossible :: Message -> DiscordHandler ()
 dadJokeIfPossible m = do
