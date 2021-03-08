@@ -11,9 +11,14 @@ import           Data.Functor               ( (<&>) )
 import           Data.List                  ( transpose )
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import           System.Directory       ( createDirectoryIfMissing )
+import           System.Directory           ( createDirectoryIfMissing )
+import           System.IO                  ( stderr )
+import           System.IO.Error            ( ioeGetErrorType
+                                            , isPermissionErrorType
+                                            )
 import           Text.ParserCombinators.Parsec hiding ( (<|>))
 import           Text.Parsec.Text hiding    ( GenParser )
+import           Control.Exception          ( handleJust )
 
 csvFile :: GenParser Char st [[String]]
 csvFile = endBy line eol
@@ -45,7 +50,11 @@ eol = try (string "\n\r")
 -- file with empty contents and returns []
 readCSV :: FilePath -> IO [[T.Text]]
 readCSV path = do
-    contents <- readFile (".owen/" <> path) <|> pure ""
+    contents <- handleJust
+        (\e -> if isPermissionErrorType (ioeGetErrorType e) then Just () else Nothing)
+        (\e -> do TIO.hPutStrLn stderr ("[Warn] Permission denied to read .owen/" <> T.pack path)
+                  pure "")
+        $ readFile (".owen/" <> path)
     case parse csvFile path contents of
         Left e       -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
@@ -61,7 +70,10 @@ readSingleColCSV path = do
 writeCSV :: FilePath -> [[T.Text]] -> IO ()
 writeCSV path contents = do
     createDirectoryIfMissing True ".owen"
-    TIO.writeFile (".owen/" <> path)
+    handleJust
+        (\e -> if isPermissionErrorType (ioeGetErrorType e) then Just () else Nothing)
+        (\e -> TIO.hPutStrLn stderr ("[Warn] Permission denied to write to .owen/" <> T.pack path))
+        $ TIO.writeFile (".owen/" <> path)
         $ T.unlines
         $ fmap (T.intercalate ",")
         $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
