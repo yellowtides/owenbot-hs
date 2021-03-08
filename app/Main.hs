@@ -27,7 +27,7 @@ owen t = do
                                         , discordOnStart = startHandler
                                         , discordOnEvent = handleEvent
                                         , discordOnLog = \s -> 
-                                            putStrLn (T.unpack s) >> putStrLn ""}
+                                            putStrLn ("[Info] " ++ T.unpack s)}
     putStrLn (T.unpack userFacingError)
 
 startHandler :: DiscordHandler ()
