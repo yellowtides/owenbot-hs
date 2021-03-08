@@ -38,6 +38,7 @@ library
       RoleSelfAssign
       TemplateRE
       CSV
+      MCServer
   other-modules:
       Paths_owenbot
   hs-source-dirs:

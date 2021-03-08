@@ -16,6 +16,7 @@ import           Control.Monad          ( unless
                                         )
 import           Control.Applicative    ( (<|>) )
 
+import           Status            ( setStatusFromFile )
 import qualified Admin
 import qualified Misc
 import qualified Calc
@@ -24,7 +25,7 @@ import qualified ILA
 import qualified Inf1A
 import qualified HallOfFame
 import qualified RoleSelfAssign
-import           Status            ( setStatusFromFile )
+import qualified MCServer
 
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
@@ -35,6 +36,7 @@ messageReceivers = concat
      , ILA.receivers
      , Inf1A.receivers
      , HallOfFame.messageReceivers
+     , MCServer.receivers
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
