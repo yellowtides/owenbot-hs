@@ -53,7 +53,7 @@ gitLocal = captureCommandOutput "git rev-parse HEAD"
 gitRemote = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-parse origin/main"
 commitsAhead = captureCommandOutput "git fetch"
-  >> captureCommandOutput "git rev-list --count origin/main..main"
+  >> captureCommandOutput "git rev-list --count HEAD..origin/main"
 uName = captureCommandOutput "uname -n"
 pidOf = captureCommandOutput "pidof owenbot-exe"
 
