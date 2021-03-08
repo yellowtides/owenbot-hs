@@ -63,8 +63,8 @@ attemptHallOfFame r = do
 
 hallOfFameEmotes :: [T.Text]
 hallOfFameEmotes = 
-    [ "xree"
-    , "kekw"
+    [ "XREE"
+    , "KEKW"
     , "\11088" -- star
     ] -- These are matched case-insensitively
 
