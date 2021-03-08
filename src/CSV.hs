@@ -55,7 +55,6 @@ readCSV path = do
             TIO.hPutStrLn stderr (T.pack err)
             pure "")
         $ readFile (".owen/" <> path)
-    print contents
     case parse csvFile path contents of
         Left e       -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
