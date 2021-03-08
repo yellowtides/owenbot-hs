@@ -152,13 +152,10 @@ restart :: IO ()
 restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"
 
 newCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler ()) -> DiscordHandler ()
-newCommand msg cmd fun =
-  let
+newCommand msg cmd fun = unless (shouldNotBeEmpty == "") $ fun captures
+  where
     match :: (T.Text, T.Text, T.Text, [T.Text])
     match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ ("^:" <> cmd <> trailingWS)
-  in
-    do
-        unless (shouldNotBeEmpty == "") $ fun captures
 
 newDevCommand :: Message -> T.Text -> ([T.Text] -> DiscordHandler ()) -> DiscordHandler ()
 newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
