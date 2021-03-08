@@ -14,7 +14,7 @@ here's a lil list of **commands** that ou can use on me:
 
 # Fun
 
-[0] :fortune                            # How are chu feelin' today?
+[0] :fortune                            # How are chu feeling today?
 [1] :ada24h                             # to see philcoin
 [2] :minecraft                          # to see minecraft
 
