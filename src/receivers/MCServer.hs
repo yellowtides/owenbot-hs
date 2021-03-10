@@ -64,7 +64,7 @@ jsonURL :: String
 jsonURL = "https://api.mcsrvstat.us/2/"
 
 getJSON :: T.Text -> IO B.ByteString
-getJSON server_ip = simpleHttp $ jsonURL ++ (T.unpack server_ip)
+getJSON server_ip = simpleHttp $ jsonURL <> (T.unpack server_ip)
 
 fetchServerDetails :: T.Text -> IO (Either String String) 
 fetchServerDetails server_ip = do
@@ -81,9 +81,10 @@ fetchServerDetails server_ip = do
                 let playersmax = show $ players_max $ fromJust $ players serverDeets
                 let motdclean = alwaysHead $ clean $ fromJust $ motd serverDeets
                 let ipstr = ip serverDeets
+                let ver = version serverDeets
                 let ann2 = "Current Players: " <> playersonline <> "/" <> playersmax <> ".\n"
                 let ann3 = "Message of the Day: *" <> motdclean <> "*\n"
-                let ann4 = "Come join at `" <> ipstr <> "`"
+                let ann4 = "Come join at `" <> ipstr <> "` on version `" <> ver <> "`"
                 Right (ann0 <> ann1 <> ann2 <> ann3 <> ann4)
 
 alwaysHead :: [String] -> String
