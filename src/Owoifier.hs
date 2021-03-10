@@ -5,7 +5,7 @@ module Owoifier (owoify) where
 import qualified Data.Text as T
 
 owoify :: T.Text -> T.Text
-owoify s = T.concat [inserty . insertY $ T.map owoifyChar s, " owo"]
+owoify = (<> " owo") . inserty . insertY . T.map owoifyChar
 
 -- returns ['l'/'L'/'r'/'R'] for ['w'/'W'], otherwise `id`
 owoifyChar :: Char -> Char
