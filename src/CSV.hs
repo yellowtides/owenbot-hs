@@ -87,11 +87,9 @@ writeCSV path contents = do
         $ fmap (T.intercalate ",")
         $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
 
-writeHashMapToCSV :: (Show k, Show v) => FilePath -> HM.HashMap k v -> IO ()
+writeHashMapToCSV :: FilePath -> HM.HashMap T.Text T.Text -> IO ()
 writeHashMapToCSV path hmap = do
-    let keyPacker   = T.pack . show
-    let valuePacker = T.pack . show
-    let textMap   = bimap keyPacker valuePacker <$> HM.toList hmap
+    let textMap   = HM.toList hmap
     let textArray = map (\(key, value) -> [key, value]) textMap
     writeCSV path textArray
 
