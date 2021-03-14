@@ -99,12 +99,12 @@ getMessageLink m = do
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = restCall (R.CreateMessage c xs) >> pure ()
 
--- | `sendMessageChan` attempts to send the given embed with the given `Text` in the 
+-- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the 
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
 sendMessageChanEmbed c xs e = restCall (R.CreateMessageEmbed c xs e) >> pure ()
 
--- | `sendMessageChan` attempts to send the given `Text` as a direct message to the user with the 
+-- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the 
 -- given `UserId`. Surpresses any error message(s), returning `()`.
 sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
 sendMessageDM u t = do
