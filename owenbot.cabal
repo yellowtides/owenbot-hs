@@ -4,14 +4,18 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3179a62a490b5d54310588414b7bcf3cc539a4bab9912efd7b50b79f7f75100a
+-- hash: e0a48de84d9a4e97e1ffaf48507cbe108346e914c12ca7720ab56781c20d4d43
 
 name:           owenbot
 version:        0.1.0.0
 description:    A neat Discord bot written in Haskell.
-homepage:       https://github.com/yellowtides/owenbot-hs
+homepage:       https://github.com/yellowtides/owenbot-hs#readme
 bug-reports:    https://github.com/yellowtides/owenbot-hs/issues
 author:         Infowmatics Devs
+maintainer:     Infowmatics Devs
+copyright:      2020 Infowmatics Devs
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
@@ -23,22 +27,23 @@ source-repository head
 
 library
   exposed-modules:
+      CSV
       EventHandler
-      Misc
       Owoifier
       Status
       Utils
       ADAPriceFetcher
       Admin
       Calc
+      HallOfFame
       Helpme
       ILA
       Inf1A
-      HallOfFame
+      MCServer
+      Misc
+      QuoteSystem
       RoleSelfAssign
       TemplateRE
-      CSV
-      MCServer
   other-modules:
       Paths_owenbot
   hs-source-dirs:
@@ -48,8 +53,8 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
-    , discord-haskell
     , directory
+    , discord-haskell
     , hashable
     , http-conduit
     , parsec
@@ -60,6 +65,7 @@ library
     , text
     , time
     , unliftio
+    , unordered-containers
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -73,11 +79,12 @@ executable owenbot-exe
       aeson
     , base >=4.7 && <5
     , bytestring
-    , discord-haskell
     , directory
+    , discord-haskell
     , hashable
     , http-conduit
     , owenbot
+    , parsec
     , process
     , random
     , regex-tdfa
@@ -85,27 +92,29 @@ executable owenbot-exe
     , text
     , time
     , unliftio
-    , parsec
+    , unordered-containers
   default-language: Haskell2010
 
 test-suite owenbot-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_owenbot
       TestCSV
+      Paths_owenbot
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
+      QuickCheck
+    , aeson
     , base >=4.7 && <5
     , bytestring
-    , discord-haskell
     , directory
+    , discord-haskell
     , hashable
     , http-conduit
     , owenbot
+    , parsec
     , process
     , random
     , regex-tdfa
@@ -113,6 +122,5 @@ test-suite owenbot-test
     , text
     , time
     , unliftio
-    , parsec
-    , QuickCheck
+    , unordered-containers
   default-language: Haskell2010

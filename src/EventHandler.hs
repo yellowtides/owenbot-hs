@@ -26,6 +26,7 @@ import qualified Inf1A
 import qualified HallOfFame
 import qualified RoleSelfAssign
 import qualified MCServer
+import qualified QuoteSystem
 
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
@@ -37,6 +38,7 @@ messageReceivers = concat
      , Inf1A.receivers
      , HallOfFame.messageReceivers
      , MCServer.receivers
+     , QuoteSystem.receivers
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]

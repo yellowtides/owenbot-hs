@@ -4,6 +4,8 @@ module CSV ( readCSV
            , readSingleColCSV
            , writeCSV
            , writeSingleColCSV
+           , addToCSV
+           , writeHashMapToCSV
            ) where
 
 import           Control.Applicative        ( (<|>) )
@@ -17,6 +19,10 @@ import           Text.ParserCombinators.Parsec hiding ( (<|>))
 import           Text.Parsec.Text hiding    ( GenParser )
 import           Control.Exception          ( handle
                                             , IOException )
+
+import Data.Bifunctor ( bimap )
+
+import qualified Data.HashMap.Strict as HM
 
 csvFile :: GenParser Char st [[String]]
 csvFile = endBy line eol
@@ -80,6 +86,21 @@ writeCSV path contents = do
         $ T.unlines
         $ fmap (T.intercalate ",")
         $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
+
+writeHashMapToCSV :: (Show k, Show v) => FilePath -> HM.HashMap k v -> IO ()
+writeHashMapToCSV path hmap = do
+    let keyPacker   = T.pack . show
+    let valuePacker = T.pack . show
+    let textMap   = bimap keyPacker valuePacker <$> HM.toList hmap
+    let textArray = map (\(key, value) -> [key, value]) textMap
+    writeCSV path textArray
+
+-- | Appends the given tabular `Text` data to the CSV present at the given path. If no
+-- such CSV exists, a new one is created.
+addToCSV :: FilePath -> [[T.Text]] -> IO ()
+addToCSV path contents = do
+    oldData <- readCSV path
+    writeCSV path $ oldData <> contents
 
 writeSingleColCSV :: FilePath -> [T.Text] -> IO ()
 writeSingleColCSV path = (writeCSV path) . fmap (\x -> [x])
