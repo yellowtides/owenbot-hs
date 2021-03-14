@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module CSV ( readCSV
+module CSV ( configDir
+           , readCSV
            , readSingleColCSV
            , writeCSV
            , writeSingleColCSV
@@ -23,6 +24,9 @@ import           Control.Exception          ( handle
 import Data.Bifunctor ( bimap )
 
 import qualified Data.HashMap.Strict as HM
+
+configDir :: FilePath
+configDir = ".owen/"
 
 csvFile :: GenParser Char st [[String]]
 csvFile = endBy line eol
@@ -57,10 +61,10 @@ readCSV path = do
     contents <- handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr ("[Warn] Error reading .owen/" <> T.pack path)
+            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error reading" <> configDir <> path)
             TIO.hPutStrLn stderr (T.pack err)
             pure "")
-        $ readFile (".owen/" <> path)
+        $ readFile (configDir <> path)
     case parse csvFile path contents of
         Left e       -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
@@ -75,14 +79,14 @@ readSingleColCSV path = do
 -- | Write CSV from 2-D T.Text list
 writeCSV :: FilePath -> [[T.Text]] -> IO ()
 writeCSV path contents = do
-    createDirectoryIfMissing True ".owen"
+    createDirectoryIfMissing True configDir
     handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr ("[Warn] Error writing to .owen/" <> T.pack path)
+            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error writing to" <> configDir <> path)
             TIO.hPutStrLn stderr (T.pack err)
             pure ())
-        $ TIO.writeFile (".owen/" <> path)
+        $ TIO.writeFile (configDir <> path)
         $ T.unlines
         $ fmap (T.intercalate ",")
         $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents

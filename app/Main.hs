@@ -15,6 +15,7 @@ import           Discord                ( runDiscord
 import           Discord.Types          ( ChannelId )
 import           System.Directory       ( createDirectoryIfMissing )
 
+import           CSV                    ( configDir )
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )
@@ -26,7 +27,7 @@ owen t = do
     userFacingError <- runDiscord $ def { discordToken   = T.pack t
                                         , discordOnStart = startHandler
                                         , discordOnEvent = handleEvent
-                                        , discordOnLog = \s -> 
+                                        , discordOnLog = \s ->
                                             putStrLn ("[Info] " ++ T.unpack s)}
     putStrLn (T.unpack userFacingError)
 
@@ -42,7 +43,7 @@ startHandler = do
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    createDirectoryIfMissing True ".owen"
+    createDirectoryIfMissing True configDir
     tok <- readFile ".token.txt"  
     putStrLn ("Token: " ++ tok)
     owen tok

@@ -13,7 +13,8 @@ import           Test.QuickCheck.Monadic    ( assert
                                             , run
                                             )
 import           System.Directory           ( removeFile )
-import           CSV                        ( readCSV
+import           CSV                        ( configDir
+                                            , readCSV
                                             , readSingleColCSV
                                             , writeCSV
                                             , writeSingleColCSV
@@ -34,4 +35,4 @@ prop_readWriteSingleColCSV line = monadicIO $ do
     assert $ writeData == readData
 
 cleanupTempCSV :: IO ()
-cleanupTempCSV = removeFile ".owen/temp.csv"
+cleanupTempCSV = removeFile $ configDir <> "temp.csv"
