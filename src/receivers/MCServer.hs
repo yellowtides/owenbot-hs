@@ -72,20 +72,24 @@ fetchServerDetails server_ip = do
     pure $ case serverDeetsM of
         Left err          -> Left err
         Right serverDeets -> do
-            let ann0 = ":pick: The Minecraft server is "
-            let ann1 = "**" <> (if online serverDeets then "online" else "offline") <> "**. "
+            let serverStatus = concat [
+                                   ":pick: The Minecraft server is ",
+                                   "**", if online serverDeets then "online" else "offline", "**. "
+                               ]
             if not (online serverDeets) then
-                Right (ann0 <> ann1)
+                Right serverStatus
             else do
                 let playersonline = show $ players_online $ fromJust $ players serverDeets
                 let playersmax = show $ players_max $ fromJust $ players serverDeets
                 let motdclean = alwaysHead $ clean $ fromJust $ motd serverDeets
                 let ipstr = ip serverDeets
                 let ver = fromJust $ version serverDeets
-                let ann2 = "Current Players: " <> playersonline <> "/" <> playersmax <> ".\n"
-                let ann3 = "Message of the Day: *" <> motdclean <> "*\n"
-                let ann4 = "Come join at `" <> ipstr <> "` on version `" <> ver <> "`"
-                Right (ann0 <> ann1 <> ann2 <> ann3 <> ann4)
+                let onlineServerDeets = concat [
+                                            "Current Players: ", playersonline, "/", playersmax, ".\n",
+                                            "Message of the Day: *", motdclean, "*\n",
+                                            "Come join at `", ipstr, "` on version `", ver, "`"
+                                        ]
+                Right $ serverStatus <> onlineServerDeets
 
 alwaysHead :: [String] -> String
 alwaysHead [] = ""

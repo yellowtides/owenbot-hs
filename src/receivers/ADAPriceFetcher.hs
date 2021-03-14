@@ -50,10 +50,12 @@ fetchADADetails = do
             let currPriceDouble     = read (lastPrice adaDeets) :: Double
             let lowPriceDouble      = read (lowPrice adaDeets) :: Double
             let highPriceDouble     = read (highPrice adaDeets) :: Double
-            let ann0 = "<:ada:805934431071371305> (philcoin) is "
-            let ann1 = "**" <> (if percentChangeDouble < 0 then "down 💢" else "up 🚀🚀") <> "** "
-            let ann2 = "**" <> show (abs percentChangeDouble) <> "%** in the past 24 hours, "
-            let ann3 = "currently sitting at **$" <> show currPriceDouble <> "** per unit (₳).\n"
-            let ann4 = "Lowest price in the past 24h: **$"  <> show lowPriceDouble <> "**.\n"
-            let ann5 = "Highest price in the past 24h: **$" <> show highPriceDouble <> "**."
-            Right (ann0 <> ann1 <> ann2 <> ann3 <> ann4 <> ann5)
+            let adaAnnouncement = concat [
+                                    "<:ada:805934431071371305> (philcoin) is "
+                                    , "**", if percentChangeDouble < 0 then "down 💢" else "up 🚀🚀", "** "
+                                    , "**", show (abs percentChangeDouble), "%** in the past 24 hours, "
+                                    , "currently sitting at **$", show currPriceDouble, "** per unit (₳).\n"
+                                    , "Lowest price in the past 24h: **$", show lowPriceDouble, "**.\n"
+                                    , "Highest price in the past 24h: **$", show highPriceDouble, "**."
+                                  ]
+            Right adaAnnouncement 
