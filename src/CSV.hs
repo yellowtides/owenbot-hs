@@ -12,9 +12,14 @@ module CSV ( configDir
 import           Control.Applicative        ( (<|>) )
 import           Data.Functor               ( (<&>) )
 import           Data.List                  ( transpose )
+import           Data.Maybe                 ( fromMaybe )
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import           System.Directory           ( createDirectoryIfMissing )
+import           System.Directory           ( createDirectoryIfMissing
+                                            , getXdgDirectory
+                                            , XdgDirectory( XdgConfig )
+                                            )
+
 import           System.IO                  ( stderr )
 import           Text.ParserCombinators.Parsec hiding ( (<|>))
 import           Text.Parsec.Text hiding    ( GenParser )
@@ -25,8 +30,8 @@ import Data.Bifunctor ( bimap )
 
 import qualified Data.HashMap.Strict as HM
 
-configDir :: FilePath
-configDir = ".owen/"
+configDir :: IO FilePath
+configDir = getXdgDirectory XdgConfig "owen/"
 
 csvFile :: GenParser Char st [[String]]
 csvFile = endBy line eol
@@ -58,13 +63,14 @@ eol = try (string "\n\r")
 -- file with empty contents and returns []
 readCSV :: FilePath -> IO [[T.Text]]
 readCSV path = do
+    base <- configDir
     contents <- handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error reading" <> configDir <> path)
+            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error reading" <> base <> path)
             TIO.hPutStrLn stderr (T.pack err)
             pure "")
-        $ readFile (configDir <> path)
+        $ readFile (base <> path)
     case parse csvFile path contents of
         Left e       -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
@@ -79,14 +85,15 @@ readSingleColCSV path = do
 -- | Write CSV from 2-D T.Text list
 writeCSV :: FilePath -> [[T.Text]] -> IO ()
 writeCSV path contents = do
-    createDirectoryIfMissing True configDir
+    base <- configDir
+    createDirectoryIfMissing True base
     handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error writing to" <> configDir <> path)
+            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error writing to" <> base <> path)
             TIO.hPutStrLn stderr (T.pack err)
             pure ())
-        $ TIO.writeFile (configDir <> path)
+        $ TIO.writeFile (base <> path)
         $ T.unlines
         $ fmap (T.intercalate ",")
         $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents

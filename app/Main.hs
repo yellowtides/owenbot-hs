@@ -43,7 +43,8 @@ startHandler = do
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    createDirectoryIfMissing True configDir
-    tok <- readFile ".token.txt"  
-    putStrLn ("Token: " ++ tok)
+    base <- configDir
+    createDirectoryIfMissing True base
+    tok <- readFile (base <> "token.txt")
+    putStrLn ("[Info] Token: " ++ tok)
     owen tok
