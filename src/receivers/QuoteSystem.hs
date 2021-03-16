@@ -24,8 +24,8 @@ import qualified Data.Text as T
 quotePath :: FilePath
 quotePath = "registeredQuotes.csv"
 
-maxNameLen :: T.Text  -- TODO: keep as int and cast later
-maxNameLen = "32"
+maxNameLen :: T.Text
+maxNameLen = show $ 32
 
 -- | `quoteTable` maps quotes to their text.
 quoteTable :: IO (HM.HashMap T.Text T.Text)
@@ -44,7 +44,7 @@ removeQuote quote = do
     writeHashMapToCSV quotePath newTable 
 
 receiveQuote :: Message -> DiscordHandler ()
-receiveQuote msg = newCommand msg "quote +(.{1,"<>maxNameLen<>"})" $ \quoteCapture -> do
+receiveQuote msg = newCommand msg ("quote +(.{1,"<>maxNameLen<>"})") $ \quoteCapture -> do
     let quote = head quoteCapture
     quoteTextM <- liftIO $ fetchQuote quote
     sendMessageChan (messageChannel msg) $ case quoteTextM of
@@ -55,7 +55,7 @@ receiveQuote msg = newCommand msg "quote +(.{1,"<>maxNameLen<>"})" $ \quoteCaptu
         Just quoteText -> quoteText
 
 addQuote :: Message -> DiscordHandler ()
-addQuote msg = newDevCommand msg "addquote +(.{1,"<>maxNameLen<>"}) +(.{1,})" $ \quoteCapture -> do
+addQuote msg = newDevCommand msg ("addquote +(.{1,"<>maxNameLen<>"}) +(.{1,})") $ \quoteCapture -> do
     let quote = head quoteCapture 
     quoteTextM <- liftIO $ fetchQuote quote
     case quoteTextM of
@@ -68,7 +68,7 @@ addQuote msg = newDevCommand msg "addquote +(.{1,"<>maxNameLen<>"}) +(.{1,})" $ 
                               $ "Quote already exists my dude, try `:quote " <> quote <> "`."
 
 rmQuote :: Message -> DiscordHandler ()
-rmQuote msg = newDevCommand msg "rmquote +(.{1,"<>maxNameLen<>"})" $ \quoteCapture -> do
+rmQuote msg = newDevCommand msg ("rmquote +(.{1,"<>maxNameLen<>"})") $ \quoteCapture -> do
     let quote = head quoteCapture
     quoteTextM <- liftIO $ fetchQuote quote
     case quoteTextM of
