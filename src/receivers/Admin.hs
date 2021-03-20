@@ -18,6 +18,8 @@ import           Data.Char          ( isSpace )
 import           Control.Monad      ( when )
 import           Text.Regex.TDFA    ( (=~) )
 
+import           System.Directory   ( doesPathExist )
+
 import           Utils              ( newCommand
                                     , newDevCommand
                                     , sendMessageChan
@@ -25,6 +27,7 @@ import           Utils              ( newCommand
                                     , captureCommandOutput
                                     , devIDs
                                     , restart
+                                    , update
                                     , (=~=)
                                     )
 import           Status             ( updateStatus
@@ -57,24 +60,31 @@ commitsAhead = captureCommandOutput "git fetch"
 uName = captureCommandOutput "uname -n"
 pidOf = captureCommandOutput "pidof owenbot-exe"
 
+isGitRepo :: IO Bool
+isGitRepo = doesPathExist ".git"
+
 sendGitInfo :: Message -> DiscordHandler ()
 sendGitInfo m = newDevCommand m "repo" $ \_ -> do
     sendGitInfoChan $ messageChannel m
-    
+
 sendGitInfoChan :: ChannelId -> DiscordHandler ()
 sendGitInfoChan chan = do
-    loc <- liftIO gitLocal
-    remote <- liftIO gitRemote
-    commits <- liftIO commitsAhead
-    sendMessageChan chan ("Git Status Info: \n" <>
-                          "Local at: " <> loc <>  --as all things returned by captureCommandOutput has a newline at the end
-                          "Remote at: " <> remote <>
-                          "Remote is " <> rstrip commits <> " commits ahead")
+    inRepo <- liftIO isGitRepo
+    if (not inRepo) then
+        sendMessageChan chan "Not in git repo (sorry)!"
+    else do
+        loc <- liftIO gitLocal
+        remote <- liftIO gitRemote
+        commits <- liftIO commitsAhead
+        sendMessageChan chan ("Git Status Info: \n" <>
+                              "Local at: " <> loc <>  --as all things returned by captureCommandOutput has a newline at the end
+                              "Remote at: " <> remote <>
+                              "Remote is " <> rstrip commits <> " commits ahead")
 
 sendInstanceInfo :: Message -> DiscordHandler ()
 sendInstanceInfo m = newDevCommand m "instance" $ \_ -> do
     sendInstanceInfoChan $ messageChannel m
-    
+
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
 sendInstanceInfoChan chan = do
     host <- liftIO uName
@@ -88,12 +98,18 @@ restartOwen m = newDevCommand m "restart" $ \_ -> do
     sendMessageChan (messageChannel m) "Restarting"
     _ <- liftIO restart
     sendMessageChan (messageChannel m) "Failed"
-    
+
+updateOwen :: Message -> DiscordHandler ()
+updateOwen m = newDevCommand m "update" $ \_ -> do
+    sendMessageChan (messageChannel m) "Updating Owen"
+    _ <- liftIO update
+    sendMessageChan (messageChannel m) "Failed to update! Check the logs for more info."
+
 listDevs :: Message -> DiscordHandler ()
 listDevs m = newDevCommand m "devs" $ \_ -> do
     contents <- liftIO $ readSingleColCSV devIDs
     when (not $ null contents) $ do
-        sendMessageChan (messageChannel m) 
+        sendMessageChan (messageChannel m)
             $ T.intercalate "\n" contents
 
 addDevs :: Message -> DiscordHandler ()

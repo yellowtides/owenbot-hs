@@ -21,6 +21,7 @@ module Utils ( sendMessageChan
              , getTimestampFromMessage
              , captureCommandOutput
              , restart
+             , update
              ) where
 
 import qualified Discord.Requests as R
@@ -196,9 +197,13 @@ captureCommandOutput command = do
     }) ""
     return $ T.pack output
 
--- | `restart` send a restart signal to the bot.
+-- | `restart` calls a shell script to restart the bot.
 restart :: IO ()
 restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"
+
+-- | `update` calls a shell script that updates the bot's repo
+update :: IO ()
+update = Process.callCommand "~/owenbot-hs/update.sh"
 
 -- | `newCommand` should be used in the creation of a new Owen command. Given a `T.Text` command regex
 -- (lacking the `:` prefix and the trailing whitespace), along with a function that can handle the
