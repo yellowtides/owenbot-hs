@@ -70,7 +70,7 @@ devIDs = "devs.csv"
 
 -- | The `FilePath` representing the repo for the bot (TODO: chuck in a config file)
 repoDir :: FilePath
-repoDir = "~/docs/prog/hs/owenbot-hs/"
+repoDir = "$HOME/owenbot-hs/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
