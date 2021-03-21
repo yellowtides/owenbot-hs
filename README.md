@@ -22,7 +22,7 @@ Place a text file called `.token.txt` containing your bot's Discord token in the
 
 ### Docker
 
-There is a `Dockerfile` included in this repo that basically runs the Stack build/exec process. 
+There is a `Dockerfile` included in this repo that basically runs the Stack build/exec process.
 However, it has not been used so the functionality cannot be vouched for.
 
 ### Cabal
@@ -33,9 +33,9 @@ Run tests with `cabal test`.
 
 ### Stack
 
-Build with `stack build`. The resulting executable can then be run with `stack exec`.
+Build with `stack install`. This compiles and installs the bot in one go.
 
-Run with `stack run`.
+Run with `owenbot-hs`.
 
 ## Documentation | Commands
 
