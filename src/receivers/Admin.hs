@@ -42,6 +42,7 @@ receivers =
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen
+    , updateOwen
     , prepareStatus
     , listDevs
     , addDevs
@@ -102,8 +103,8 @@ restartOwen m = newDevCommand m "restart" $ \_ -> do
 updateOwen :: Message -> DiscordHandler ()
 updateOwen m = newDevCommand m "update" $ \_ -> do
     sendMessageChan (messageChannel m) "Updating Owen"
-    _ <- liftIO update
-    sendMessageChan (messageChannel m) "Failed to update! Check the logs for more info."
+    _ <- liftIO update  -- TODO: get return code and alert if it didn't complete
+    sendMessageChan (messageChannel m) "Finished update"
 
 listDevs :: Message -> DiscordHandler ()
 listDevs m = newDevCommand m "devs" $ \_ -> do

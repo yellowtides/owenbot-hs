@@ -44,26 +44,33 @@ import           Data.Function          ( on )
 import           Data.List.Split        ( splitOn )
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
+
 import           System.IO as Sys
 import           System.Process as Process
+import           System.Exit            ( exitSuccess )
+
 import           Text.Regex.TDFA        ( (=~) )
 import           UnliftIO               ( liftIO
                                         , UnliftIO ( unliftIO )
                                         , stringException
                                         )
 
-import           Owoifier               ( owoify 
+import           Owoifier               ( owoify
                                         , weakOwoify
                                         )
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
 import           Data.Either             ( isRight
-                                         , fromRight )            
+                                         , fromRight )
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
 devIDs = "devs.csv"
+
+-- | The `FilePath` representing the repo for the bot (TODO: chuck in a config file)
+repoDir :: FilePath
+repoDir = "~/docs/prog/hs/owenbot-hs/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
@@ -199,11 +206,13 @@ captureCommandOutput command = do
 
 -- | `restart` calls a shell script to restart the bot.
 restart :: IO ()
-restart = Process.callCommand "~/owenbot-hs/.restartWithin.sh"
+restart = do
+    Process.spawnCommand "owenbot-exe"
+    exitSuccess
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO ()
-update = Process.callCommand "~/owenbot-hs/update.sh"
+update = Process.callCommand ("cd " <> repoDir <> "; git reset --hard @{u} && stack install")
 
 -- | `newCommand` should be used in the creation of a new Owen command. Given a `T.Text` command regex
 -- (lacking the `:` prefix and the trailing whitespace), along with a function that can handle the
