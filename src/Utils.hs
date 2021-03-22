@@ -212,7 +212,7 @@ restart = do
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO ()
-update = Process.callCommand ("cd " <> repoDir <> " && git reset --hard @ && git pull && stack install")
+update = Process.callCommand ("cd " <> repoDir <> " && git reset --hard @{u} && git pull && stack install")
 
 -- | `newCommand` should be used in the creation of a new Owen command. Given a `T.Text` command regex
 -- (lacking the `:` prefix and the trailing whitespace), along with a function that can handle the
