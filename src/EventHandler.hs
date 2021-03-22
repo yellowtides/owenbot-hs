@@ -42,10 +42,15 @@ messageReceivers = concat
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
-reactionAddReceivers = HallOfFame.reactionReceivers ++ RoleSelfAssign.reactionAddReceivers
+reactionAddReceivers = concat
+     [ HallOfFame.reactionReceivers
+     , RoleSelfAssign.reactionAddReceivers
+     ]
 
 reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
-reactionRemoveReceivers = RoleSelfAssign.reactionRemReceivers
+reactionRemoveReceivers = concat
+     [ RoleSelfAssign.reactionRemReceivers
+     ]
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
