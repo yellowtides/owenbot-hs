@@ -1,4 +1,4 @@
-module EventHandler ( handleEvent ) where 
+module EventHandler ( handleEvent ) where
 
 import           Discord.Types          ( Message ( messageAuthor )
                                         , ReactionInfo
@@ -42,14 +42,10 @@ messageReceivers = concat
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
-reactionAddReceivers = concat 
-     [ HallOfFame.reactionReceivers
-     , RoleSelfAssign.reactionAddReceivers
-     ]
+reactionAddReceivers = HallOfFame.reactionReceivers ++ RoleSelfAssign.reactionAddReceivers
 
 reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
-reactionRemoveReceivers = concat
-     [ RoleSelfAssign.reactionRemReceivers ]
+reactionRemoveReceivers = RoleSelfAssign.reactionRemReceivers
 
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
@@ -57,10 +53,10 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-     MessageCreate m -> 
-          unless (isFromBot m) $ (forM_ messageReceivers ($ m)) <|> pure ()
-     MessageReactionAdd r -> 
-          (forM_ reactionAddReceivers ($ r)) <|> pure ()
-     MessageReactionRemove r -> 
-          (forM_ reactionRemoveReceivers ($ r)) <|> pure ()
+     MessageCreate m ->
+          unless (isFromBot m) $ forM_ messageReceivers ($ m) <|> pure ()
+     MessageReactionAdd r ->
+          forM_ reactionAddReceivers ($ r) <|> pure ()
+     MessageReactionRemove r ->
+          forM_ reactionRemoveReceivers ($ r) <|> pure ()
      _ -> pure ()
