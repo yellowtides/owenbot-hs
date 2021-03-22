@@ -18,6 +18,7 @@ spec = do
         it "checks owoify against a complex string" $
             owoify "Laughter Rolling no more MORE NOW nOT a mOMENT." `shouldBe`
                 "Waughtew Wowwing nyo myowe MYOWE NYOW nyOT a myOMENT. owo"
+    describe "Owoify (weak ver.) operations" $ do
         it "checks weakOwoify doesn't change the length" $
             property prop_weakNoChangeLength
         it "checks weakOwoify against a complex string" $
