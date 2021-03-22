@@ -16,14 +16,14 @@ spec = do
         it "checks owoify ends with owo" $
             property prop_owoifyEndsWithOwo
         it "checks owoify against a complex string" $
-            owoify "Laughter Rolling no more MORE NOW nOT a mOMENT." `shouldBe`
-                "Waughtew Wowwing nyo myowe MYOWE NYOW nyOT a myOMENT. owo"
+            owoify "Laughter Rolling no more NO MORE nO mORE No More." `shouldBe`
+                "Waughtew Wowwing nyo myowe NYO MYOWE nyO myOWE Nyo Myowe. owo"
     describe "Owoify (weak ver.) operations" $ do
         it "checks weakOwoify doesn't change the length" $
             property prop_weakNoChangeLength
         it "checks weakOwoify against a complex string" $
-            weakOwoify "Laughter Rolling no more MORE NOW nOT a mOMENT." `shouldBe`
-                "Waughtew Wowwing no mowe MOWE NOW nOT a mOMENT."
+            weakOwoify "Laughter Rolling no more NO MORE nO mORE No More." `shouldBe`
+                "Waughtew Wowwing no mowe NO MOWE nO mOWE No Mowe."
 
 prop_owoifyEndsWithOwo :: T.Text -> Bool
 prop_owoifyEndsWithOwo str = T.takeEnd 4 (owoify str) == " owo" 
