@@ -62,4 +62,5 @@ tests:
     dependencies:
     - owenbot
     - QuickCheck
+    - quickcheck-instances # required for arbitrary Text
     - hspec
