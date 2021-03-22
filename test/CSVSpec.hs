@@ -2,6 +2,7 @@ module CSVSpec ( spec ) where
 
 import qualified Data.Text as T
 import           Test.Hspec
+import           Test.Hspec.QuickCheck      ( modifyMaxSuccess )
 import           Test.QuickCheck            ( Property
                                             , property
                                             , (==>)
@@ -22,8 +23,9 @@ import           CSV                        ( configDir
 spec :: Spec
 spec = do
     describe "CSV Operations" $ afterAll_ cleanupTempCSV $ do
-        it "checks if read/write operations work" $
-            property prop_readWriteCSV
+        modifyMaxSuccess (const 50) $ -- not be so hard on system >.<
+            it "checks if read/write operations work" $
+                property prop_readWriteCSV
         it "checks if single-column read/write operations work" $
             property prop_readWriteSingleColCSV
 
