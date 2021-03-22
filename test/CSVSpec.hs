@@ -6,6 +6,7 @@ import           Test.QuickCheck            ( Property
                                             , property
                                             , (==>)
                                             )
+import           Test.QuickCheck.Instances.Text
 import           Test.QuickCheck.Monadic    ( assert
                                             , monadicIO
                                             , run
@@ -26,19 +27,18 @@ spec = do
         it "checks if single-column read/write operations work" $
             property prop_readWriteSingleColCSV
 
-prop_readWriteCSV :: [[Char]] -> Int -> Property
+prop_readWriteCSV :: [T.Text] -> Int -> Property
 prop_readWriteCSV line n = not (null line) ==> monadicIO $ do
-    let writeData = replicate n (fmap T.pack line)
+    let writeData = replicate n line
     run $ writeCSV "temp.csv" writeData
     readData <- run $ readCSV "temp.csv"
     assert $ writeData == readData 
 
-prop_readWriteSingleColCSV :: [[Char]] -> Property
+prop_readWriteSingleColCSV :: [T.Text] -> Property
 prop_readWriteSingleColCSV line = monadicIO $ do
-    let writeData = fmap T.pack line
-    run $ writeSingleColCSV "temp.csv" writeData
+    run $ writeSingleColCSV "temp.csv" line
     readData <- run $ readSingleColCSV "temp.csv"
-    assert $ writeData == readData
+    assert $ line == readData
 
 cleanupTempCSV :: IO ()
 cleanupTempCSV = configDir >>= \x -> removeFile $ x <> "temp.csv"
