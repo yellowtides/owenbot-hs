@@ -35,4 +35,4 @@ prop_readWriteSingleColCSV line = monadicIO $ do
     assert $ writeData == readData
 
 cleanupTempCSV :: IO ()
-cleanupTempCSV = removeFile $ configDir <> "temp.csv"
+cleanupTempCSV = configDir >>= \x -> removeFile $ x <> "temp.csv"
