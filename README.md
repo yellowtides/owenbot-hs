@@ -35,8 +35,13 @@ Run tests with `cabal test`.
 
 Build with `stack install`. This compiles and installs the bot in one go.
 
-Run with `owenbot-hs`.
+Run with `owenbot-exe`.
+
+Run tests with `stack test`.
 
 ## Documentation | Commands
 
 Try sending `:helpme` to the bot!
+
+Generate Haddock documentation:
+`stack haddock . --haddock-hyperlink-source`

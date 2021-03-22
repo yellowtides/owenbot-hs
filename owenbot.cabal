@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e0a48de84d9a4e97e1ffaf48507cbe108346e914c12ca7720ab56781c20d4d43
+-- hash: 2d72b50aa0aac02592410fcf56e15d932e73b9c3a386c07c096ba3356d625302
 
 name:           owenbot
 version:        0.1.0.0
@@ -99,7 +99,8 @@ test-suite owenbot-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      TestCSV
+      CSVSpec
+      OwoifierSpec
       Paths_owenbot
   hs-source-dirs:
       test
@@ -112,10 +113,12 @@ test-suite owenbot-test
     , directory
     , discord-haskell
     , hashable
+    , hspec
     , http-conduit
     , owenbot
     , parsec
     , process
+    , quickcheck-instances
     , random
     , regex-tdfa
     , split

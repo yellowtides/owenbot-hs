@@ -222,7 +222,7 @@ newCommand :: Message                               -- ^ a message that needs to
               -> ([T.Text] -> DiscordHandler ())    -- ^ a function used to handle each message portion
                                                     -- captured by the command regex
               -> DiscordHandler ()                  -- ^ the over-all result of handling the message
-newCommand msg cmd fun = unless (shouldNotBeEmpty == "") $ fun captures
+newCommand msg cmd funct = unless (shouldNotBeEmpty == "") $ funct captures
   where
     match :: ( T.Text
              , T.Text   -- the first match of the regex against the message 

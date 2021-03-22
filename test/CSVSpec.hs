@@ -1,13 +1,13 @@
-module TestCSV ( prop_readWriteCSV
-               , prop_readWriteSingleColCSV
-               , cleanupTempCSV
-               ) where
+module CSVSpec ( spec ) where
 
 import qualified Data.Text as T
-import           Test.QuickCheck            ( quickCheck
-                                            , Property
+import           Test.Hspec
+import           Test.Hspec.QuickCheck      ( modifyMaxSuccess )
+import           Test.QuickCheck            ( Property
+                                            , property
                                             , (==>)
                                             )
+import           Test.QuickCheck.Instances.Text
 import           Test.QuickCheck.Monadic    ( assert
                                             , monadicIO
                                             , run
@@ -20,19 +20,27 @@ import           CSV                        ( configDir
                                             , writeSingleColCSV
                                             )
 
-prop_readWriteCSV :: [[Char]] -> Int -> Property
+spec :: Spec
+spec = do
+    describe "CSV Operations" $ afterAll_ cleanupTempCSV $ do
+        modifyMaxSuccess (const 50) $ -- not be so hard on system >.<
+            it "checks if read/write operations work" $
+                property prop_readWriteCSV
+        it "checks if single-column read/write operations work" $
+            property prop_readWriteSingleColCSV
+
+prop_readWriteCSV :: [T.Text] -> Int -> Property
 prop_readWriteCSV line n = not (null line) ==> monadicIO $ do
-    let writeData = replicate n (fmap T.pack line)
+    let writeData = replicate n line
     run $ writeCSV "temp.csv" writeData
     readData <- run $ readCSV "temp.csv"
     assert $ writeData == readData 
 
-prop_readWriteSingleColCSV :: [[Char]] -> Property
+prop_readWriteSingleColCSV :: [T.Text] -> Property
 prop_readWriteSingleColCSV line = monadicIO $ do
-    let writeData = fmap T.pack line
-    run $ writeSingleColCSV "temp.csv" writeData
+    run $ writeSingleColCSV "temp.csv" line
     readData <- run $ readSingleColCSV "temp.csv"
-    assert $ writeData == readData
+    assert $ line == readData
 
 cleanupTempCSV :: IO ()
-cleanupTempCSV = removeFile $ configDir <> "temp.csv"
+cleanupTempCSV = configDir >>= \x -> removeFile $ x <> "temp.csv"

@@ -25,6 +25,13 @@ packages:
       sha256: dd9ea90a631342e5db0fc21331ade4d563a685e9125d5a3989eefa8e1b96c6c6
   original:
     hackage: emoji-0.1.0.2
+- completed:
+    hackage: hspec-2.7.4@sha256:8d0430e4a7ba8fa1482a1766fd4973f0c5e7c5adf512bded7358269bb9486c9e,1692
+    pantry-tree:
+      size: 532
+      sha256: 6a6ba1798090ee6245f5995303b6ccf1afea26c73d4e69b95330c8914056d420
+  original:
+    hackage: hspec-2.7.4
 snapshots:
 - completed:
     size: 532177

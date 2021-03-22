@@ -15,7 +15,8 @@ import           Discord.Types      ( ChannelId
 import           Discord            ( DiscordHandler )
 import           UnliftIO           ( liftIO )
 import           Data.Char          ( isSpace )
-import           Control.Monad      ( when )
+import           Control.Monad      ( when
+                                    , unless )
 import           Text.Regex.TDFA    ( (=~) )
 
 import           System.Directory   ( doesPathExist )
@@ -38,7 +39,7 @@ import           CSV                ( readSingleColCSV
                                     )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers = 
+receivers =
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen
@@ -71,7 +72,7 @@ sendGitInfo m = newDevCommand m "repo" $ \_ -> do
 sendGitInfoChan :: ChannelId -> DiscordHandler ()
 sendGitInfoChan chan = do
     inRepo <- liftIO isGitRepo
-    if (not inRepo) then
+    if not inRepo then
         sendMessageChan chan "Not in git repo (sorry)!"
     else do
         loc <- liftIO gitLocal
@@ -109,7 +110,7 @@ updateOwen m = newDevCommand m "update" $ \_ -> do
 listDevs :: Message -> DiscordHandler ()
 listDevs m = newDevCommand m "devs" $ \_ -> do
     contents <- liftIO $ readSingleColCSV devIDs
-    when (not $ null contents) $ do
+    unless (null contents) $ do
         sendMessageChan (messageChannel m)
             $ T.intercalate "\n" contents
 
@@ -121,7 +122,7 @@ addDevs m = newDevCommand m "devs add ([0-9]{1,32})" $ \captures -> do
         liftIO $ writeSingleColCSV devIDs [id]
         sendMessageChan (messageChannel m) "Added!"
     else do
-        liftIO $ writeSingleColCSV devIDs (id:contents) 
+        liftIO $ writeSingleColCSV devIDs (id:contents)
         sendMessageChan (messageChannel m) "Added!"
 
 removeDevs :: Message -> DiscordHandler ()
@@ -154,5 +155,5 @@ prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
         sendMessageChan (messageChannel m)
             $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
     else
-        sendMessageChan (messageChannel m) 
+        sendMessageChan (messageChannel m)
             $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"

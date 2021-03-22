@@ -53,7 +53,7 @@ updateStatus' newStatus newType newName = sendCommand $
 setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
-    when (length line > 3) $
+    when (length line >= 3) $
         updateStatus
             (head line)
             ((head.tail) line)

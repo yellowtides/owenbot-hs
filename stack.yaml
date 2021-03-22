@@ -45,6 +45,7 @@ extra-deps:
   - hoogle-5.0.18
   - discord-haskell-1.8.3
   - emoji-0.1.0.2
+  - hspec-2.7.4
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
