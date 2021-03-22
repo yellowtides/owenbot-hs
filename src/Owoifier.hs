@@ -18,32 +18,35 @@ owoifyChar :: Char -> Char
 owoifyChar c
     | c `elem` ("LR" :: [Char]) = 'W'
     | c `elem` ("lr" :: [Char]) = 'w'
-    | otherwise     = c
+    | otherwise                 = c
 
-cartesianConcat :: [Char] -> [Char] -> [T.Text]
-cartesianConcat half1 half2 = T.cons <$> half1
-                                     <*> (T.singleton <$> half2)
+cartesianCons :: [Char] -> [Char] -> [T.Text]
+cartesianCons chars chars' = T.cons <$> chars
+                                    <*> (T.singleton <$> chars')
 
 -- ['NMnm' <-> 'o']
 -- ['nm'   <-> 'O']
-insertablesSmallY :: [T.Text]
-insertablesSmallY = cartesianConcat "NMnm" "o" ++ cartesianConcat "nm" "O"
+segmentsSmallY :: [T.Text]
+segmentsSmallY = cartesianCons "NMnm" "o" ++ cartesianCons "nm" "O"
 
 -- ['NM' <-> 'O']
-insertablesBigY :: [T.Text]
-insertablesBigY = cartesianConcat "NM" "O"
+segmentsBigY :: [T.Text]
+segmentsBigY = cartesianCons "NM" "O"
+
+mkRules :: Char -> [T.Text] -> [(T.Text, Char)]
+mkRules ch segments = (, ch) <$> segments
 
 insertionRules :: [(T.Text, Char)]
 insertionRules = concat
-    [ (, 'y') <$> insertablesSmallY
-    , (, 'Y') <$> insertablesBigY
+    [ mkRules 'y' segmentsSmallY
+    , mkRules 'Y' segmentsBigY
     ]
 
 applyRule :: (T.Text, Char) -> T.Text -> T.Text
-applyRule rule text = do
-    let (word, ins) = rule
-    let newWord     = T.intersperse ins word
-    T.replace word newWord text
+applyRule rule
+    = let (word, ins) = rule
+          newWord     = T.intersperse ins word in
+    T.replace word newWord
 
 doInserts :: T.Text -> T.Text
 doInserts str = foldl (flip applyRule) str insertionRules
