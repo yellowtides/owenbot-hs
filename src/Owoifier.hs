@@ -1,13 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 
 module Owoifier ( owoify
-                , weakOwoify 
+                , weakOwoify
                 ) where
 
 import qualified Data.Text as T
 
 owoify :: T.Text -> T.Text
-owoify = (<> " owo") . inserty . insertY . weakOwoify
+owoify = (<> " owo") . doInserts . weakOwoify
 
 weakOwoify :: T.Text -> T.Text
 weakOwoify = T.map owoifyChar
@@ -19,13 +20,30 @@ owoifyChar c
     | c `elem` ("lr" :: [Char]) = 'w'
     | otherwise     = c
 
--- inserts a 'y' between ['n'/'m'] and ['o'/'O']
-inserty :: T.Text -> T.Text
-inserty s = foldl (\s x -> T.replace x (T.intersperse 'y' x) s) s 
-                    $ T.cons <$> ("nm" :: [Char]) 
-                             <*> (T.singleton <$> "oO")
+cartesianConcat :: [Char] -> [Char] -> [T.Text]
+cartesianConcat half1 half2 = T.cons <$> half1
+                                     <*> (T.singleton <$> half2)
 
-insertY :: T.Text -> T.Text
-insertY s = foldl (\s x -> T.replace x (T.intersperse 'Y' x) s) s 
-                    $ T.cons <$> ("NM" :: [Char]) 
-                             <*> (T.singleton <$> "oO")
+-- ['NMnm' <-> 'o']
+-- ['nm'   <-> 'O']
+insertablesSmallY :: [T.Text]
+insertablesSmallY = cartesianConcat "NMnm" "o" ++ cartesianConcat "nm" "O"
+
+-- ['NM' <-> 'O']
+insertablesBigY :: [T.Text]
+insertablesBigY = cartesianConcat "NM" "O"
+
+insertionRules :: [(T.Text, Char)]
+insertionRules = concat
+    [ (, 'y') <$> insertablesSmallY
+    , (, 'Y') <$> insertablesBigY
+    ]
+
+applyRule :: (T.Text, Char) -> T.Text -> T.Text
+applyRule rule text = do
+    let (word, ins) = rule
+    let newWord     = T.intersperse ins word
+    T.replace word newWord text
+
+doInserts :: T.Text -> T.Text
+doInserts str = foldl (flip applyRule) str insertionRules
