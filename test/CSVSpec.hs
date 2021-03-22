@@ -1,11 +1,9 @@
-module TestCSV ( prop_readWriteCSV
-               , prop_readWriteSingleColCSV
-               , cleanupTempCSV
-               ) where
+module CSVSpec ( spec ) where
 
 import qualified Data.Text as T
-import           Test.QuickCheck            ( quickCheck
-                                            , Property
+import           Test.Hspec
+import           Test.QuickCheck            ( Property
+                                            , property
                                             , (==>)
                                             )
 import           Test.QuickCheck.Monadic    ( assert
@@ -19,6 +17,14 @@ import           CSV                        ( configDir
                                             , writeCSV
                                             , writeSingleColCSV
                                             )
+
+spec :: Spec
+spec = do
+    describe "CSV Operations" $ afterAll_ cleanupTempCSV $ do
+        it "checks if read/write operations work" $
+            property prop_readWriteCSV
+        it "checks if single-column read/write operations work" $
+            property prop_readWriteSingleColCSV
 
 prop_readWriteCSV :: [[Char]] -> Int -> Property
 prop_readWriteCSV line n = not (null line) ==> monadicIO $ do

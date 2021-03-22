@@ -62,3 +62,4 @@ tests:
     dependencies:
     - owenbot
     - QuickCheck
+    - hspec
