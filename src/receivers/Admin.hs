@@ -15,7 +15,8 @@ import           Discord.Types      ( ChannelId
 import           Discord            ( DiscordHandler )
 import           UnliftIO           ( liftIO )
 import           Data.Char          ( isSpace )
-import           Control.Monad      ( when )
+import           Control.Monad      ( when
+                                    , unless )
 import           Text.Regex.TDFA    ( (=~) )
 
 import           System.Directory   ( doesPathExist )
@@ -36,7 +37,6 @@ import           Status             ( updateStatus
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
-import System.Directory.Internal.Prelude (unless)
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
