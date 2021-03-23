@@ -38,8 +38,8 @@ quoteTable = do
     let listMap = map (\[key, value] -> (key, value)) compatibleLines
     pure $ HM.fromList listMap
 
-storeQuote :: T.Text -> [T.Text] -> IO ()
-storeQuote name contents = addToCSV quotePath [[name], contents]
+storeQuote :: T.Text -> T.Text -> IO ()
+storeQuote name content = addToCSV quotePath [[name, content]]
 
 fetchQuote :: T.Text -> IO (Maybe T.Text)
 fetchQuote name = HM.lookup name <$> quoteTable
@@ -71,11 +71,11 @@ addQuoteRE = "addquote +\"(.{1," <> maxNameLen <> "})\" +\"(.{1,})\""
 
 addQuote :: Message -> DiscordHandler ()
 addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
-    let name = head quote
+    let [name, content] = quote
     textM <- liftIO $ fetchQuote name
     case textM of
         Nothing -> do
-            liftIO $ storeQuote name (tail quote)
+            liftIO $ storeQuote name content
             let successMessage = "New quote registered under `:quote " <> name <> "`."
             sendMessageChan (messageChannel msg) successMessage
         Just _  -> sendMessageChan (messageChannel msg) . owoify
