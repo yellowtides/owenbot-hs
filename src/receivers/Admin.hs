@@ -3,40 +3,43 @@
 module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
-import           Discord.Types      ( ChannelId
-                                    , Message   ( messageChannel
-                                                , messageAuthor
-                                                , messageId
-                                                , messageText)
-                                    , User      ( userId )
-                                    , Channel   ( channelId )
-                                    , Snowflake
-                                    )
-import           Discord            ( DiscordHandler )
-import           UnliftIO           ( liftIO )
-import           Data.Char          ( isSpace )
-import           Control.Monad      ( when
-                                    , unless )
-import           Text.Regex.TDFA    ( (=~) )
+import           Discord.Types        ( ChannelId
+                                      , Message   ( messageChannel
+                                                  , messageAuthor
+                                                  , messageId
+                                                  , messageText)
+                                      , User      ( userId )
+                                      , Channel   ( channelId )
+                                      , Snowflake
+                                      )
+import           Discord              ( DiscordHandler )
+import           UnliftIO             ( liftIO )
+import           Data.Char            ( isSpace )
+import           Control.Monad        ( when
+                                      , unless )
+import           Text.Regex.TDFA      ( (=~) )
 
-import           System.Directory   ( doesPathExist )
+import           System.Directory     ( doesPathExist )
+import           System.Posix.Process ( getProcessID )
 
-import           Utils              ( newCommand
-                                    , newDevCommand
-                                    , sendMessageChan
-                                    , sendMessageDM
-                                    , captureCommandOutput
-                                    , devIDs
-                                    , restart
-                                    , update
-                                    , (=~=)
-                                    )
-import           Status             ( updateStatus
-                                    , editStatusFile
-                                    )
-import           CSV                ( readSingleColCSV
-                                    , writeSingleColCSV
-                                    )
+import           Owoifier             ( owoify )
+
+import           Utils                ( newCommand
+                                      , newDevCommand
+                                      , sendMessageChan
+                                      , sendMessageDM
+                                      , captureCommandOutput
+                                      , devIDs
+                                      , restart
+                                      , update
+                                      , (=~=)
+                                      )
+import           Status               ( updateStatus
+                                      , editStatusFile
+                                      )
+import           CSV                  ( readSingleColCSV
+                                      , writeSingleColCSV
+                                      )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
@@ -53,14 +56,13 @@ receivers =
 rstrip :: T.Text -> T.Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
-gitLocal, gitRemote, commitsAhead, uName, pidOf :: IO T.Text
+gitLocal, gitRemote, commitsAhead, uName :: IO T.Text
 gitLocal = captureCommandOutput "git rev-parse HEAD"
 gitRemote = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-parse origin/main"
 commitsAhead = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-list --count HEAD..origin/main"
 uName = captureCommandOutput "uname -n"
-pidOf = captureCommandOutput "pidof owenbot-exe"
 
 isGitRepo :: IO Bool
 isGitRepo = doesPathExist ".git"
@@ -90,22 +92,27 @@ sendInstanceInfo m = newDevCommand m "instance" $ \_ -> do
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
 sendInstanceInfoChan chan = do
     host <- liftIO uName
-    pid <- liftIO pidOf
+    pid <- liftIO getProcessID
     sendMessageChan chan ("Instance Info: \n" <>
                           "Host: " <> host <>
-                          "Process ID: " <> pid)
+                          "Process ID: " <> T.pack (show pid))
 
 restartOwen :: Message -> DiscordHandler ()
 restartOwen m = newDevCommand m "restart" $ \_ -> do
     sendMessageChan (messageChannel m) "Restarting"
     _ <- liftIO restart
-    sendMessageChan (messageChannel m) "Failed"
+    sendMessageChan (messageChannel m) "Failed to restart"
 
 updateOwen :: Message -> DiscordHandler ()
 updateOwen m = newDevCommand m "update" $ \_ -> do
     sendMessageChan (messageChannel m) "Updating Owen"
-    _ <- liftIO update  -- TODO: get return code and alert if it didn't complete
-    sendMessageChan (messageChannel m) "Finished update"
+    result <- liftIO update
+    if result then
+        sendMessageChan (messageChannel m)
+            $ owoify "Finished update"
+    else
+        sendMessageChan (messageChannel m)
+            $ owoify "Failed to update! Please check the logs"
 
 listDevs :: Message -> DiscordHandler ()
 listDevs m = newDevCommand m "devs" $ \_ -> do
@@ -136,9 +143,9 @@ removeDevs m = newDevCommand m "devs remove ([0-9]{1,32})" $ \captures -> do
         sendMessageChan (messageChannel m) "Removed!"
 
 statusRE :: T.Text
-statusRE = ("(online|idle|dnd|invisible) " <>
-            "(playing|streaming|competing|listening to) " <>
-            "(.*)")
+statusRE = "(online|idle|dnd|invisible) "
+           <> "(playing|streaming|competing|listening to "
+           <> "(.*)"
 
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
@@ -153,7 +160,7 @@ prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
         updateStatus newStatus newType newName
         liftIO $ editStatusFile newStatus newType newName
         sendMessageChan (messageChannel m)
-            $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
+            "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
     else
         sendMessageChan (messageChannel m)
-            $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"
+            "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"

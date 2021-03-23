@@ -52,6 +52,9 @@ quotedCell = do
 quotedChar :: GenParser Char st Char
 quotedChar = noneOf "\"" <|> try (string "\"\"" >> return '"')
 
+escapeQuotes :: T.Text -> T.Text
+escapeQuotes x =  "\"" <> T.replace "\"" "\"\"" x <> "\""
+
 eol :: GenParser Char st String
 eol = try (string "\n\r")
     <|> try (string "\r\n")
@@ -67,7 +70,7 @@ readCSV path = do
     contents <- handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error reading" <> base <> path)
+            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error reading " <> base <> path)
             TIO.hPutStrLn stderr (T.pack err)
             pure "")
         $ readFile (base <> path)
@@ -90,13 +93,12 @@ writeCSV path contents = do
     handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error writing to" <> base <> path)
+            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error writing to " <> base <> path)
             TIO.hPutStrLn stderr (T.pack err)
             pure ())
         $ TIO.writeFile (base <> path)
         $ T.unlines
-        $ fmap (T.intercalate ",")
-        $ fmap (fmap $ \x -> "\"" <> (T.replace "\"" "\"\"" x) <> "\"") contents
+        $ fmap (T.intercalate "," . fmap escapeQuotes) contents
 
 writeHashMapToCSV :: FilePath -> HM.HashMap T.Text T.Text -> IO ()
 writeHashMapToCSV path hmap = do
@@ -112,4 +114,4 @@ addToCSV path contents = do
     writeCSV path $ oldData <> contents
 
 writeSingleColCSV :: FilePath -> [T.Text] -> IO ()
-writeSingleColCSV path = (writeCSV path) . fmap (\x -> [x])
+writeSingleColCSV path = writeCSV path . fmap (:[])

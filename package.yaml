@@ -32,11 +32,12 @@ dependencies:
 - split
 - time
 - text
+- unix
 - unliftio
 - unordered-containers
 
 library:
-  source-dirs: 
+  source-dirs:
     - src
     - src/receivers
 

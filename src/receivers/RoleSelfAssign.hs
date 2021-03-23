@@ -59,12 +59,12 @@ isOnAssignMessage r = do
     -- make sure the message being reacted is a role assignment message
     -- (prevents the config from being opened very often / every sent message)
 
--- `attemptRoleAssign` handles role assignments.
+-- | `attemptRoleAssign` handles role assignments.
 attemptRoleAssign :: ReactionInfo -> DiscordHandler ()
 attemptRoleAssign r = do
     validMsg <- isOnAssignMessage r
     guard validMsg
-    
+
     assFileName <- liftIO $ getRoleListIndex r
     roleMap <- liftIO $ getRoleMap (fromJust assFileName)
     let desiredRole = lookup (T.toUpper . emojiName $ reactionEmoji r) roleMap
@@ -75,12 +75,12 @@ attemptRoleAssign r = do
 
     let newRoleId = fromJust desiredRole
     restCall $ AddGuildMemberRole 755798054455738489 (reactionUserId r) newRoleId
-    -- the number is the fixed Guild/Server ID. 
+    -- the number is the fixed Guild/Server ID.
     -- TODO: put the number in a config file.
 
     sendMessageDM (reactionUserId r) 
         $ owoify "Added your desired role! Hurray!"
-    
+
 -- | TODO: remove the repetition in handleRoleAssign/handleRoleRemove by
 -- modularizing thingies better (i.e., the sanity check).
 handleRoleRemove :: ReactionInfo -> DiscordHandler ()
@@ -100,7 +100,7 @@ handleRoleRemove r = do
 
     let oldRoleId = fromJust desiredRole
     restCall $ RemoveGuildMemberRole 755798054455738489 (reactionUserId r) oldRoleId
-    -- the number is the fixed Guild/Server ID. 
+    -- the number is the fixed Guild/Server ID.
     -- TODO: put the number in a config file.
 
     sendMessageDM (reactionUserId r)

@@ -58,9 +58,9 @@ godIsDead m = do
 
 thatcherIsDead :: Message -> DiscordHandler ()
 thatcherIsDead m = do
-    when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do 
+    when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do
         sendMessageChan (messageChannel m)
-            $ "https://www.youtube.com/watch?v=ILvd5buCEnU"
+            "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
 thatcherIsAlive :: Message -> DiscordHandler ()
 thatcherIsAlive m = do
@@ -74,12 +74,12 @@ dadJokeIfPossible m = do
     when (M.isJust name) $ do
         let Just n = name 
         roll10 <- liftIO $ roll 20
-        when (roll10 == 1 && (T.length n) >= 3) $ do
+        when (roll10 == 1 && T.length n >= 3) $ do
             sendMessageChan (messageChannel m)
                 $ owoify ("hello " <> n <> ", i'm owen")
 
 attemptParseDadJoke :: T.Text -> Maybe T.Text
-attemptParseDadJoke t = 
+attemptParseDadJoke t =
     case captures of
         [] -> Nothing
         e  -> Just (head captures :: T.Text)
@@ -108,7 +108,7 @@ handleAda24h m = newCommand m "ada24h" $ \_ -> do
     case adaAnnouncementM of
         Left err -> 
             liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err)
-                >> pure () 
+                >> pure ()
         Right announcement ->
             sendMessageChan (messageChannel m)
                 $ owoify $ T.pack announcement
