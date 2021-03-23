@@ -30,6 +30,9 @@ quotePath = "registeredQuotes.csv"
 maxNameLen :: T.Text
 maxNameLen = T.pack $ show 32
 
+nameRE :: T.Text
+nameRE = "(.{1," <> maxNameLen <> "})"
+
 -- | `quoteTable` maps quotes to their text.
 quoteTable :: IO (HM.HashMap T.Text T.Text)
 quoteTable = do
@@ -50,7 +53,7 @@ removeQuote name = do
     writeHashMapToCSV quotePath newTable
 
 receiveQuoteRE :: T.Text
-receiveQuoteRE = "quote +\"?(.{1," <> maxNameLen <> "})\"?";
+receiveQuoteRE = "quote +\"?"<> nameRE <> "\"?";
 
 receiveQuote :: Message -> DiscordHandler ()
 receiveQuote msg = newCommand msg ("quote +(.{1,"<>maxNameLen<>"})") $ \quote -> do
@@ -67,7 +70,7 @@ receiveQuote msg = newCommand msg ("quote +(.{1,"<>maxNameLen<>"})") $ \quote ->
 -- | `addQuoteRE` is the regex for the quote addition command. Quote texts and names *must* be wrapped in
 -- double quotes when adding.
 addQuoteRE :: T.Text
-addQuoteRE = "addquote +\"(.{1," <> maxNameLen <> "})\" +\"(.{1,})\"" 
+addQuoteRE = "addquote +\"" <> nameRE <> "\" +\"(.{1,})\""
 
 addQuote :: Message -> DiscordHandler ()
 addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
@@ -83,7 +86,7 @@ addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
 
 
 rmQuoteRE :: T.Text
-rmQuoteRE = "rmquote +\"?(.{1," <> maxNameLen <> "})\"?"
+rmQuoteRE = "rmquote +\"?" <> nameRE <> ""\"?"
 
 rmQuote :: Message -> DiscordHandler ()
 rmQuote msg = newDevCommand msg rmQuoteRE $ \quote -> do

@@ -18,7 +18,7 @@ import           CSV                    ( readCSV
 -- Although we revert to defaults if enums don't match, the caller of this function
 -- should always check first on their own and provide approriate error messages.
 updateStatus :: T.Text -> T.Text -> T.Text -> DiscordHandler ()
-updateStatus newStatus newType newName = 
+updateStatus newStatus newType newName =
     updateStatus' newStatusParsed newTypeParsed newName
   where
     newStatusParsed = case newStatus of
@@ -32,11 +32,11 @@ updateStatus newStatus newType newName =
         "streaming" -> ActivityTypeStreaming
         "listening to" -> ActivityTypeListening
         "competing" -> ActivityTypeCompeting
-        _ -> ActivityTypeGame -- revert to playing if not match    
+        _ -> ActivityTypeGame -- revert to playing if not match
 
 -- | Sets the Discord status
 updateStatus' :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()
-updateStatus' newStatus newType newName = sendCommand $ 
+updateStatus' newStatus newType newName = sendCommand $
     UpdateStatus (UpdateStatusOpts {
         updateStatusOptsSince = Nothing,
         updateStatusOptsGame = Just (Activity {
@@ -45,7 +45,7 @@ updateStatus' newStatus newType newName = sendCommand $
             activityUrl = Nothing
             }),
         updateStatusOptsNewStatus = newStatus,
-        updateStatusOptsAFK = False 
+        updateStatusOptsAFK = False
         })
 
 -- | Sets the status from file on bot launch
@@ -60,7 +60,7 @@ setStatusFromFile = do
             (T.unwords $ (tail . tail) line)
 
 editStatusFile :: T.Text -> T.Text -> T.Text -> IO ()
-editStatusFile newStatus newType newName = 
+editStatusFile newStatus newType newName =
     writeCSV "status.csv" [[newStatus, newType, newName]]
 
 readStatusFile :: IO [T.Text]
