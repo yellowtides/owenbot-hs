@@ -43,7 +43,9 @@ packages:
 #
 extra-deps:
   - hoogle-5.0.18
-  - discord-haskell-1.8.3
+  # - discord-haskell-1.8.3
+  - git: https://github.com/yutotakano/discord-haskell.git
+    commit: 3c8af40b7c15715a8892395b3a9a6faf1423e604
   - emoji-0.1.0.2
   - hspec-2.7.4
 

@@ -3,38 +3,42 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-snapshots:
-- original: lts-16.20
-  completed:
-    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
-    size: 532177
 packages:
-- original:
-    hackage: hoogle-5.0.18
-  completed:
-    pantry-tree:
-      sha256: 8f7e3f5ac4b9de12c930bc677f34a1eca0e91d9da3cfd9fce1d8c7ff6bcfdc0e
-      size: 3414
+- completed:
     hackage: hoogle-5.0.18@sha256:821c50a23662ceff262387ffd85bd443ef4308a2fcd1f5c51aa9ddc9fdd8c28d,3171
-- original:
-    hackage: discord-haskell-1.8.3
-  completed:
     pantry-tree:
-      sha256: 3c9b61962ffe49490c19861c85da44cf0e9966f8cb1f673d39541adf7d839885
-      size: 2107
-    hackage: discord-haskell-1.8.3@sha256:5216830fc38f505ba91cd794ca4aeb650c89269267c3fad95a34dfe51ece3a69,3562
-- original:
-    hackage: emoji-0.1.0.2
-  completed:
+      size: 3414
+      sha256: 8f7e3f5ac4b9de12c930bc677f34a1eca0e91d9da3cfd9fce1d8c7ff6bcfdc0e
+  original:
+    hackage: hoogle-5.0.18
+- completed:
+    name: discord-haskell
+    version: 1.8.3
+    git: https://github.com/yutotakano/discord-haskell.git
     pantry-tree:
-      sha256: dd9ea90a631342e5db0fc21331ade4d563a685e9125d5a3989eefa8e1b96c6c6
-      size: 437
+      size: 2501
+      sha256: de15cd14685f325c7e344e8bcdcbd29e65e88341e8a0cd8edba938ebe0e9f0a3
+    commit: 3c8af40b7c15715a8892395b3a9a6faf1423e604
+  original:
+    git: https://github.com/yutotakano/discord-haskell.git
+    commit: 3c8af40b7c15715a8892395b3a9a6faf1423e604
+- completed:
     hackage: emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
-- original:
-    hackage: hspec-2.7.4
-  completed:
     pantry-tree:
-      sha256: 6a6ba1798090ee6245f5995303b6ccf1afea26c73d4e69b95330c8914056d420
-      size: 532
+      size: 437
+      sha256: dd9ea90a631342e5db0fc21331ade4d563a685e9125d5a3989eefa8e1b96c6c6
+  original:
+    hackage: emoji-0.1.0.2
+- completed:
     hackage: hspec-2.7.4@sha256:8d0430e4a7ba8fa1482a1766fd4973f0c5e7c5adf512bded7358269bb9486c9e,1692
+    pantry-tree:
+      size: 532
+      sha256: 6a6ba1798090ee6245f5995303b6ccf1afea26c73d4e69b95330c8914056d420
+  original:
+    hackage: hspec-2.7.4
+snapshots:
+- completed:
+    size: 532177
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
+    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
+  original: lts-16.20

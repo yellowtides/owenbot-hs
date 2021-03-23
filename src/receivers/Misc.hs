@@ -19,6 +19,7 @@ import           System.Random          ( randomR
                                         )
 
 import           Utils                  ( sendMessageChan
+                                        , sendReply
                                         , sendFileChan
                                         , pingAuthorOf
                                         , newCommand
@@ -48,8 +49,8 @@ owoifyIfPossible m = do
     roll500 <- liftIO $ roll 500
     let isOwoifiable = messageText m =~= "[lLrR]|[nNmM][oO]"
     when (roll500 == 1 && isOwoifiable) $ do
-        sendMessageChan (messageChannel m)
-            $ pingAuthorOf m <> ": " <> owoify (messageText m)
+        sendReply m True
+            $ owoify (messageText m)
 
 godIsDead :: Message -> DiscordHandler ()
 godIsDead m = do
@@ -74,7 +75,7 @@ dadJokeIfPossible :: Message -> DiscordHandler ()
 dadJokeIfPossible m = do
     let name = attemptParseDadJoke (messageText m)
     when (M.isJust name) $ do
-        let Just n = name 
+        let Just n = name
         roll10 <- liftIO $ roll 20
         when (roll10 == 1 && T.length n >= 3) $ do
             sendMessageChan (messageChannel m)
@@ -92,7 +93,7 @@ attemptParseDadJoke t =
 
 handleFortune :: Message -> DiscordHandler ()
 handleFortune m = newCommand m "fortune" $ \_ -> do
-    cowText <- liftIO fortuneCow 
+    cowText <- liftIO fortuneCow
     sendMessageChan (messageChannel m)
         $ "```" <> T.pack cowText <> "```"
 
