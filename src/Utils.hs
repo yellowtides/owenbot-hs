@@ -230,7 +230,7 @@ restart :: IO ()
 restart = do
     Process.spawnCommand "owenbot-exe"
     pid <- getProcessID
-    Process.callCommand $ "pkill " <> show pid
+    Process.callCommand $ "kill " <> show pid
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO Bool
