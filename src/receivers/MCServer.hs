@@ -52,21 +52,21 @@ data ServerPlayers = ServerPlayers {
 
 instance FromJSON ServerPlayers where
     parseJSON = genericParseJSON $ defaultOptions {
-        fieldLabelModifier = players_prefix
+        fieldLabelModifier = playersPrefix
         }
 instance ToJSON ServerPlayers
 
-players_prefix :: String -> String
-players_prefix "players_online" = "online"
-players_prefix "players_max" = "max"
+playersPrefix :: String -> String
+playersPrefix "players_online" = "online"
+playersPrefix "players_max" = "max"
 
 jsonURL :: String
 jsonURL = "https://api.mcsrvstat.us/2/"
 
 getJSON :: T.Text -> IO B.ByteString
-getJSON server_ip = simpleHttp $ jsonURL <> (T.unpack server_ip)
+getJSON server_ip = simpleHttp $ jsonURL <> T.unpack server_ip
 
-fetchServerDetails :: T.Text -> IO (Either String String) 
+fetchServerDetails :: T.Text -> IO (Either String String)
 fetchServerDetails server_ip = do
     serverDeetsM <- (eitherDecode <$> getJSON server_ip) :: IO (Either String ServerStatus)
     pure $ case serverDeetsM of
@@ -97,7 +97,7 @@ alwaysHead (a:as) = a
 
 getStatus :: Message -> DiscordHandler ()
 getStatus m = newCommand m "minecraft" $ \_ -> do
-    server_ip <- liftIO $ readServerIP
+    server_ip <- liftIO readServerIP
     deets <- liftIO $ fetchServerDetails server_ip
     case deets of 
         Left err   -> liftIO (print err) >> sendMessageChan (messageChannel m) (T.pack err)

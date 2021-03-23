@@ -21,17 +21,17 @@ receivers =
     , sendTextbook
     ]
 
-inf1atextbookRE :: T.Text 
+inf1atextbookRE :: T.Text
 inf1atextbookRE = textbookRE <> "i(nf)?1a"
 
 sendSyl :: Message -> DiscordHandler ()
 sendSyl m = newCommand m "syl(logisms)?" $ \_ ->
-    sendFileChan (messageChannel m) "id-smash-aristotle.png" 
+    sendFileChan (messageChannel m) "id-smash-aristotle.png"
                                     "./src/assets/cl/syllogisms.png"
 
 sendBool :: Message -> DiscordHandler ()
 sendBool m = newCommand m "bool(ean)?" $ \_ ->
-    sendFileChan (messageChannel m) "literally-satan.png" 
+    sendFileChan (messageChannel m) "literally-satan.png"
                                     "./src/assets/cl/Bool.png"
 
 sendHDoc :: Message -> DiscordHandler ()
@@ -40,5 +40,5 @@ sendHDoc m = newCommand m "doc ([a-z']+)" $ \captures ->
 
 sendTextbook :: Message -> DiscordHandler ()
 sendTextbook m = newCommand m inf1atextbookRE $ \_ ->
-    sendFileChan (messageChannel m) "the-holy-bible-2.png" 
+    sendFileChan (messageChannel m) "the-holy-bible-2.png"
                                     "./src/assets/textbooks/i1a-textbook.pdf"

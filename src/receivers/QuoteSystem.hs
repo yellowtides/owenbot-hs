@@ -64,7 +64,7 @@ receiveQuote msg = newCommand msg ("quote +(.{1,"<>maxNameLen<>"})") $ \quote ->
         Just text -> text
 
 
--- | `addQuoteRE` is the regex for the quote addition command. Quote texts and names *must* be wrapped in 
+-- | `addQuoteRE` is the regex for the quote addition command. Quote texts and names *must* be wrapped in
 -- double quotes when adding.
 addQuoteRE :: T.Text
 addQuoteRE = "addquote +\"(.{1," <> maxNameLen <> "})\" +\"(.{1,})\"" 
@@ -95,4 +95,4 @@ rmQuote msg = newDevCommand msg rmQuoteRE $ \quote -> do
         Just _  -> do
             liftIO $ removeQuote name
             sendMessageChan (messageChannel msg) . owoify
-                $ "All done! Forgot all about `" <> name <> "`, was super bad anyways." 
+                $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."

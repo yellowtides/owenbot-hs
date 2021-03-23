@@ -136,9 +136,9 @@ removeDevs m = newDevCommand m "devs remove ([0-9]{1,32})" $ \captures -> do
         sendMessageChan (messageChannel m) "Removed!"
 
 statusRE :: T.Text
-statusRE = ("(online|idle|dnd|invisible) " <>
-            "(playing|streaming|competing|listening to) " <>
-            "(.*)")
+statusRE = "(online|idle|dnd|invisible) "
+           <> "(playing|streaming|competing|listening to "
+           <> "(.*)"
 
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
@@ -153,7 +153,7 @@ prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
         updateStatus newStatus newType newName
         liftIO $ editStatusFile newStatus newType newName
         sendMessageChan (messageChannel m)
-            $ "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
+            "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
     else
         sendMessageChan (messageChannel m)
-            $ "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"
+            "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"
