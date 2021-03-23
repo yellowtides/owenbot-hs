@@ -108,7 +108,7 @@ getMessageLink m = do
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = do
-    restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedContent = xs }
+    restCall $ R.CreateMessage c xs
     pure ()
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
@@ -128,9 +128,7 @@ sendReply m mention xs = do
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
 sendMessageChanEmbed c xs e = do
-    restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedContent = xs
-                                               , R.messageDetailedEmbed = Just e
-                                               }
+    restCall $ R.CreateMessageEmbed c xs e
     pure ()
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
@@ -151,9 +149,7 @@ sendFileChan c name fp = do
     case mFileContent of
         Nothing          -> sendMessageChan c $ owoify "The file cannot be found!"
         Just fileContent -> do
-            restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedFile = Just (name, fileContent)
-                                                       , R.messageDetailedContent = ""
-                                                       }
+            restCall $ R.CreateMessageUploadFile c name fileContent
             pure ()
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
