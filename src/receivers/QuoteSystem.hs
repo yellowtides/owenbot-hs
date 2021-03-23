@@ -53,7 +53,7 @@ receiveQuoteRE :: T.Text
 receiveQuoteRE = "quote +\"?(.{1," <> maxNameLen <> "})\"?";
 
 receiveQuote :: Message -> DiscordHandler ()
-receiveQuote msg = newCommand msg ("quote +(.{1,"<>maxNameLen<>"})") $ \quote -> do
+receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
     let name = head quote
     textM <- liftIO $ fetchQuote name
     sendMessageChan (messageChannel msg) $ case textM of
