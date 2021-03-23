@@ -53,11 +53,11 @@ removeQuote name = do
     writeHashMapToCSV quotePath newTable
 
 receiveQuoteRE :: T.Text
-receiveQuoteRE = "quote +\"?" <> nameRE <> "\"?";
+receiveQuoteRE = "(:|quote +)\"?" <> nameRE <> "\"?";
 
 receiveQuote :: Message -> DiscordHandler ()
 receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
-    let name = head quote
+    let name = (head . tail) quote
     textM <- liftIO $ fetchQuote name
     sendMessageChan (messageChannel msg) $ case textM of
         Nothing   -> owoify $ T.concat [
@@ -73,7 +73,7 @@ addQuoteRE :: T.Text
 addQuoteRE = "addquote +\"" <> nameRE <> "\" +\"(.{1,})\""
 
 addQuote :: Message -> DiscordHandler ()
-addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
+addQuote msg = newCommand msg addQuoteRE $ \quote -> do
     let [name, content] = quote
     textM <- liftIO $ fetchQuote name
     case textM of
