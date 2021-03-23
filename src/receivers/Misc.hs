@@ -25,7 +25,8 @@ import           Utils                  ( sendMessageChan
                                         , (=~=)
                                         )
 import           Owoifier               ( owoify )
-import           ADAPriceFetcher        ( fetchADADetails )
+import           ADAPriceFetcher        ( fetchTicker
+                                        , fetchADADetails)
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
@@ -35,6 +36,7 @@ receivers =
     , thatcherIsAlive
     , dadJokeIfPossible
     , handleFortune
+    , handleTicker
     , handleAda24h
     ]
 
@@ -102,13 +104,28 @@ fortuneCow = do
     f <- T.pack <$> fortune
     SP.readProcess "cowsay" [] . T.unpack $ owoify f
 
+handleTicker :: Message -> DiscordHandler ()
+handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
+    let [base, quote] = T.unpack <$> symbol
+    announcementM <- liftIO $ fetchTicker base quote
+    case announcementM of
+         Left err -> do
+            liftIO (putStrLn $ "Cannot get ticker from binance: " ++ err)
+            sendMessageChan (messageChannel m)
+                $ owoify "Couldn't get the data! Sorry"
+         Right announcement ->
+            sendMessageChan (messageChannel m)
+                $ owoify . T.pack $ base <> "/" <> quote <> " is "
+                                 <> announcement
+
 handleAda24h :: Message -> DiscordHandler ()
 handleAda24h m = newCommand m "ada24h" $ \_ -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
-        Left err -> 
+        Left err -> do
             liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err)
-                >> pure ()
+            sendMessageChan (messageChannel m)
+                $ owoify "Couldn't get the data! Sorry"
         Right announcement ->
             sendMessageChan (messageChannel m)
                 $ owoify $ T.pack announcement
