@@ -61,8 +61,8 @@ import           Owoifier               ( owoify
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
-import           Data.Either             ( isRight
-                                         , fromRight )
+import           Data.Either            ( isRight
+                                        , fromRight )
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
@@ -105,12 +105,18 @@ getMessageLink m = do
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given 
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
-sendMessageChan c xs = restCall (R.CreateMessage c xs) >> pure ()
+sendMessageChan c xs = do
+    restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedContent = xs }
+    pure ()
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the 
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
-sendMessageChanEmbed c xs e = restCall (R.CreateMessageEmbed c xs e) >> pure ()
+sendMessageChanEmbed c xs e = do
+    restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedContent = xs
+                                               , R.messageDetailedEmbed = Just e
+                                               }
+    pure ()
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the 
 -- given `UserId`. Surpresses any error message(s), returning `()`.
@@ -125,11 +131,15 @@ sendMessageDM u t = do
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`. Surpresses any error
 -- message(s), returning `()`.
 sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
-sendFileChan c t fp = do
+sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
         Nothing          -> sendMessageChan c $ owoify "The file cannot be found!"
-        Just fileContent -> restCall (R.CreateMessageUploadFile c t fileContent) >> pure ()
+        Just fileContent -> do
+            restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedFile = Just (name, fileContent)
+                                                       , R.messageDetailedContent = ""
+                                                       }
+            pure ()
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.
