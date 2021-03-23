@@ -53,7 +53,7 @@ removeQuote name = do
     writeHashMapToCSV quotePath newTable
 
 receiveQuoteRE :: T.Text
-receiveQuoteRE = "quote +\"?"<> nameRE <> "\"?";
+receiveQuoteRE = "quote +\"?" <> nameRE <> "\"?";
 
 receiveQuote :: Message -> DiscordHandler ()
 receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
