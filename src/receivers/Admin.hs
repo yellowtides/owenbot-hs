@@ -3,42 +3,43 @@
 module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
-import           Discord.Types      ( ChannelId
-                                    , Message   ( messageChannel
-                                                , messageAuthor
-                                                , messageId
-                                                , messageText)
-                                    , User      ( userId )
-                                    , Channel   ( channelId )
-                                    , Snowflake
-                                    )
-import           Discord            ( DiscordHandler )
-import           UnliftIO           ( liftIO )
-import           Data.Char          ( isSpace )
-import           Control.Monad      ( when
-                                    , unless )
-import           Text.Regex.TDFA    ( (=~) )
+import           Discord.Types        ( ChannelId
+                                      , Message   ( messageChannel
+                                                  , messageAuthor
+                                                  , messageId
+                                                  , messageText)
+                                      , User      ( userId )
+                                      , Channel   ( channelId )
+                                      , Snowflake
+                                      )
+import           Discord              ( DiscordHandler )
+import           UnliftIO             ( liftIO )
+import           Data.Char            ( isSpace )
+import           Control.Monad        ( when
+                                      , unless )
+import           Text.Regex.TDFA      ( (=~) )
 
-import           System.Directory   ( doesPathExist )
+import           System.Directory     ( doesPathExist )
+import           System.Posix.Process ( getProcessID )
 
-import           Owoifier           ( owoify )
+import           Owoifier             ( owoify )
 
-import           Utils              ( newCommand
-                                    , newDevCommand
-                                    , sendMessageChan
-                                    , sendMessageDM
-                                    , captureCommandOutput
-                                    , devIDs
-                                    , restart
-                                    , update
-                                    , (=~=)
-                                    )
-import           Status             ( updateStatus
-                                    , editStatusFile
-                                    )
-import           CSV                ( readSingleColCSV
-                                    , writeSingleColCSV
-                                    )
+import           Utils                ( newCommand
+                                      , newDevCommand
+                                      , sendMessageChan
+                                      , sendMessageDM
+                                      , captureCommandOutput
+                                      , devIDs
+                                      , restart
+                                      , update
+                                      , (=~=)
+                                      )
+import           Status               ( updateStatus
+                                      , editStatusFile
+                                      )
+import           CSV                  ( readSingleColCSV
+                                      , writeSingleColCSV
+                                      )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
@@ -55,14 +56,13 @@ receivers =
 rstrip :: T.Text -> T.Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
-gitLocal, gitRemote, commitsAhead, uName, pidOf :: IO T.Text
+gitLocal, gitRemote, commitsAhead, uName :: IO T.Text
 gitLocal = captureCommandOutput "git rev-parse HEAD"
 gitRemote = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-parse origin/main"
 commitsAhead = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-list --count HEAD..origin/main"
 uName = captureCommandOutput "uname -n"
-pidOf = captureCommandOutput "pidof owenbot-exe"
 
 isGitRepo :: IO Bool
 isGitRepo = doesPathExist ".git"
@@ -92,10 +92,10 @@ sendInstanceInfo m = newDevCommand m "instance" $ \_ -> do
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
 sendInstanceInfoChan chan = do
     host <- liftIO uName
-    pid <- liftIO pidOf
+    pid <- liftIO getProcessID
     sendMessageChan chan ("Instance Info: \n" <>
                           "Host: " <> host <>
-                          "Process ID: " <> pid)
+                          "Process ID: " <> T.pack (show pid))
 
 restartOwen :: Message -> DiscordHandler ()
 restartOwen m = newDevCommand m "restart" $ \_ -> do
