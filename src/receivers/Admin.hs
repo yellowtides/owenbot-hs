@@ -21,6 +21,8 @@ import           Text.Regex.TDFA    ( (=~) )
 
 import           System.Directory   ( doesPathExist )
 
+import           Owoifier           ( owoify )
+
 import           Utils              ( newCommand
                                     , newDevCommand
                                     , sendMessageChan
@@ -99,13 +101,18 @@ restartOwen :: Message -> DiscordHandler ()
 restartOwen m = newDevCommand m "restart" $ \_ -> do
     sendMessageChan (messageChannel m) "Restarting"
     _ <- liftIO restart
-    sendMessageChan (messageChannel m) "Failed"
+    sendMessageChan (messageChannel m) "Failed to restart"
 
 updateOwen :: Message -> DiscordHandler ()
 updateOwen m = newDevCommand m "update" $ \_ -> do
     sendMessageChan (messageChannel m) "Updating Owen"
-    _ <- liftIO update  -- TODO: get return code and alert if it didn't complete
-    sendMessageChan (messageChannel m) "Finished update"
+    result <- liftIO update
+    if result then
+        sendMessageChan (messageChannel m)
+            $ owoify "Finished update"
+    else
+        sendMessageChan (messageChannel m)
+            $ owoify "Failed to update! Please check the logs"
 
 listDevs :: Message -> DiscordHandler ()
 listDevs m = newDevCommand m "devs" $ \_ -> do

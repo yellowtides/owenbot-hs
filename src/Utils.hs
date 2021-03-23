@@ -47,7 +47,8 @@ import qualified Data.Time.Format as TF
 
 import           System.IO as Sys
 import           System.Process as Process
-import           System.Exit            ( exitSuccess )
+import           System.Exit            ( ExitCode ( ExitSuccess, ExitFailure ) )
+import           System.Posix.Process   ( getProcessID )
 
 import           Text.Regex.TDFA        ( (=~) )
 import           UnliftIO               ( liftIO
@@ -208,11 +209,17 @@ captureCommandOutput command = do
 restart :: IO ()
 restart = do
     Process.spawnCommand "owenbot-exe"
-    exitSuccess
+    pid <- getProcessID
+    Process.callCommand $ "pkill " <> show pid
 
 -- | `update` calls a shell script that updates the bot's repo
-update :: IO ()
-update = Process.callCommand ("cd " <> repoDir <> " && git reset --hard @{u} && git pull && stack install")
+update :: IO Bool
+update = do
+    process <- Process.spawnCommand ("cd " <> repoDir <> " && git reset --hard @{u} && git pull && stack install")
+    exitcode <- Process.waitForProcess process
+    pure $ case exitcode of
+         ExitSuccess   -> True
+         ExitFailure _ -> False
 
 -- | `newCommand` should be used in the creation of a new Owen command. Given a `T.Text` command regex
 -- (lacking the `:` prefix and the trailing whitespace), along with a function that can handle the
