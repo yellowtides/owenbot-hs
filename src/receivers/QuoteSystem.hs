@@ -39,7 +39,7 @@ quoteTable = do
     pure $ HM.fromList listMap
 
 storeQuote :: T.Text -> T.Text -> IO ()
-storeQuote name content = addToCSV quotePath [[name], [content]]
+storeQuote name content = addToCSV quotePath [[name, content]]
 
 fetchQuote :: T.Text -> IO (Maybe T.Text)
 fetchQuote name = HM.lookup name <$> quoteTable
