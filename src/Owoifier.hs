@@ -33,13 +33,15 @@ segmentsSmallY = cartesianCons "NMnm" "o" ++ cartesianCons "nm" "O"
 segmentsBigY :: [T.Text]
 segmentsBigY = cartesianCons "NM" "O"
 
-mkRules :: Char -> [T.Text] -> [(T.Text, Char)]
-mkRules ch segments = (, ch) <$> segments
+mkRules :: [(Char, [T.Text])] -> [(T.Text, Char)]
+mkRules defs = do
+    (sym, segments) <- defs
+    (, sym) <$> segments
 
 insertionRules :: [(T.Text, Char)]
-insertionRules = concat
-    [ mkRules 'y' segmentsSmallY
-    , mkRules 'Y' segmentsBigY
+insertionRules = mkRules
+    [ ('y', segmentsSmallY)
+    , ('Y', segmentsBigY)
     ]
 
 applyRule :: (T.Text, Char) -> T.Text -> T.Text

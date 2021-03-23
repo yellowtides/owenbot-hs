@@ -49,37 +49,50 @@ removeQuote name = do
     newTable <- HM.delete name <$> quoteTable
     writeHashMapToCSV quotePath newTable
 
+receiveQuoteRE :: T.Text
+receiveQuoteRE = "quote +\"?(.{1," <> maxNameLen <> "})\"?";
+
 receiveQuote :: Message -> DiscordHandler ()
 receiveQuote msg = newCommand msg ("quote +(.{1,"<>maxNameLen<>"})") $ \quote -> do
     let name = head quote
     textM <- liftIO $ fetchQuote name
     sendMessageChan (messageChannel msg) $ case textM of
         Nothing   -> owoify $ T.concat [
-                                       "Nope, nothing there. ",
-                                       "Maybe consider `:addQuote [quote] [quote_message]`"
-                                       ]
+                "Nope, nothing there. ",
+                "Maybe consider `:addQuote [quote] [quote_message]`"
+            ]
         Just text -> text
 
+
+-- | `addQuoteRE` is the regex for the quote addition command. Quote texts and names *must* be wrapped in
+-- double quotes when adding.
+addQuoteRE :: T.Text
+addQuoteRE = "addquote +\"(.{1," <> maxNameLen <> "})\" +\"(.{1,})\"" 
+
 addQuote :: Message -> DiscordHandler ()
-addQuote msg = newDevCommand msg ("addquote +(.{1,"<>maxNameLen<>"}) +(.{1,})") $ \quote -> do
+addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
     let name = head quote
     textM <- liftIO $ fetchQuote name
     case textM of
         Nothing -> do
-                   liftIO $ storeQuote name (tail quote)
-                   let successMessage = "New quote registered under `:quote " <> name <> "`."
-                   sendMessageChan (messageChannel msg) successMessage
+            liftIO $ storeQuote name (tail quote)
+            let successMessage = "New quote registered under `:quote " <> name <> "`."
+            sendMessageChan (messageChannel msg) successMessage
         Just _  -> sendMessageChan (messageChannel msg) . owoify
                        $ "Quote already exists my dude, try `:quote " <> name <> "`."
 
+
+rmQuoteRE :: T.Text
+rmQuoteRE = "rmquote +\"?(.{1," <> maxNameLen <> "})\"?"
+
 rmQuote :: Message -> DiscordHandler ()
-rmQuote msg = newDevCommand msg ("rmquote +(.{1,"<>maxNameLen<>"})") $ \quote -> do
+rmQuote msg = newDevCommand msg rmQuoteRE $ \quote -> do
     let name = head quote
     textM <- liftIO $ fetchQuote name
     case textM of
         Nothing -> sendMessageChan (messageChannel msg)
                        $ owoify "Cannot remove that which doesn't exist."
         Just _  -> do
-                   liftIO $ removeQuote name
-                   sendMessageChan (messageChannel msg) . owoify
-                       $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."
+            liftIO $ removeQuote name
+            sendMessageChan (messageChannel msg) . owoify
+                $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."
