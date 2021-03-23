@@ -78,8 +78,10 @@ sign "BUSD" = "$"
 sign "USDT" = "$"
 sign "GBP"  = "£"
 sign "EUR"  = "€"
+sign "JPY"  = "¥"
 
 sign "ADA"  = "₳"
 sign "BTC"  = "₿"
+sign "ETH"  = "Ξ"
 
 sign x      = x
