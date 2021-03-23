@@ -64,9 +64,9 @@ jsonURL :: String
 jsonURL = "https://api.mcsrvstat.us/2/"
 
 getJSON :: T.Text -> IO B.ByteString
-getJSON server_ip = simpleHttp $ jsonURL <> (T.unpack server_ip)
+getJSON server_ip = simpleHttp $ jsonURL <> T.unpack server_ip
 
-fetchServerDetails :: T.Text -> IO (Either String String) 
+fetchServerDetails :: T.Text -> IO (Either String String)
 fetchServerDetails server_ip = do
     serverDeetsM <- (eitherDecode <$> getJSON server_ip) :: IO (Either String ServerStatus)
     pure $ case serverDeetsM of

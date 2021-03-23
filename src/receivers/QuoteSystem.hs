@@ -28,7 +28,7 @@ quotePath :: FilePath
 quotePath = "registeredQuotes.csv"
 
 maxNameLen :: T.Text
-maxNameLen = T.pack $ show $ 32
+maxNameLen = T.pack $ show 32
 
 -- | `quoteTable` maps quotes to their text.
 quoteTable :: IO (HM.HashMap T.Text T.Text)
