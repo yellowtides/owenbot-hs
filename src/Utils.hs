@@ -225,7 +225,7 @@ newCommand :: Message                               -- ^ a message that needs to
 newCommand msg cmd funct = unless (shouldNotBeEmpty == "") $ funct captures
   where
     match :: ( T.Text
-             , T.Text   -- the first match of the regex against the message 
+             , T.Text   -- the first match of the regex against the message
              , T.Text
              , [T.Text] -- every message portion identified by the regex capture groups
              )

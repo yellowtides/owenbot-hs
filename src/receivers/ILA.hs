@@ -72,6 +72,6 @@ rmZeroes :: T.Text -> T.Text
 rmZeroes digits = case T.dropWhile (== '0') digits of
     "" -> "0"
     d' -> d'
-                    
+
 padZeroes :: Int -> T.Text -> T.Text
 padZeroes newLen digits = T.replicate (newLen - T.length digits) "0" <> digits

@@ -82,4 +82,4 @@ rmQuote msg = newDevCommand msg ("rmquote +(.{1,"<>maxNameLen<>"})") $ \quote ->
         Just _  -> do
                    liftIO $ removeQuote name
                    sendMessageChan (messageChannel msg) . owoify
-                       $ "All done! Forgot all about `" <> name <> "`, was super bad anyways." 
+                       $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."

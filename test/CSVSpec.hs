@@ -34,7 +34,7 @@ prop_readWriteCSV line n = not (null line) ==> monadicIO $ do
     let writeData = replicate n line
     run $ writeCSV "temp.csv" writeData
     readData <- run $ readCSV "temp.csv"
-    assert $ writeData == readData 
+    assert $ writeData == readData
 
 prop_readWriteSingleColCSV :: [T.Text] -> Property
 prop_readWriteSingleColCSV line = monadicIO $ do
