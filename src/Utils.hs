@@ -5,6 +5,7 @@
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
 module Utils ( sendMessageChan
+             , sendReply
              , sendMessageChanEmbed
              , sendMessageDM
              , sendFileChan
@@ -97,20 +98,33 @@ getMessageLink m = do
             let channelIDT = T.pack . show $ messageChannel m
             -- the messageID, as a `Text`
             let messageIDT = T.pack . show $ messageId m
-            pure . Right $ T.concat [ "https://discord.com/channels/", 
-                                      serverIDT, "/", 
-                                      channelIDT, "/", 
+            pure . Right $ T.concat [ "https://discord.com/channels/",
+                                      serverIDT, "/",
+                                      channelIDT, "/",
                                       messageIDT ]
         Left err -> pure $ Left err
 
--- | `sendMessageChan` attempts to send the given `Text` in the channel with the given 
+-- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = do
     restCall $ R.CreateMessageDetailed c $ def { R.messageDetailedContent = xs }
     pure ()
 
--- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the 
+-- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
+-- message(s), returning `()`.
+sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
+sendReply m mention xs = do
+    restCall $ R.CreateMessageDetailed (messageChannel m)
+        $ def { R.messageDetailedContent = xs
+              , R.messageDetailedReference = Just
+                $ def { referenceMessageId = Just $ messageId m }
+              , R.messageDetailedAllowedMentions = Just
+                $ def { R.mentionRepliedUser = mention }
+              }
+    pure ()
+
+-- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
 sendMessageChanEmbed c xs e = do
@@ -119,7 +133,7 @@ sendMessageChanEmbed c xs e = do
                                                }
     pure ()
 
--- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the 
+-- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
 sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
 sendMessageDM u t = do
@@ -156,7 +170,7 @@ isMod m = hasRoleByName m "Moderator"
 
 -- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
 -- the provided `Text` exactly.
-hasRoleByName :: Message -> T.Text -> DiscordHandler Bool     
+hasRoleByName :: Message -> T.Text -> DiscordHandler Bool
 hasRoleByName m r = case messageGuild m of
     Nothing -> pure False
     Just g -> do
@@ -167,7 +181,7 @@ hasRoleByName m r = case messageGuild m of
 -- two given lists contain at least one common element (with equality being determined by their `Eq`
 -- class instantiation).
 isNotMutExWith :: Eq a => [a] -> [a] -> Bool
-isNotMutExWith x y = or $ (==) <$> x <*> y      
+isNotMutExWith x y = or $ (==) <$> x <*> y
 -- the cartesian product of two lists, but constructed with pairwise `(==)` instead of `(,)`.
 
 -- | `hasRoleByID` checks whether the provided message was sent by a user that has a role matching
@@ -252,12 +266,12 @@ newCommand msg cmd funct = unless (shouldNotBeEmpty == "") $ funct captures
 -- with the distinction that it constructs handlers that require the message author to be a developer. If they
 -- are not, the message author is messaged directly and reprimanded so harshly that they will never attempt to use a
 -- dev command ever again.
-newDevCommand :: Message 
-                -> T.Text 
-                -> ([T.Text] -> DiscordHandler ()) 
+newDevCommand :: Message
+                -> T.Text
+                -> ([T.Text] -> DiscordHandler ())
                 -> DiscordHandler ()
 newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
     isDev <- isSenderDeveloper msg
-    if isDev 
+    if isDev
         then fun captures
         else sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"

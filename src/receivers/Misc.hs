@@ -19,13 +19,15 @@ import           System.Random          ( randomR
                                         )
 
 import           Utils                  ( sendMessageChan
+                                        , sendReply
                                         , sendFileChan
                                         , pingAuthorOf
                                         , newCommand
                                         , (=~=)
                                         )
 import           Owoifier               ( owoify )
-import           ADAPriceFetcher        ( fetchADADetails )
+import           ADAPriceFetcher        ( fetchTicker
+                                        , fetchADADetails)
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
@@ -35,6 +37,7 @@ receivers =
     , thatcherIsAlive
     , dadJokeIfPossible
     , handleFortune
+    , handleTicker
     , handleAda24h
     ]
 
@@ -46,8 +49,8 @@ owoifyIfPossible m = do
     roll500 <- liftIO $ roll 500
     let isOwoifiable = messageText m =~= "[lLrR]|[nNmM][oO]"
     when (roll500 == 1 && isOwoifiable) $ do
-        sendMessageChan (messageChannel m)
-            $ pingAuthorOf m <> ": " <> owoify (messageText m)
+        sendReply m True
+            $ owoify (messageText m)
 
 godIsDead :: Message -> DiscordHandler ()
 godIsDead m = do
@@ -72,7 +75,7 @@ dadJokeIfPossible :: Message -> DiscordHandler ()
 dadJokeIfPossible m = do
     let name = attemptParseDadJoke (messageText m)
     when (M.isJust name) $ do
-        let Just n = name 
+        let Just n = name
         roll10 <- liftIO $ roll 20
         when (roll10 == 1 && T.length n >= 3) $ do
             sendMessageChan (messageChannel m)
@@ -90,7 +93,7 @@ attemptParseDadJoke t =
 
 handleFortune :: Message -> DiscordHandler ()
 handleFortune m = newCommand m "fortune" $ \_ -> do
-    cowText <- liftIO fortuneCow 
+    cowText <- liftIO fortuneCow
     sendMessageChan (messageChannel m)
         $ "```" <> T.pack cowText <> "```"
 
@@ -102,13 +105,28 @@ fortuneCow = do
     f <- T.pack <$> fortune
     SP.readProcess "cowsay" [] . T.unpack $ owoify f
 
+handleTicker :: Message -> DiscordHandler ()
+handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
+    let [base, quote] = T.unpack <$> symbol
+    announcementM <- liftIO $ fetchTicker base quote
+    case announcementM of
+         Left err -> do
+            liftIO (putStrLn $ "Cannot get ticker from binance: " ++ err)
+            sendMessageChan (messageChannel m)
+                $ owoify "Couldn't get the data! Sorry"
+         Right announcement ->
+            sendMessageChan (messageChannel m)
+                $ owoify . T.pack $ base <> "/" <> quote <> " is "
+                                 <> announcement
+
 handleAda24h :: Message -> DiscordHandler ()
 handleAda24h m = newCommand m "ada24h" $ \_ -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
-        Left err -> 
+        Left err -> do
             liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err)
-                >> pure ()
+            sendMessageChan (messageChannel m)
+                $ owoify "Couldn't get the data! Sorry"
         Right announcement ->
             sendMessageChan (messageChannel m)
                 $ owoify $ T.pack announcement
