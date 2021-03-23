@@ -1,6 +1,8 @@
 {-# language OverloadedStrings, DeriveGeneric #-}
 
-module ADAPriceFetcher (fetchADADetails) where
+module ADAPriceFetcher ( fetchADADetails
+                       , fetchTicker
+                       ) where
 
 import           GHC.Generics
 import           Data.Aeson
@@ -42,22 +44,42 @@ getJSON a b = simpleHttp $ jsonURL a b
 
 fetchADADetails :: IO (Either String String)
 fetchADADetails = do
-    adaDeetsM <- (eitherDecode <$> getJSON "ADA" "BUSD") :: IO (Either String Ticker)
-    pure $ case adaDeetsM of
+    ticker <- fetchTicker "ADA" "BUSD"
+    pure $ case ticker of
+        Left  err -> Left err
+        Right str -> Right $ "<:ada:805934431071371305> (philcoin) is " ++ str
+
+fetchTicker :: String -> String -> IO (Either String String)
+fetchTicker base quote = do
+    detailsM <- (eitherDecode <$> getJSON base quote) :: IO (Either String Ticker)
+    pure $ case detailsM of
         Left err       -> Left err
-        Right adaDeets -> do
-            let percentChangeDouble = read (priceChangePercent adaDeets) :: Double
-            let curPriceDouble      = read (lastPrice adaDeets) :: Double
-            let lowPriceDouble      = read (lowPrice adaDeets) :: Double
-            let highPriceDouble     = read (highPrice adaDeets) :: Double
-            let adaAnnouncement = concat [
-                                    "<:ada:805934431071371305> (philcoin) is "
-                                    , "**", if percentChangeDouble < 0 then "down 💢" else "up 🚀🚀", "** "
-                                    , "**", show (abs percentChangeDouble), "%** in the past 24 hours, "
-                                    , "currently sitting at **$", show curPriceDouble, "** per unit (₳).\n"
+        Right details -> do
+            let percentChangeD = read (priceChangePercent details) :: Double
+            let curPriceD      = read (lastPrice          details) :: Double
+            let lowPriceD      = read (lowPrice           details) :: Double
+            let highPriceD     = read (highPrice          details) :: Double
+            Right $ tickerAnnounce base quote percentChangeD curPriceD lowPriceD highPriceD
 
-                                    , "Lowest price in the past 24h: **$", show lowPriceDouble, "**.\n"
+tickerAnnounce :: String -> String -> Double -> Double -> Double -> Double -> String
+tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
+      "**", if percentChange < 0 then "down 💢" else "up 🚀🚀", "** "
+    , "**", show (abs percentChange), "%** in the past 24 hours, "
+    , "currently sitting at **", sign base, "1** = **"
+    , sign quote, show curPrice, "** per unit.\n"
 
-                                    , "Highest price in the past 24h: **$", show highPriceDouble, "**."
-                                  ]
-            Right adaAnnouncement
+    , "Lowest price in the past 24h: **", sign quote, show lowPrice, "**.\n"
+
+    , "Highest price in the past 24h: **", sign quote, show highPrice, "**."
+    ]
+
+sign :: String -> String
+sign "BUSD" = "$"
+sign "USDT" = "$"
+sign "GBP"  = "£"
+sign "EUR"  = "€"
+
+sign "ADA"  = "₳"
+sign "BTC"  = "₿"
+
+sign x      = x

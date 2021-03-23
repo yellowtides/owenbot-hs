@@ -86,7 +86,7 @@ addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
 
 
 rmQuoteRE :: T.Text
-rmQuoteRE = "rmquote +\"?" <> nameRE <> ""\"?"
+rmQuoteRE = "rmquote +\"?" <> nameRE <> "\"?"
 
 rmQuote :: Message -> DiscordHandler ()
 rmQuote msg = newDevCommand msg rmQuoteRE $ \quote -> do
