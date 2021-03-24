@@ -2,24 +2,24 @@
 
 module QuoteSystem ( receivers ) where
 
-import Discord.Types            ( Message(messageChannel) )
-import Discord                  ( DiscordHandler )
-import Utils                    ( sendMessageChan
-                                , newCommand
-                                , newDevCommand
+import qualified Data.HashMap.Strict as HM
+import qualified Data.Text as T
+import           Discord.Types  ( Message ( messageChannel
+                                          , messageGuild
+                                          )
                                 )
+import           Discord        ( DiscordHandler )
+import           UnliftIO       ( liftIO )
 
-import UnliftIO                 ( liftIO )
-
-import Owoifier                 ( owoify )
-
-import CSV                      ( addToCSV
+import           CSV            ( addToCSV
                                 , readCSV
                                 , writeHashMapToCSV
                                 )
-
-import qualified Data.HashMap.Strict as HM
-import qualified Data.Text as T
+import           Owoifier       ( owoify )
+import           Utils          ( sendMessageChan
+                                , newCommand
+                                , newDevCommand
+                                )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers = [ receiveQuote, addQuote, rmQuote ]
@@ -53,11 +53,11 @@ removeQuote name = do
     writeHashMapToCSV quotePath newTable
 
 receiveQuoteRE :: T.Text
-receiveQuoteRE = "quote +\"?" <> nameRE <> "\"?";
+receiveQuoteRE = "(:|quote +)\"?" <> nameRE <> "\"?";
 
 receiveQuote :: Message -> DiscordHandler ()
 receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
-    let name = head quote
+    let name = (head . tail) quote
     textM <- liftIO $ fetchQuote name
     sendMessageChan (messageChannel msg) $ case textM of
         Nothing   -> owoify $ T.concat [
@@ -73,16 +73,20 @@ addQuoteRE :: T.Text
 addQuoteRE = "addquote +\"" <> nameRE <> "\" +\"(.{1,})\""
 
 addQuote :: Message -> DiscordHandler ()
-addQuote msg = newDevCommand msg addQuoteRE $ \quote -> do
-    let [name, content] = quote
-    textM <- liftIO $ fetchQuote name
-    case textM of
-        Nothing -> do
-            liftIO $ storeQuote name content
-            let successMessage = "New quote registered under `:quote " <> name <> "`."
-            sendMessageChan (messageChannel msg) successMessage
-        Just _  -> sendMessageChan (messageChannel msg) . owoify
-                       $ "Quote already exists my dude, try `:quote " <> name <> "`."
+addQuote msg = newCommand msg addQuoteRE $ \quote ->
+    case messageGuild msg of
+        Nothing ->
+            sendMessageChan (messageChannel msg) "Only possible in a server!"
+        Just _  -> do
+            let [name, content] = quote
+            textM <- liftIO $ fetchQuote name
+            case textM of
+                Nothing -> do
+                    liftIO $ storeQuote name content
+                    sendMessageChan (messageChannel msg)
+                        $ "New quote registered under `:quote " <> name <> "`."
+                Just _  -> sendMessageChan (messageChannel msg) . owoify
+                    $ "Quote already exists my dude, try `:quote " <> name <> "`."
 
 
 rmQuoteRE :: T.Text
