@@ -75,9 +75,11 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
 
 sign :: String -> String
 sign "BUSD" = "$"
+sign "TUSD" = "$"
 sign "USDT" = "$"
-sign "GBP"  = "£"
+sign "AUD"  = "$"
 sign "EUR"  = "€"
+sign "GBP"  = "£"
 sign "JPY"  = "¥"
 
 sign "ADA"  = "₳"
