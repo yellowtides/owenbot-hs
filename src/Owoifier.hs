@@ -20,18 +20,14 @@ owoifyChar c
     | c `elem` ("lr" :: [Char]) = 'w'
     | otherwise                 = c
 
-cartesianCons :: [Char] -> [Char] -> [T.Text]
-cartesianCons chars chars' = T.cons <$> chars
-                                    <*> (T.singleton <$> chars')
+(<->) :: [Char] -> [Char] -> [T.Text]
+(<->) as bs = [T.pack [a,b] | a <- as, b <- bs]
 
--- ['NMnm' <-> 'o']
--- ['nm'   <-> 'O']
 segmentsSmallY :: [T.Text]
-segmentsSmallY = cartesianCons "NMnm" "o" ++ cartesianCons "nm" "O"
+segmentsSmallY = "NMnm" <-> "o" ++ "nm" <-> "O"
 
--- ['NM' <-> 'O']
 segmentsBigY :: [T.Text]
-segmentsBigY = cartesianCons "NM" "O"
+segmentsBigY = "NM" <-> "O"
 
 mkRules :: [(Char, [T.Text])] -> [(T.Text, Char)]
 mkRules defs = do
