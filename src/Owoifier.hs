@@ -13,7 +13,7 @@ owolessDelim = "```"
 owoify :: T.Text -> T.Text
 owoify text = do
     let segments = T.splitOn owolessDelim text
-    let owoifiedText = T.concat [
+    let owoifiedText = T.intercalate owolessDelim [
             if odd i 
                 then owoifySegment segment 
                 else segment 

@@ -20,7 +20,7 @@ spec = do
                 "Waughtew Wowwing nyo myowe NYO MYOWE nyO myOWE Nyo Myowe. owo"
         it "checks owoify against a string with escapes" $
             owoify "Laughter Rolling ```no more NO``` MOR```E nO mOR```E No``` More." `shouldBe`
-                "Waughtew Wowwing no more NO MYOWE nO mORE Nyo More. owo"
+                "Waughtew Wowwing ```no more NO``` MYOW```E nO mOR```E Nyo``` More. owo"
     describe "Owoify (weak ver.) operations" $ do
         it "checks weakOwoify doesn't change the length" $
             property prop_weakNoChangeLength
