@@ -1,7 +1,7 @@
 module Main where
 
 import qualified Data.Text as T
-import           Control.Monad 
+import           Control.Monad
 import           Discord.Requests as R
 import           Discord                ( runDiscord
                                         , def
