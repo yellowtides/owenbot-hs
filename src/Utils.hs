@@ -9,6 +9,8 @@ module Utils ( sendMessageChan
              , sendMessageChanEmbed
              , sendMessageDM
              , sendFileChan
+             , addReaction
+             , messageFromReaction
              , pingAuthorOf
              , newCommand
              , newDevCommand
@@ -159,6 +161,16 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
             where
                 putNothing :: IOException -> IO (Maybe B.ByteString)
                 putNothing = const $ pure Nothing
+
+-- | `messageFromReaction` attempts to get the Message instance from a reaction.
+messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
+messageFromReaction r = restCall
+    $ R.GetChannelMessage (reactionChannelId r, reactionMessageId r)
+
+-- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
+-- error message(s), returning `()`.
+addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
+addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 
 -- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
 isMod :: Message -> DiscordHandler Bool

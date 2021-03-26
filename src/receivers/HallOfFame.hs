@@ -38,6 +38,7 @@ import           UnliftIO           ( liftIO )
 
 import           Utils              ( sendMessageChan
                                     , pingAuthorOf
+                                    , messageFromReaction
                                     , linkChannel
                                     , getMessageLink
                                     , sendMessageChanEmbed
@@ -62,7 +63,7 @@ attemptHallOfFame r = do
         when eligible $ putInHallOfFame r
 
 hallOfFameEmotes :: [T.Text]
-hallOfFameEmotes = 
+hallOfFameEmotes =
     [ "XREE"
     , "KEKW"
     , "\11088" -- star
@@ -77,10 +78,6 @@ notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
 isHallOfFameEmote :: ReactionInfo -> Bool
 isHallOfFameEmote r = T.toUpper (emojiName (reactionEmoji r)) `elem` hallOfFameEmotes
 
-messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
-messageFromReaction r = restCall 
-    $ R.GetChannelMessage (reactionChannelId r, reactionMessageId r)
-
 isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler Bool
 isEligibleForHallOfFame r = do
     messM <- messageFromReaction r
@@ -92,12 +89,12 @@ isEligibleForHallOfFame r = do
             let existsInHOF = show (messageId mess) `elem` msgIdListStr
             let reactions = messageReactions mess
             let capsEmotes = map T.toUpper hallOfFameEmotes
-            let fulfillCond = \x -> 
+            let fulfillCond = \x ->
                     (messageReactionCount x) >= limit
                     && T.toUpper (emojiName $ messageReactionEmoji x) `elem` capsEmotes
                     && not existsInHOF
             pure $ any fulfillCond reactions
-        Left err -> liftIO (putStrLn (show err)) >> pure False    
+        Left err -> liftIO (putStrLn (show err)) >> pure False
 
 putInHallOfFame :: ReactionInfo -> DiscordHandler ()
 putInHallOfFame r = do
