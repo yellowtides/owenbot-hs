@@ -7,8 +7,21 @@ module Owoifier ( owoify
 
 import qualified Data.Text as T
 
+owolessDelim :: T.Text
+owolessDelim = "```"
+
 owoify :: T.Text -> T.Text
-owoify = (<> " owo") . doInserts . weakOwoify
+owoify text = do
+    let segments = T.splitOn owolessDelim text
+    let owoifiedText = T.intercalate owolessDelim [
+            if odd i 
+                then owoifySegment segment 
+                else segment 
+            |  (i, segment) <- zip [1..] segments]
+    owoifiedText <> " owo"
+
+owoifySegment :: T.Text -> T.Text
+owoifySegment = doInserts . weakOwoify
 
 weakOwoify :: T.Text -> T.Text
 weakOwoify = T.map owoifyChar
@@ -20,18 +33,14 @@ owoifyChar c
     | c `elem` ("lr" :: [Char]) = 'w'
     | otherwise                 = c
 
-cartesianCons :: [Char] -> [Char] -> [T.Text]
-cartesianCons chars chars' = T.cons <$> chars
-                                    <*> (T.singleton <$> chars')
+(<->) :: [Char] -> [Char] -> [T.Text]
+(<->) as bs = [T.pack [a,b] | a <- as, b <- bs]
 
--- ['NMnm' <-> 'o']
--- ['nm'   <-> 'O']
 segmentsSmallY :: [T.Text]
-segmentsSmallY = cartesianCons "NMnm" "o" ++ cartesianCons "nm" "O"
+segmentsSmallY = "NMnm" <-> "o" ++ "nm" <-> "O"
 
--- ['NM' <-> 'O']
 segmentsBigY :: [T.Text]
-segmentsBigY = cartesianCons "NM" "O"
+segmentsBigY = "NM" <-> "O"
 
 mkRules :: [(Char, [T.Text])] -> [(T.Text, Char)]
 mkRules defs = do

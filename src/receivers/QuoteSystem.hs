@@ -53,7 +53,7 @@ removeQuote name = do
     writeHashMapToCSV quotePath newTable
 
 receiveQuoteRE :: T.Text
-receiveQuoteRE = "(:|quote +)\"?" <> nameRE <> "\"?";
+receiveQuoteRE = "(:|quote +)\"?" <> nameRE <> "\"?"
 
 receiveQuote :: Message -> DiscordHandler ()
 receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
@@ -62,7 +62,7 @@ receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
     sendMessageChan (messageChannel msg) $ case textM of
         Nothing   -> owoify $ T.concat [
                 "Nope, nothing there. ",
-                "Maybe consider `:addQuote [quote] [quote_message]`"
+                "Maybe consider `:addquote \"[quote]\" \"[quote_message]\"`"
             ]
         Just text -> text
 
