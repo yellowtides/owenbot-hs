@@ -31,7 +31,7 @@ import qualified QuoteSystem
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
      [ Admin.receivers
-     , Misc.receivers
+     , Misc.messageReceivers
      , Calc.receivers
      , Helpme.receivers
      , ILA.receivers
@@ -43,7 +43,8 @@ messageReceivers = concat
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = concat
-     [ HallOfFame.reactionReceivers
+     [ Misc.reactionReceivers
+     , HallOfFame.reactionReceivers
      , RoleSelfAssign.reactionAddReceivers
      ]
 
