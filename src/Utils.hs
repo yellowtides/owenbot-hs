@@ -11,7 +11,10 @@ module Utils ( sendMessageChan
              , sendFileChan
              , addReaction
              , messageFromReaction
+             , pingUser
+             , pingRole
              , pingAuthorOf
+             , stripAllPings
              , newCommand
              , newDevCommand
              , linkChannel
@@ -67,6 +70,7 @@ import           CSV                    ( readSingleColCSV )
 
 import           Data.Either            ( isRight
                                         , fromRight )
+import           Data.Maybe             ( fromMaybe )
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
@@ -80,9 +84,35 @@ repoDir = "$HOME/owenbot-hs/"
 (=~=) :: T.Text -> T.Text -> Bool
 (=~=) = (=~) `on` weakOwoify
 
+-- | `pingUser` constructs a minimal `Text` pinging the given user.
+pingUser :: User -> T.Text
+pingUser u =  "<@" <> T.pack (show $ userId u) <> ">"
+
+-- | `pingRole` constructs a minimal `Text` pinging the given role id.
+pingRole :: RoleId -> T.Text
+pingRole r = "<@&" <> T.pack (show r) <> ">"
+
 -- | `pingAuthorOf` constructs a minimal `Text` pinging the author of a given message.
 pingAuthorOf :: Message -> T.Text
-pingAuthorOf m = "<@" <> T.pack (show . userId $ messageAuthor m) <> ">"
+pingAuthorOf = pingUser . messageAuthor
+
+-- | `converge` applies a function to a variable until the result converges.
+converge :: Eq a => (a -> a) -> a -> a
+converge = (>>= (==)) >>= until
+
+-- | `stripAllPings` removes all pings from a given `Text` message. 
+stripAllPings :: T.Text -> T.Text
+stripAllPings = T.pack . converge stripOnePing . T.unpack
+    where
+        pingRE :: String
+        pingRE = "^@[&!]?[0-9]{8,}>"
+        stripOnePing :: String -> String
+        stripOnePing []           = []
+        stripOnePing [ch]         = [ch]
+        stripOnePing ('<':xs) = if xs =~ pingRE
+                                    then drop 1 $ dropWhile (/= '>') xs
+                                    else '<':xs
+        stripOnePing (x:xs)       = x : stripOnePing xs
 
 -- | `linkChannel` constructs a minimal `Text` linking the channel with the provided ID.
 linkChannel :: ChannelId  -> T.Text
