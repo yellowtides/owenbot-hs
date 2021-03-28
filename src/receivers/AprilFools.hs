@@ -85,12 +85,14 @@ rewriteReactionAsIRC r = do
                         then "[...]"
                         else ""
     let reactMessageT = T.concat [
+                "_",
                 reacterUsername,
                 " reacted to \"",
                 T.take maxMessageLen $ messageText message,
                 ellipses,
                 "\" with ",
-                emojiT
+                emojiT,
+                "_"
             ]
     if isLikelyIRCMessage message
         then sendMessageChan cid reactMessageT
