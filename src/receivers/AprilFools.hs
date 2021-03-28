@@ -18,22 +18,13 @@ import           Discord.Types      ( ChannelId
                                     , Snowflake
                                     , Attachment ( attachmentUrl )
                                     , Emoji ( emojiName )
-                                    , Message ( messageReactions
-                                              , messageId
-                                              , messageText
-                                              , messageChannel
-                                              , messageAttachments
-                                              , messageChannel, messageAuthor, messageEmbeds, messageMentionRoles, messageMentions, referencedMessage
-                                              )
-                                    , MessageReaction ( messageReactionCount
-                                                      , messageReactionEmoji
-                                                      )
+                                    , Message (..)
+                                    , MessageReaction (..)
                                     , CreateEmbed ( CreateEmbed )
                                     , CreateEmbedImage ( CreateEmbedImageUrl )
-                                    , ReactionInfo ( reactionEmoji
-                                                   , reactionChannelId
-                                                   , reactionMessageId, reactionUserId
-                                                   ), User ( userName, userId ), UserId
+                                    , ReactionInfo (..)
+                                    , User (..)
+                                    , UserId
                                     )
 import           Text.Read          ( readMaybe )
 import           UnliftIO           ( liftIO )
