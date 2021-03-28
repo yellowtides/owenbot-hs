@@ -32,7 +32,8 @@ import qualified AprilFools
 
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
-     [ {- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
+     [ 
+          {- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
      , -}
      Admin.receivers
      , Misc.messageReceivers
@@ -53,7 +54,7 @@ reactionAddReceivers = {-AprilFools.reactionReceivers -}concat
      ]
 
 reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
-reactionRemoveReceivers = concat
+reactionRemoveReceivers = concat --Singleton list as expansion could be used later on
      [ RoleSelfAssign.reactionRemReceivers
      ]
 
