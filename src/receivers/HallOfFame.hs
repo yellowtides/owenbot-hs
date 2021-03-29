@@ -63,7 +63,7 @@ attemptHallOfFame r = do
         when eligible $ putInHallOfFame r
 
 hallOfFameEmotes :: [T.Text]
-hallOfFameEmotes =
+hallOfFameEmotes = T.toUpper <$>
     [ "XREE"
     , "KEKW"
     , "\11088" -- star
@@ -88,10 +88,9 @@ isEligibleForHallOfFame r = do
             limit <- liftIO readLimit
             let existsInHOF = show (messageId mess) `elem` msgIdListStr
             let reactions   = messageReactions mess
-            let capsEmotes  = map T.toUpper hallOfFameEmotes
             let fulfillCond = \x ->
                     messageReactionCount x >= limit
-                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` capsEmotes
+                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
                     && not existsInHOF
             pure $ any fulfillCond reactions
         Left err -> liftIO (print err) >> pure False
