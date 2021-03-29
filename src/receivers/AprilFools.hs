@@ -5,7 +5,8 @@ module AprilFools ( messageReceivers
                   ) where
 
 import           Control.Monad      ( guard
-                                    , when, join
+                                    , when
+                                    , join
                                     )
 import           Data.Functor       ( (<&>) )
 import qualified Data.Text as T
@@ -94,9 +95,7 @@ rewriteReactionAsIRC r = do
                 emojiT,
                 "_"
             ]
-    if isLikelyIRCMessage message
-        then sendMessageChan cid reactMessageT
-        else pure ()
+    when (isLikelyIRCMessage message) (sendMessageChan cid reactMessageT)
     where
         uid    = reactionUserId r
         cid    = reactionChannelId r

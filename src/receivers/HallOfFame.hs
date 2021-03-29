@@ -110,6 +110,7 @@ putInHallOfFame r = do
                 Left err -> liftIO (putStrLn "Couldn't get link to message")
         Left err -> liftIO (putStrLn "Couldn't find associated message")
 
+
 createDescription :: Message -> T.Text
 createDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel (messageChannel m)
 
