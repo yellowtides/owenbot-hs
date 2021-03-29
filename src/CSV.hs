@@ -10,6 +10,7 @@ module CSV ( configDir
            ) where
 
 import           Control.Applicative        ( (<|>) )
+import           Control.Monad              ( void )
 import           Data.Functor               ( (<&>) )
 import           Data.List                  ( transpose )
 import           Data.Maybe                 ( fromMaybe )
@@ -62,6 +63,9 @@ eol = try (string "\n\r")
     <|> string "\r"
     <?> "end of line"
 
+errStrLn :: String -> IO ()
+errStrLn = TIO.hPutStrLn stderr . T.pack
+
 -- | Reads CSV as 2-D T.Text list. If doesn't exist, creates new
 -- file with empty contents and returns []
 readCSV :: FilePath -> IO [[T.Text]]
@@ -70,8 +74,8 @@ readCSV path = do
     contents <- handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error reading " <> base <> path)
-            TIO.hPutStrLn stderr (T.pack err)
+            errStrLn $ "[Warn] Error reading " <> base <> path
+            errStrLn err
             pure "")
         $ readFile (base <> path)
     case parse csvFile path contents of
@@ -93,9 +97,8 @@ writeCSV path contents = do
     handle
         (\e -> do
             let err = show (e :: IOException)
-            TIO.hPutStrLn stderr $ T.pack ("[Warn] Error writing to " <> base <> path)
-            TIO.hPutStrLn stderr (T.pack err)
-            pure ())
+            errStrLn $ "[Warn] Error writing to " <> base <> path
+            void $ errStrLn err)
         $ TIO.writeFile (base <> path)
         $ T.unlines
         $ fmap (T.intercalate "," . fmap escapeQuotes) contents

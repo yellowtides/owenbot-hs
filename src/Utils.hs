@@ -36,6 +36,7 @@ import           Control.Monad          ( guard
                                         , when
                                         , join
                                         , liftM
+                                        , void
                                         )
 import qualified Data.ByteString as B
 import           Data.Char              ( isSpace
@@ -108,28 +109,25 @@ getMessageLink m = do
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = do
-    restCall $ R.CreateMessage c xs
-    pure ()
+    void $ restCall $ R.CreateMessage c xs
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
 sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
 sendReply m mention xs = do
-    restCall $ R.CreateMessageDetailed (messageChannel m)
+    void $ restCall $ R.CreateMessageDetailed (messageChannel m)
         $ def { R.messageDetailedContent = xs
               , R.messageDetailedReference = Just
                 $ def { referenceMessageId = Just $ messageId m }
               , R.messageDetailedAllowedMentions = Just
                 $ def { R.mentionRepliedUser = mention }
               }
-    pure ()
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
 sendMessageChanEmbed c xs e = do
-    restCall $ R.CreateMessageEmbed c xs e
-    pure ()
+    void $ restCall $ R.CreateMessageEmbed c xs e
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
@@ -149,8 +147,7 @@ sendFileChan c name fp = do
     case mFileContent of
         Nothing          -> sendMessageChan c $ owoify "The file cannot be found!"
         Just fileContent -> do
-            restCall $ R.CreateMessageUploadFile c name fileContent
-            pure ()
+            void $ restCall $ R.CreateMessageUploadFile c name fileContent
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.
