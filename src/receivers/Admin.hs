@@ -144,7 +144,7 @@ removeDevs m = newDevCommand m "devs remove ([0-9]{1,32})" $ \captures -> do
 
 statusRE :: T.Text
 statusRE = "(online|idle|dnd|invisible) "
-           <> "(playing|streaming|competing|listening to "
+           <> "(playing|streaming|competing|listening to) "
            <> "(.*)"
 
 -- | Checks the input against the correct version of :status

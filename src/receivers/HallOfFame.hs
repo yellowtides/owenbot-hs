@@ -38,6 +38,7 @@ import           UnliftIO           ( liftIO )
 
 import           Utils              ( sendMessageChan
                                     , pingAuthorOf
+                                    , messageFromReaction
                                     , linkChannel
                                     , getMessageLink
                                     , sendMessageChanEmbed
@@ -77,10 +78,6 @@ notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
 isHallOfFameEmote :: ReactionInfo -> Bool
 isHallOfFameEmote r = T.toUpper (emojiName (reactionEmoji r)) `elem` hallOfFameEmotes
 
-messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
-messageFromReaction r = restCall 
-    $ R.GetChannelMessage (reactionChannelId r, reactionMessageId r)
-
 isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler Bool
 isEligibleForHallOfFame r = do
     messM <- messageFromReaction r
@@ -90,9 +87,9 @@ isEligibleForHallOfFame r = do
             let msgIdListStr = T.unpack <$> msgIdList
             limit <- liftIO readLimit
             let existsInHOF = show (messageId mess) `elem` msgIdListStr
-            let reactions = messageReactions mess
-            let capsEmotes = map T.toUpper hallOfFameEmotes
-            let fulfillCond = \x -> 
+            let reactions   = messageReactions mess
+            let capsEmotes  = map T.toUpper hallOfFameEmotes
+            let fulfillCond = \x ->
                     messageReactionCount x >= limit
                     && T.toUpper (emojiName $ messageReactionEmoji x) `elem` capsEmotes
                     && not existsInHOF

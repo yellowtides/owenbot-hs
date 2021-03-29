@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Misc ( receivers ) where
+module Misc ( messageReceivers, reactionReceivers ) where
 
 import qualified Discord.Requests as R
 import           Discord.Types
@@ -21,6 +21,8 @@ import           System.Random          ( randomR
 import           Utils                  ( sendMessageChan
                                         , sendReply
                                         , sendFileChan
+                                        , addReaction
+                                        , messageFromReaction
                                         , pingAuthorOf
                                         , newCommand
                                         , (=~=)
@@ -29,8 +31,8 @@ import           Owoifier               ( owoify )
 import           ADAPriceFetcher        ( fetchTicker
                                         , fetchADADetails)
 
-receivers :: [Message -> DiscordHandler ()]
-receivers =
+messageReceivers :: [Message -> DiscordHandler ()]
+messageReceivers =
     [ owoifyIfPossible
     , godIsDead
     , thatcherIsDead
@@ -40,6 +42,10 @@ receivers =
     , handleTicker
     , handleAda24h
     ]
+
+reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
+reactionReceivers =
+    [ forceOwoify ]
 
 roll :: Int -> IO Int
 roll n = getStdRandom $ randomR (1, n)
@@ -51,6 +57,37 @@ owoifyIfPossible m = do
     when (roll500 == 1 && isOwoifiable) $ do
         sendReply m True
             $ owoify (messageText m)
+
+-- | Emote names for which to trigger force owoify on. All caps.
+forceOwoifyEmotes :: [T.Text]
+forceOwoifyEmotes =
+    [ "BEGONEBISH" ]
+
+-- | Forces the owofication of a message upon a reaction of forceOwoifyEmotes.
+-- Marks it as done with a green check, and checks for its existence to prevent
+-- duplicates.
+forceOwoify :: ReactionInfo -> DiscordHandler ()
+forceOwoify r = do
+    messM <- messageFromReaction r
+    case messM of
+        Right mess -> do
+            -- Get all reactions for the associated message
+            let reactions = messageReactions mess
+            -- Define conditions that stops execution
+            let blockCond = \x ->
+                    messageReactionMeIncluded x
+                    && emojiName (messageReactionEmoji x) == "✅"
+            -- Conditions that say go!
+            let fulfillCond = \x ->
+                    T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
+            -- If all goes good, add a checkmark and send an owoification reply
+            if any blockCond reactions || not (any fulfillCond reactions) then do
+                pure ()
+            else do
+                _ <- addReaction (reactionChannelId r) (reactionMessageId r) "✅"
+                -- Send reply without pinging (this isn't as ping-worthy as random trigger)
+                sendReply mess False $ owoify (messageText mess)
+        Left err -> liftIO (print err) >> pure ()
 
 godIsDead :: Message -> DiscordHandler ()
 godIsDead m = do

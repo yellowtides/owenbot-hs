@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 4aac3eab6c712896ecf7fa6ab962eec4388453f5da850cdc224cc5b78e3f2bb0
 
 name:           owenbot
 version:        0.1.0.0
@@ -32,6 +34,7 @@ library
       Utils
       ADAPriceFetcher
       Admin
+      AprilFools
       Calc
       HallOfFame
       Helpme

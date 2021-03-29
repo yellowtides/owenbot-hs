@@ -28,10 +28,15 @@ import qualified RoleSelfAssign
 import qualified MCServer
 import qualified QuoteSystem
 
+import qualified AprilFools
+
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
-     [ Admin.receivers
-     , Misc.receivers
+     [ 
+          {- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
+     , -}
+     Admin.receivers
+     , Misc.messageReceivers
      , Calc.receivers
      , Helpme.receivers
      , ILA.receivers
@@ -42,13 +47,14 @@ messageReceivers = concat
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
-reactionAddReceivers = concat
-     [ HallOfFame.reactionReceivers
+reactionAddReceivers = {-AprilFools.reactionReceivers -}concat
+     [ Misc.reactionReceivers
+     , HallOfFame.reactionReceivers
      , RoleSelfAssign.reactionAddReceivers
      ]
 
 reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
-reactionRemoveReceivers = concat
+reactionRemoveReceivers = concat --Singleton list as expansion could be used later on
      [ RoleSelfAssign.reactionRemReceivers
      ]
 

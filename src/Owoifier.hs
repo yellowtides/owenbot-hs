@@ -7,8 +7,21 @@ module Owoifier ( owoify
 
 import qualified Data.Text as T
 
+owolessDelim :: T.Text
+owolessDelim = "```"
+
 owoify :: T.Text -> T.Text
-owoify = (<> " owo") . doInserts . weakOwoify
+owoify text = do
+    let segments = T.splitOn owolessDelim text
+    let owoifiedText = T.intercalate owolessDelim [
+            if odd i 
+                then owoifySegment segment 
+                else segment 
+            |  (i, segment) <- zip [1..] segments]
+    owoifiedText <> " owo"
+
+owoifySegment :: T.Text -> T.Text
+owoifySegment = doInserts . weakOwoify
 
 weakOwoify :: T.Text -> T.Text
 weakOwoify = T.map owoifyChar
