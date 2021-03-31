@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Status where
+module Status(updateStatus, editStatusFile, setStatusFromFile) where
 
 import           Control.Monad          ( when )
 import qualified Data.Text as T

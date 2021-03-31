@@ -63,7 +63,7 @@ attemptHallOfFame r = do
         when eligible $ putInHallOfFame r
 
 hallOfFameEmotes :: [T.Text]
-hallOfFameEmotes =
+hallOfFameEmotes = T.toUpper <$>
     [ "XREE"
     , "KEKW"
     , "\11088" -- star
@@ -87,14 +87,13 @@ isEligibleForHallOfFame r = do
             let msgIdListStr = T.unpack <$> msgIdList
             limit <- liftIO readLimit
             let existsInHOF = show (messageId mess) `elem` msgIdListStr
-            let reactions = messageReactions mess
-            let capsEmotes = map T.toUpper hallOfFameEmotes
+            let reactions   = messageReactions mess
             let fulfillCond = \x ->
-                    (messageReactionCount x) >= limit
-                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` capsEmotes
+                    messageReactionCount x >= limit
+                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
                     && not existsInHOF
             pure $ any fulfillCond reactions
-        Left err -> liftIO (putStrLn (show err)) >> pure False
+        Left err -> liftIO (print err) >> pure False
 
 putInHallOfFame :: ReactionInfo -> DiscordHandler ()
 putInHallOfFame r = do
@@ -105,11 +104,12 @@ putInHallOfFame r = do
             case embedM of
                 Right embed -> do
                     msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-                    liftIO $ writeSingleColCSV "fame.csv" ((T.pack $ show $ messageId mess):msgIdList)
+                    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId mess):msgIdList)
                     --adds the message id to the csv to make sure we dont add it multiple times.
                     sendMessageChanEmbed hallOfFameChannel "" embed
-                Left err -> liftIO (putStrLn "Couldn't get link to message") >> pure ()
-        Left err -> liftIO (putStrLn "Couldn't find associated message") >> pure ()
+                Left err -> liftIO (putStrLn "Couldn't get link to message")
+        Left err -> liftIO (putStrLn "Couldn't find associated message")
+
 
 createDescription :: Message -> T.Text
 createDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel (messageChannel m)
@@ -130,9 +130,9 @@ createHallOfFameEmbed m = do
             let embedTitle = "👑 best of ouw buwwshit"
             let embedUrl = ""
             let embedThumbnail = Nothing
-            let embedDescription = (createDescription m <> "\n\n[Original Message](" <> messLink <> ")")
+            let embedDescription = createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
             let embedFields = []
-            let embedImage = (Just (CreateEmbedImageUrl $ getImageFromMessage m))
+            let embedImage = Just (CreateEmbedImageUrl $ getImageFromMessage m)
             let embedFooterText = getTimestampFromMessage m
             let embedFooterIcon = Nothing
             pure $ Right (CreateEmbed authorName
@@ -155,7 +155,7 @@ reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
         Nothing -> do
             i <- liftIO $ readLimit
             sendMessageChan (messageChannel m)
-                $ "Current limit is at " <> (T.pack $ show i)
+                $ "Current limit is at " <> T.pack (show i)
         Just i -> do
             liftIO $ editLimit i
             sendMessageChan (messageChannel m) "New Limit Set"

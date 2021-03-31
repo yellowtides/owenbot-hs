@@ -7,6 +7,7 @@
 module Utils ( sendMessageChan
              , sendReply
              , sendMessageChanEmbed
+             , sendMessageChanPingsDisabled
              , sendMessageDM
              , sendFileChan
              , addReaction
@@ -14,6 +15,7 @@ module Utils ( sendMessageChan
              , pingUser
              , pingRole
              , pingAuthorOf
+             , pingWithUsername
              , stripAllPings
              , newCommand
              , newDevCommand
@@ -41,6 +43,7 @@ import           Control.Monad          ( guard
                                         , when
                                         , join
                                         , liftM
+                                        , void
                                         )
 import qualified Data.ByteString as B
 import           Data.Char              ( isSpace
@@ -96,6 +99,27 @@ pingRole r = "<@&" <> T.pack (show r) <> ">"
 pingAuthorOf :: Message -> T.Text
 pingAuthorOf = pingUser . messageAuthor
 
+-- | `pingWithUsername` constructs a minimal `Text` pinging the the user with the given 
+-- username from the given guild. On failure, returns an empty Text. On multiple such
+-- users, returns an empty Text.
+pingWithUsername :: T.Text -> GuildId -> DiscordHandler T.Text
+pingWithUsername uname gid = do
+    let timing = R.GuildMembersTiming (Just 1000) Nothing
+    -- number of users to fetch, maximum is 1000
+    -- "Nothing" seems to default to (Just 1)
+    membersM <- restCall $ R.ListGuildMembers gid timing 
+    let members = case membersM of
+            Right success -> success
+            Left  _       -> []
+    let users = memberUser <$> members
+    _ <- liftIO $ print (userName <$> users)
+    let usersWithUsername = filter (\u -> userName u == uname) users
+    _ <- liftIO $ print usersWithUsername
+    pure $ case usersWithUsername of
+        []  -> ""
+        [u] -> pingUser u
+        _   -> ""
+
 -- | `converge` applies a function to a variable until the result converges.
 converge :: Eq a => (a -> a) -> a -> a
 converge = (>>= (==)) >>= until
@@ -140,28 +164,36 @@ getMessageLink m = do
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = do
-    restCall $ R.CreateMessage c xs
-    pure ()
+    void $ restCall $ R.CreateMessage c xs
+
+sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler () 
+sendMessageChanPingsDisabled cid t = do
+    let opts = def { R.messageDetailedContent = t
+                    , R.messageDetailedAllowedMentions = Just
+                        $ def { R.mentionEveryone = False
+                              , R.mentionUsers    = False
+                              , R.mentionRoles    = False
+                              }
+                   }
+    void $ restCall (R.CreateMessageDetailed cid opts)
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
 sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
 sendReply m mention xs = do
-    restCall $ R.CreateMessageDetailed (messageChannel m)
+    void $ restCall $ R.CreateMessageDetailed (messageChannel m)
         $ def { R.messageDetailedContent = xs
               , R.messageDetailedReference = Just
                 $ def { referenceMessageId = Just $ messageId m }
               , R.messageDetailedAllowedMentions = Just
                 $ def { R.mentionRepliedUser = mention }
               }
-    pure ()
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
 sendMessageChanEmbed c xs e = do
-    restCall $ R.CreateMessageEmbed c xs e
-    pure ()
+    void $ restCall $ R.CreateMessageEmbed c xs e
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
@@ -181,8 +213,7 @@ sendFileChan c name fp = do
     case mFileContent of
         Nothing          -> sendMessageChan c $ owoify "The file cannot be found!"
         Just fileContent -> do
-            restCall $ R.CreateMessageUploadFile c name fileContent
-            pure ()
+            void $ restCall $ R.CreateMessageUploadFile c name fileContent
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.

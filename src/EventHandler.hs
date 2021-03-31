@@ -32,8 +32,7 @@ import qualified AprilFools
 
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat
-     [ {- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
-     , -}
+     [ -- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
      Admin.receivers
      , Misc.messageReceivers
      , Calc.receivers
@@ -46,8 +45,9 @@ messageReceivers = concat
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
-reactionAddReceivers = {-AprilFools.reactionReceivers -}concat
-     [ Misc.reactionReceivers
+reactionAddReceivers = concat
+     [ -- AprilFools.reactionReceivers
+     Misc.reactionReceivers
      , HallOfFame.reactionReceivers
      , RoleSelfAssign.reactionAddReceivers
      ]
