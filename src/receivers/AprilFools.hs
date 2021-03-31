@@ -38,7 +38,7 @@ import           Utils              ( sendMessageChan
                                     , sendMessageChanPingsDisabled
                                     , getTimestampFromMessage
                                     , newDevCommand, pingUser, pingRole, stripAllPings, pingWithUsername
-                                    , emojiToUsableText
+                                    , emojiToUsableText, sendMessageDM
                                     )
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
@@ -127,25 +127,28 @@ rewriteMessageAsIRC m = do
             , onNonEmptyAddAfter (T.intercalate ": " userPings) ": "
             , onNonEmptyAddAfter (T.intercalate ": " rolePings) ": "
             ]
-    let attachURLs = attachmentUrl <$> attach
-    let attachmentsT = T.concat
-            [ onNonEmptyAddBefore (T.intercalate "\n" attachURLs) "\n"
-            ]
     let postHandleT = T.concat
             [ mentionsT
             , stripAllPings messageT
-            , attachmentsT
             ] 
     let newMessageT = T.concat
             [ authorHandle
             , postHandleT
             ]
     -- > SEND IRC MESSAGE
+    _ <- restCall $ R.DeleteMessage (cid, mid)
+    unless (null attach)
+        . sendMessageDM (userId $ messageAuthor m) $ T.concat 
+          [ "**An IRC client doesn't support direct file upload!** "
+          , "Consider uploading your media to https://imgur.com/upload and "
+          , "posting a link in chat instead."
+          ]
+    -- Only send a message when the attachments are null.
+    guard $ null attach
+
     unless (T.null postHandleT)
         $ sendMessageChan cid newMessageT
     -- _ <- liftIO . print $ messageT
-    _ <- restCall $ R.DeleteMessage (cid, mid)
-    pure ()
     where
         cid                   = messageChannel m
         mid                   = messageId m
