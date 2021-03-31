@@ -37,16 +37,15 @@ updateStatus newStatus newType newName =
 -- | Sets the Discord status
 updateStatus' :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()
 updateStatus' newStatus newType newName = sendCommand $
-    UpdateStatus (UpdateStatusOpts {
-        updateStatusOptsSince = Nothing,
-        updateStatusOptsGame = Just (Activity {
-            activityName = newName,
-            activityType = newType,
-            activityUrl = Nothing
-            }),
-        updateStatusOptsNewStatus = newStatus,
-        updateStatusOptsAFK = False
-        })
+    UpdateStatus $ UpdateStatusOpts { updateStatusOptsSince = Nothing
+                                    , updateStatusOptsGame = Just
+                                        $ Activity { activityName = newName
+                                                   , activityType = newType
+                                                   , activityUrl = Nothing
+                                                   }
+                                    , updateStatusOptsNewStatus = newStatus
+                                    , updateStatusOptsAFK = False
+                                    }
 
 -- | Sets the status from file on bot launch
 -- Should be called only once.
