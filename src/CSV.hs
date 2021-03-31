@@ -10,7 +10,12 @@ module CSV ( configDir
            ) where
 
 import           Control.Applicative        ( (<|>) )
+import           Control.Exception          ( handle
+                                            , IOException
+                                            )
+import           Data.Bifunctor             ( bimap )
 import           Data.Functor               ( (<&>) )
+import qualified Data.HashMap.Strict as HM
 import           Data.List                  ( transpose )
 import           Data.Maybe                 ( fromMaybe )
 import qualified Data.Text as T
@@ -23,12 +28,6 @@ import           System.Directory           ( createDirectoryIfMissing
 import           System.IO                  ( stderr )
 import           Text.ParserCombinators.Parsec hiding ( (<|>))
 import           Text.Parsec.Text hiding    ( GenParser )
-import           Control.Exception          ( handle
-                                            , IOException )
-
-import Data.Bifunctor ( bimap )
-
-import qualified Data.HashMap.Strict as HM
 
 configDir :: IO FilePath
 configDir = getXdgDirectory XdgConfig "owen/"
