@@ -93,17 +93,27 @@ rewriteReactionAsIRC r = do
         mid    = reactionMessageId r
         emojiT = emojiName $ reactionEmoji r
 
+-- | Returns false only if it a crosspost, new pin add, announcement follow added, boost, etc.
+isProperMessage :: Message -> Bool
+isProperMessage m = not (messageReference m /= Nothing && referencedMessage m == Nothing)
+
 rewriteMessageAsIRC :: Message -> DiscordHandler ()
 rewriteMessageAsIRC m = do
+
+    -- Safely use guard because there won't be any handlers using this.
+    -- Concern is that a CompSoc msg may get sent during the day, but it's an insignificance
+    -- compared to how often msgs can get pinned by mods.
+    guard $ isProperMessage m
+    
     excludeThisPing <- botIdM
     let userPings = pingUser <$> filter ((/= excludeThisPing) . userId) mentionU
     let rolePings = pingRole <$> mentionR
     let replyUsername = maybe "" ircMessageToUsername (referencedMessage m)
-    _ <- liftIO . print $ replyUsername
+    -- _ <- liftIO . print $ replyUsername
     replyPing <- case messageGuild m of 
             Just guildId -> pingWithUsername replyUsername guildId
             Nothing      -> pure ""
-    _ <- liftIO . print $ replyPing
+    -- _ <- liftIO . print $ replyPing
     -- > AUTHOR HANDLE
     let authorHandle = T.concat
             [ "**<"
@@ -132,7 +142,7 @@ rewriteMessageAsIRC m = do
     -- > SEND IRC MESSAGE
     unless (T.null postHandleT)
         $ sendMessageChan cid newMessageT
-    _ <- liftIO . print $ messageT
+    -- _ <- liftIO . print $ messageT
     _ <- restCall $ R.DeleteMessage (cid, mid)
     pure ()
     where
