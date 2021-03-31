@@ -4,7 +4,8 @@
     Module:     : Utils
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
-module Utils ( sendMessageChan
+module Utils ( emojiToUsableText
+             , sendMessageChan
              , sendReply
              , sendMessageChanEmbed
              , sendMessageChanPingsDisabled
@@ -107,7 +108,7 @@ pingWithUsername uname gid = do
     let timing = R.GuildMembersTiming (Just 1000) Nothing
     -- number of users to fetch, maximum is 1000
     -- "Nothing" seems to default to (Just 1)
-    membersM <- restCall $ R.ListGuildMembers gid timing 
+    membersM <- restCall $ R.ListGuildMembers gid timing
     let members = case membersM of
             Right success -> success
             Left  _       -> []
@@ -160,13 +161,23 @@ getMessageLink m = do
                                       messageIDT ]
         Left err -> pure $ Left err
 
+-- | `emojiToUsableText` converts a given emoji to a text which can be used to display it in Discord.
+emojiToUsableText :: Emoji -> T.Text
+emojiToUsableText r = do
+    let name = emojiName r
+    case emojiId r of
+        Nothing -> name
+        Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
+
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = do
     void $ restCall $ R.CreateMessage c xs
 
-sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler () 
+-- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
+-- all pings (@everyone, @user, @role) pings from the message.
+sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChanPingsDisabled cid t = do
     let opts = def { R.messageDetailedContent = t
                    , R.messageDetailedAllowedMentions = Just

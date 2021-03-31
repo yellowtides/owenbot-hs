@@ -38,6 +38,7 @@ import           Utils              ( sendMessageChan
                                     , sendMessageChanPingsDisabled
                                     , getTimestampFromMessage
                                     , newDevCommand, pingUser, pingRole, stripAllPings, pingWithUsername
+                                    , emojiToUsableText
                                     )
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
@@ -77,21 +78,21 @@ rewriteReactionAsIRC r = do
                         then "[...]"
                         else ""
     let reactMessageT = T.concat [
-                "_",
+                "*",
                 reacterUsername,
                 " reacted to \"",
                 T.take maxMessageLen $ messageText message,
                 ellipses,
                 "\" with ",
                 emojiT,
-                "_"
+                "*"
             ]
     when (isLikelyIRCMessage message) (sendMessageChanPingsDisabled cid reactMessageT)
     where
         uid    = reactionUserId r
         cid    = reactionChannelId r
         mid    = reactionMessageId r
-        emojiT = emojiName $ reactionEmoji r
+        emojiT = emojiToUsableText $ reactionEmoji r
 
 -- | Returns false only if it a crosspost, new pin add, announcement follow added, boost, etc.
 isProperMessage :: Message -> Bool
