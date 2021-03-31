@@ -4,10 +4,10 @@ module ADAPriceFetcher ( fetchADADetails
                        , fetchTicker
                        ) where
 
-import           GHC.Generics
 import           Data.Aeson
-import           Network.HTTP.Conduit   ( simpleHttp )
 import qualified Data.ByteString.Lazy as B
+import           GHC.Generics
+import           Network.HTTP.Conduit   ( simpleHttp )
 
 data Ticker = Ticker {
     symbol              :: String,
