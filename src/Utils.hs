@@ -112,9 +112,9 @@ pingWithUsername uname gid = do
             Right success -> success
             Left  _       -> []
     let users = memberUser <$> members
-    _ <- liftIO $ print (userName <$> users)
+    --_ <- liftIO $ print (userName <$> users)
     let usersWithUsername = filter (\u -> userName u == uname) users
-    _ <- liftIO $ print usersWithUsername
+    --_ <- liftIO $ print usersWithUsername
     pure $ case usersWithUsername of
         []  -> ""
         [u] -> pingUser u
@@ -169,7 +169,7 @@ sendMessageChan c xs = do
 sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler () 
 sendMessageChanPingsDisabled cid t = do
     let opts = def { R.messageDetailedContent = t
-                    , R.messageDetailedAllowedMentions = Just
+                   , R.messageDetailedAllowedMentions = Just
                         $ def { R.mentionEveryone = False
                               , R.mentionUsers    = False
                               , R.mentionRoles    = False
