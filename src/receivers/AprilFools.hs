@@ -6,7 +6,7 @@ module AprilFools ( messageReceivers
 
 import           Control.Monad      ( guard
                                     , when
-                                    , join
+                                    , join, unless
                                     )
 import           Data.Functor       ( (<&>) )
 import qualified Data.Text as T
@@ -24,7 +24,13 @@ import           Discord.Types      ( ChannelId
                                               , messageText
                                               , messageChannel
                                               , messageAttachments
-                                              , messageChannel, messageAuthor, messageEmbeds, messageMentionRoles, messageMentions, referencedMessage
+                                              , messageChannel
+                                              , messageAuthor
+                                              , messageEmbeds
+                                              , messageMentionRoles
+                                              , messageMentions
+                                              , referencedMessage
+                                              , messageGuild
                                               )
                                     , MessageReaction ( messageReactionCount
                                                       , messageReactionEmoji
@@ -44,9 +50,9 @@ import           Utils              ( sendMessageChan
                                     , messageFromReaction
                                     , linkChannel
                                     , getMessageLink
-                                    , sendMessageChanEmbed
+                                    , sendMessageChanPingsDisabled
                                     , getTimestampFromMessage
-                                    , newDevCommand, pingUser, pingRole, stripAllPings
+                                    , newDevCommand, pingUser, pingRole, stripAllPings, pingWithUsername
                                     )
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
@@ -95,7 +101,7 @@ rewriteReactionAsIRC r = do
                 emojiT,
                 "_"
             ]
-    when (isLikelyIRCMessage message) (sendMessageChan cid reactMessageT)
+    when (isLikelyIRCMessage message) (sendMessageChanPingsDisabled cid reactMessageT)
     where
         uid    = reactionUserId r
         cid    = reactionChannelId r
@@ -107,28 +113,40 @@ rewriteMessageAsIRC m = do
     excludeThisPing <- botIdM
     let userPings = pingUser <$> filter ((/= excludeThisPing) . userId) mentionU
     let rolePings = pingRole <$> mentionR
-    let replyPing = maybe "" ircMessageToUsername (referencedMessage m)
+    let replyUsername = maybe "" ircMessageToUsername (referencedMessage m)
+    _ <- liftIO . print $ replyUsername
+    replyPing <- case messageGuild m of 
+            Just guildId -> pingWithUsername replyUsername guildId
+            Nothing      -> pure ""
+    _ <- liftIO . print $ replyPing
+    -- > AUTHOR HANDLE
     let authorHandle = T.concat
             [ "**<"
             , userName author
             , ">** "
             ]
+    -- > MESSAGE CONTENTS
     let mentionsT = T.concat
-            [ onNonEmptyAddAfter (T.intercalate ": " userPings) ": "
+            [ onNonEmptyAddAfter replyPing ": "
+            , onNonEmptyAddAfter (T.intercalate ": " userPings) ": "
             , onNonEmptyAddAfter (T.intercalate ": " rolePings) ": "
-            , onNonEmptyAddAfter replyPing ": "
             ]
     let attachURLs = attachmentUrl <$> attach
     let attachmentsT = T.concat
             [ onNonEmptyAddBefore (T.intercalate "\n" attachURLs) "\n"
             ]
-    let newMessageT = T.concat
-            [ authorHandle
-            , mentionsT
+    let postHandleT = T.concat
+            [ mentionsT
             , stripAllPings messageT
             , attachmentsT
+            ] 
+    let newMessageT = T.concat
+            [ authorHandle
+            , postHandleT
             ]
-    sendMessageChan cid newMessageT
+    -- > SEND IRC MESSAGE
+    unless (T.null postHandleT)
+        $ sendMessageChan cid newMessageT
     _ <- liftIO . print $ messageT
     _ <- restCall $ R.DeleteMessage (cid, mid)
     pure ()
