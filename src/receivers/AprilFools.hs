@@ -6,18 +6,22 @@ module AprilFools ( messageReceivers
 
 import           Control.Monad      ( guard
                                     , when
-                                    , join, unless
+                                    , join
+                                    , unless
                                     )
+import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString as B
 import           Data.Functor       ( (<&>) )
 import qualified Data.Text as T
 import           Discord            ( restCall
                                     , DiscordHandler
                                     , RestCallErrorCode
+                                    , def
                                     )
 import qualified Discord.Requests as R
 import           Discord.Types      ( ChannelId
                                     , Snowflake
-                                    , Attachment ( attachmentUrl )
+                                    , Attachment ( .. )
                                     , Emoji ( emojiName )
                                     , Message (..)
                                     , MessageReaction (..)
@@ -27,6 +31,7 @@ import           Discord.Types      ( ChannelId
                                     , User (..)
                                     , UserId
                                     )
+import           Network.HTTP.Conduit   ( simpleHttp )
 import           Text.Read          ( readMaybe )
 import           UnliftIO           ( liftIO )
 
@@ -38,7 +43,7 @@ import           Utils              ( sendMessageChan
                                     , sendMessageChanPingsDisabled
                                     , getTimestampFromMessage
                                     , newDevCommand, pingUser, pingRole, stripAllPings, pingWithUsername
-                                    , emojiToUsableText, sendMessageDM
+                                    , emojiToUsableText, sendMessageDM, sendFileChan
                                     )
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
@@ -105,13 +110,13 @@ rewriteMessageAsIRC m = do
     -- Concern is that a CompSoc msg may get sent during the day, but it's an insignificance
     -- compared to how often msgs can get pinned by mods.
     guard $ isProperMessage m
-    
+
     excludeThisPing <- botIdM
     let userPings = pingUser <$> filter ((/= excludeThisPing) . userId) mentionU
     let rolePings = pingRole <$> mentionR
     let replyUsername = maybe "" ircMessageToUsername (referencedMessage m)
     -- _ <- liftIO . print $ replyUsername
-    replyPing <- case messageGuild m of 
+    replyPing <- case messageGuild m of
             Just guildId -> pingWithUsername replyUsername guildId
             Nothing      -> pure ""
     -- _ <- liftIO . print $ replyPing
@@ -130,24 +135,26 @@ rewriteMessageAsIRC m = do
     let postHandleT = T.concat
             [ mentionsT
             , stripAllPings messageT
-            ] 
+            ]
     let newMessageT = T.concat
             [ authorHandle
             , postHandleT
             ]
+
+    -- Download before deletion, will return Nothing if attach is null
+    downloadedAttachment <- liftIO $ downloadFirstAttachment attach
+
     -- > SEND IRC MESSAGE
     _ <- restCall $ R.DeleteMessage (cid, mid)
-    unless (null attach)
-        . sendMessageDM (userId $ messageAuthor m) $ T.concat 
-          [ "**An IRC client doesn't support direct file upload!** "
-          , "Consider uploading your media to https://imgur.com/upload and "
-          , "posting a link in chat instead."
-          ]
-    -- Only send a message when the attachments are null.
-    guard $ null attach
 
-    unless (T.null postHandleT)
-        $ sendMessageChan cid newMessageT
+    -- Unless it's a truly empty message, i.e. no attachments & no text
+    unless (T.null postHandleT && downloadedAttachment == Nothing) $ do
+        let opts = def { R.messageDetailedContent = newMessageT
+                       , R.messageDetailedFile = downloadedAttachment
+                       }
+        _ <- restCall $ R.CreateMessageDetailed cid opts
+        pure ()
+
     -- _ <- liftIO . print $ messageT
     where
         cid                   = messageChannel m
@@ -164,3 +171,16 @@ rewriteMessageAsIRC m = do
         onNonEmptyAddBefore t extra = if T.length t /= 0
                                          then extra <> t
                                          else t
+
+-- | If possible download the first attachment into memory, return it in Maybe
+-- I don't really know how GHC handles it but I guess the memory is freed when
+-- the thread finishes processing.
+downloadFirstAttachment :: [Attachment] -> IO (Maybe (T.Text, B.ByteString))
+downloadFirstAttachment []     = pure Nothing
+downloadFirstAttachment (a:as) = do
+    -- Start lazy download of bytestring
+    bytestring <- simpleHttp $ T.unpack $ attachmentUrl a
+    -- Convert lazy to not lazy. Forces entire lazy data into memory so it's expensive.
+    -- Only possible because the VPS has enough RAM.
+    let stricter = BL.toStrict bytestring
+    pure $ Just (attachmentFilename a, stricter)
