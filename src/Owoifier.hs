@@ -7,18 +7,18 @@ module Owoifier ( owoify
 
 import qualified Data.Text as T
 
+-- | String constant, text enclosed in this will not be owoified
 owolessDelim :: T.Text
 owolessDelim = "```"
 
+-- | Maps f over every other element in a list:
+-- e.g. `[f a, a, f a, a]`
+alternate :: (a -> a) -> [a] -> [a]
+alternate f = zipWith ($) (cycle [f, id])
+
 owoify :: T.Text -> T.Text
-owoify text = do
-    let segments = T.splitOn owolessDelim text
-    let owoifiedText = T.intercalate owolessDelim [
-            if odd i 
-                then owoifySegment segment 
-                else segment 
-            |  (i, segment) <- zip [1..] segments]
-    owoifiedText <> " owo"
+owoify text = T.intercalate owolessDelim (alternate owoifySegment segments) <> " owo"
+    where segments = T.splitOn owolessDelim text
 
 owoifySegment :: T.Text -> T.Text
 owoifySegment = doInserts . weakOwoify
@@ -33,6 +33,7 @@ owoifyChar c
     | c `elem` ("lr" :: [Char]) = 'w'
     | otherwise                 = c
 
+-- | Takes the cartesian product of two lists of chars and packs as a Text
 (<->) :: [Char] -> [Char] -> [T.Text]
 (<->) as bs = [T.pack [a,b] | a <- as, b <- bs]
 
