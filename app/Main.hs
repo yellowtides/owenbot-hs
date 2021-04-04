@@ -21,6 +21,10 @@ import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )
 import           Utils                  ( sendMessageChan )
 
+-- | Channel to post startup message into
+startupChan :: ChannelId
+startupChan = 801763198792368129
+
 -- | UWU
 owen :: String -> IO ()
 owen t = do
@@ -33,12 +37,9 @@ owen t = do
 
 startHandler :: DiscordHandler ()
 startHandler = do
-    --this channel is the bot-start channel on the test server, change to point towards your channel.
-    let chan = 801763198792368129 :: ChannelId
-    sendMessageChan chan (T.pack "Hewwo, I am bawck! UwU")
-    _ <- sendGitInfoChan chan
-    _ <- setStatusFromFile
-    pure ()
+    sendMessageChan startupChan (T.pack "Hewwo, I am bawck! UwU")
+    _ <- sendGitInfoChan startupChan
+    void setStatusFromFile
 
 main :: IO ()
 main = do

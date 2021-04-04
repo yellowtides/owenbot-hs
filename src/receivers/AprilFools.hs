@@ -12,6 +12,7 @@ import           Control.Monad      ( guard
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString as B
 import           Data.Functor       ( (<&>) )
+import           Data.Maybe         ( isNothing, isJust )
 import qualified Data.Text as T
 import           Discord            ( restCall
                                     , DiscordHandler
@@ -49,7 +50,6 @@ import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
 import Discord.Internal.Rest.User   ( UserRequest ( GetUser ) )
-import Data.Either                  ( fromRight )
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ rewriteReactionAsIRC ]
@@ -101,7 +101,7 @@ rewriteReactionAsIRC r = do
 
 -- | Returns false only if it a crosspost, new pin add, announcement follow added, boost, etc.
 isProperMessage :: Message -> Bool
-isProperMessage m = not (messageReference m /= Nothing && referencedMessage m == Nothing)
+isProperMessage m = isNothing (messageReference m) && isJust (referencedMessage m)
 
 rewriteMessageAsIRC :: Message -> DiscordHandler ()
 rewriteMessageAsIRC m = do
@@ -148,7 +148,7 @@ rewriteMessageAsIRC m = do
     _ <- restCall $ R.DeleteMessage (cid, mid)
 
     -- Unless it's a truly empty message, i.e. no attachments & no text
-    unless (T.null postHandleT && downloadedAttachment == Nothing) $ do
+    unless (T.null postHandleT && isNothing downloadedAttachment) $ do
         let opts = def { R.messageDetailedContent = newMessageT
                        , R.messageDetailedFile = downloadedAttachment
                        }
@@ -164,12 +164,8 @@ rewriteMessageAsIRC m = do
         attach                = messageAttachments m
         mentionU              = messageMentions m
         mentionR              = messageMentionRoles m
-        replyM                = referencedMessage m
         onNonEmptyAddAfter t extra  = if T.length t /= 0
                                          then t <> extra
-                                         else t
-        onNonEmptyAddBefore t extra = if T.length t /= 0
-                                         then extra <> t
                                          else t
 
 -- | If possible download the first attachment into memory, return it in Maybe
@@ -177,7 +173,7 @@ rewriteMessageAsIRC m = do
 -- the thread finishes processing.
 downloadFirstAttachment :: [Attachment] -> IO (Maybe (T.Text, B.ByteString))
 downloadFirstAttachment []     = pure Nothing
-downloadFirstAttachment (a:as) = do
+downloadFirstAttachment (a:_) = do
     -- Start lazy download of bytestring
     bytestring <- simpleHttp $ T.unpack $ attachmentUrl a
     -- Convert lazy to not lazy. Forces entire lazy data into memory so it's expensive.
