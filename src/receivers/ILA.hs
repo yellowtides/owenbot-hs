@@ -10,11 +10,13 @@ import qualified Data.Text as T
 import           Data.Bifunctor     ( first )
 import           Data.Char          ( isAlpha
                                     , isSpace
+                                    , toLower
                                     )
 
 import           Utils              ( sendMessageChan
                                     , sendFileChan
                                     , newCommand
+                                    , assetDir
                                     )
 import           TemplateRE         ( oneDot
                                     , twoDot
@@ -39,33 +41,25 @@ iladefRE      = defRE      <> "ila (" <> oneDot <> ")"
 ilalemmaRE    = lemRE      <> "ila (" <> twoDot <> ")"
 ilatextbookRE = textbookRE <> "ila"
 
-sendThm :: Message -> DiscordHandler ()
-sendThm m = newCommand m ilathmRE $ \captures -> do
-    let content = (head . tail) captures -- first match is (eore) from th(eore)m
-    sendFileChan (messageChannel m) ("Theorem "                      <> parse content)
-                                    ("./src/assets/ila/theorems/"    ++ parseStr content)
+sendAsset :: Message -> T.Text -> String -> DiscordHandler ()
+sendAsset m regex name = newCommand m regex $ \(_:assetNr:_) -> do
+    let assetNr' = parseAssetNr assetNr
+    let name' = T.pack $ name <> " " <> assetNr'
+    let path = assetDir <> "ila/" <> map toLower name <> "s/" <> assetNr'
+    sendFileChan (messageChannel m) name' path
 
-sendDef :: Message -> DiscordHandler ()
-sendDef m = newCommand m iladefRE $ \captures -> do
-    let content = (head . tail) captures
-    sendFileChan (messageChannel m) ("Definition "                   <> parse content)
-                                    ("./src/assets/ila/definitions/" ++ parseStr content)
-
-sendLem :: Message -> DiscordHandler ()
-sendLem m = newCommand m ilalemmaRE $ \captures -> do
-    let content = (head . tail) captures
-    sendFileChan (messageChannel m) ("Lemma "                        <> parse content)
-                                    ("./src/assets/ila/lemmas/"      ++ parseStr content)
+sendThm, sendDef, sendLem :: Message -> DiscordHandler ()
+sendThm m = sendAsset m ilathmRE   "Theorem"
+sendDef m = sendAsset m iladefRE   "Definition"
+sendLem m = sendAsset m ilalemmaRE "Lemma"
 
 sendTextbook :: Message -> DiscordHandler ()
 sendTextbook m = newCommand m ilatextbookRE $ \_ -> do
-    sendFileChan (messageChannel m) "ila-textbook.pdf" "./src/assets/textbooks/ila-textbook.pdf"
+    sendFileChan (messageChannel m) "ila-textbook.pdf"
+                                    $ assetDir <> "textbooks/ila-textbook.pdf"
 
-parseStr :: T.Text -> String
-parseStr = T.unpack . parse
-
-parse :: T.Text -> T.Text
-parse = (<> ".png") . uncurry (<>) . first (padZeroes 2) . T.breakOn "." .
+parseAssetNr :: T.Text -> String
+parseAssetNr = T.unpack . (<> ".png") . uncurry (<>) . first (padZeroes 2) . T.breakOn "." .
         T.intercalate "." . map rmZeroes . T.splitOn "."
 
 rmZeroes :: T.Text -> T.Text

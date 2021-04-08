@@ -26,6 +26,7 @@ module Utils ( emojiToUsableText
              , hasRoleByID
              , isMod
              , devIDs
+             , assetDir
              , (=~=)
              , getTimestampFromMessage
              , captureCommandOutput
@@ -80,9 +81,15 @@ import           Data.Maybe             ( fromMaybe )
 devIDs :: FilePath
 devIDs = "devs.csv"
 
--- | The `FilePath` representing the repo for the bot (TODO: chuck in a config file)
+-- | The `FilePath` representing the repo for the bot.
+-- TODO: chuck in a config file, handle not having a repo
 repoDir :: FilePath
 repoDir = "$HOME/owenbot-hs/"
+
+-- | The `FilePath` representing the location of the assets.
+-- TODO: Move to configDir
+assetDir :: FilePath
+assetDir = repoDir <> "src/assets/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
