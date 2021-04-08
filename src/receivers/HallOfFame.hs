@@ -153,7 +153,7 @@ reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
     let parsed = readMaybe (T.unpack $ head captures)
     case parsed of
         Nothing -> do
-            i <- liftIO $ readLimit
+            i <- liftIO readLimit
             sendMessageChan (messageChannel m)
                 $ "Current limit is at " <> T.pack (show i)
         Just i -> do
