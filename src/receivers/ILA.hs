@@ -44,8 +44,8 @@ ilatextbookRE = textbookRE <> "ila"
 sendAsset :: Message -> T.Text -> String -> DiscordHandler ()
 sendAsset m regex name = newCommand m regex $ \(_:assetNr:_) -> do
     let assetNr' = parseAssetNr assetNr
-    let name' = T.pack $ name <> " " <> assetNr'
-    let path = assetDir <> "ila/" <> map toLower name <> "s/" <> assetNr'
+    let name'    = T.pack $ name <> " " <> assetNr'
+    let path     = assetDir <> "ila/" <> map toLower name <> "s/" <> assetNr'
     sendFileChan (messageChannel m) name' path
 
 sendThm, sendDef, sendLem :: Message -> DiscordHandler ()

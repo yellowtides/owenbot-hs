@@ -25,21 +25,15 @@ receivers =
 inf1atextbookRE :: T.Text
 inf1atextbookRE = textbookRE <> "i(nf)?1a"
 
-sendSyl :: Message -> DiscordHandler ()
-sendSyl m = newCommand m "syl(logisms)?" $ \_ ->
-    sendFileChan (messageChannel m) "id-smash-aristotle.png"
-                                    $ assetDir <> "/syllogisms.png"
+sendAsset :: Message -> T.Text -> T.Text -> FilePath -> DiscordHandler ()
+sendAsset m regex filename path = newCommand m regex $ \_ ->
+    sendFileChan (messageChannel m) filename $ assetDir <> path
 
-sendBool :: Message -> DiscordHandler ()
-sendBool m = newCommand m "bool(ean)?" $ \_ ->
-    sendFileChan (messageChannel m) "literally-satan.png"
-                                    $ assetDir <> "cl/Bool.png"
+sendSyl, sendBool, sendTextbook :: Message -> DiscordHandler ()
+sendSyl      m = sendAsset m "syl(logisms)?" "id-smash-aristotle.png" "cl/syllogisms.png"
+sendBool     m = sendAsset m "bool(ean)?"    "literally-satan.png"    "cl/Bool.png"
+sendTextbook m = sendAsset m inf1atextbookRE "the-holy-bible-2.png"   "textbooks/i1a-textbook.pdf"
 
 sendHDoc :: Message -> DiscordHandler ()
 sendHDoc m = newCommand m "doc ([a-z']+)" $ \captures ->
     sendMessageChan (messageChannel m) "not yet implemented :^)"
-
-sendTextbook :: Message -> DiscordHandler ()
-sendTextbook m = newCommand m inf1atextbookRE $ \_ ->
-    sendFileChan (messageChannel m) "the-holy-bible-2.png"
-                                    $ assetDir <> "textbooks/i1a-textbook.pdf"
