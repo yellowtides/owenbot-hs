@@ -27,11 +27,11 @@ receivers = [ receiveQuote, addQuote, rmQuote ]
 quotePath :: FilePath
 quotePath = "registeredQuotes.csv"
 
-maxNameLen :: T.Text
-maxNameLen = T.pack $ show 32
+maxNameLen :: Int
+maxNameLen = 32
 
 nameRE :: T.Text
-nameRE = "(.{1," <> maxNameLen <> "})"
+nameRE = "(.{1," <> T.pack (show maxNameLen) <> "})"
 
 -- | `quoteTable` maps quotes to their text.
 quoteTable :: IO (HM.HashMap T.Text T.Text)

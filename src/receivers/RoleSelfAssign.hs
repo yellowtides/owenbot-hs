@@ -12,6 +12,7 @@ import           Discord.Types          ( Emoji ( emojiName )
                                                        )
                                         , MessageId
                                         , RoleId
+                                        , GuildId
                                         , Message
                                         )
 import           Discord.Requests       ( GuildRequest ( RemoveGuildMemberRole
@@ -52,6 +53,11 @@ reactionAddReceivers = [ attemptRoleAssign ]
 reactionRemReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionRemReceivers = [ handleRoleRemove ]
 
+serverID :: GuildId
+serverID = 755798054455738489
+-- the number is the fixed Guild/Server ID.
+-- TODO: put the number in a config file.
+
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do
     validMessages <- liftIO getAssignMessageIds
@@ -74,9 +80,7 @@ attemptRoleAssign r = do
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let newRoleId = fromJust desiredRole
-    restCall $ AddGuildMemberRole 755798054455738489 (reactionUserId r) newRoleId
-    -- the number is the fixed Guild/Server ID.
-    -- TODO: put the number in a config file.
+    restCall $ AddGuildMemberRole serverID (reactionUserId r) newRoleId
 
     sendMessageDM (reactionUserId r) 
         $ owoify "Added your desired role! Hurray!"
@@ -99,9 +103,7 @@ handleRoleRemove r = do
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let oldRoleId = fromJust desiredRole
-    restCall $ RemoveGuildMemberRole 755798054455738489 (reactionUserId r) oldRoleId
-    -- the number is the fixed Guild/Server ID.
-    -- TODO: put the number in a config file.
+    restCall $ RemoveGuildMemberRole serverID (reactionUserId r) oldRoleId
 
     sendMessageDM (reactionUserId r)
         $ owoify "Really sorry you didn't like the role, I went ahead and removed it."

@@ -47,14 +47,22 @@ reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers =
     [ forceOwoify ]
 
+-- TODO: put these in config so they can be changed at runtime
+owoifyChance, dadJokeChance :: Int
+owoifyChance = 500
+dadJokeChance = 20
+
+owoifiedEmoji :: T.Text
+owoifiedEmoji = "✅"
+
 roll :: Int -> IO Int
 roll n = getStdRandom $ randomR (1, n)
 
 owoifyIfPossible :: Message -> DiscordHandler ()
 owoifyIfPossible m = do
-    roll500 <- liftIO $ roll 500
+    r <- liftIO $ roll owoifyChance
     let isOwoifiable = messageText m =~= "[lLrR]|[nNmM][oO]"
-    when (roll500 == 1 && isOwoifiable) $ do
+    when (r == 1 && isOwoifiable) $ do
         sendReply m True
             $ owoify (messageText m)
 
@@ -76,7 +84,7 @@ forceOwoify r = do
             -- Define conditions that stops execution
             let blockCond = \x ->
                     messageReactionMeIncluded x
-                    && emojiName (messageReactionEmoji x) == "✅"
+                    && emojiName (messageReactionEmoji x) == owoifiedEmoji
             -- Conditions that say go!
             let fulfillCond = \x ->
                     T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
@@ -84,7 +92,7 @@ forceOwoify r = do
             if any blockCond reactions || not (any fulfillCond reactions) then do
                 pure ()
             else do
-                _ <- addReaction (reactionChannelId r) (reactionMessageId r) "✅"
+                _ <- addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
                 -- Send reply without pinging (this isn't as ping-worthy as random trigger)
                 sendReply mess False $ owoify (messageText mess)
         Left err -> liftIO (print err) >> pure ()
@@ -96,15 +104,18 @@ godIsDead m = do
         liftIO (TIO.readFile "./src/assets/nietzsche.txt")
             >>= sendMessageChan (messageChannel m) . owoify
 
+thatcherRE :: T.Text
+thatcherRE = "thatcher('s *| *[Ii]s) *"
+
 thatcherIsDead :: Message -> DiscordHandler ()
 thatcherIsDead m = do
-    when (messageText m =~= "thatcher *[Ii]s *[Dd]ead") $ do
+    when (messageText m =~= (thatcherRE <> "[Dd]ead")) $ do
         sendMessageChan (messageChannel m)
             "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
 thatcherIsAlive :: Message -> DiscordHandler ()
 thatcherIsAlive m = do
-    when (messageText m =~= "thatcher *[Ii]s *[Aa]live") $ do
+    when (messageText m =~= (thatcherRE <> "thatcher *[Ii]s *[Aa]live")) $ do
         sendFileChan (messageChannel m)
             "god_help_us_all.mp4" "./src/assets/god_help_us_all.mp4"
 
@@ -113,8 +124,8 @@ dadJokeIfPossible m = do
     let name = attemptParseDadJoke (messageText m)
     when (M.isJust name) $ do
         let Just n = name
-        roll10 <- liftIO $ roll 20
-        when (roll10 == 1 && T.length n >= 3) $ do
+        r <- liftIO $ roll dadJokeChance
+        when (r == 1 && T.length n >= 3) $ do
             sendMessageChan (messageChannel m)
                 $ owoify ("hello " <> n <> ", i'm owen")
 
