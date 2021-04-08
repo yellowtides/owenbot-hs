@@ -36,6 +36,10 @@ data Ticker = Ticker {
 instance FromJSON Ticker
 instance ToJSON Ticker
 
+adaEmoji :: String
+adaEmoji = "<:ada:805934431071371305>"
+-- TODO: allow server to choose emoji through :config
+
 jsonURL :: String -> String -> String
 jsonURL base quote = "https://api.binance.com/api/v3/ticker/24hr?symbol=" <> base <> quote
 
@@ -47,7 +51,7 @@ fetchADADetails = do
     ticker <- fetchTicker "ADA" "BUSD"
     pure $ case ticker of
         Left  err -> Left err
-        Right str -> Right $ "<:ada:805934431071371305> (philcoin) is " ++ str
+        Right str -> Right $ adaEmoji ++ " (philcoin) is " ++ str
 
 fetchTicker :: String -> String -> IO (Either String String)
 fetchTicker base quote = do
