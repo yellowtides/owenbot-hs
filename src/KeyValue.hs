@@ -24,13 +24,16 @@ import Data.Vector as V
 
 type DataBase = Vector (T.Text, T.Text)
 
+-- | Locks a file for thread-safety
 lockFile :: FilePath -> IO ()
-lockFile file = return ()
+lockFile file = return ()  -- TODO: Replace stub with working impl.
 
+-- | Checks if a file is locked
 isFileLocked :: FilePath -> IO Bool
 isFileLocked file = do
-    return False
+    return False  -- TODO: Replace stub with working impl.
 
+-- | Reads a DataBase from a file
 readDB :: FilePath -> IO DataBase
 readDB dbFile = do
     contents <- BS.readFile dbFile
@@ -38,6 +41,7 @@ readDB dbFile = do
          Left  _  -> return $ V.singleton ("","")
          Right db -> return db
 
+-- | Returns `Just T.Text` if `k` is in the database, `Nothing` otherwise.
 lookupDB :: T.Text -> DataBase -> Maybe T.Text
 lookupDB k = lookup k . V.toList
 
@@ -49,6 +53,7 @@ prependDB k v = V.cons (k,v)
 appendDB :: T.Text -> T.Text -> DataBase -> DataBase
 appendDB k v db = V.snoc db (k,v)
 
+-- | Writes a DataBase to a file
 writeDB :: FilePath -> DataBase -> IO ()
 writeDB path = BS.writeFile path . encode . V.toList
 
