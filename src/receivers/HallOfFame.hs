@@ -48,7 +48,7 @@ import           Utils              ( sendMessageChan
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
-import           KeyValue           ( fetch
+import           DB                 ( fetch
                                     , store
                                     )
 
@@ -95,9 +95,9 @@ isEligibleForHallOfFame r = do
             exists <- liftIO $ existsInHOF mess
             let reactions   = messageReactions mess
             let fulfillCond = \x ->
-                T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
-                && messageReactionCount x >= limit
-                && not exists
+                    T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
+                    && messageReactionCount x >= limit
+                    && not exists
             pure $ any fulfillCond reactions
         Left err -> liftIO (print err) >> pure False
 

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module KeyValue
+module DB
     ( dbDir
     , readDB
     , lookupDB

@@ -16,7 +16,7 @@ import           Discord.Types          ( ChannelId )
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
-import           KeyValue               ( dbDir )
+import           DB                     ( dbDir )
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )

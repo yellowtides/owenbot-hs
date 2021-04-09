@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 05b0e1830719dda22de1b9695b0096b438e5ee0d427548a070a0df3a175e33ee
+-- hash: 52cebd42d740db21a1a555f1ff1a5797310a6153363bb586580c069ec804f413
 
 name:           owenbot
 version:        0.1.0.0
@@ -29,8 +29,8 @@ library
   exposed-modules:
       Config
       CSV
+      DB
       EventHandler
-      KeyValue
       Owoifier
       Status
       Utils
