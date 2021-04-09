@@ -48,6 +48,9 @@ import           Utils              ( sendMessageChan
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
+import           KeyValue           ( fetch
+                                    , store
+                                    )
 
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -78,20 +81,23 @@ notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
 isHallOfFameEmote :: ReactionInfo -> Bool
 isHallOfFameEmote r = T.toUpper (emojiName (reactionEmoji r)) `elem` hallOfFameEmotes
 
+existsInHOF :: Message -> IO Bool
+existsInHOF m = do
+    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
+    return $ show (messageId m) `elem` (T.unpack <$> msgIdList)
+
 isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler Bool
 isEligibleForHallOfFame r = do
     messM <- messageFromReaction r
     case messM of
         Right mess -> do
-            msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-            let msgIdListStr = T.unpack <$> msgIdList
             limit <- liftIO readLimit
-            let existsInHOF = show (messageId mess) `elem` msgIdListStr
+            exists <- liftIO $ existsInHOF mess
             let reactions   = messageReactions mess
             let fulfillCond = \x ->
                     messageReactionCount x >= limit
                     && T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
-                    && not existsInHOF
+                    && not exists
             pure $ any fulfillCond reactions
         Left err -> liftIO (print err) >> pure False
 
@@ -107,8 +113,8 @@ putInHallOfFame r = do
                     liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId mess):msgIdList)
                     --adds the message id to the csv to make sure we dont add it multiple times.
                     sendMessageChanEmbed hallOfFameChannel "" embed
-                Left err -> liftIO (putStrLn "Couldn't get link to message")
-        Left err -> liftIO (putStrLn "Couldn't find associated message")
+                Left err -> liftIO (putStrLn "[Error][HoF] Couldn't get link to message")
+        Left err -> liftIO (putStrLn "[Error][HoF] Couldn't find associated message")
 
 
 createDescription :: Message -> T.Text
