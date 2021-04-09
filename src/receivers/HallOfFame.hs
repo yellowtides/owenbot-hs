@@ -95,9 +95,9 @@ isEligibleForHallOfFame r = do
             exists <- liftIO $ existsInHOF mess
             let reactions   = messageReactions mess
             let fulfillCond = \x ->
-                    messageReactionCount x >= limit
-                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
-                    && not exists
+                T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
+                && messageReactionCount x >= limit
+                && not exists
             pure $ any fulfillCond reactions
         Left err -> liftIO (print err) >> pure False
 
