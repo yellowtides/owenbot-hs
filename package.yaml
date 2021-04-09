@@ -21,6 +21,7 @@ dependencies:
 - aeson
 - base >= 4.7 && < 5
 - bytestring
+- cassava
 - discord-haskell
 - directory
 - hashable
@@ -35,6 +36,7 @@ dependencies:
 - unix
 - unliftio
 - unordered-containers
+- vector
 
 library:
   source-dirs:

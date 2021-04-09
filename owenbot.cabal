@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f62d89a2884953500d6c6f2c3331ac5dee6738defccd204d5384578444a9988c
+-- hash: 05b0e1830719dda22de1b9695b0096b438e5ee0d427548a070a0df3a175e33ee
 
 name:           owenbot
 version:        0.1.0.0
@@ -27,8 +27,10 @@ source-repository head
 
 library
   exposed-modules:
+      Config
       CSV
       EventHandler
+      KeyValue
       Owoifier
       Status
       Utils
@@ -54,6 +56,7 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , cassava
     , directory
     , discord-haskell
     , hashable
@@ -68,6 +71,7 @@ library
     , unix
     , unliftio
     , unordered-containers
+    , vector
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -81,6 +85,7 @@ executable owenbot-exe
       aeson
     , base >=4.7 && <5
     , bytestring
+    , cassava
     , directory
     , discord-haskell
     , hashable
@@ -96,6 +101,7 @@ executable owenbot-exe
     , unix
     , unliftio
     , unordered-containers
+    , vector
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -113,6 +119,7 @@ test-suite owenbot-test
     , aeson
     , base >=4.7 && <5
     , bytestring
+    , cassava
     , directory
     , discord-haskell
     , hashable
@@ -130,4 +137,5 @@ test-suite owenbot-test
     , unix
     , unliftio
     , unordered-containers
+    , vector
   default-language: Haskell2010
