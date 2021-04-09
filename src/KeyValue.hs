@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Lib
-    ( someFunc
-    , readDB
+module KeyValue
+    ( readDB
     , lookupDB
     , prependDB
     , writeDB
@@ -22,9 +21,6 @@ import Data.Csv                   ( encode
                                   )
 import Data.Text as T
 import Data.Vector as V
-
-someFunc :: IO ()
-someFunc = putStrLn "kvdb"
 
 type DataBase = Vector (T.Text, T.Text)
 
