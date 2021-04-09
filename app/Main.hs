@@ -16,6 +16,7 @@ import           Discord.Types          ( ChannelId )
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
+import           KeyValue               ( dbDir )
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )
@@ -44,8 +45,10 @@ startHandler = do
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    base <- configDir
-    createDirectoryIfMissing True base
-    tok <- readFile (base <> "token.txt")
+    cfg <- configDir
+    db <- dbDir
+    createDirectoryIfMissing True cfg
+    createDirectoryIfMissing True db
+    tok <- readFile (cfg <> "token.txt")
     putStrLn ("[Info] Token: " ++ tok)
     owen tok

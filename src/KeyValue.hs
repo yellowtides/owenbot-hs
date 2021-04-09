@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module KeyValue
-    ( readDB
+    ( dbDir
+    , readDB
     , lookupDB
     , prependDB
     , writeDB
@@ -9,7 +10,7 @@ module KeyValue
     , store
     ) where
 
-import Control.Monad           ( liftM )
+import Control.Monad              ( liftM )
 
 import Data.Maybe                 ( fromMaybe
                                   , isNothing )
@@ -21,8 +22,19 @@ import Data.Csv                   ( encode
                                   )
 import Data.Text as T
 import Data.Vector as V
+import           System.Directory ( createDirectoryIfMissing
+                                  , getXdgDirectory
+                                  , XdgDirectory( XdgData )
+                                  )
+
+import CSV                        ( configDir )
 
 type DataBase = Vector (T.Text, T.Text)
+
+-- | Directory to store databases in: ~/.local/share/owen/db on UNIX,
+-- %APPDATA% on Windows. Controlled by XDG_DATA environment variable.
+dbDir :: IO FilePath
+dbDir = getXdgDirectory XdgData "owen/db/"
 
 -- | Locks a file for thread-safety
 lockFile :: FilePath -> IO ()
@@ -36,7 +48,8 @@ isFileLocked file = do
 -- | Reads a DataBase from a file
 readDB :: FilePath -> IO DataBase
 readDB dbFile = do
-    contents <- BS.readFile dbFile
+    base <- dbDir
+    contents <- BS.readFile $ base <> dbFile
     case decode NoHeader contents of
          Left  _  -> return $ V.singleton ("","")
          Right db -> return db
@@ -54,8 +67,11 @@ appendDB :: T.Text -> T.Text -> DataBase -> DataBase
 appendDB k v db = V.snoc db (k,v)
 
 -- | Writes a DataBase to a file
+-- TODO: Handle errors
 writeDB :: FilePath -> DataBase -> IO ()
-writeDB path = BS.writeFile path . encode . V.toList
+writeDB file db = do
+    base <- dbDir
+    BS.writeFile (base <> file) $ encode $ V.toList db
 
 -- | Gets a value from a given db; if it doesn't exist, return ""
 fetch :: FilePath -> T.Text -> IO T.Text
@@ -69,5 +85,5 @@ store :: FilePath -> T.Text -> T.Text -> IO ()
 store path k v = do
     db <- readDB path
     case lookupDB k db of
-         Just v  -> putStrLn $ T.unpack v <> " was already in the database!"
+         Just v  -> putStrLn $ "[KeyValue] " <> T.unpack v <> " was already in the database!"
          Nothing -> writeDB path $ prependDB k v db

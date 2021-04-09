@@ -73,7 +73,7 @@ readCSV path = do
     contents <- handle
         (\e -> do
             let err = show (e :: IOException)
-            errStrLn $ "[Warn] Error reading " <> base <> path
+            errStrLn $ "[CSV] Error reading " <> base <> path
             errStrLn err
             pure "")
         $ readFile (base <> path)
@@ -96,7 +96,7 @@ writeCSV path contents = do
     handle
         (\e -> do
             let err = show (e :: IOException)
-            errStrLn $ "[Warn] Error writing to " <> base <> path
+            errStrLn $ "[CSV] Error writing to " <> base <> path
             void $ errStrLn err)
         $ TIO.writeFile (base <> path)
         $ T.unlines
