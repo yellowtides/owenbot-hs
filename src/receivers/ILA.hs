@@ -54,7 +54,7 @@ sendDef m = sendAsset m iladefRE   "Definition"
 sendLem m = sendAsset m ilalemmaRE "Lemma"
 
 sendTextbook :: Message -> DiscordHandler ()
-sendTextbook m = newCommand m ilatextbookRE $ \_ -> do
+sendTextbook m = newCommand m ilatextbookRE $ \_ ->
     sendFileChan (messageChannel m) "ila-textbook.pdf"
                                     $ assetDir <> "textbooks/ila-textbook.pdf"
 

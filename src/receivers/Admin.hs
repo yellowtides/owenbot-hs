@@ -68,7 +68,7 @@ isGitRepo :: IO Bool
 isGitRepo = doesPathExist ".git"
 
 sendGitInfo :: Message -> DiscordHandler ()
-sendGitInfo m = newDevCommand m "repo" $ \_ -> do
+sendGitInfo m = newDevCommand m "repo" $ \_ ->
     sendGitInfoChan $ messageChannel m
 
 sendGitInfoChan :: ChannelId -> DiscordHandler ()
@@ -86,7 +86,7 @@ sendGitInfoChan chan = do
                               "Remote is " <> rstrip commits <> " commits ahead")
 
 sendInstanceInfo :: Message -> DiscordHandler ()
-sendInstanceInfo m = newDevCommand m "instance" $ \_ -> do
+sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
     sendInstanceInfoChan $ messageChannel m
 
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
@@ -114,32 +114,38 @@ updateOwen m = newDevCommand m "update" $ \_ -> do
         sendMessageChan (messageChannel m)
             $ owoify "Failed to update! Please check the logs"
 
+-- DEV COMMANDS
+getDevs :: IO [T.Text]
+getDevs = readSingleColCSV devIDs
+
+setDevs :: [T.Text] -> IO ()
+setDevs = writeSingleColCSV devIDs
+
 listDevs :: Message -> DiscordHandler ()
 listDevs m = newDevCommand m "devs" $ \_ -> do
-    contents <- liftIO $ readSingleColCSV devIDs
-    unless (null contents) $ do
-        sendMessageChan (messageChannel m)
+    contents <- liftIO getDevs
+    unless (null contents) $ sendMessageChan (messageChannel m)
             $ T.intercalate "\n" contents
 
 addDevs :: Message -> DiscordHandler ()
 addDevs m = newDevCommand m "devs add ([0-9]{1,32})" $ \captures -> do
     let id = head captures
-    contents <- liftIO $ readSingleColCSV devIDs
+    contents <- liftIO getDevs
     if null contents then do
-        liftIO $ writeSingleColCSV devIDs [id]
+        liftIO $ setDevs [id]
         sendMessageChan (messageChannel m) "Added!"
     else do
-        liftIO $ writeSingleColCSV devIDs (id:contents)
+        liftIO $ setDevs (id:contents)
         sendMessageChan (messageChannel m) "Added!"
 
 removeDevs :: Message -> DiscordHandler ()
 removeDevs m = newDevCommand m "devs remove ([0-9]{1,32})" $ \captures -> do
     let id = head captures
-    contents <- liftIO $ readSingleColCSV devIDs
-    if null contents then do
+    contents <- liftIO getDevs
+    if null contents then
         sendMessageChan (messageChannel m) "No devs in first place :("
     else do
-        liftIO $ writeSingleColCSV devIDs (filter (/= id) contents)
+        liftIO $ setDevs (filter (/= id) contents)
         sendMessageChan (messageChannel m) "Removed!"
 
 statusRE :: T.Text

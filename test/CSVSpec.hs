@@ -7,7 +7,7 @@ import           Test.QuickCheck            ( Property
                                             , property
                                             , (==>)
                                             )
-import           Test.QuickCheck.Instances.Text
+import           Test.QuickCheck.Instances.Text ()
 import           Test.QuickCheck.Monadic    ( assert
                                             , monadicIO
                                             , run
@@ -21,8 +21,7 @@ import           CSV                        ( configDir
                                             )
 
 spec :: Spec
-spec = do
-    describe "CSV Operations" $ afterAll_ cleanupTempCSV $ do
+spec = describe "CSV Operations" $ afterAll_ cleanupTempCSV $ do
         modifyMaxSuccess (const 50) $ -- not be so hard on system >.<
             it "checks if read/write operations work" $
                 property prop_readWriteCSV

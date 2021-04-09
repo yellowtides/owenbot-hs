@@ -60,7 +60,7 @@ messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = [ reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
-attemptHallOfFame r = do
+attemptHallOfFame r =
     when (isHallOfFameEmote r && notInHallOfFameChannel r) $ do
         eligible <- isEligibleForHallOfFame r
         when eligible $ putInHallOfFame r
@@ -123,7 +123,7 @@ createDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> lin
 getImageFromMessage :: Message -> T.Text
 getImageFromMessage m
   | not . null $ messageAttachments m = attachmentUrl (head $ messageAttachments m)
-  | otherwise = ""
+  | otherwise                         = ""
 
 createHallOfFameEmbed :: Message -> DiscordHandler (Either RestCallErrorCode CreateEmbed)
 createHallOfFameEmbed m = do
