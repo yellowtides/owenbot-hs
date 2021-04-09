@@ -115,7 +115,7 @@ thatcherIsDead m = do
 
 thatcherIsAlive :: Message -> DiscordHandler ()
 thatcherIsAlive m = do
-    when (messageText m =~= (thatcherRE <> "thatcher *[Ii]s *[Aa]live")) $ do
+    when (messageText m =~= (thatcherRE <> "[Aa]live")) $ do
         sendFileChan (messageChannel m)
             "god_help_us_all.mp4" "./src/assets/god_help_us_all.mp4"
 
