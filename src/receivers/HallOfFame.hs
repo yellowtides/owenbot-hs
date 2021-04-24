@@ -2,18 +2,12 @@
 
 module HallOfFame ( reactionReceivers, messageReceivers ) where
 
-import           Control.Monad      ( guard
-                                    , when
-                                    )
-import           Data.Functor       ( (<&>) )
+import           Control.Monad      ( when )
 import qualified Data.Text as T
-import           Discord            ( restCall
-                                    , DiscordHandler
+import           Discord            ( DiscordHandler
                                     , RestCallErrorCode
                                     )
-import qualified Discord.Requests as R
 import           Discord.Types      ( ChannelId
-                                    , Snowflake
                                     , Attachment ( attachmentUrl )
                                     , Emoji ( emojiName )
                                     , Message ( messageReactions
@@ -30,7 +24,6 @@ import           Discord.Types      ( ChannelId
                                     , CreateEmbedImage ( CreateEmbedImageUrl )
                                     , ReactionInfo ( reactionEmoji
                                                    , reactionChannelId
-                                                   , reactionMessageId
                                                    )
                                     )
 import           Text.Read          ( readMaybe )

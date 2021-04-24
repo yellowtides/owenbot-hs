@@ -40,32 +40,23 @@ import           Discord
 import           Control.Exception      ( catch
                                         , IOException
                                         )
-import           Control.Monad          ( guard
-                                        , unless
-                                        , when
+import           Control.Monad          ( unless
                                         , join
-                                        , liftM
                                         , void
                                         )
 import qualified Data.ByteString as B
-import           Data.Char              ( isSpace
-                                        , isAlpha
-                                        )
 import           Data.Function          ( on )
 import           Data.List.Split        ( splitOn )
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
 
-import           System.IO as Sys
 import           System.Process as Process
 import           System.Exit            ( ExitCode ( ExitSuccess, ExitFailure ) )
 import           System.Posix.Process   ( getProcessID )
 
+import           UnliftIO               ( liftIO )
+
 import           Text.Regex.TDFA        ( (=~) )
-import           UnliftIO               ( liftIO
-                                        , UnliftIO ( unliftIO )
-                                        , stringException
-                                        )
 
 import           Owoifier               ( owoify
                                         , weakOwoify
@@ -73,9 +64,6 @@ import           Owoifier               ( owoify
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
-import           Data.Either            ( isRight
-                                        , fromRight )
-import           Data.Maybe             ( fromMaybe )
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
