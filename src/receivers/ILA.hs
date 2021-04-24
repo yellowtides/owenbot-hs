@@ -2,19 +2,13 @@
 
 module ILA ( receivers ) where
 
-import           Discord.Types      ( ChannelId
-                                    , Message ( messageChannel )
-                                    )
+import           Discord.Types      ( Message ( messageChannel ) )
 import           Discord            ( DiscordHandler )
 import qualified Data.Text as T
 import           Data.Bifunctor     ( first )
-import           Data.Char          ( isAlpha
-                                    , isSpace
-                                    , toLower
-                                    )
+import           Data.Char          ( toLower )
 
-import           Utils              ( sendMessageChan
-                                    , sendFileChan
+import           Utils              ( sendFileChan
                                     , newCommand
                                     , assetDir
                                     )
@@ -42,7 +36,8 @@ ilalemmaRE    = lemRE      <> "ila (" <> twoDot <> ")"
 ilatextbookRE = textbookRE <> "ila"
 
 sendAsset :: Message -> T.Text -> String -> DiscordHandler ()
-sendAsset m regex name = newCommand m regex $ \(_:assetNr:_) -> do
+sendAsset m regex name = newCommand m (regex <> trailingWS)
+        $ \(_:assetNr:_) -> do
     let assetNr' = parseAssetNr assetNr
     let name'    = T.pack $ name <> " " <> assetNr'
     let path     = assetDir <> "ila/" <> map toLower name <> "s/" <> assetNr'
