@@ -54,19 +54,34 @@ jsonURL :: String -> String -> String
 jsonURL base quote = "https://api.binance.com/api/v3/ticker/24hr?symbol=" <> base <> quote
 
 sign :: String -> String
-sign "BUSD" = "$"
-sign "TUSD" = "$"
-sign "USDT" = "$"
-sign "AUD"  = "$"
-sign "EUR"  = "€"
-sign "GBP"  = "£"
-sign "JPY"  = "¥"
+sign "BUSD"  = "$"
+sign "TUSD"  = "$"
+sign "USDT"  = "$"
+sign "AUD"   = "$"
+sign "CAD"   = "$"
+sign "EUR"   = "€"
+sign "GBP"   = "£"
+sign "JPY"   = "¥"
 
-sign "ADA"  = "₳"
-sign "BTC"  = "₿"
-sign "ETH"  = "Ξ"
+sign "ADA"   = "₳"
+sign "BCH"   = "Ƀ"
+sign "BSV"   = "Ɓ"
+sign "BTC"   = "₿"
+sign "DAI"   = "◈"
+sign "DOGE"  = "Ð"
+sign "EOS"   = "ε"
+sign "ETC"   = "ξ"
+sign "ETH"   = "Ξ"
+sign "LTC"   = "Ł"
+sign "MKR"   = "Μ"
+sign "REP"   = "Ɍ"
+sign "STEEM" = "ȿ"
+sign "XMR"   = "ɱ"
+sign "XRP"   = "✕"
+sign "XTZ"   = "ꜩ"
+sign "ZEC"   = "ⓩ"
 
-sign x      = x
+sign x       = x
 
 getJSON :: String -> String -> IO B.ByteString
 getJSON a b = simpleHttp $ jsonURL a b
