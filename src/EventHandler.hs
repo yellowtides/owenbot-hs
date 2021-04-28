@@ -9,12 +9,10 @@ import           Discord.Types          ( Message ( messageAuthor )
                                         , User ( userIsBot )
                                         )
 import           Discord                ( DiscordHandler )
+import           Data.Foldable          ( for_ )
 import           Control.Monad          ( unless
-                                        , void
                                         , forM_
-                                        , mplus
                                         )
-import           Control.Applicative    ( (<|>) )
 
 import           Status            ( setStatusFromFile )
 import qualified Admin
@@ -60,13 +58,12 @@ reactionRemoveReceivers = concat
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
-
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
      MessageCreate m ->
-          unless (isFromBot m) $ forM_ messageReceivers ($ m) <|> pure ()
+          unless (isFromBot m) $ for_ messageReceivers ($ m)
      MessageReactionAdd r ->
-          forM_ reactionAddReceivers ($ r) <|> pure ()
+          for_ reactionAddReceivers ($ r)
      MessageReactionRemove r ->
-          forM_ reactionRemoveReceivers ($ r) <|> pure ()
+          for_ reactionRemoveReceivers ($ r)
      _ -> pure ()
