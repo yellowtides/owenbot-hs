@@ -28,7 +28,7 @@ import           Utils                  ( sendMessageChan
                                         , (=~=)
                                         )
 import           Owoifier               ( owoify )
-import           ADAPriceFetcher    ( fetchTicker
+import           BinancePriceFetcher    ( fetchTicker
                                         , fetchADADetails)
 
 commandReceivers :: [Message -> DiscordHandler ()]

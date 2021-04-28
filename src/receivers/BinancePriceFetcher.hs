@@ -1,8 +1,8 @@
 {-# language OverloadedStrings, DeriveGeneric #-}
 
-module ADAPriceFetcher ( fetchADADetails
-                       , fetchTicker
-                       ) where
+module BinancePriceFetcher ( fetchADADetails
+                           , fetchTicker
+                           ) where
 
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
