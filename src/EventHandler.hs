@@ -28,11 +28,11 @@ import qualified QuoteSystem
 
 import qualified AprilFools
 
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = concat
+commandReceivers :: [Message -> DiscordHandler ()]
+commandReceivers = concat
      [  -- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
        Admin.receivers
-     , Misc.messageReceivers
+     , Misc.commandReceivers
      , Calc.receivers
      , Helpme.receivers
      , ILA.receivers
@@ -41,6 +41,11 @@ messageReceivers = concat
      , MCServer.receivers
      , QuoteSystem.receivers
      ]
+
+messageReceivers :: [Message -> DiscordHandler ()]
+messageReceivers = concat
+    [ Misc.miscReceivers
+    ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = concat

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Misc ( messageReceivers, reactionReceivers ) where
+module Misc ( commandReceivers, miscReceivers, reactionReceivers ) where
 
 import qualified Discord.Requests as R
 import           Discord.Types
@@ -28,19 +28,23 @@ import           Utils                  ( sendMessageChan
                                         , (=~=)
                                         )
 import           Owoifier               ( owoify )
-import           ADAPriceFetcher        ( fetchTicker
+import           ADAPriceFetcher    ( fetchTicker
                                         , fetchADADetails)
 
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers =
+commandReceivers :: [Message -> DiscordHandler ()]
+commandReceivers =
+    [ handleFortune
+    , handleTicker
+    , handleAda24h
+    ]
+
+miscReceivers :: [Message -> DiscordHandler ()]
+miscReceivers =
     [ owoifyIfPossible
     , godIsDead
     , thatcherIsDead
     , thatcherIsAlive
     , dadJokeIfPossible
-    , handleFortune
-    , handleTicker
-    , handleAda24h
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
