@@ -1,9 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Helpme ( receivers ) where
-  
-import           Discord.Types      ( ChannelId
-                                    , Message ( messageAuthor )
+
+import           Discord.Types      ( Message ( messageAuthor )
                                     , User ( userId )
                                     )
 import           Discord            ( DiscordHandler )

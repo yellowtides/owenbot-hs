@@ -4,19 +4,12 @@ module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types        ( ChannelId
-                                      , Message   ( messageChannel
-                                                  , messageAuthor
-                                                  , messageId
-                                                  , messageText)
-                                      , User      ( userId )
-                                      , Channel   ( channelId )
-                                      , Snowflake
+                                      , Message   ( messageChannel )
                                       )
 import           Discord              ( DiscordHandler )
 import           UnliftIO             ( liftIO )
 import           Data.Char            ( isSpace )
-import           Control.Monad        ( when
-                                      , unless )
+import           Control.Monad        ( unless )
 import           Text.Regex.TDFA      ( (=~) )
 
 import           System.Directory     ( doesPathExist )
@@ -24,15 +17,12 @@ import           System.Posix.Process ( getProcessID )
 
 import           Owoifier             ( owoify )
 
-import           Utils                ( newCommand
-                                      , newDevCommand
+import           Utils                ( newDevCommand
                                       , sendMessageChan
-                                      , sendMessageDM
                                       , captureCommandOutput
                                       , devIDs
                                       , restart
                                       , update
-                                      , (=~=)
                                       )
 import           Status               ( updateStatus
                                       , editStatusFile

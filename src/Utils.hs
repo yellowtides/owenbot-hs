@@ -40,32 +40,23 @@ import           Discord
 import           Control.Exception      ( catch
                                         , IOException
                                         )
-import           Control.Monad          ( guard
-                                        , unless
-                                        , when
+import           Control.Monad          ( unless
                                         , join
-                                        , liftM
                                         , void
                                         )
 import qualified Data.ByteString as B
-import           Data.Char              ( isSpace
-                                        , isAlpha
-                                        )
 import           Data.Function          ( on )
 import           Data.List.Split        ( splitOn )
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
 
-import           System.IO as Sys
 import           System.Process as Process
 import           System.Exit            ( ExitCode ( ExitSuccess, ExitFailure ) )
 import           System.Posix.Process   ( getProcessID )
 
+import           UnliftIO               ( liftIO, retrySTM )
+
 import           Text.Regex.TDFA        ( (=~) )
-import           UnliftIO               ( liftIO
-                                        , UnliftIO ( unliftIO )
-                                        , stringException
-                                        )
 
 import           Owoifier               ( owoify
                                         , weakOwoify
@@ -73,9 +64,6 @@ import           Owoifier               ( owoify
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
-import           Data.Either            ( isRight
-                                        , fromRight )
-import           Data.Maybe             ( fromMaybe )
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
@@ -251,8 +239,9 @@ addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
 addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 
 -- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
+
 isMod :: Message -> DiscordHandler Bool
-isMod m = hasRoleByName m "Moderator"
+isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 
 -- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
 -- the provided `Text` exactly.
@@ -360,4 +349,18 @@ newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
     isDev <- isSenderDeveloper msg
     if isDev
         then fun captures
-        else sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
+        else sendPrivError msg
+
+
+newModCommand :: Message
+                -> T.Text
+                -> ([T.Text ] -> DiscordHandler ())
+                -> DiscordHandler ()
+newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
+    isMod <- isMod msg
+    if isMod
+        then fun captures
+        else sendPrivError msg
+
+sendPrivError :: Message -> DiscordHandler ()
+sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"

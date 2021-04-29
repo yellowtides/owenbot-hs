@@ -10,13 +10,10 @@ import           Discord.Types          ( Message ( messageAuthor )
                                         )
 import           Discord                ( DiscordHandler )
 import           Control.Monad          ( unless
-                                        , void
                                         , forM_
-                                        , mplus
                                         )
 import           Control.Applicative    ( (<|>) )
 
-import           Status            ( setStatusFromFile )
 import qualified Admin
 import qualified Misc
 import qualified Calc
@@ -27,8 +24,7 @@ import qualified HallOfFame
 import qualified RoleSelfAssign
 import qualified MCServer
 import qualified QuoteSystem
-
-import qualified AprilFools
+--import qualified AprilFools
 
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat

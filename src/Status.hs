@@ -3,8 +3,6 @@ module Status(updateStatus, editStatusFile, setStatusFromFile) where
 
 import           Control.Monad          ( when )
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
-import           Data.Functor           ( (<&>) )
 import           Discord.Internal.Types.Gateway
 import           Discord                ( sendCommand
                                         , DiscordHandler
@@ -22,17 +20,17 @@ updateStatus newStatus newType newName =
     updateStatus' newStatusParsed newTypeParsed newName
   where
     newStatusParsed = case newStatus of
-        "online" -> UpdateStatusOnline
-        "dnd" -> UpdateStatusDoNotDisturb
-        "idle" -> UpdateStatusAwayFromKeyboard
+        "online"    -> UpdateStatusOnline
+        "dnd"       -> UpdateStatusDoNotDisturb
+        "idle"      -> UpdateStatusAwayFromKeyboard
         "invisible" -> UpdateStatusInvisibleOffline
-        _ -> UpdateStatusOnline -- revert to online if not match
+        _           -> UpdateStatusOnline -- revert to online if not match
     newTypeParsed = case newType of
-        "playing" -> ActivityTypeGame
-        "streaming" -> ActivityTypeStreaming
+        "playing"      -> ActivityTypeGame
+        "streaming"    -> ActivityTypeStreaming
         "listening to" -> ActivityTypeListening
-        "competing" -> ActivityTypeCompeting
-        _ -> ActivityTypeGame -- revert to playing if not match
+        "competing"    -> ActivityTypeCompeting
+        _              -> ActivityTypeGame -- revert to playing if not match
 
 -- | Sets the Discord status
 updateStatus' :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()

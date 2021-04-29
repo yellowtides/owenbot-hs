@@ -87,7 +87,11 @@ sign "GBP"  = "£"
 sign "JPY"  = "¥"
 
 sign "ADA"  = "₳"
+sign "AUR"  = "ᚠ"
 sign "BTC"  = "₿"
+sign "DOGE" = "Ð"
 sign "ETH"  = "Ξ"
+sign "LTC"  = "Ł"
+sign "NMC"  = "ℕ"
 
 sign x      = x
