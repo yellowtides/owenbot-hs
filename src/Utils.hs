@@ -349,4 +349,18 @@ newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
     isDev <- isSenderDeveloper msg
     if isDev
         then fun captures
-        else sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
+        else sendPrivError msg
+
+
+newModCommand :: Message 
+                -> T.Text 
+                -> ([T.Text ] -> DiscordHandler ()) 
+                -> DiscordHandler ()
+newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
+    isMod <- isMod msg 
+    if isMod
+        then fun captures
+        else sendPrivError msg   
+
+sendPrivError :: Message -> DiscordHandler ()
+sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
