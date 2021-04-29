@@ -226,7 +226,9 @@ sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
 sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
-        Nothing          -> sendMessageChan c $ owoify "The file cannot be found!"
+        Nothing          -> do
+            _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
+            sendMessageChan c $ owoify "The file cannot be found!"
         Just fileContent ->
             void $ restCall $ R.CreateMessageUploadFile c name fileContent
 
