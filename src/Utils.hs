@@ -54,7 +54,7 @@ import           System.Process as Process
 import           System.Exit            ( ExitCode ( ExitSuccess, ExitFailure ) )
 import           System.Posix.Process   ( getProcessID )
 
-import           UnliftIO               ( liftIO )
+import           UnliftIO               ( liftIO, retrySTM )
 
 import           Text.Regex.TDFA        ( (=~) )
 
@@ -240,8 +240,9 @@ addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
 addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 
 -- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
+
 isMod :: Message -> DiscordHandler Bool
-isMod m = hasRoleByName m "Moderator"
+isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 
 -- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
 -- the provided `Text` exactly.
@@ -352,15 +353,15 @@ newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
         else sendPrivError msg
 
 
-newModCommand :: Message 
-                -> T.Text 
-                -> ([T.Text ] -> DiscordHandler ()) 
+newModCommand :: Message
+                -> T.Text
+                -> ([T.Text ] -> DiscordHandler ())
                 -> DiscordHandler ()
 newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
-    isMod <- isMod msg 
+    isMod <- isMod msg
     if isMod
         then fun captures
-        else sendPrivError msg   
+        else sendPrivError msg
 
 sendPrivError :: Message -> DiscordHandler ()
 sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
