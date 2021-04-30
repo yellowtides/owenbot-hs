@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Misc ( messageReceivers, reactionReceivers ) where
+module Misc ( commandReceivers, miscReceivers, reactionReceivers ) where
 
 import           Discord.Types
 import           Discord
@@ -24,19 +24,21 @@ import           Utils                  ( sendMessageChan
                                         , (=~=)
                                         )
 import           Owoifier               ( owoify )
-import           ADAPriceFetcher        ( fetchTicker
+import           BinancePriceFetcher    ( fetchTicker
                                         , fetchADADetails)
 
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers =
+commandReceivers :: [Message -> DiscordHandler ()]
+commandReceivers =
+    [ handleFortune
+    ]
+
+miscReceivers :: [Message -> DiscordHandler ()]
+miscReceivers =
     [ owoifyIfPossible
     , godIsDead
     , thatcherIsDead
     , thatcherIsAlive
     , dadJokeIfPossible
-    , handleFortune
-    , handleTicker
-    , handleAda24h
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -144,6 +146,7 @@ fortuneCow :: IO String
 fortuneCow = do
     f <- T.pack <$> fortune
     SP.readProcess "cowsay" [] . T.unpack $ owoify f
+<<<<<<< HEAD
 
 handleTicker :: Message -> DiscordHandler ()
 handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
@@ -170,3 +173,5 @@ handleAda24h m = newCommand m "ada24h" $ \_ -> do
         Right announcement ->
             sendMessageChan (messageChannel m)
                 $ owoify $ T.pack announcement
+=======
+>>>>>>> cmdrefactor

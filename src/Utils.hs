@@ -215,7 +215,11 @@ sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
         Nothing          -> do
+<<<<<<< HEAD
             _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
+=======
+            _ <- liftIO $ putStrLn $ "[WARN] couldn't read file: " <> fp
+>>>>>>> cmdrefactor
             sendMessageChan c $ owoify "The file cannot be found!"
         Just fileContent ->
             void $ restCall $ R.CreateMessageUploadFile c name fileContent
