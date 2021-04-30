@@ -34,8 +34,8 @@ moveEventsChannel :: Message -> DiscordHandler ()
 moveEventsChannel m = newModCommand m "showEvents" $ \_ -> do
     sendMessageChan (messageChannel m) $ owoify "Moving Events Channel."
 
-    eiChannelObj <- restCall $ R.GetChannel eventsChannelId
-    case eiChannelObj of 
+    eChannelObj <- restCall $ R.GetChannel eventsChannelId
+    case eChannelObj of 
         Left err -> liftIO $ print err
         Right channel -> do
             case channel of
