@@ -10,33 +10,37 @@ import Control.Monad ( void )
 import UnliftIO
 import Data.Maybe ( fromJust )
 import Data.Text as T
+import GHC.Word ( Word64 )
+
+import Owoifier ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
     [moveEventsChannel]
 
 
-eventsChannelId :: ChannelId 
-eventsChannelId = 837451182946517054
+eventsChannelId :: GuildId   
+eventsChannelId = 837700461192151120
 
+
+-- | Move a registered events channel to the top of the server.
 moveEventsChannel :: Message -> DiscordHandler ()
 moveEventsChannel m = newModCommand m "showEvents" $ \_ -> do
-    sendMessageChan (messageChannel m) "Moving Events Channel."
+    sendMessageChan (messageChannel m) $ owoify "Moving Events Channel."
 
-    channelObj <- restCall $ GetChannel eventsChannelId
-    let Left testl = channelObj
-    let Right textr = channelObj
-    liftIO $ print testl
-    let location = channelPosition textr
-    sendMessageChan (messageChannel m) (T.pack $ show location)
-    if location == 0
-        then do
-            moveChannel (fromJust (messageGuild m)) 99 -- Arbitrarily large number to shift to bottom
-        else do
-            moveChannel (fromJust (messageGuild m)) 0
+    mbchannelObj <- restCall $ GetChannel eventsChannelId
+    case mbchannelObj of 
+        Left err -> liftIO $ print err
+        Right mbchannelObj -> do
+            case mbchannelObj of
+                ChannelGuildCategory _ guild _ position _ -> do
+                    if position == 0
+                        then do
+                            -- Guild is used in place of role ID as guildID == @everyone role ID
+                            restCall $ EditChannelPermissions eventsChannelId guild ChannelPermissionsOpts {channelPermissionsOptsAllow = 0, channelPermissionsOptsDeny = 0x000000400, channelPermissionsOptsType = ChannelPermissionsOptsRole}
+                            moveChannel guild eventsChannelId 99 -- Arbitrarily large number to shift to bottom
+                        else do
+                            restCall $ EditChannelPermissions eventsChannelId guild ChannelPermissionsOpts {channelPermissionsOptsAllow = 0x000000400, channelPermissionsOptsDeny = 0, channelPermissionsOptsType = ChannelPermissionsOptsRole}
+                            moveChannel guild eventsChannelId 0
+                _ -> do sendMessageChan (messageChannel m) $ owoify "eventsChannelId is not a valid ChannelCategory"
 
-
-    -- void $ restCall $ EditChannelPermissions 837451182946517054 0x000000400 undefined
-
-moveChannel :: GuildId -> Int -> DiscordHandler ()
-moveChannel guild location = void $ restCall $ R.ModifyGuildChannelPositions guild [(eventsChannelId, location)]

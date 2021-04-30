@@ -33,6 +33,8 @@ module Utils ( emojiToUsableText
              , captureCommandOutput
              , restart
              , update
+             , snowflakeToInt
+             , moveChannel
              ) where
 
 import qualified Discord.Requests as R
@@ -366,3 +368,9 @@ newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
 
 sendPrivError :: Message -> DiscordHandler ()
 sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
+
+snowflakeToInt :: Snowflake -> Integer
+snowflakeToInt (Snowflake w) = toInteger w
+
+moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
+moveChannel guild chan location = void $ restCall $ R.ModifyGuildChannelPositions guild [(chan, location)]
