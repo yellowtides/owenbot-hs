@@ -16,15 +16,6 @@ A neat Discord bot written in Haskell. Use with caution.
 - Admin commands to configure some settings at runtime
 - Has a modular and extensible codebase that abstracts away boilerplate
 
-## Running Locally
-
-Place a text file called `.token.txt` containing your bot's Discord token in the root directory of this repo.
-
-### Docker
-
-There is a `Dockerfile` included in this repo that basically runs the Stack build/exec process.
-However, it has not been used so the functionality cannot be vouched for.
-
 ### Cabal
 
 Install and build all dependencies, and run the bot all with the command: `cabal run owenbot-exe`.
@@ -38,6 +29,17 @@ Build with `stack install`. This compiles and installs the bot in one go.
 Run with `owenbot-exe`.
 
 Run tests with `stack test`.
+
+## Running Locally
+
+Place a text file called `.token.txt` containing your bot's Discord token in `~/.config/owen` (or `%APP_DATA%/owen` on Windows).
+
+Execute with `owenbot-exe`
+
+### Docker
+
+There is a `Dockerfile` included in this repo that basically runs the Stack build/exec process.
+However, it has not been used so the functionality cannot be vouched for.
 
 ## Documentation | Commands
 
