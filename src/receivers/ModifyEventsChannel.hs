@@ -1,42 +1,57 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module ModifyEventsChannel (receivers) where
-import Discord
+import Discord ( DiscordHandler, restCall )
 import Discord.Types
-import Discord.Internal.Rest.Channel
+    ( GuildId, Channel(ChannelGuildCategory), Message(messageChannel) )
+    
 import Discord.Requests as R
-import Utils
+    ( ChannelPermissionsOpts(ChannelPermissionsOpts,
+                             channelPermissionsOptsAllow, channelPermissionsOptsDeny,
+                             channelPermissionsOptsType),
+      ChannelPermissionsOptsType(ChannelPermissionsOptsRole),
+      ChannelRequest(EditChannelPermissions, GetChannel) )
+import Utils ( sendMessageChan, newModCommand, moveChannel )
 import Control.Monad ( void )
-import UnliftIO
+import UnliftIO ( MonadIO(liftIO) )
 import Data.Maybe ( fromJust )
-import Data.Text as T
+import Data.Text as T ()
+import GHC.Word ( Word64 )
+
+import Owoifier ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
     [moveEventsChannel]
 
 
-eventsChannelId :: ChannelId 
-eventsChannelId = 837451182946517054
+eventsChannelId :: GuildId   
+eventsChannelId = 837700461192151120
 
+
+-- | Move a registered events channel to the top of the server.
 moveEventsChannel :: Message -> DiscordHandler ()
 moveEventsChannel m = newModCommand m "showEvents" $ \_ -> do
-    sendMessageChan (messageChannel m) "Moving Events Channel."
+    sendMessageChan (messageChannel m) $ owoify "Moving Events Channel."
 
-    channelObj <- restCall $ GetChannel eventsChannelId
-    let Left testl = channelObj
-    let Right textr = channelObj
-    liftIO $ print testl
-    let location = channelPosition textr
-    sendMessageChan (messageChannel m) (T.pack $ show location)
-    if location == 0
-        then do
-            moveChannel (fromJust (messageGuild m)) 99 -- Arbitrarily large number to shift to bottom
-        else do
-            moveChannel (fromJust (messageGuild m)) 0
+    eChannelObj <- restCall $ R.GetChannel eventsChannelId
+    case eChannelObj of 
+        Left err -> liftIO $ print err
+        Right channel -> do
+            case channel of
+                ChannelGuildCategory _ guild _ position _ -> do
+                    -- Selects the first value if the category is at the top of the channel.
+                    let selector = if position == 0 then fst else snd 
+                    let swapPermOpts = ChannelPermissionsOpts 
+                            { channelPermissionsOptsAllow = selector (0, 0x000000400)
+                            , channelPermissionsOptsDeny  = selector (0x000000400, 0)
+                            , channelPermissionsOptsType  = ChannelPermissionsOptsRole
+                            }
+                    
+                    -- Guild is used in place of role ID as guildID == @everyone role ID
+                    restCall $ R.EditChannelPermissions eventsChannelId guild swapPermOpts
+                    -- Shift to opposite of current location
+                    moveChannel guild eventsChannelId $ selector (0, 99) -- Arbitrarily large number to shift to bottom
+                
+                _ -> do sendMessageChan (messageChannel m) $ owoify "eventsChannelId is not a valid ChannelCategory"
 
-
-    -- void $ restCall $ EditChannelPermissions 837451182946517054 0x000000400 undefined
-
-moveChannel :: GuildId -> Int -> DiscordHandler ()
-moveChannel guild location = void $ restCall $ R.ModifyGuildChannelPositions guild [(eventsChannelId, location)]

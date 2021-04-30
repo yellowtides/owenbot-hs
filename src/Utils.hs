@@ -33,6 +33,8 @@ module Utils ( emojiToUsableText
              , captureCommandOutput
              , restart
              , update
+             , snowflakeToInt
+             , moveChannel
              ) where
 
 import qualified Discord.Requests as R
@@ -186,7 +188,8 @@ sendMessageChanPingsDisabled cid t = do
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
 sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
-sendReply m mention xs = void $ restCall $ R.CreateMessageDetailed (messageChannel m)
+sendReply m mention xs =
+    void $ restCall $ R.CreateMessageDetailed (messageChannel m)
         $ def { R.messageDetailedContent = xs
               , R.messageDetailedReference = Just
                 $ def { referenceMessageId = Just $ messageId m }
@@ -216,14 +219,9 @@ sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
         Nothing          -> do
-<<<<<<< HEAD
-            _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
-=======
-            _ <- liftIO $ putStrLn $ "[WARN] couldn't read file: " <> fp
->>>>>>> cmdrefactor
-            sendMessageChan c $ owoify "The file cannot be found!"
-        Just fileContent ->
-            void $ restCall $ R.CreateMessageUploadFile c name fileContent
+              _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
+              sendMessageChan c $ owoify "The file cannot be found!"
+        Just fileContent -> void $ restCall $ R.CreateMessageUploadFile c name fileContent
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.
@@ -369,3 +367,9 @@ newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
 
 sendPrivError :: Message -> DiscordHandler ()
 sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
+
+snowflakeToInt :: Snowflake -> Integer
+snowflakeToInt (Snowflake w) = toInteger w
+
+moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
+moveChannel guild chan location = void $ restCall $ R.ModifyGuildChannelPositions guild [(chan, location)]
