@@ -1,6 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module TemplateRE where
+module TemplateRE
+    ( oneDot
+    , twoDot
+    , trailingWS
+    , thmRE
+    , defRE
+    , lemRE
+    , textbookRE
+    ) where
 
 import qualified Data.Text as T
 

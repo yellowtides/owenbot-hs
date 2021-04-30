@@ -41,6 +41,9 @@ import           Utils              ( sendMessageChan
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
+import           DB                 ( fetch
+                                    , store
+                                    )
 
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -50,7 +53,7 @@ messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = [ reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
-attemptHallOfFame r = do
+attemptHallOfFame r =
     when (isHallOfFameEmote r && notInHallOfFameChannel r) $ do
         eligible <- isEligibleForHallOfFame r
         when eligible $ putInHallOfFame r
@@ -71,20 +74,23 @@ notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
 isHallOfFameEmote :: ReactionInfo -> Bool
 isHallOfFameEmote r = T.toUpper (emojiName (reactionEmoji r)) `elem` hallOfFameEmotes
 
+existsInHOF :: Message -> IO Bool
+existsInHOF m = do
+    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
+    return $ show (messageId m) `elem` (T.unpack <$> msgIdList)
+
 isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler Bool
 isEligibleForHallOfFame r = do
     messM <- messageFromReaction r
     case messM of
         Right mess -> do
-            msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-            let msgIdListStr = T.unpack <$> msgIdList
             limit <- liftIO readLimit
-            let existsInHOF = show (messageId mess) `elem` msgIdListStr
+            exists <- liftIO $ existsInHOF mess
             let reactions   = messageReactions mess
             let fulfillCond = \x ->
-                    messageReactionCount x >= limit
-                    && T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
-                    && not existsInHOF
+                    T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
+                    && messageReactionCount x >= limit
+                    && not exists
             pure $ any fulfillCond reactions
         Left err -> liftIO (print err) >> pure False
 
@@ -100,8 +106,8 @@ putInHallOfFame r = do
                     liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId mess):msgIdList)
                     --adds the message id to the csv to make sure we dont add it multiple times.
                     sendMessageChanEmbed hallOfFameChannel "" embed
-                Left err -> liftIO (putStrLn "Couldn't get link to message")
-        Left err -> liftIO (putStrLn "Couldn't find associated message")
+                Left err -> liftIO (putStrLn "[Error][HoF] Couldn't get link to message")
+        Left err -> liftIO (putStrLn "[Error][HoF] Couldn't find associated message")
 
 
 createDescription :: Message -> T.Text
@@ -110,7 +116,7 @@ createDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> lin
 getImageFromMessage :: Message -> T.Text
 getImageFromMessage m
   | not . null $ messageAttachments m = attachmentUrl (head $ messageAttachments m)
-  | otherwise = ""
+  | otherwise                         = ""
 
 createHallOfFameEmbed :: Message -> DiscordHandler (Either RestCallErrorCode CreateEmbed)
 createHallOfFameEmbed m = do

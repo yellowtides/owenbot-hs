@@ -1,13 +1,23 @@
 {-# language OverloadedStrings, DeriveGeneric #-}
 
-module ADAPriceFetcher ( fetchADADetails
-                       , fetchTicker
-                       ) where
+module BinancePriceFetcher ( fetchADADetails
+                           , fetchTicker
+                           ) where
 
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           GHC.Generics
 import           Network.HTTP.Conduit   ( simpleHttp )
+import qualified Data.Text as T         ( pack
+                                        , unpack )
+import           Discord                ( DiscordHandler )
+import           Discord.Types          ( Message
+                                        , messageChannel )
+import           UnliftIO               ( liftIO )
+
+import           Utils                  ( newCommand
+                                        , sendMessageChan )
+import           Owoifier               ( owoify )
 
 data Ticker = Ticker {
     symbol              :: String,
@@ -43,6 +53,36 @@ adaEmoji = "<:ada:805934431071371305>"
 jsonURL :: String -> String -> String
 jsonURL base quote = "https://api.binance.com/api/v3/ticker/24hr?symbol=" <> base <> quote
 
+sign :: String -> String
+sign "BUSD"  = "$"
+sign "TUSD"  = "$"
+sign "USDT"  = "$"
+sign "AUD"   = "$"
+sign "CAD"   = "$"
+sign "EUR"   = "€"
+sign "GBP"   = "£"
+sign "JPY"   = "¥"
+
+sign "ADA"   = "₳"
+sign "BCH"   = "Ƀ"
+sign "BSV"   = "Ɓ"
+sign "BTC"   = "₿"
+sign "DAI"   = "◈"
+sign "DOGE"  = "Ð"
+sign "EOS"   = "ε"
+sign "ETC"   = "ξ"
+sign "ETH"   = "Ξ"
+sign "LTC"   = "Ł"
+sign "MKR"   = "Μ"
+sign "REP"   = "Ɍ"
+sign "STEEM" = "ȿ"
+sign "XMR"   = "ɱ"
+sign "XRP"   = "✕"
+sign "XTZ"   = "ꜩ"
+sign "ZEC"   = "ⓩ"
+
+sign x       = x
+
 getJSON :: String -> String -> IO B.ByteString
 getJSON a b = simpleHttp $ jsonURL a b
 
@@ -77,21 +117,29 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
     , "Highest price in the past 24h: **", sign quote, show highPrice, "**."
     ]
 
-sign :: String -> String
-sign "BUSD" = "$"
-sign "TUSD" = "$"
-sign "USDT" = "$"
-sign "AUD"  = "$"
-sign "EUR"  = "€"
-sign "GBP"  = "£"
-sign "JPY"  = "¥"
 
-sign "ADA"  = "₳"
-sign "AUR"  = "ᚠ"
-sign "BTC"  = "₿"
-sign "DOGE" = "Ð"
-sign "ETH"  = "Ξ"
-sign "LTC"  = "Ł"
-sign "NMC"  = "ℕ"
+handleTicker :: Message -> DiscordHandler ()
+handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
+    let [base, quote] = T.unpack <$> symbol
+    announcementM <- liftIO $ fetchTicker base quote
+    case announcementM of
+         Left err -> do
+            liftIO (putStrLn $ "Cannot get ticker from binance: " ++ err)
+            sendMessageChan (messageChannel m)
+                $ owoify "Couldn't get the data! Sorry"
+         Right announcement ->
+            sendMessageChan (messageChannel m)
+                $ owoify . T.pack $ base <> "/" <> quote <> " is "
+                                 <> announcement
 
-sign x      = x
+handleAda24h :: Message -> DiscordHandler ()
+handleAda24h m = newCommand m "ada24h" $ \_ -> do
+    adaAnnouncementM <- liftIO fetchADADetails
+    case adaAnnouncementM of
+        Left err -> do
+            liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err)
+            sendMessageChan (messageChannel m)
+                $ owoify "Couldn't get the data! Sorry"
+        Right announcement ->
+            sendMessageChan (messageChannel m)
+                $ owoify $ T.pack announcement

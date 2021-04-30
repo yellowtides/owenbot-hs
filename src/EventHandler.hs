@@ -9,10 +9,12 @@ import           Discord.Types          ( Message ( messageAuthor )
                                         , User ( userIsBot )
                                         )
 import           Discord                ( DiscordHandler )
+import           Discord.Types          ( messageText )
+import           Data.Foldable          ( for_ )
 import           Control.Monad          ( unless
                                         , forM_
                                         )
-import           Control.Applicative    ( (<|>) )
+import qualified Data.Text as T         ( head )
 
 import qualified Admin
 import qualified Misc
@@ -27,11 +29,11 @@ import qualified QuoteSystem
 import qualified ModifyEventsChannel
 --import qualified AprilFools
 
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = concat
+commandReceivers :: [Message -> DiscordHandler ()]
+commandReceivers = concat
      [  -- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
        Admin.receivers
-     , Misc.messageReceivers
+     , Misc.commandReceivers
      , Calc.receivers
      , Helpme.receivers
      , ILA.receivers
@@ -41,6 +43,11 @@ messageReceivers = concat
      , QuoteSystem.receivers
      , ModifyEventsChannel.receivers
      ]
+
+messageReceivers :: [Message -> DiscordHandler ()]
+messageReceivers = concat
+    [ Misc.miscReceivers
+    ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = concat
@@ -58,13 +65,14 @@ reactionRemoveReceivers = concat
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
-
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
      MessageCreate m ->
-          unless (isFromBot m) $ forM_ messageReceivers ($ m) <|> pure ()
+          unless (isFromBot m) $ if T.head (messageText m) == ':'
+            then for_ commandReceivers ($ m)
+            else for_ messageReceivers ($ m)
      MessageReactionAdd r ->
-          forM_ reactionAddReceivers ($ r) <|> pure ()
+          for_ reactionAddReceivers ($ r)
      MessageReactionRemove r ->
-          forM_ reactionRemoveReceivers ($ r) <|> pure ()
+          for_ reactionRemoveReceivers ($ r)
      _ -> pure ()
