@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 52cebd42d740db21a1a555f1ff1a5797310a6153363bb586580c069ec804f413
+-- hash: 95838efa57328f18b506d22591086dcde2a461e4469b7be3451c3243a0f53365
 
 name:           owenbot
 version:        0.1.0.0
@@ -34,9 +34,9 @@ library
       Owoifier
       Status
       Utils
-      ADAPriceFetcher
       Admin
       AprilFools
+      BinancePriceFetcher
       Calc
       HallOfFame
       Helpme
@@ -44,10 +44,10 @@ library
       Inf1A
       MCServer
       Misc
+      ModifyEventsChannel
       QuoteSystem
       RoleSelfAssign
       TemplateRE
-      ModifyEventsChannel
   other-modules:
       Paths_owenbot
   hs-source-dirs:
