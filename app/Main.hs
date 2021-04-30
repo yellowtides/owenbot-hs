@@ -1,8 +1,9 @@
 module Main where
 
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import           Control.Monad
-import           Discord.Requests as R
+import Discord.Requests as R ( UserRequest(GetCurrentUser) )
 import           Discord                ( runDiscord
                                         , def
                                         , DiscordHandler
@@ -10,9 +11,9 @@ import           Discord                ( runDiscord
                                                          , discordOnStart
                                                          , discordOnEvent
                                                          , discordOnLog
-                                                         )
+                                                         ), restCall
                                         )
-import           Discord.Types          ( ChannelId )
+import           Discord.Types          ( ChannelId, User (userName) )
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
@@ -20,6 +21,7 @@ import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )
 import           Utils                  ( sendMessageChan )
+import UnliftIO
 
 -- | Channel to post startup message into
 startupChan :: ChannelId
@@ -38,6 +40,8 @@ owen t = do
 startHandler :: DiscordHandler ()
 startHandler = do
     sendMessageChan startupChan (T.pack "Hewwo, I am bawck! UwU")
+    Right owenId <- restCall GetCurrentUser
+    _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     _ <- sendGitInfoChan startupChan
     void setStatusFromFile
 
