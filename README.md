@@ -4,6 +4,7 @@
 </div>
 
 # owenbot-hs 
+![](https://tokei.rs/b1/github/yellowtides/owenbot-hs)
 
 A neat Discord bot written in Haskell. Use with caution.
 
