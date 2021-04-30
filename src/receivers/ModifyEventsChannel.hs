@@ -51,7 +51,7 @@ moveEventsChannel m = newModCommand m "showEvents" $ \_ -> do
                     -- Guild is used in place of role ID as guildID == @everyone role ID
                     restCall $ R.EditChannelPermissions eventsChannelId guild swapPermOpts
                     -- Shift to opposite of current location
-                    moveChannel guild eventsChannelId $ selector (0, 99) -- Arbitrarily large number to shift to bottom
+                    moveChannel guild eventsChannelId $ selector (99,0) -- Arbitrarily large number to shift to bottom
                 
                 _ -> do sendMessageChan (messageChannel m) $ owoify "eventsChannelId is not a valid ChannelCategory"
 
