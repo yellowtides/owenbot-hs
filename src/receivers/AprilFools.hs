@@ -6,50 +6,33 @@ module AprilFools ( messageReceivers
 
 import           Control.Monad      ( guard
                                     , when
-                                    , join
                                     , unless
                                     )
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString as B
-import           Data.Functor       ( (<&>) )
 import           Data.Maybe         ( isNothing, isJust )
 import qualified Data.Text as T
 import           Discord            ( restCall
                                     , DiscordHandler
-                                    , RestCallErrorCode
                                     , def
                                     )
 import qualified Discord.Requests as R
-import           Discord.Types      ( ChannelId
-                                    , Snowflake
-                                    , Attachment ( .. )
-                                    , Emoji ( emojiName )
+import           Discord.Types      ( Attachment ( .. )
                                     , Message (..)
-                                    , MessageReaction (..)
-                                    , CreateEmbed ( CreateEmbed )
-                                    , CreateEmbedImage ( CreateEmbedImageUrl )
                                     , ReactionInfo (..)
                                     , User (..)
                                     , UserId
                                     )
 import           Network.HTTP.Conduit   ( simpleHttp )
-import           Text.Read          ( readMaybe )
 import           UnliftIO           ( liftIO )
 
-import           Utils              ( sendMessageChan
-                                    , pingAuthorOf
-                                    , messageFromReaction
-                                    , linkChannel
-                                    , getMessageLink
-                                    , sendMessageChanPingsDisabled
-                                    , getTimestampFromMessage
-                                    , newDevCommand, pingUser, pingRole, stripAllPings, pingWithUsername
-                                    , emojiToUsableText, sendMessageDM, sendFileChan
+import           Utils              ( sendMessageChanPingsDisabled
+                                    , pingUser
+                                    , pingRole
+                                    , stripAllPings
+                                    , pingWithUsername
+                                    , emojiToUsableText
                                     )
-import           CSV                ( readSingleColCSV
-                                    , writeSingleColCSV
-                                    )
-import Discord.Internal.Rest.User   ( UserRequest ( GetUser ) )
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ rewriteReactionAsIRC ]

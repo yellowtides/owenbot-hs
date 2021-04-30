@@ -16,7 +16,6 @@ import           Control.Monad          ( unless
                                         )
 import qualified Data.Text as T         ( head )
 
-import           Status            ( setStatusFromFile )
 import qualified Admin
 import qualified Misc
 import qualified Calc
@@ -27,8 +26,7 @@ import qualified HallOfFame
 import qualified RoleSelfAssign
 import qualified MCServer
 import qualified QuoteSystem
-
-import qualified AprilFools
+--import qualified AprilFools
 
 commandReceivers :: [Message -> DiscordHandler ()]
 commandReceivers = concat
