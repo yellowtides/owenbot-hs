@@ -170,8 +170,7 @@ emojiToUsableText r = do
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
-sendMessageChan c xs = do
-    void $ restCall $ R.CreateMessage c xs
+sendMessageChan c xs = void $ restCall $ R.CreateMessage c xs
 
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
@@ -201,8 +200,7 @@ sendReply m mention xs =
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
-sendMessageChanEmbed c xs e = do
-    void $ restCall $ R.CreateMessageEmbed c xs e
+sendMessageChanEmbed c xs e = void $ restCall $ R.CreateMessageEmbed c xs e
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
@@ -221,8 +219,7 @@ sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
         Nothing          -> sendMessageChan c $ owoify "The file cannot be found!"
-        Just fileContent -> do
-            void $ restCall $ R.CreateMessageUploadFile c name fileContent
+        Just fileContent -> void $ restCall $ R.CreateMessageUploadFile c name fileContent
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.
