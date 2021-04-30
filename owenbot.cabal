@@ -47,6 +47,7 @@ library
       QuoteSystem
       RoleSelfAssign
       TemplateRE
+      ModifyEventsChannel
   other-modules:
       Paths_owenbot
   hs-source-dirs:
