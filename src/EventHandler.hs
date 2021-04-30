@@ -24,6 +24,7 @@ import qualified HallOfFame
 import qualified RoleSelfAssign
 import qualified MCServer
 import qualified QuoteSystem
+import qualified ModifyEventsChannel
 --import qualified AprilFools
 
 messageReceivers :: [Message -> DiscordHandler ()]
@@ -38,6 +39,7 @@ messageReceivers = concat
      , HallOfFame.messageReceivers
      , MCServer.receivers
      , QuoteSystem.receivers
+     , ModifyEventsChannel.receivers
      ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
