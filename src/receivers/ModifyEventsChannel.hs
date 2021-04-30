@@ -1,15 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module ModifyEventsChannel (receivers) where
-import Discord
+import Discord ( DiscordHandler, restCall )
 import Discord.Types
-import Discord.Internal.Rest.Channel
+    ( GuildId, Channel(ChannelGuildCategory), Message(messageChannel) )
+    
 import Discord.Requests as R
-import Utils
+    ( ChannelPermissionsOpts(ChannelPermissionsOpts,
+                             channelPermissionsOptsAllow, channelPermissionsOptsDeny,
+                             channelPermissionsOptsType),
+      ChannelPermissionsOptsType(ChannelPermissionsOptsRole),
+      ChannelRequest(EditChannelPermissions, GetChannel) )
+import Utils ( sendMessageChan, newModCommand, moveChannel )
 import Control.Monad ( void )
-import UnliftIO
+import UnliftIO ( MonadIO(liftIO) )
 import Data.Maybe ( fromJust )
-import Data.Text as T
+import Data.Text as T ()
 import GHC.Word ( Word64 )
 
 import Owoifier ( owoify )
@@ -28,19 +34,24 @@ moveEventsChannel :: Message -> DiscordHandler ()
 moveEventsChannel m = newModCommand m "showEvents" $ \_ -> do
     sendMessageChan (messageChannel m) $ owoify "Moving Events Channel."
 
-    mbchannelObj <- restCall $ GetChannel eventsChannelId
-    case mbchannelObj of 
+    eiChannelObj <- restCall $ R.GetChannel eventsChannelId
+    case eiChannelObj of 
         Left err -> liftIO $ print err
-        Right mbchannelObj -> do
-            case mbchannelObj of
+        Right channel -> do
+            case channel of
                 ChannelGuildCategory _ guild _ position _ -> do
-                    if position == 0
-                        then do
-                            -- Guild is used in place of role ID as guildID == @everyone role ID
-                            restCall $ EditChannelPermissions eventsChannelId guild ChannelPermissionsOpts {channelPermissionsOptsAllow = 0, channelPermissionsOptsDeny = 0x000000400, channelPermissionsOptsType = ChannelPermissionsOptsRole}
-                            moveChannel guild eventsChannelId 99 -- Arbitrarily large number to shift to bottom
-                        else do
-                            restCall $ EditChannelPermissions eventsChannelId guild ChannelPermissionsOpts {channelPermissionsOptsAllow = 0x000000400, channelPermissionsOptsDeny = 0, channelPermissionsOptsType = ChannelPermissionsOptsRole}
-                            moveChannel guild eventsChannelId 0
+                    -- Selects the first value if the category is at the top of the channel.
+                    let selector = if position == 0 then fst else snd 
+                    let swapPermOpts = ChannelPermissionsOpts 
+                            { channelPermissionsOptsAllow = selector (0, 0x000000400)
+                            , channelPermissionsOptsDeny  = selector (0x000000400, 0)
+                            , channelPermissionsOptsType  = ChannelPermissionsOptsRole
+                            }
+                    
+                    -- Guild is used in place of role ID as guildID == @everyone role ID
+                    restCall $ R.EditChannelPermissions eventsChannelId guild swapPermOpts
+                    -- Shift to opposite of current location
+                    moveChannel guild eventsChannelId $ selector (0, 99) -- Arbitrarily large number to shift to bottom
+                
                 _ -> do sendMessageChan (messageChannel m) $ owoify "eventsChannelId is not a valid ChannelCategory"
 
