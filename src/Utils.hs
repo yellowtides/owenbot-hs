@@ -20,6 +20,7 @@ module Utils ( emojiToUsableText
              , stripAllPings
              , newCommand
              , newDevCommand
+             , newModCommand
              , linkChannel
              , getMessageLink
              , hasRoleByName
