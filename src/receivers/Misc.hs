@@ -11,6 +11,7 @@ import           UnliftIO               ( liftIO )
 import           Text.Regex.TDFA        ( (=~) )
 import qualified System.Process as SP
 import           Control.Monad          ( when )
+import           System.Environment     ( getEnv )
 import           System.Random          ( randomR
                                         , getStdRandom
                                         )
@@ -151,13 +152,15 @@ fortuneCowFiles =
     , "moofasa"
     , "three-eyes"
     , "www"
-    , assetDir <> "freddy.cow"
     ] 
 
 fortuneCow :: IO String
 fortuneCow = do
     f <- T.pack <$> fortune
-    i <- roll $ length fortuneCowFiles
-    let file = head $ drop (i - 1) fortuneCowFiles
-    putStrLn file
+    i <- getStdRandom $ randomR (0, length fortuneCowFiles)
+    file <-
+        if i == 0 then do
+            home <- getEnv "HOME"
+            pure $ home <> "/owenbot-hs/src/assets/freddy.cow"
+        else pure $ head $ drop (i - 1) fortuneCowFiles
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
