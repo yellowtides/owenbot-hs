@@ -22,6 +22,7 @@ import           Utils                  ( sendMessageChan
                                         , messageFromReaction
                                         , newCommand
                                         , (=~=)
+                                        , assetDir
                                         )
 import           Owoifier               ( owoify )
 import           BinancePriceFetcher    ( fetchTicker
@@ -142,7 +143,21 @@ handleFortune m = newCommand m "fortune" $ \_ -> do
 fortune :: IO String
 fortune = SP.readProcess "fortune" [] []
 
+fortuneCowFiles :: [String]
+fortuneCowFiles =
+    [ "default"
+    , "milk"
+    , "moose"
+    , "moofasa"
+    , "three-eyes"
+    , "www"
+    , assetDir <> "freddy.cow"
+    ] 
+
 fortuneCow :: IO String
 fortuneCow = do
     f <- T.pack <$> fortune
-    SP.readProcess "cowsay" [] . T.unpack $ owoify f
+    i <- roll $ length fortuneCowFiles
+    let file = head $ drop (i - 1) fortuneCowFiles
+    putStrLn file
+    SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
