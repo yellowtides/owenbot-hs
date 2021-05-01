@@ -2,6 +2,7 @@
 
 module BinancePriceFetcher ( fetchADADetails
                            , fetchTicker
+                           , receivers
                            ) where
 
 import           Data.Aeson
@@ -18,6 +19,12 @@ import           UnliftIO               ( liftIO )
 import           Utils                  ( newCommand
                                         , sendMessageChan )
 import           Owoifier               ( owoify )
+
+receivers :: [Message -> DiscordHandler ()]
+receivers =
+    [ handleTicker
+    , handleAda24h
+    ]
 
 data Ticker = Ticker {
     symbol              :: String,

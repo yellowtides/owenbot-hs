@@ -17,6 +17,7 @@ import           Control.Monad          ( unless
 import qualified Data.Text as T         ( head )
 
 import qualified Admin
+import qualified BinancePriceFetcher
 import qualified Misc
 import qualified Calc
 import qualified Helpme
@@ -33,6 +34,7 @@ commandReceivers :: [Message -> DiscordHandler ()]
 commandReceivers = concat
      [  -- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
        Admin.receivers
+     , BinancePriceFetcher.receivers
      , Misc.commandReceivers
      , Calc.receivers
      , Helpme.receivers
