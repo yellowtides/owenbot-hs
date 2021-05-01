@@ -6,14 +6,19 @@ import qualified Data.Text as T
 import           Discord.Types        ( ChannelId
                                       , Message   ( messageChannel )
                                       )
-import           Discord              ( DiscordHandler )
+import           Discord              ( DiscordHandler
+                                      , stopDiscord
+                                      )
 import           UnliftIO             ( liftIO )
 import           Data.Char            ( isSpace )
-import           Control.Monad        ( unless )
+import           Control.Monad        ( unless
+                                      , void
+                                      )
 import           Text.Regex.TDFA      ( (=~) )
 
 import           System.Directory     ( doesPathExist )
 import           System.Posix.Process ( getProcessID )
+import           System.Process as Process
 
 import           Owoifier             ( owoify )
 
@@ -21,7 +26,6 @@ import           Utils                ( newDevCommand
                                       , sendMessageChan
                                       , captureCommandOutput
                                       , devIDs
-                                      , restart
                                       , update
                                       )
 import           Status               ( updateStatus
@@ -36,6 +40,7 @@ receivers =
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen
+    , stopOwen
     , updateOwen
     , prepareStatus
     , listDevs
@@ -90,8 +95,14 @@ sendInstanceInfoChan chan = do
 restartOwen :: Message -> DiscordHandler ()
 restartOwen m = newDevCommand m "restart" $ \_ -> do
     sendMessageChan (messageChannel m) "Restarting"
-    _ <- liftIO restart
-    sendMessageChan (messageChannel m) "Failed to restart"
+    void $ liftIO $ Process.spawnCommand "owenbot-exe"
+    stopDiscord
+
+-- | Stops the entire Discord chain.
+stopOwen :: Message -> DiscordHandler ()
+stopOwen m = newDevCommand m "stop" $ \_ -> do
+    sendMessageChan (messageChannel m) "Stopping."
+    stopDiscord
 
 updateOwen :: Message -> DiscordHandler ()
 updateOwen m = newDevCommand m "update" $ \_ -> do

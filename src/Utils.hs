@@ -31,7 +31,6 @@ module Utils ( emojiToUsableText
              , (=~=)
              , getTimestampFromMessage
              , captureCommandOutput
-             , restart
              , update
              , snowflakeToInt
              , moveChannel
@@ -54,7 +53,9 @@ import qualified Data.Text as T
 import qualified Data.Time.Format as TF
 
 import           System.Process as Process
-import           System.Exit            ( ExitCode ( ExitSuccess, ExitFailure ) )
+import           System.Exit            ( ExitCode  ( ExitSuccess
+                                                    , ExitFailure )
+                                        )
 import           System.Posix.Process   ( getProcessID )
 
 import           UnliftIO               ( liftIO, retrySTM )
@@ -306,13 +307,6 @@ captureCommandOutput command = do
         cwd = Just "."
     }) ""
     return $ T.pack output
-
--- | `restart` calls a shell script to restart the bot.
-restart :: IO ()
-restart = do
-    Process.spawnCommand "owenbot-exe"
-    pid <- getProcessID
-    Process.callCommand $ "kill " <> show pid
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO Bool
