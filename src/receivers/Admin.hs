@@ -4,13 +4,19 @@ module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types        ( ChannelId
-                                      , Message   ( messageChannel )
+                                      , Message   ( messageChannel, messageGuild, messageAuthor )
+                                      , Channel(ChannelGuildCategory
+                                                , ChannelText, channelId)
+                                      , Guild, GuildId
+                                      , OverwriteId, User (userId)
                                       )
 import           Discord              ( DiscordHandler
-                                      , stopDiscord
+                                      , stopDiscord, restCall
                                       )
+import           Discord.Requests as R
 import           UnliftIO             ( liftIO )
 import           Data.Char            ( isSpace )
+import Data.Maybe                     ( fromJust )
 import           Control.Monad        ( unless
                                       , void
                                       )
@@ -23,10 +29,11 @@ import           System.Process as Process
 import           Owoifier             ( owoify )
 
 import           Utils                ( newDevCommand
+                                      , newModCommand
                                       , sendMessageChan
                                       , captureCommandOutput
                                       , devIDs
-                                      , update
+                                      , update, sendMessageDM
                                       )
 import           Status               ( updateStatus
                                       , editStatusFile
@@ -46,6 +53,10 @@ receivers =
     , listDevs
     , addDevs
     , removeDevs
+    , lockdown
+    , unlock
+    , lockAll
+    , unlockAll
     ]
 
 rstrip :: T.Text -> T.Text
@@ -171,3 +182,71 @@ prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
     else
         sendMessageChan (messageChannel m)
             "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"
+
+data Lock = Lockdown | Unlock deriving (Show, Eq)
+
+lockdown :: Message -> DiscordHandler ()
+lockdown m = newModCommand m "lockdown" $ \captures -> do
+    let chan = messageChannel m
+    eChannelObj <- restCall $ R.GetChannel chan
+    case eChannelObj of
+        Left err -> liftIO $ print err
+        Right channel -> do
+            case channel of
+                ChannelText _ guild _ _ _ _ _ _ _ _ -> do
+                    -- Guild is used in place of role ID as guildID == @everyone role ID
+                    restCall $ lockdownChan chan guild Lockdown
+                    sendMessageChan chan $ owoify "Locking Channel. To unlock use :unlock"
+
+                _ -> do sendMessageChan (messageChannel m) $ owoify "channel is not a valid Channel"
+
+unlock :: Message -> DiscordHandler ()
+unlock m = newModCommand m "unlock" $ \captures -> do
+  let chan = messageChannel m
+
+  eChannelObj <- restCall $ R.GetChannel chan
+  case eChannelObj of
+    Left err -> liftIO $ print err
+    Right channel -> do
+      case channel of
+        ChannelText _ guild _ _ _ _ _ _ _ _ -> do
+          -- Guild is used in place of role ID as guildID == @everyone role ID
+          restCall $ lockdownChan chan guild Unlock
+          sendMessageChan chan $ owoify "Unlocking channel, GLHF!"
+        _ -> do sendMessageChan (messageChannel m) $ owoify "channel is not a valid Channel (How the fuck did you pull that off?)"
+
+
+lockdownChan :: ChannelId -> OverwriteId -> Lock -> ChannelRequest ()
+lockdownChan chan guild b = do
+    let switch  = case b of Lockdown -> fst; Unlock -> snd
+    let swapPermOpts = ChannelPermissionsOpts
+                            { channelPermissionsOptsAllow = switch (0, 0x0000000800)
+                            , channelPermissionsOptsDeny  = switch (0x0000000800, 0)
+                            , channelPermissionsOptsType  = ChannelPermissionsOptsRole
+                            }
+    R.EditChannelPermissions chan guild swapPermOpts
+
+lockAll :: Message -> DiscordHandler ()
+lockAll m = newModCommand m "lockAll" $ \captures -> do
+    let guild = fromJust $ messageGuild m
+    -- Assume this is being invoked from Guild, and not DM
+    Right allChans <- restCall $ GetGuildChannels guild
+    let _ = map (\x -> restCall $ lockdownChan (channelId x) guild Lockdown) allChans
+    sendMessageChan (messageChannel m) $ owoify "Full Lockdown Achieved"
+
+unlockAll :: Message -> DiscordHandler ()
+unlockAll m = newModCommand m "unlockAll" $ \captures -> do
+    let guild = fromJust $ messageGuild m
+    let test ch = do 
+            out <- restCall $ lockdownChan (channelId ch) guild Unlock
+            case out of 
+                Right success -> pure success
+                Left error -> do
+                    sendMessageChan (messageChannel m) $ T.pack $ show error
+    
+    allChans <- restCall $ GetGuildChannels guild
+    case allChans of
+        Right chans -> do
+            let _ = mapM test chans
+            sendMessageChan (messageChannel m ) $ owoify "All channels unlocked"
+        _ -> sendMessageChan (messageChannel m) "Fetching Channels Failed."
