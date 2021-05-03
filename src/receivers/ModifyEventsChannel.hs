@@ -3,7 +3,7 @@
 module ModifyEventsChannel (receivers) where
 import Discord ( DiscordHandler, restCall )
 import Discord.Types
-    ( GuildId, Channel(ChannelGuildCategory), Message(messageChannel) )
+    ( GuildId, Channel(ChannelGuildCategory), Message(messageChannel), ChannelId )
     
 import Discord.Requests as R
     ( ChannelPermissionsOpts(ChannelPermissionsOpts,
@@ -25,7 +25,7 @@ receivers =
     [moveEventsChannel]
 
 
-eventsChannelId :: GuildId   
+eventsChannelId :: ChannelId    
 eventsChannelId = 837700461192151120
 
 
