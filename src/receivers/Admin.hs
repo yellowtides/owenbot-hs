@@ -7,7 +7,7 @@ import           Discord.Types        ( ChannelId
                                       , Message   ( messageChannel, messageGuild, messageAuthor )
                                       , Channel(ChannelGuildCategory
                                                 , ChannelText, channelId)
-                                      , Guild, GuildId
+                                      , Guild (guildId), GuildId
                                       , OverwriteId, User (userId)
                                       )
 import           Discord              ( DiscordHandler
@@ -226,27 +226,22 @@ lockdownChan chan guild b = do
                             }
     R.EditChannelPermissions chan guild swapPermOpts
 
-lockAll :: Message -> DiscordHandler ()
-lockAll m = newModCommand m "lockAll" $ \captures -> do
-    let guild = fromJust $ messageGuild m
-    -- Assume this is being invoked from Guild, and not DM
-    Right allChans <- restCall $ GetGuildChannels guild
-    let _ = map (\x -> restCall $ lockdownChan (channelId x) guild Lockdown) allChans
-    sendMessageChan (messageChannel m) $ owoify "Full Lockdown Achieved"
 
+--https://discordapi.com/permissions.html#2251673153
 unlockAll :: Message -> DiscordHandler ()
 unlockAll m = newModCommand m "unlockAll" $ \captures -> do
-    let guild = fromJust $ messageGuild m
-    let test ch = do 
-            out <- restCall $ lockdownChan (channelId ch) guild Unlock
-            case out of 
-                Right success -> pure success
-                Left error -> do
-                    sendMessageChan (messageChannel m) $ T.pack $ show error
+    let opts = ModifyGuildRoleOpts Nothing (Just 2251673153) Nothing Nothing Nothing
     
-    allChans <- restCall $ GetGuildChannels guild
-    case allChans of
-        Right chans -> do
-            let _ = mapM test chans
-            sendMessageChan (messageChannel m ) $ owoify "All channels unlocked"
-        _ -> sendMessageChan (messageChannel m) "Fetching Channels Failed."
+    let g = fromJust $ messageGuild m
+    restCall $ ModifyGuildRole g g opts
+    sendMessageChan (messageChannel m) "unlocked"
+
+-- https://discordapi.com/permissions.html#2251671105
+lockAll :: Message -> DiscordHandler ()
+lockAll m = newModCommand m "lockAll" $ \captures -> do
+  let opts = ModifyGuildRoleOpts Nothing (Just 2251671105) Nothing Nothing Nothing
+
+  let g = fromJust $ messageGuild m
+  restCall $ ModifyGuildRole g g opts
+  sendMessageChan (messageChannel m) "locked"
+
