@@ -152,7 +152,7 @@ fortuneCowFiles =
     , "moofasa"
     , "three-eyes"
     , "www"
-    ] 
+    ]
 
 fortuneCow :: IO String
 fortuneCow = do
@@ -162,5 +162,5 @@ fortuneCow = do
         if i == 0 then do
             home <- getEnv "HOME"
             pure $ home <> "/owenbot-hs/src/assets/freddy.cow"
-        else pure $ head $ drop (i - 1) fortuneCowFiles
+                  else pure $ fortuneCowFiles !! max 0 (i-1)
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
