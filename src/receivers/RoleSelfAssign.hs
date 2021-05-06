@@ -101,8 +101,8 @@ formatAssignStation :: T.Text -> T.Text -> [(T.Text, RoleId)] -> DiscordHandler 
 formatAssignStation prependT appendT options = do
     Right roles <- restCall $ GetGuildRoles serverID
     let roleTextOptions = (\(emojiT, roleID) -> (emojiT, roleIdToRole roleID roles)) <$> options
-    let optionsT = (\(emoji, roleID) ->
-                        "`[`" <> emoji <> "`]` for " <> "`[`" <> T.pack (show roleID) <> "`]`")
+    let optionsT = (\(emoji, roleName) ->
+                        "`[`" <> emoji <> "`]` for " <> "`[`" <> roleName <> "`]`")
                     <$> roleTextOptions
     pure $ T.unlines [
             prependT,
