@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers ) where
+module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers, receivers ) where
 
 import           Discord                ( restCall
                                         , DiscordHandler
@@ -67,6 +67,11 @@ reactionAddReceivers = [ attemptRoleAssign ]
 
 reactionRemReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionRemReceivers = [ handleRoleRemove ]
+
+receivers :: [Message -> DiscordHandler ()]
+receivers =
+    [ createAssignStation
+    ]
 
 serverID :: GuildId
 serverID = 755798054455738489

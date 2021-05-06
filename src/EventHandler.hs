@@ -44,6 +44,7 @@ commandReceivers = concat
      , MCServer.receivers
      , QuoteSystem.receivers
      , ModifyEventsChannel.receivers
+     , RoleSelfAssign.receivers
      ]
 
 messageReceivers :: [Message -> DiscordHandler ()]
