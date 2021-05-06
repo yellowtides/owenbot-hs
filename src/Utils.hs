@@ -68,6 +68,9 @@ import           Owoifier               ( owoify
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
+import           Data.Maybe             ( fromJust )
+
+import           Data.Char              ( isDigit )
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
@@ -121,9 +124,11 @@ pingWithUsername uname gid = do
         _   -> ""
 
 -- | `isUnicodeEmoji` determines whether a provided character is a unicode emoji.
--- https://en.wikipedia.org/wiki/Emoticons_(Unicode_block)
-isUnicodeEmoji :: Char -> Bool
-isUnicodeEmoji c = c >= '\x1F600' && c <= '\x1F64F'
+-- Really weak check.
+isUnicodeEmoji :: T.Text -> Bool
+isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
+    where
+        isInEmojiBlock c = c >= '\x00A9' && c <= '\x1FADF'
 
 -- | `isRoleInGuild` determines whether a role containing the given text exists
 -- in the guild (case insensitive). If it does, then it returns the role's ID.
@@ -136,16 +141,27 @@ isRoleInGuild roleFragment gid = do
         []      -> Nothing
         role:rs -> Just $ roleId role
 
--- | `isEmojiValid` determines whether an emoji with the given text exists in the guild
--- (or is a default emoji). Case insensitive.
+-- | `discordEmojiTextToId` takes a Discord <::0-9> formatted emoji string and extracts the ID.
+discordEmojiTextToId :: T.Text -> EmojiId
+discordEmojiTextToId emojiT
+    = case T.unpack . T.reverse . T.takeWhile isDigit . T.drop 1
+                    . T.dropWhile (== ' ') $ T.reverse emojiT of
+            ""  -> 0
+            num -> read num
+
+-- | `isEmojiValid` determines whether an emoji (provided in Discord <::0-9> format) exists in the
+-- guild (or is a default emoji). Case insensitive.
 isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
     Right guild <- restCall $ R.GetGuild gid
     let emojis = guildEmojis guild
-    let matchingEmojis = filter (\emoji -> emojiT == T.toUpper (emojiName emoji)) emojis
+    let emojiTID = discordEmojiTextToId emojiT
+    let matchingEmojis = filter (\emoji -> emojiTID == fromJust (emojiId emoji)) emojis
+    -- _ <- liftIO $ print matchingEmojis
+    -- _ <- liftIO $ print emojiTID
     let isInvalid = case (emojiT, matchingEmojis) of
             ("", _) -> True
-            (_, []) -> not $ isUnicodeEmoji (head $ T.unpack emojiT)
+            (_, []) -> not $ isUnicodeEmoji emojiT
             _       -> False
     pure . not $ isInvalid
 

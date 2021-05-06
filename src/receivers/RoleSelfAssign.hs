@@ -74,9 +74,10 @@ receivers =
     ]
 
 serverID :: GuildId
-serverID = 755798054455738489
+serverID = 768810076201811989
 -- the number is the fixed Guild/Server ID.
 -- TODO: put the number in a config file.
+-- Currently set to the testing server's.
 
 createAssignStationSyntax :: T.Text
 createAssignStationSyntax = "Syntax: `:createSelfAssign \"<prependText>\" \"<appendText>\" " <>
@@ -92,7 +93,6 @@ formatAssignStation prependT appendT options = do
             prependT,
             "",
             T.unlines optionsT,
-            "",
             appendT
         ]
 
@@ -104,14 +104,20 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
     let [prependT, appendT, emojiRoleJson] = captures
     let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
     case emojiRoleMapM of
-        Nothing           -> sendMessageChan (messageChannel m) $
-                                "Invalid JSON. " <> createAssignStationSyntax
+        Nothing           -> do
+            -- LOGGING
+            _ <- liftIO $ print emojiRoleJson
+            sendMessageChan (messageChannel m) $
+                "Invalid JSON. " <> createAssignStationSyntax
         Just emojiRoleMap' -> do
             let emojiRoleMap = bimap T.pack T.pack <$> toList emojiRoleMap'
+            -- LOGGING
+            _ <- liftIO $ print emojiRoleMap
             doEmojisExist <- and <$> sequence ((\(emoji, _) -> isEmojiValid emoji serverID) <$> emojiRoleMap)
             unless doEmojisExist
                 (sendMessageChan (messageChannel m)
                 "One of the emojis provided is invalid. Perhaps you used one from another server?")
+            guard doEmojisExist
             -- Emojis are fine!
             emojiRoleIDMMap <- sequence $ (\(emoji, roleFragment) ->
                                 (emoji, ) <$> isRoleInGuild roleFragment serverID) <$> emojiRoleMap
@@ -119,6 +125,7 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
             unless doRolesExist
                 (sendMessageChan (messageChannel m)
                 "One of the roles provided is invalid. Please make sure you use the roles' names!")
+            guard doRolesExist
             -- Roles are fine!
             -- Hence, the map is fine. Write the mapping to a file :)
             let emojiRoleIDMap = (\(emoji, Just roleID) -> (emoji, roleID)) <$> emojiRoleIDMMap
