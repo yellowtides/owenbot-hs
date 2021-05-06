@@ -54,8 +54,8 @@ sendTextbook m = newCommand m ilatextbookRE $ \_ ->
                                     $ assetDir <> "textbooks/ila-textbook.pdf"
 
 parseAssetNr :: T.Text -> String
-parseAssetNr = T.unpack . (<> ".png") . uncurry (<>) . first (padZeroes 2) . T.breakOn "." .
-        T.intercalate "." . map rmZeroes . T.splitOn "."
+parseAssetNr = T.unpack . (<> ".png") . uncurry (<>) . first (padZeroes 2)
+        . T.breakOn "." .  T.intercalate "." . map rmZeroes . T.splitOn "."
 
 rmZeroes :: T.Text -> T.Text
 rmZeroes digits = case T.dropWhile (== '0') digits of
