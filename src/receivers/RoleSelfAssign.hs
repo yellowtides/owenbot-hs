@@ -12,6 +12,7 @@ import           Discord.Types          ( Emoji ( emojiName )
                                                        )
                                         , MessageId
                                         , Message
+                                        , messageId
                                         , RoleId
                                         , GuildId
                                         , messageChannel
@@ -19,9 +20,12 @@ import           Discord.Types          ( Emoji ( emojiName )
 import           Discord.Requests       ( GuildRequest ( RemoveGuildMemberRole
                                                        , AddGuildMemberRole
                                                        , GetGuildRoles
-                                                       ) )
+                                                       )
+                                        , ChannelRequest ( CreateMessage )
+                                        )
 import           Control.Monad          ( guard
-                                        , unless )
+                                        , unless
+                                        , forM_ )
 import           UnliftIO               ( liftIO )
 import           Data.Bifunctor         ( first
                                         , bimap
@@ -48,6 +52,7 @@ import           Utils                  ( sendMessageDM
                                         , isEmojiValid
                                         , isRoleInGuild
                                         , sendMessageChan
+                                        , addReaction
                                         )
 import           CSV                    ( readCSV
                                         , readSingleColCSV
@@ -129,8 +134,10 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
             -- Roles are fine!
             -- Hence, the map is fine. Write the mapping to a file :)
             let emojiRoleIDMap = (\(emoji, Just roleID) -> (emoji, roleID)) <$> emojiRoleIDMMap
+            let emojiList = fst <$> emojiRoleIDMap
             assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
-            sendMessageChan (messageChannel m) assignStationT
+            Right newMessage <- restCall $ CreateMessage (messageChannel m) assignStationT
+            forM_ emojiList (addReaction (messageChannel newMessage) (messageId newMessage))
 
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do
