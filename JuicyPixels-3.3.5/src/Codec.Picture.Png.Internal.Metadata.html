@@ -1,0 +1,646 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Codec.Picture.Png.Internal.Metadata</span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#extractMetadatas"><span class="hs-identifier">extractMetadatas</span></a></span><span>
+</span><span id="line-5"></span><span>                                 </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#encodeMetadatas"><span class="hs-identifier">encodeMetadatas</span></a></span><span>
+</span><span id="line-6"></span><span>                                 </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span class="hs-cpp">
+
+#if !MIN_VERSION_base(4,8,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Control.Applicative</span><span class="hs-special">(</span><span> </span><span class="hs-special">(</span><span class="hs-operator">&lt;$&gt;</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-operator">&lt;*&gt;</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-identifier">pure</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Monoid</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">Monoid</span><span class="hs-special">,</span><span> </span><span class="hs-identifier">mempty</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Foldable</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">foldMap</span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">fromMaybe</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Binary</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Binary</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">get</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">put</span></span><span> </span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">encode</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Binary.Get</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">getLazyByteStringNul</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">getWord8</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Binary.Put</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">putLazyByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">putWord8</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy.Char8</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span class="hs-cpp">
+#if !MIN_VERSION_base(4,11,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Monoid</span><span class="hs-special">(</span><span> </span><span class="hs-special">(</span><span class="hs-operator">&lt;&gt;</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Codec.Compression.Zlib</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Z</span></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.InternalHelper.html"><span class="hs-identifier">Codec.Picture.InternalHelper</span></a></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Met</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier">Metadatas</span></a></span><span>
+</span><span id="line-28"></span><span>                              </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#dotsPerMeterToDotPerInch"><span class="hs-identifier">dotsPerMeterToDotPerInch</span></a></span><span>
+</span><span id="line-29"></span><span>                              </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Elem"><span class="hs-identifier">Elem</span></a></span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator">(:=&gt;)</span></a></span><span> </span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html"><span class="hs-identifier">Codec.Picture.Png.Internal.Type</span></a></span><span class="hs-cpp">
+
+#if !MIN_VERSION_base(4,7,0)
+</span><span class="hs-identifier">eitherFoldMap</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-identifier">Monoid</span><span> </span><span class="hs-identifier">m</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-identifier">a</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">m</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">Either</span><span> </span><span class="hs-identifier">e</span><span> </span><span class="hs-identifier">a</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">m</span><span>
+</span><span id="line-34"></span><span class="hs-identifier">eitherFoldMap</span><span> </span><span class="hs-identifier">f</span><span> </span><span class="hs-identifier">v</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-identifier">v</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-identifier">Left</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">mempty</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-identifier">Right</span><span> </span><span class="hs-identifier">a</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">f</span><span> </span><span class="hs-identifier">a</span><span class="hs-cpp">
+#else
+</span><span id="local-6989586621679201141"><span id="local-6989586621679201142"><span id="local-6989586621679201143"><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#eitherFoldMap"><span class="hs-identifier hs-type">eitherFoldMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679201143"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679201142"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679201143"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679201141"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679201142"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679201143"><span class="hs-identifier hs-type">m</span></a></span></span></span></span><span>
+</span><span id="line-39"></span><span id="eitherFoldMap"><span class="annot"><span class="annottext">eitherFoldMap :: (a -&gt; m) -&gt; Either e a -&gt; m
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#eitherFoldMap"><span class="hs-identifier hs-var hs-var">eitherFoldMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; Either e a -&gt; m
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-42"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#getGamma"><span class="hs-identifier hs-type">getGamma</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-43"></span><span id="getGamma"><span class="annot"><span class="annottext">getGamma :: [ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getGamma"><span class="hs-identifier hs-var hs-var">getGamma</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#getGamma"><span class="hs-identifier hs-var">getGamma</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679201069"><span class="annot"><span class="annottext">g :: ByteString
+</span><a href="#local-6989586621679201069"><span class="hs-identifier hs-var">g</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PngGamma -&gt; Metadatas) -&gt; Either String PngGamma -&gt; Metadatas
+forall m a e. Monoid m =&gt; (a -&gt; m) -&gt; Either e a -&gt; m
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#eitherFoldMap"><span class="hs-identifier hs-var">eitherFoldMap</span></a></span><span> </span><span class="annot"><span class="annottext">PngGamma -&gt; Metadatas
+</span><a href="#local-6989586621679201068"><span class="hs-identifier hs-var">unpackGamma</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String PngGamma -&gt; Metadatas)
+-&gt; Either String PngGamma -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Get PngGamma -&gt; ByteString -&gt; Either String PngGamma
+forall a. Get a -&gt; ByteString -&gt; Either String a
+</span><a href="Codec.Picture.InternalHelper.html#runGet"><span class="hs-identifier hs-var">runGet</span></a></span><span> </span><span class="annot"><span class="annottext">Get PngGamma
+forall t. Binary t =&gt; Get t
+</span><span class="hs-identifier hs-var">get</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679201069"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679201068"><span class="annot"><span class="annottext">unpackGamma :: PngGamma -&gt; Metadatas
+</span><a href="#local-6989586621679201068"><span class="hs-identifier hs-var hs-var">unpackGamma</span></a></span></span><span> </span><span id="local-6989586621679201066"><span class="annot"><span class="annottext">gamma :: PngGamma
+</span><a href="#local-6989586621679201066"><span class="hs-identifier hs-var">gamma</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Keys Double -&gt; Double -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Double
+</span><a href="Codec.Picture.Metadata.html#Gamma"><span class="hs-identifier hs-var">Met.Gamma</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PngGamma -&gt; Double
+</span><a href="Codec.Picture.Png.Internal.Type.html#getPngGamma"><span class="hs-identifier hs-var hs-var">getPngGamma</span></a></span><span> </span><span class="annot"><span class="annottext">PngGamma
+</span><a href="#local-6989586621679201066"><span class="hs-identifier hs-var">gamma</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#getDpis"><span class="hs-identifier hs-type">getDpis</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-49"></span><span id="getDpis"><span class="annot"><span class="annottext">getDpis :: [ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getDpis"><span class="hs-identifier hs-var hs-var">getDpis</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#getDpis"><span class="hs-identifier hs-var">getDpis</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679201061"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679201061"><span class="hs-identifier hs-var">b</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PngPhysicalDimension -&gt; Metadatas)
+-&gt; Either String PngPhysicalDimension -&gt; Metadatas
+forall m a e. Monoid m =&gt; (a -&gt; m) -&gt; Either e a -&gt; m
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#eitherFoldMap"><span class="hs-identifier hs-var">eitherFoldMap</span></a></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension -&gt; Metadatas
+</span><a href="#local-6989586621679201060"><span class="hs-identifier hs-var">unpackPhys</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String PngPhysicalDimension -&gt; Metadatas)
+-&gt; Either String PngPhysicalDimension -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Get PngPhysicalDimension
+-&gt; ByteString -&gt; Either String PngPhysicalDimension
+forall a. Get a -&gt; ByteString -&gt; Either String a
+</span><a href="Codec.Picture.InternalHelper.html#runGet"><span class="hs-identifier hs-var">runGet</span></a></span><span> </span><span class="annot"><span class="annottext">Get PngPhysicalDimension
+forall t. Binary t =&gt; Get t
+</span><span class="hs-identifier hs-var">get</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679201061"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>    </span><span id="local-6989586621679201060"><span class="annot"><span class="annottext">unpackPhys :: PngPhysicalDimension -&gt; Metadatas
+</span><a href="#local-6989586621679201060"><span class="hs-identifier hs-var hs-var">unpackPhys</span></a></span></span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngPhysicalDimension"><span class="hs-identifier hs-type">PngPhysicalDimension</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pngUnit :: PngPhysicalDimension -&gt; PngUnit
+</span><a href="Codec.Picture.Png.Internal.Type.html#pngUnit"><span class="hs-identifier hs-var">pngUnit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PngUnit
+</span><a href="Codec.Picture.Png.Internal.Type.html#PngUnitUnknown"><span class="hs-identifier hs-var">PngUnitUnknown</span></a></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-53"></span><span>      </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-var">Met.DpiX</span></a></span><span> </span><span class="annot"><span class="hs-number">72</span></span><span> </span><span class="annot"><span class="annottext">(Metadatas -&gt; Metadatas) -&gt; Metadatas -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-var">Met.DpiY</span></a></span><span> </span><span class="annot"><span class="hs-number">72</span></span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><a href="#local-6989586621679201060"><span class="hs-identifier hs-var">unpackPhys</span></a></span><span> </span><span id="local-6989586621679201053"><span class="annot"><span class="annottext">phy :: PngPhysicalDimension
+</span><a href="#local-6989586621679201053"><span class="hs-identifier hs-var">phy</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngPhysicalDimension"><span class="hs-identifier hs-type">PngPhysicalDimension</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pngUnit :: PngPhysicalDimension -&gt; PngUnit
+</span><a href="Codec.Picture.Png.Internal.Type.html#pngUnit"><span class="hs-identifier hs-var">pngUnit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PngUnit
+</span><a href="Codec.Picture.Png.Internal.Type.html#PngUnitMeter"><span class="hs-identifier hs-var">PngUnitMeter</span></a></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-55"></span><span>      </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-var">Met.DpiX</span></a></span><span> </span><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679201051"><span class="hs-identifier hs-var">dpx</span></a></span><span> </span><span class="annot"><span class="annottext">(Metadatas -&gt; Metadatas) -&gt; Metadatas -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-var">Met.DpiY</span></a></span><span> </span><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679201050"><span class="hs-identifier hs-var">dpy</span></a></span><span>
+</span><span id="line-56"></span><span>        </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>          </span><span id="local-6989586621679201051"><span class="annot"><span class="annottext">dpx :: Word
+</span><a href="#local-6989586621679201051"><span class="hs-identifier hs-var hs-var">dpx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word
+</span><a href="Codec.Picture.Metadata.html#dotsPerMeterToDotPerInch"><span class="hs-identifier hs-var">dotsPerMeterToDotPerInch</span></a></span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Word) -&gt; (Word32 -&gt; Word) -&gt; Word32 -&gt; Word
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word32 -&gt; Word) -&gt; Word32 -&gt; Word
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension -&gt; Word32
+</span><a href="Codec.Picture.Png.Internal.Type.html#pngDpiX"><span class="hs-identifier hs-var hs-var">pngDpiX</span></a></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension
+</span><a href="#local-6989586621679201053"><span class="hs-identifier hs-var">phy</span></a></span><span>
+</span><span id="line-58"></span><span>          </span><span id="local-6989586621679201050"><span class="annot"><span class="annottext">dpy :: Word
+</span><a href="#local-6989586621679201050"><span class="hs-identifier hs-var hs-var">dpy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word
+</span><a href="Codec.Picture.Metadata.html#dotsPerMeterToDotPerInch"><span class="hs-identifier hs-var">dotsPerMeterToDotPerInch</span></a></span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Word) -&gt; (Word32 -&gt; Word) -&gt; Word32 -&gt; Word
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word32 -&gt; Word) -&gt; Word32 -&gt; Word
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension -&gt; Word32
+</span><a href="Codec.Picture.Png.Internal.Type.html#pngDpiY"><span class="hs-identifier hs-var hs-var">pngDpiY</span></a></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension
+</span><a href="#local-6989586621679201053"><span class="hs-identifier hs-var">phy</span></a></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">data</span><span> </span><span id="PngText"><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-var">PngText</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PngText"><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-var">PngText</span></a></span></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="pngKeyword"><span class="annot"><span class="annottext">PngText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngKeyword"><span class="hs-identifier hs-var hs-var">pngKeyword</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="pngData"><span class="annot"><span class="annottext">PngText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngData"><span class="hs-identifier hs-var hs-var">pngData</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679201038"><span id="local-6989586621679201040"><span id="local-6989586621679201042"><span class="annot"><span class="annottext">Int -&gt; PngText -&gt; ShowS
+[PngText] -&gt; ShowS
+PngText -&gt; String
+(Int -&gt; PngText -&gt; ShowS)
+-&gt; (PngText -&gt; String) -&gt; ([PngText] -&gt; ShowS) -&gt; Show PngText
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PngText] -&gt; ShowS
+$cshowList :: [PngText] -&gt; ShowS
+show :: PngText -&gt; String
+$cshow :: PngText -&gt; String
+showsPrec :: Int -&gt; PngText -&gt; ShowS
+$cshowsPrec :: Int -&gt; PngText -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679201033"><span class="annot"><span class="hs-identifier hs-type">Binary</span></span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-type">PngText</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>  </span><span id="local-6989586621679201031"><span class="annot"><span class="annottext">get :: Get PngText
+</span><a href="#local-6989586621679201031"><span class="hs-identifier hs-var hs-var hs-var hs-var">get</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; PngText
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-var">PngText</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString -&gt; PngText)
+-&gt; Get ByteString -&gt; Get (ByteString -&gt; PngText)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Get ByteString
+</span><span class="hs-identifier hs-var">getLazyByteStringNul</span></span><span> </span><span class="annot"><span class="annottext">Get (ByteString -&gt; PngText) -&gt; Get ByteString -&gt; Get PngText
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Get ByteString
+</span><a href="Codec.Picture.InternalHelper.html#getRemainingLazyBytes"><span class="hs-identifier hs-var">getRemainingLazyBytes</span></a></span><span>
+</span><span id="line-68"></span><span>  </span><span id="local-6989586621679201028"><span class="annot"><span class="annottext">put :: PngText -&gt; Put
+</span><a href="#local-6989586621679201028"><span class="hs-identifier hs-var hs-var hs-var hs-var">put</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-type">PngText</span></a></span><span> </span><span id="local-6989586621679201027"><span class="annot"><span class="annottext">kw :: ByteString
+</span><a href="#local-6989586621679201027"><span class="hs-identifier hs-var">kw</span></a></span></span><span> </span><span id="local-6989586621679201026"><span class="annot"><span class="annottext">pdata :: ByteString
+</span><a href="#local-6989586621679201026"><span class="hs-identifier hs-var">pdata</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-69"></span><span>    </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putLazyByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679201027"><span class="hs-identifier hs-var">kw</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="annot"><span class="annottext">Word8 -&gt; Put
+</span><span class="hs-identifier hs-var">putWord8</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-71"></span><span>    </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putLazyByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679201026"><span class="hs-identifier hs-var">pdata</span></a></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="hs-keyword">data</span><span> </span><span id="PngZText"><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngZText"><span class="hs-identifier hs-var">PngZText</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PngZText"><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngZText"><span class="hs-identifier hs-var">PngZText</span></a></span></span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="pngZKeyword"><span class="annot"><span class="annottext">PngZText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngZKeyword"><span class="hs-identifier hs-var hs-var">pngZKeyword</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-75"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="pngZData"><span class="annot"><span class="annottext">PngZText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngZData"><span class="hs-identifier hs-var hs-var">pngZData</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-77"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679201017"><span id="local-6989586621679201019"><span id="local-6989586621679201021"><span class="annot"><span class="annottext">Int -&gt; PngZText -&gt; ShowS
+[PngZText] -&gt; ShowS
+PngZText -&gt; String
+(Int -&gt; PngZText -&gt; ShowS)
+-&gt; (PngZText -&gt; String) -&gt; ([PngZText] -&gt; ShowS) -&gt; Show PngZText
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PngZText] -&gt; ShowS
+$cshowList :: [PngZText] -&gt; ShowS
+show :: PngZText -&gt; String
+$cshow :: PngZText -&gt; String
+showsPrec :: Int -&gt; PngZText -&gt; ShowS
+$cshowsPrec :: Int -&gt; PngZText -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679201013"><span class="annot"><span class="hs-identifier hs-type">Binary</span></span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngZText"><span class="hs-identifier hs-type">PngZText</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621679201012"><span class="annot"><span class="annottext">get :: Get PngZText
+</span><a href="#local-6989586621679201012"><span class="hs-identifier hs-var hs-var hs-var hs-var">get</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; PngZText
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#PngZText"><span class="hs-identifier hs-var">PngZText</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString -&gt; PngZText)
+-&gt; Get ByteString -&gt; Get (ByteString -&gt; PngZText)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Get ByteString
+</span><span class="hs-identifier hs-var">getLazyByteStringNul</span></span><span> </span><span class="annot"><span class="annottext">Get (ByteString -&gt; PngZText)
+-&gt; Get () -&gt; Get (ByteString -&gt; PngZText)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Get ()
+</span><a href="#local-6989586621679201010"><span class="hs-identifier hs-var">getCompressionType</span></a></span><span> </span><span class="annot"><span class="annottext">Get (ByteString -&gt; PngZText) -&gt; Get ByteString -&gt; Get PngZText
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">Z.decompress</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; Get ByteString -&gt; Get ByteString
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Get ByteString
+</span><a href="Codec.Picture.InternalHelper.html#getRemainingLazyBytes"><span class="hs-identifier hs-var">getRemainingLazyBytes</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-81"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>      </span><span id="local-6989586621679201010"><span class="annot"><span class="annottext">getCompressionType :: Get ()
+</span><a href="#local-6989586621679201010"><span class="hs-identifier hs-var hs-var">getCompressionType</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-83"></span><span>        </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Get Word8
+</span><span class="hs-identifier hs-var">getWord8</span></span><span>
+</span><span id="line-84"></span><span>        </span><span class="annot"><span class="annottext">() -&gt; Get ()
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679201008"><span class="annot"><span class="annottext">put :: PngZText -&gt; Put
+</span><a href="#local-6989586621679201008"><span class="hs-identifier hs-var hs-var hs-var hs-var">put</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngZText"><span class="hs-identifier hs-type">PngZText</span></a></span><span> </span><span id="local-6989586621679201007"><span class="annot"><span class="annottext">kw :: ByteString
+</span><a href="#local-6989586621679201007"><span class="hs-identifier hs-var">kw</span></a></span></span><span> </span><span id="local-6989586621679201006"><span class="annot"><span class="annottext">pdata :: ByteString
+</span><a href="#local-6989586621679201006"><span class="hs-identifier hs-var">pdata</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-86"></span><span>    </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putLazyByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679201007"><span class="hs-identifier hs-var">kw</span></a></span><span>
+</span><span id="line-87"></span><span>    </span><span class="annot"><span class="annottext">Word8 -&gt; Put
+</span><span class="hs-identifier hs-var">putWord8</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-88"></span><span>    </span><span class="annot"><span class="annottext">Word8 -&gt; Put
+</span><span class="hs-identifier hs-var">putWord8</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-comment">-- compression type</span><span>
+</span><span id="line-89"></span><span>    </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putLazyByteString</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">Z.compress</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679201006"><span class="hs-identifier hs-var">pdata</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span id="local-6989586621679201105"><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#aToMetadata"><span class="hs-identifier hs-type">aToMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679201105"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679201105"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679201105"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span></span><span>
+</span><span id="line-92"></span><span id="aToMetadata"><span class="annot"><span class="annottext">aToMetadata :: (a -&gt; ByteString) -&gt; (a -&gt; ByteString) -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#aToMetadata"><span class="hs-identifier hs-var hs-var">aToMetadata</span></a></span></span><span> </span><span id="local-6989586621679201003"><span class="annot"><span class="annottext">pkeyword :: a -&gt; ByteString
+</span><a href="#local-6989586621679201003"><span class="hs-identifier hs-var">pkeyword</span></a></span></span><span> </span><span id="local-6989586621679201002"><span class="annot"><span class="annottext">pdata :: a -&gt; ByteString
+</span><a href="#local-6989586621679201002"><span class="hs-identifier hs-var">pdata</span></a></span></span><span> </span><span id="local-6989586621679201001"><span class="annot"><span class="annottext">ptext :: a
+</span><a href="#local-6989586621679201001"><span class="hs-identifier hs-var">ptext</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a -&gt; ByteString
+</span><a href="#local-6989586621679201003"><span class="hs-identifier hs-var">pkeyword</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679201001"><span class="hs-identifier hs-var">ptext</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-93"></span><span>  </span><span class="hs-string">&quot;Title&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Title"><span class="hs-identifier hs-var">Met.Title</span></a></span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-string">&quot;Author&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Author"><span class="hs-identifier hs-var">Met.Author</span></a></span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-string">&quot;Description&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Description"><span class="hs-identifier hs-var">Met.Description</span></a></span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-string">&quot;Copyright&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Copyright"><span class="hs-identifier hs-var">Met.Copyright</span></a></span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-comment">{-&quot;Creation Time&quot; -&gt; strValue Creation-}</span><span>
+</span><span id="line-98"></span><span>  </span><span class="hs-string">&quot;Software&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Software"><span class="hs-identifier hs-var">Met.Software</span></a></span><span>
+</span><span id="line-99"></span><span>  </span><span class="hs-string">&quot;Disclaimer&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Disclaimer"><span class="hs-identifier hs-var">Met.Disclaimer</span></a></span><span>
+</span><span id="line-100"></span><span>  </span><span class="hs-string">&quot;Warning&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Warning"><span class="hs-identifier hs-var">Met.Warning</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-string">&quot;Source&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Source"><span class="hs-identifier hs-var">Met.Source</span></a></span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-string">&quot;Comment&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var">strValue</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="Codec.Picture.Metadata.html#Comment"><span class="hs-identifier hs-var">Met.Comment</span></a></span><span>
+</span><span id="line-103"></span><span>  </span><span id="local-6989586621679200990"><span class="annot"><span class="annottext">other :: ByteString
+</span><a href="#local-6989586621679200990"><span class="hs-identifier hs-var">other</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span>
+</span><span id="line-104"></span><span>    </span><span class="annot"><span class="annottext">Keys Value -&gt; Value -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span>
+</span><span id="line-105"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Keys Value
+</span><a href="Codec.Picture.Metadata.html#Unknown"><span class="hs-identifier hs-var">Met.Unknown</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Keys Value) -&gt; String -&gt; Keys Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; String
+</span><span class="hs-identifier hs-var">L.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679200990"><span class="hs-identifier hs-var">other</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Value
+</span><a href="Codec.Picture.Metadata.html#String"><span class="hs-identifier hs-var">Met.String</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Value) -&gt; (ByteString -&gt; String) -&gt; ByteString -&gt; Value
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; String
+</span><span class="hs-identifier hs-var">L.unpack</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Value) -&gt; ByteString -&gt; Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ByteString
+</span><a href="#local-6989586621679201002"><span class="hs-identifier hs-var">pdata</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679201001"><span class="hs-identifier hs-var">ptext</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-108"></span><span>    </span><span id="local-6989586621679201000"><span class="annot"><span class="annottext">strValue :: Keys String -&gt; Metadatas
+</span><a href="#local-6989586621679201000"><span class="hs-identifier hs-var hs-var">strValue</span></a></span></span><span> </span><span id="local-6989586621679200986"><span class="annot"><span class="annottext">k :: Keys String
+</span><a href="#local-6989586621679200986"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Keys String -&gt; String -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys String
+</span><a href="#local-6989586621679200986"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Metadatas)
+-&gt; (ByteString -&gt; String) -&gt; ByteString -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; String
+</span><span class="hs-identifier hs-var">L.unpack</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Metadatas) -&gt; ByteString -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ByteString
+</span><a href="#local-6989586621679201002"><span class="hs-identifier hs-var">pdata</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679201001"><span class="hs-identifier hs-var">ptext</span></a></span><span>
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#textToMetadata"><span class="hs-identifier hs-type">textToMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-type">PngText</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-111"></span><span id="textToMetadata"><span class="annot"><span class="annottext">textToMetadata :: PngText -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#textToMetadata"><span class="hs-identifier hs-var hs-var">textToMetadata</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PngText -&gt; ByteString)
+-&gt; (PngText -&gt; ByteString) -&gt; PngText -&gt; Metadatas
+forall a. (a -&gt; ByteString) -&gt; (a -&gt; ByteString) -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#aToMetadata"><span class="hs-identifier hs-var">aToMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">PngText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngKeyword"><span class="hs-identifier hs-var hs-var">pngKeyword</span></a></span><span> </span><span class="annot"><span class="annottext">PngText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngData"><span class="hs-identifier hs-var hs-var">pngData</span></a></span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#ztxtToMetadata"><span class="hs-identifier hs-type">ztxtToMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#PngZText"><span class="hs-identifier hs-type">PngZText</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-114"></span><span id="ztxtToMetadata"><span class="annot"><span class="annottext">ztxtToMetadata :: PngZText -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#ztxtToMetadata"><span class="hs-identifier hs-var hs-var">ztxtToMetadata</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PngZText -&gt; ByteString)
+-&gt; (PngZText -&gt; ByteString) -&gt; PngZText -&gt; Metadatas
+forall a. (a -&gt; ByteString) -&gt; (a -&gt; ByteString) -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#aToMetadata"><span class="hs-identifier hs-var">aToMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">PngZText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngZKeyword"><span class="hs-identifier hs-var hs-var">pngZKeyword</span></a></span><span> </span><span class="annot"><span class="annottext">PngZText -&gt; ByteString
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#pngZData"><span class="hs-identifier hs-var hs-var">pngZData</span></a></span><span>
+</span><span id="line-115"></span><span>
+</span><span id="line-116"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#getTexts"><span class="hs-identifier hs-type">getTexts</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-117"></span><span id="getTexts"><span class="annot"><span class="annottext">getTexts :: [ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getTexts"><span class="hs-identifier hs-var hs-var">getTexts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Metadatas) -&gt; [ByteString] -&gt; Metadatas
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(PngText -&gt; Metadatas) -&gt; Either String PngText -&gt; Metadatas
+forall m a e. Monoid m =&gt; (a -&gt; m) -&gt; Either e a -&gt; m
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#eitherFoldMap"><span class="hs-identifier hs-var">eitherFoldMap</span></a></span><span> </span><span class="annot"><span class="annottext">PngText -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#textToMetadata"><span class="hs-identifier hs-var">textToMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String PngText -&gt; Metadatas)
+-&gt; (ByteString -&gt; Either String PngText) -&gt; ByteString -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Get PngText -&gt; ByteString -&gt; Either String PngText
+forall a. Get a -&gt; ByteString -&gt; Either String a
+</span><a href="Codec.Picture.InternalHelper.html#runGet"><span class="hs-identifier hs-var">runGet</span></a></span><span> </span><span class="annot"><span class="annottext">Get PngText
+forall t. Binary t =&gt; Get t
+</span><span class="hs-identifier hs-var">get</span></span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#getZTexts"><span class="hs-identifier hs-type">getZTexts</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-120"></span><span id="getZTexts"><span class="annot"><span class="annottext">getZTexts :: [ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getZTexts"><span class="hs-identifier hs-var hs-var">getZTexts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Metadatas) -&gt; [ByteString] -&gt; Metadatas
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(PngZText -&gt; Metadatas) -&gt; Either String PngZText -&gt; Metadatas
+forall m a e. Monoid m =&gt; (a -&gt; m) -&gt; Either e a -&gt; m
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#eitherFoldMap"><span class="hs-identifier hs-var">eitherFoldMap</span></a></span><span> </span><span class="annot"><span class="annottext">PngZText -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#ztxtToMetadata"><span class="hs-identifier hs-var">ztxtToMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String PngZText -&gt; Metadatas)
+-&gt; (ByteString -&gt; Either String PngZText)
+-&gt; ByteString
+-&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Get PngZText -&gt; ByteString -&gt; Either String PngZText
+forall a. Get a -&gt; ByteString -&gt; Either String a
+</span><a href="Codec.Picture.InternalHelper.html#runGet"><span class="hs-identifier hs-var">runGet</span></a></span><span> </span><span class="annot"><span class="annottext">Get PngZText
+forall t. Binary t =&gt; Get t
+</span><span class="hs-identifier hs-var">get</span></span><span class="hs-special">)</span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#extractMetadatas"><span class="hs-identifier hs-type">extractMetadatas</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngRawImage"><span class="hs-identifier hs-type">PngRawImage</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-123"></span><span id="extractMetadatas"><span class="annot"><span class="annottext">extractMetadatas :: PngRawImage -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#extractMetadatas"><span class="hs-identifier hs-var hs-var">extractMetadatas</span></a></span></span><span> </span><span id="local-6989586621679200981"><span class="annot"><span class="annottext">img :: PngRawImage
+</span><a href="#local-6989586621679200981"><span class="hs-identifier hs-var">img</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getDpis"><span class="hs-identifier hs-var">getDpis</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+</span><a href="#local-6989586621679200980"><span class="hs-identifier hs-var">chunksOf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#pHYsSignature"><span class="hs-identifier hs-var">pHYsSignature</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-124"></span><span>                    </span><span class="annot"><span class="annottext">Metadatas -&gt; Metadatas -&gt; Metadatas
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getGamma"><span class="hs-identifier hs-var">getGamma</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+</span><a href="#local-6989586621679200980"><span class="hs-identifier hs-var">chunksOf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#gammaSignature"><span class="hs-identifier hs-var">gammaSignature</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-125"></span><span>                    </span><span class="annot"><span class="annottext">Metadatas -&gt; Metadatas -&gt; Metadatas
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getTexts"><span class="hs-identifier hs-var">getTexts</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+</span><a href="#local-6989586621679200980"><span class="hs-identifier hs-var">chunksOf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#tEXtSignature"><span class="hs-identifier hs-var">tEXtSignature</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span>                    </span><span class="annot"><span class="annottext">Metadatas -&gt; Metadatas -&gt; Metadatas
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; Metadatas
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#getZTexts"><span class="hs-identifier hs-var">getZTexts</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+</span><a href="#local-6989586621679200980"><span class="hs-identifier hs-var">chunksOf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#zTXtSignature"><span class="hs-identifier hs-var">zTXtSignature</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-128"></span><span>    </span><span id="local-6989586621679200980"><span class="annot"><span class="annottext">chunksOf :: ByteString -&gt; [ByteString]
+</span><a href="#local-6989586621679200980"><span class="hs-identifier hs-var hs-var">chunksOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PngRawImage -&gt; ByteString -&gt; [ByteString]
+</span><a href="Codec.Picture.Png.Internal.Type.html#chunksWithSig"><span class="hs-identifier hs-var">chunksWithSig</span></a></span><span> </span><span class="annot"><span class="annottext">PngRawImage
+</span><a href="#local-6989586621679200981"><span class="hs-identifier hs-var">img</span></a></span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#encodePhysicalMetadata"><span class="hs-identifier hs-type">encodePhysicalMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngRawChunk"><span class="hs-identifier hs-type">PngRawChunk</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-131"></span><span id="encodePhysicalMetadata"><span class="annot"><span class="annottext">encodePhysicalMetadata :: Metadatas -&gt; [PngRawChunk]
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#encodePhysicalMetadata"><span class="hs-identifier hs-var hs-var">encodePhysicalMetadata</span></a></span></span><span> </span><span id="local-6989586621679200973"><span class="annot"><span class="annottext">metas :: Metadatas
+</span><a href="#local-6989586621679200973"><span class="hs-identifier hs-var">metas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk] -&gt; Maybe [PngRawChunk] -&gt; [PngRawChunk]
+forall a. a -&gt; Maybe a -&gt; a
+</span><span class="hs-identifier hs-var">fromMaybe</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe [PngRawChunk] -&gt; [PngRawChunk])
+-&gt; Maybe [PngRawChunk] -&gt; [PngRawChunk]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-132"></span><span>  </span><span id="local-6989586621679200972"><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679200972"><span class="hs-identifier hs-var">dx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Metadatas -&gt; Maybe Word
+forall a. Keys a -&gt; Metadatas -&gt; Maybe a
+</span><a href="Codec.Picture.Metadata.html#lookup"><span class="hs-identifier hs-var">Met.lookup</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-var">Met.DpiX</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679200973"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-133"></span><span>  </span><span id="local-6989586621679200970"><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679200970"><span class="hs-identifier hs-var">dy</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Metadatas -&gt; Maybe Word
+forall a. Keys a -&gt; Metadatas -&gt; Maybe a
+</span><a href="Codec.Picture.Metadata.html#lookup"><span class="hs-identifier hs-var">Met.lookup</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-var">Met.DpiY</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679200973"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679200969"><span class="annot"><span class="annottext">to :: Word -&gt; Word32
+</span><a href="#local-6989586621679200969"><span class="hs-identifier hs-var hs-var">to</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Word32) -&gt; (Word -&gt; Word) -&gt; Word -&gt; Word32
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word
+</span><a href="Codec.Picture.Metadata.html#dotPerInchToDotsPerMeter"><span class="hs-identifier hs-var">Met.dotPerInchToDotsPerMeter</span></a></span><span>
+</span><span id="line-135"></span><span>      </span><span id="local-6989586621679200967"><span class="annot"><span class="annottext">dim :: PngPhysicalDimension
+</span><a href="#local-6989586621679200967"><span class="hs-identifier hs-var hs-var">dim</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; PngUnit -&gt; PngPhysicalDimension
+</span><a href="Codec.Picture.Png.Internal.Type.html#PngPhysicalDimension"><span class="hs-identifier hs-var">PngPhysicalDimension</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word -&gt; Word32
+</span><a href="#local-6989586621679200969"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679200972"><span class="hs-identifier hs-var">dx</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word -&gt; Word32
+</span><a href="#local-6989586621679200969"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679200970"><span class="hs-identifier hs-var">dy</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">PngUnit
+</span><a href="Codec.Picture.Png.Internal.Type.html#PngUnitMeter"><span class="hs-identifier hs-var">PngUnitMeter</span></a></span><span>
+</span><span id="line-136"></span><span>  </span><span class="annot"><span class="annottext">[PngRawChunk] -&gt; Maybe [PngRawChunk]
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; PngRawChunk
+</span><a href="Codec.Picture.Png.Internal.Type.html#mkRawChunk"><span class="hs-identifier hs-var">mkRawChunk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#pHYsSignature"><span class="hs-identifier hs-var">pHYsSignature</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; PngRawChunk) -&gt; ByteString -&gt; PngRawChunk
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension -&gt; ByteString
+forall a. Binary a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">PngPhysicalDimension
+</span><a href="#local-6989586621679200967"><span class="hs-identifier hs-var">dim</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#encodeSingleMetadata"><span class="hs-identifier hs-type">encodeSingleMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngRawChunk"><span class="hs-identifier hs-type">PngRawChunk</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-139"></span><span id="encodeSingleMetadata"><span class="annot"><span class="annottext">encodeSingleMetadata :: Metadatas -&gt; [PngRawChunk]
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#encodeSingleMetadata"><span class="hs-identifier hs-var hs-var">encodeSingleMetadata</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Elem Keys -&gt; [PngRawChunk]) -&gt; Metadatas -&gt; [PngRawChunk]
+forall m. Monoid m =&gt; (Elem Keys -&gt; m) -&gt; Metadatas -&gt; m
+</span><a href="Codec.Picture.Metadata.html#foldMap"><span class="hs-identifier hs-var">Met.foldMap</span></a></span><span> </span><span class="annot"><span class="annottext">Elem Keys -&gt; [PngRawChunk]
+</span><a href="#local-6989586621679200963"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-140"></span><span>  </span><span class="annot"><a href="#local-6989586621679200963"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Elem"><span class="hs-identifier hs-type">Elem</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Keys"><span class="hs-identifier hs-type">Met.Keys</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngRawChunk"><span class="hs-identifier hs-type">PngRawChunk</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-141"></span><span>  </span><span id="local-6989586621679200963"><span class="annot"><span class="annottext">go :: Elem Keys -&gt; [PngRawChunk]
+</span><a href="#local-6989586621679200963"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679200962"><span class="annot"><span class="annottext">v :: Elem Keys
+</span><a href="#local-6989586621679200962"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Elem Keys
+</span><a href="#local-6989586621679200962"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-142"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Exif"><span class="hs-identifier hs-type">Met.Exif</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-143"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-type">Met.DpiX</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-144"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-type">Met.DpiY</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-145"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Width"><span class="hs-identifier hs-type">Met.Width</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-146"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Height"><span class="hs-identifier hs-type">Met.Height</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-147"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Format"><span class="hs-identifier hs-type">Met.Format</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-148"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Gamma"><span class="hs-identifier hs-type">Met.Gamma</span></a></span><span>       </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200957"><span class="annot"><span class="annottext">g :: a
+</span><a href="#local-6989586621679200957"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-149"></span><span>      </span><span class="annot"><span class="annottext">PngRawChunk -&gt; [PngRawChunk]
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(PngRawChunk -&gt; [PngRawChunk]) -&gt; PngRawChunk -&gt; [PngRawChunk]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; PngRawChunk
+</span><a href="Codec.Picture.Png.Internal.Type.html#mkRawChunk"><span class="hs-identifier hs-var">mkRawChunk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#gammaSignature"><span class="hs-identifier hs-var">gammaSignature</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; PngRawChunk)
+-&gt; (PngGamma -&gt; ByteString) -&gt; PngGamma -&gt; PngRawChunk
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">PngGamma -&gt; ByteString
+forall a. Binary a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">(PngGamma -&gt; PngRawChunk) -&gt; PngGamma -&gt; PngRawChunk
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Double -&gt; PngGamma
+</span><a href="Codec.Picture.Png.Internal.Type.html#PngGamma"><span class="hs-identifier hs-var">PngGamma</span></a></span><span> </span><span class="annot"><span class="annottext">a
+Double
+</span><a href="#local-6989586621679200957"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-150"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#ColorSpace"><span class="hs-identifier hs-type">Met.ColorSpace</span></a></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-151"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Title"><span class="hs-identifier hs-type">Met.Title</span></a></span><span>       </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200954"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200954"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Title&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200954"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-152"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Description"><span class="hs-identifier hs-type">Met.Description</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200951"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200951"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Description&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200951"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-153"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Author"><span class="hs-identifier hs-type">Met.Author</span></a></span><span>      </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200950"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200950"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Author&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200950"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-154"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Copyright"><span class="hs-identifier hs-type">Met.Copyright</span></a></span><span>   </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200949"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200949"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Copyright&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200949"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-155"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Software"><span class="hs-identifier hs-type">Met.Software</span></a></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200948"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200948"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Software&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200948"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-156"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Comment"><span class="hs-identifier hs-type">Met.Comment</span></a></span><span>     </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200947"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200947"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Comment&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200947"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-157"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Disclaimer"><span class="hs-identifier hs-type">Met.Disclaimer</span></a></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200946"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200946"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Disclaimer&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200946"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-158"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Source"><span class="hs-identifier hs-type">Met.Source</span></a></span><span>      </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200945"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200945"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Source&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200945"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-159"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Warning"><span class="hs-identifier hs-type">Met.Warning</span></a></span><span>     </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span id="local-6989586621679200944"><span class="annot"><span class="annottext">tx :: a
+</span><a href="#local-6989586621679200944"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Warning&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">a
+String
+</span><a href="#local-6989586621679200944"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-160"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Unknown"><span class="hs-identifier hs-type">Met.Unknown</span></a></span><span> </span><span id="local-6989586621679200943"><span class="annot"><span class="annottext">k :: String
+</span><a href="#local-6989586621679200943"><span class="hs-identifier hs-var">k</span></a></span></span><span>   </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#String"><span class="hs-identifier hs-type">Met.String</span></a></span><span> </span><span id="local-6989586621679200942"><span class="annot"><a href="#local-6989586621679200942"><span class="hs-identifier hs-var">tx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; [PngRawChunk]
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679200943"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679200942"><span class="hs-identifier hs-var">tx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-161"></span><span>    </span><span class="annot"><a href="Codec.Picture.Metadata.html#Unknown"><span class="hs-identifier hs-type">Met.Unknown</span></a></span><span> </span><span class="hs-identifier">_</span><span>   </span><span class="annot"><a href="Codec.Picture.Metadata.html#%3A%3D%3E"><span class="hs-operator hs-type">:=&gt;</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[PngRawChunk]
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-162"></span><span>
+</span><span id="line-163"></span><span>  </span><span id="local-6989586621679200953"><span class="annot"><span class="annottext">txt :: ByteString -&gt; ByteString -&gt; f PngRawChunk
+</span><a href="#local-6989586621679200953"><span class="hs-identifier hs-var hs-var">txt</span></a></span></span><span> </span><span id="local-6989586621679200941"><span class="annot"><span class="annottext">k :: ByteString
+</span><a href="#local-6989586621679200941"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679200940"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679200940"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PngRawChunk -&gt; f PngRawChunk
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(PngRawChunk -&gt; f PngRawChunk)
+-&gt; (PngText -&gt; PngRawChunk) -&gt; PngText -&gt; f PngRawChunk
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; PngRawChunk
+</span><a href="Codec.Picture.Png.Internal.Type.html#mkRawChunk"><span class="hs-identifier hs-var">mkRawChunk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Codec.Picture.Png.Internal.Type.html#tEXtSignature"><span class="hs-identifier hs-var">tEXtSignature</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; PngRawChunk)
+-&gt; (PngText -&gt; ByteString) -&gt; PngText -&gt; PngRawChunk
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">PngText -&gt; ByteString
+forall a. Binary a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">(PngText -&gt; f PngRawChunk) -&gt; PngText -&gt; f PngRawChunk
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; PngText
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#PngText"><span class="hs-identifier hs-var">PngText</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679200941"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679200940"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-164"></span><span>
+</span><span id="line-165"></span><span class="annot"><a href="Codec.Picture.Png.Internal.Metadata.html#encodeMetadatas"><span class="hs-identifier hs-type">encodeMetadatas</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Png.Internal.Type.html#PngRawChunk"><span class="hs-identifier hs-type">PngRawChunk</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-166"></span><span id="encodeMetadatas"><span class="annot"><span class="annottext">encodeMetadatas :: Metadatas -&gt; [PngRawChunk]
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#encodeMetadatas"><span class="hs-identifier hs-var hs-var">encodeMetadatas</span></a></span></span><span> </span><span id="local-6989586621679200939"><span class="annot"><span class="annottext">m :: Metadatas
+</span><a href="#local-6989586621679200939"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Metadatas -&gt; [PngRawChunk]
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#encodePhysicalMetadata"><span class="hs-identifier hs-var">encodePhysicalMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679200939"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">[PngRawChunk] -&gt; [PngRawChunk] -&gt; [PngRawChunk]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Metadatas -&gt; [PngRawChunk]
+</span><a href="Codec.Picture.Png.Internal.Metadata.html#encodeSingleMetadata"><span class="hs-identifier hs-var">encodeSingleMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679200939"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-167"></span><span>
+</span><span id="line-168"></span></pre></body></html>

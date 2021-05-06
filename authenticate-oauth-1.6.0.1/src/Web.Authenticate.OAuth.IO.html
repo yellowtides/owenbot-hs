@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, StandaloneDeriving #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wall -fno-warn-orphans #-}</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- | This Module provides interface for the instance of 'MonadIO' instead of 'MonadIO'.</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- What this module do is just adding 'withManager' or 'runResourceT'.</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Web.Authenticate.OAuth.IO</span><span>
+</span><span id="line-7"></span><span>    </span><span class="hs-pragma">{-# DEPRECATED</span><span> </span><span class="hs-pragma">&quot;This module is deprecated; rewrite your code using MonadResource&quot;</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-8"></span><span>    </span><span class="hs-special">(</span><span>
+</span><span id="line-9"></span><span>      </span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html"><span class="hs-identifier">Web.Authenticate.OAuth</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>      </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getAccessToken"><span class="hs-identifier">getAccessToken</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>      </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredential"><span class="hs-identifier">getTemporaryCredential</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredentialWithScope"><span class="hs-identifier">getTemporaryCredentialWithScope</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>      </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredentialProxy"><span class="hs-identifier">getTemporaryCredentialProxy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredential%27"><span class="hs-identifier">getTemporaryCredential'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>      </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTokenCredential"><span class="hs-identifier">getTokenCredential</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>      </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getAccessTokenProxy"><span class="hs-identifier">getAccessTokenProxy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTokenCredentialProxy"><span class="hs-identifier">getTokenCredentialProxy</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>      </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getAccessToken%27"><span class="hs-identifier">getAccessToken'</span></a></span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Network.HTTP.Client</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html"><span class="hs-identifier">Web.Authenticate.OAuth</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">OA</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html"><span class="hs-identifier">Web.Authenticate.OAuth</span></a></span><span> </span><span class="hs-keyword">hiding</span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Web.Authenticate.OAuth.html#getAccessToken"><span class="hs-identifier">getAccessToken</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span>     </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredential"><span class="hs-identifier">getTemporaryCredential</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredentialWithScope"><span class="hs-identifier">getTemporaryCredentialWithScope</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>     </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredentialProxy"><span class="hs-identifier">getTemporaryCredentialProxy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredential%27"><span class="hs-identifier">getTemporaryCredential'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>     </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTokenCredential"><span class="hs-identifier">getTokenCredential</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredentialWithScope"><span class="hs-identifier">getTemporaryCredentialWithScope</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>     </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getAccessTokenProxy"><span class="hs-identifier">getAccessTokenProxy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredentialProxy"><span class="hs-identifier">getTemporaryCredentialProxy</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span>     </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTokenCredentialProxy"><span class="hs-identifier">getTokenCredentialProxy</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-26"></span><span>     </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getAccessToken%27"><span class="hs-identifier">getAccessToken'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#getTemporaryCredential%27"><span class="hs-identifier">getTemporaryCredential'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.IO.Class</span></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Char8</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BS</span></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- | Get temporary credential for requesting acces token.</span><span>
+</span><span id="line-32"></span><span id="local-6989586621679119409"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredential"><span class="hs-identifier hs-type">getTemporaryCredential</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119409"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-33"></span><span>                       </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OA.OAuth</span></a></span><span>        </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-34"></span><span>                       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119409"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">OA.Credential</span></a></span><span> </span><span class="hs-comment">-- ^ Temporary Credential (Request Token &amp; Secret).</span></span><span>
+</span><span id="line-35"></span><span id="getTemporaryCredential"><span class="annot"><span class="annottext">getTemporaryCredential :: OAuth -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredential"><span class="hs-identifier hs-var hs-var">getTemporaryCredential</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential)
+-&gt; (OAuth -&gt; IO Credential) -&gt; OAuth -&gt; m Credential
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (OAuth -&gt; Manager -&gt; IO Credential) -&gt; OAuth -&gt; IO Credential
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">OAuth -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *). MonadIO m =&gt; OAuth -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getTemporaryCredential"><span class="hs-identifier hs-var">OA.getTemporaryCredential</span></a></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- | Get temporary credential for requesting access token with Scope parameter.</span><span>
+</span><span id="line-38"></span><span id="local-6989586621679119404"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredentialWithScope"><span class="hs-identifier hs-type">getTemporaryCredentialWithScope</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119404"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-39"></span><span>                                </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">BS.ByteString</span></span><span> </span><span class="hs-comment">-- ^ Scope parameter string</span><span>
+</span><span id="line-40"></span><span>                                </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OAuth</span></a></span><span>         </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-41"></span><span>                                </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119404"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span> </span><span class="hs-comment">-- ^ Temporay Credential (Request Token &amp; Secret).</span></span><span>
+</span><span id="line-42"></span><span id="getTemporaryCredentialWithScope"><span class="annot"><span class="annottext">getTemporaryCredentialWithScope :: ByteString -&gt; OAuth -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredentialWithScope"><span class="hs-identifier hs-var hs-var">getTemporaryCredentialWithScope</span></a></span></span><span> </span><span id="local-6989586621679119403"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679119403"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span id="local-6989586621679119402"><span class="annot"><span class="annottext">oa :: OAuth
+</span><a href="#local-6989586621679119402"><span class="hs-identifier hs-var">oa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-43"></span><span>  </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential) -&gt; IO Credential -&gt; m Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; OAuth -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+ByteString -&gt; OAuth -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getTemporaryCredentialWithScope"><span class="hs-identifier hs-var">OA.getTemporaryCredentialWithScope</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679119403"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">OAuth
+</span><a href="#local-6989586621679119402"><span class="hs-identifier hs-var">oa</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- | Get temporary credential for requesting access token via the proxy.</span><span>
+</span><span id="line-47"></span><span id="local-6989586621679119401"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredentialProxy"><span class="hs-identifier hs-type">getTemporaryCredentialProxy</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119401"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-48"></span><span>                            </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span>   </span><span class="hs-comment">-- ^ Proxy</span><span>
+</span><span id="line-49"></span><span>                            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OAuth</span></a></span><span>         </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-50"></span><span>                            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119401"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span> </span><span class="hs-comment">-- ^ Temporary Credential (Request Token &amp; Secret).</span></span><span>
+</span><span id="line-51"></span><span id="getTemporaryCredentialProxy"><span class="annot"><span class="annottext">getTemporaryCredentialProxy :: Maybe Proxy -&gt; OAuth -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredentialProxy"><span class="hs-identifier hs-var hs-var">getTemporaryCredentialProxy</span></a></span></span><span> </span><span id="local-6989586621679119400"><span class="annot"><span class="annottext">p :: Maybe Proxy
+</span><a href="#local-6989586621679119400"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679119399"><span class="annot"><span class="annottext">oa :: OAuth
+</span><a href="#local-6989586621679119399"><span class="hs-identifier hs-var">oa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential) -&gt; IO Credential -&gt; m Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Request -&gt; Request) -&gt; OAuth -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+(Request -&gt; Request) -&gt; OAuth -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getTemporaryCredential%27"><span class="hs-identifier hs-var">OA.getTemporaryCredential'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe Proxy -&gt; Request -&gt; Request
+</span><a href="Web.Authenticate.OAuth.html#addMaybeProxy"><span class="hs-identifier hs-var">addMaybeProxy</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Proxy
+</span><a href="#local-6989586621679119400"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">OAuth
+</span><a href="#local-6989586621679119399"><span class="hs-identifier hs-var">oa</span></a></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679119397"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredential%27"><span class="hs-identifier hs-type">getTemporaryCredential'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119397"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-54"></span><span>                        </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Request</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Request</span></span><span class="hs-special">)</span><span>                                 </span><span class="hs-comment">-- ^ Request Hook</span><span>
+</span><span id="line-55"></span><span>                        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OAuth</span></a></span><span>                      </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-56"></span><span>                        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119397"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span> </span><span class="hs-comment">-- ^ Temporary Credential (Request Token &amp; Secret).</span></span><span>
+</span><span id="line-57"></span><span id="getTemporaryCredential%27"><span class="annot"><span class="annottext">getTemporaryCredential' :: (Request -&gt; Request) -&gt; OAuth -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getTemporaryCredential%27"><span class="hs-identifier hs-var hs-var">getTemporaryCredential'</span></a></span></span><span> </span><span id="local-6989586621679119396"><span class="annot"><span class="annottext">hook :: Request -&gt; Request
+</span><a href="#local-6989586621679119396"><span class="hs-identifier hs-var">hook</span></a></span></span><span> </span><span id="local-6989586621679119395"><span class="annot"><span class="annottext">oa :: OAuth
+</span><a href="#local-6989586621679119395"><span class="hs-identifier hs-var">oa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential) -&gt; IO Credential -&gt; m Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Request -&gt; Request) -&gt; OAuth -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+(Request -&gt; Request) -&gt; OAuth -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getTemporaryCredential%27"><span class="hs-identifier hs-var">OA.getTemporaryCredential'</span></a></span><span> </span><span class="annot"><span class="annottext">Request -&gt; Request
+</span><a href="#local-6989586621679119396"><span class="hs-identifier hs-var">hook</span></a></span><span> </span><span class="annot"><span class="annottext">OAuth
+</span><a href="#local-6989586621679119395"><span class="hs-identifier hs-var">oa</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-comment">-- | Get Access token.</span><span>
+</span><span id="line-61"></span><span id="local-6989586621679119430"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getAccessToken"><span class="hs-identifier hs-type">getAccessToken</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTokenCredential"><span class="hs-identifier hs-type">getTokenCredential</span></a></span><span>
+</span><span id="line-62"></span><span>               </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119430"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-63"></span><span>               </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OAuth</span></a></span><span>         </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-64"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span>    </span><span class="hs-comment">-- ^ Temporary Credential with oauth_verifier</span><span>
+</span><span id="line-65"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119430"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span> </span><span class="hs-comment">-- ^ Token Credential (Access Token &amp; Secret)</span></span><span>
+</span><span id="line-66"></span><span id="getAccessToken"><span class="annot"><span class="annottext">getAccessToken :: OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getAccessToken"><span class="hs-identifier hs-var hs-var">getAccessToken</span></a></span></span><span> </span><span id="local-6989586621679119394"><span class="annot"><span class="annottext">oa :: OAuth
+</span><a href="#local-6989586621679119394"><span class="hs-identifier hs-var">oa</span></a></span></span><span> </span><span id="local-6989586621679119393"><span class="annot"><span class="annottext">cr :: Credential
+</span><a href="#local-6989586621679119393"><span class="hs-identifier hs-var">cr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential) -&gt; IO Credential -&gt; m Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">OAuth -&gt; Credential -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+OAuth -&gt; Credential -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getAccessToken"><span class="hs-identifier hs-var">OA.getAccessToken</span></a></span><span> </span><span class="annot"><span class="annottext">OAuth
+</span><a href="#local-6989586621679119394"><span class="hs-identifier hs-var">oa</span></a></span><span> </span><span class="annot"><span class="annottext">Credential
+</span><a href="#local-6989586621679119393"><span class="hs-identifier hs-var">cr</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-comment">-- | Get Access token via the proxy.</span><span>
+</span><span id="line-69"></span><span id="local-6989586621679119428"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getAccessTokenProxy"><span class="hs-identifier hs-type">getAccessTokenProxy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getTokenCredentialProxy"><span class="hs-identifier hs-type">getTokenCredentialProxy</span></a></span><span>
+</span><span id="line-70"></span><span>               </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119428"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-71"></span><span>               </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span>   </span><span class="hs-comment">-- ^ Proxy</span><span>
+</span><span id="line-72"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OAuth</span></a></span><span>         </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-73"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span>    </span><span class="hs-comment">-- ^ Temporary Credential with oauth_verifier</span><span>
+</span><span id="line-74"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119428"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span> </span><span class="hs-comment">-- ^ Token Credential (Access Token &amp; Secret)</span></span><span>
+</span><span id="line-75"></span><span id="getAccessTokenProxy"><span class="annot"><span class="annottext">getAccessTokenProxy :: Maybe Proxy -&gt; OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getAccessTokenProxy"><span class="hs-identifier hs-var hs-var">getAccessTokenProxy</span></a></span></span><span> </span><span id="local-6989586621679119392"><span class="annot"><span class="annottext">p :: Maybe Proxy
+</span><a href="#local-6989586621679119392"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679119391"><span class="annot"><span class="annottext">oa :: OAuth
+</span><a href="#local-6989586621679119391"><span class="hs-identifier hs-var">oa</span></a></span></span><span> </span><span id="local-6989586621679119390"><span class="annot"><span class="annottext">cr :: Credential
+</span><a href="#local-6989586621679119390"><span class="hs-identifier hs-var">cr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential) -&gt; IO Credential -&gt; m Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Maybe Proxy -&gt; OAuth -&gt; Credential -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Maybe Proxy -&gt; OAuth -&gt; Credential -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getAccessTokenProxy"><span class="hs-identifier hs-var">OA.getAccessTokenProxy</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Proxy
+</span><a href="#local-6989586621679119392"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">OAuth
+</span><a href="#local-6989586621679119391"><span class="hs-identifier hs-var">oa</span></a></span><span> </span><span class="annot"><span class="annottext">Credential
+</span><a href="#local-6989586621679119390"><span class="hs-identifier hs-var">cr</span></a></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span id="local-6989586621679119389"><span class="annot"><a href="Web.Authenticate.OAuth.IO.html#getAccessToken%27"><span class="hs-identifier hs-type">getAccessToken'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679119389"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-78"></span><span>                </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Request</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Request</span></span><span class="hs-special">)</span><span>                                 </span><span class="hs-comment">-- ^ Request Hook</span><span>
+</span><span id="line-79"></span><span>                </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#OAuth"><span class="hs-identifier hs-type">OAuth</span></a></span><span>                      </span><span class="hs-comment">-- ^ OAuth Application</span><span>
+</span><span id="line-80"></span><span>                </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span>                 </span><span class="hs-comment">-- ^ Temporary Credential with oauth_verifier</span><span>
+</span><span id="line-81"></span><span>                </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119389"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="Web.Authenticate.OAuth.html#Credential"><span class="hs-identifier hs-type">Credential</span></a></span><span>     </span><span class="hs-comment">-- ^ Token Credential (Access Token &amp; Secret)</span></span><span>
+</span><span id="line-82"></span><span id="getAccessToken%27"><span class="annot"><span class="annottext">getAccessToken' :: (Request -&gt; Request) -&gt; OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getAccessToken%27"><span class="hs-identifier hs-var hs-var">getAccessToken'</span></a></span></span><span> </span><span id="local-6989586621679119388"><span class="annot"><span class="annottext">hook :: Request -&gt; Request
+</span><a href="#local-6989586621679119388"><span class="hs-identifier hs-var">hook</span></a></span></span><span> </span><span id="local-6989586621679119387"><span class="annot"><span class="annottext">oa :: OAuth
+</span><a href="#local-6989586621679119387"><span class="hs-identifier hs-var">oa</span></a></span></span><span> </span><span id="local-6989586621679119386"><span class="annot"><span class="annottext">cr :: Credential
+</span><a href="#local-6989586621679119386"><span class="hs-identifier hs-var">cr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Credential -&gt; m Credential
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Credential -&gt; m Credential) -&gt; IO Credential -&gt; m Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings -&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a. ManagerSettings -&gt; (Manager -&gt; IO a) -&gt; IO a
+</span><span class="hs-identifier hs-var">withManager</span></span><span> </span><span class="annot"><span class="annottext">ManagerSettings
+</span><span class="hs-identifier hs-var">defaultManagerSettings</span></span><span> </span><span class="annot"><span class="annottext">((Manager -&gt; IO Credential) -&gt; IO Credential)
+-&gt; (Manager -&gt; IO Credential) -&gt; IO Credential
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Request -&gt; Request)
+-&gt; OAuth -&gt; Credential -&gt; Manager -&gt; IO Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+(Request -&gt; Request)
+-&gt; OAuth -&gt; Credential -&gt; Manager -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.html#getAccessToken%27"><span class="hs-identifier hs-var">OA.getAccessToken'</span></a></span><span> </span><span class="annot"><span class="annottext">Request -&gt; Request
+</span><a href="#local-6989586621679119388"><span class="hs-identifier hs-var">hook</span></a></span><span> </span><span class="annot"><span class="annottext">OAuth
+</span><a href="#local-6989586621679119387"><span class="hs-identifier hs-var">oa</span></a></span><span> </span><span class="annot"><span class="annottext">Credential
+</span><a href="#local-6989586621679119386"><span class="hs-identifier hs-var">cr</span></a></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span id="getTokenCredential"><span class="annot"><span class="annottext">getTokenCredential :: OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getTokenCredential"><span class="hs-identifier hs-var hs-var">getTokenCredential</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">OAuth -&gt; Credential -&gt; m Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getAccessToken"><span class="hs-identifier hs-var">getAccessToken</span></a></span><span>
+</span><span id="line-86"></span><span id="getTokenCredentialProxy"><span class="annot"><span class="annottext">getTokenCredentialProxy :: Maybe Proxy -&gt; OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getTokenCredentialProxy"><span class="hs-identifier hs-var hs-var">getTokenCredentialProxy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Proxy -&gt; OAuth -&gt; Credential -&gt; m Credential
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Maybe Proxy -&gt; OAuth -&gt; Credential -&gt; m Credential
+</span><a href="Web.Authenticate.OAuth.IO.html#getAccessTokenProxy"><span class="hs-identifier hs-var">getAccessTokenProxy</span></a></span><span>
+</span><span id="line-87"></span></pre></body></html>

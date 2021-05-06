@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Codec.Picture.Jpg.Internal.Metadata</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Metadata.html#extractMetadatas"><span class="hs-identifier">extractMetadatas</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Metadata.html#encodeMetadatas"><span class="hs-identifier">encodeMetadatas</span></a></span><span> </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span class="hs-cpp">
+
+#if !MIN_VERSION_base(4,8,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Control.Applicative</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">pure</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Monoid</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">mempty</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Word</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">Word</span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Word16</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">fromMaybe</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Met</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier">Metadatas</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html"><span class="hs-identifier">Codec.Picture.Jpg.Internal.Types</span></a></span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Metadata.html#scalerOfUnit"><span class="hs-identifier hs-type">scalerOfUnit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html#JFifUnit"><span class="hs-identifier hs-type">JFifUnit</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Keys"><span class="hs-identifier hs-type">Met.Keys</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word16</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-17"></span><span id="scalerOfUnit"><span class="annot"><span class="annottext">scalerOfUnit :: JFifUnit -&gt; Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Jpg.Internal.Metadata.html#scalerOfUnit"><span class="hs-identifier hs-var hs-var">scalerOfUnit</span></a></span></span><span> </span><span id="local-6989586621679205362"><span class="annot"><span class="annottext">unit :: JFifUnit
+</span><a href="#local-6989586621679205362"><span class="hs-keyword hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679205361"><span class="annot"><span class="annottext">k :: Keys Word
+</span><a href="#local-6989586621679205361"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679205360"><span class="annot"><span class="annottext">v :: Word16
+</span><a href="#local-6989586621679205360"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">JFifUnit
+</span><a href="#local-6989586621679205362"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html#JFifUnitUnknown"><span class="hs-identifier hs-type">JFifUnitUnknown</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas -&gt; Metadatas
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html#JFifPixelsPerInch"><span class="hs-identifier hs-type">JFifPixelsPerInch</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="#local-6989586621679205361"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word16 -&gt; Word
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679205360"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html#JFifPixelsPerCentimeter"><span class="hs-identifier hs-type">JFifPixelsPerCentimeter</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-21"></span><span>    </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="#local-6989586621679205361"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word -&gt; Word
+</span><a href="Codec.Picture.Metadata.html#dotsPerCentiMeterToDotPerInch"><span class="hs-identifier hs-var">Met.dotsPerCentiMeterToDotPerInch</span></a></span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Word) -&gt; Word -&gt; Word
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679205360"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Metadata.html#extractMetadatas"><span class="hs-identifier hs-type">extractMetadatas</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html#JpgJFIFApp0"><span class="hs-identifier hs-type">JpgJFIFApp0</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-24"></span><span id="extractMetadatas"><span class="annot"><span class="annottext">extractMetadatas :: JpgJFIFApp0 -&gt; Metadatas
+</span><a href="Codec.Picture.Jpg.Internal.Metadata.html#extractMetadatas"><span class="hs-identifier hs-var hs-var">extractMetadatas</span></a></span></span><span> </span><span id="local-6989586621679205353"><span class="annot"><span class="annottext">jfif :: JpgJFIFApp0
+</span><a href="#local-6989586621679205353"><span class="hs-identifier hs-var">jfif</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-25"></span><span>    </span><span class="annot"><span class="annottext">Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679205352"><span class="hs-identifier hs-var">inserter</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-var">Met.DpiX</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">JpgJFIFApp0 -&gt; Word16
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifDpiX"><span class="hs-identifier hs-var hs-var">_jfifDpiX</span></a></span><span> </span><span class="annot"><span class="annottext">JpgJFIFApp0
+</span><a href="#local-6989586621679205353"><span class="hs-identifier hs-var">jfif</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>        </span><span class="annot"><span class="annottext">(Metadatas -&gt; Metadatas) -&gt; Metadatas -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679205352"><span class="hs-identifier hs-var">inserter</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-var">Met.DpiY</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">JpgJFIFApp0 -&gt; Word16
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifDpiY"><span class="hs-identifier hs-var hs-var">_jfifDpiY</span></a></span><span> </span><span class="annot"><span class="annottext">JpgJFIFApp0
+</span><a href="#local-6989586621679205353"><span class="hs-identifier hs-var">jfif</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-28"></span><span>    </span><span id="local-6989586621679205352"><span class="annot"><span class="annottext">inserter :: Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679205352"><span class="hs-identifier hs-var hs-var">inserter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">JFifUnit -&gt; Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Jpg.Internal.Metadata.html#scalerOfUnit"><span class="hs-identifier hs-var">scalerOfUnit</span></a></span><span> </span><span class="annot"><span class="annottext">(JFifUnit -&gt; Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas)
+-&gt; JFifUnit -&gt; Keys Word -&gt; Word16 -&gt; Metadatas -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">JpgJFIFApp0 -&gt; JFifUnit
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifUnit"><span class="hs-identifier hs-var hs-var">_jfifUnit</span></a></span><span> </span><span class="annot"><span class="annottext">JpgJFIFApp0
+</span><a href="#local-6989586621679205353"><span class="hs-identifier hs-var">jfif</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Metadata.html#encodeMetadatas"><span class="hs-identifier hs-type">encodeMetadatas</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Jpg.Internal.Types.html#JpgFrame"><span class="hs-identifier hs-type">JpgFrame</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-32"></span><span id="encodeMetadatas"><span class="annot"><span class="annottext">encodeMetadatas :: Metadatas -&gt; [JpgFrame]
+</span><a href="Codec.Picture.Jpg.Internal.Metadata.html#encodeMetadatas"><span class="hs-identifier hs-var hs-var">encodeMetadatas</span></a></span></span><span> </span><span id="local-6989586621679205346"><span class="annot"><span class="annottext">metas :: Metadatas
+</span><a href="#local-6989586621679205346"><span class="hs-identifier hs-var">metas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[JpgFrame] -&gt; Maybe [JpgFrame] -&gt; [JpgFrame]
+forall a. a -&gt; Maybe a -&gt; a
+</span><span class="hs-identifier hs-var">fromMaybe</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe [JpgFrame] -&gt; [JpgFrame]) -&gt; Maybe [JpgFrame] -&gt; [JpgFrame]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679205345"><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679205345"><span class="hs-identifier hs-var">dpiX</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Metadatas -&gt; Maybe Word
+forall a. Keys a -&gt; Metadatas -&gt; Maybe a
+</span><a href="Codec.Picture.Metadata.html#lookup"><span class="hs-identifier hs-var">Met.lookup</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-var">Met.DpiX</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679205346"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679205343"><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679205343"><span class="hs-identifier hs-var">dpiY</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Metadatas -&gt; Maybe Word
+forall a. Keys a -&gt; Metadatas -&gt; Maybe a
+</span><a href="Codec.Picture.Metadata.html#lookup"><span class="hs-identifier hs-var">Met.lookup</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-var">Met.DpiY</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679205346"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="annot"><span class="annottext">[JpgFrame] -&gt; Maybe [JpgFrame]
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">([JpgFrame] -&gt; Maybe [JpgFrame])
+-&gt; (JpgJFIFApp0 -&gt; [JpgFrame]) -&gt; JpgJFIFApp0 -&gt; Maybe [JpgFrame]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">JpgFrame -&gt; [JpgFrame]
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(JpgFrame -&gt; [JpgFrame])
+-&gt; (JpgJFIFApp0 -&gt; JpgFrame) -&gt; JpgJFIFApp0 -&gt; [JpgFrame]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">JpgJFIFApp0 -&gt; JpgFrame
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#JpgJFIF"><span class="hs-identifier hs-var">JpgJFIF</span></a></span><span> </span><span class="annot"><span class="annottext">(JpgJFIFApp0 -&gt; Maybe [JpgFrame])
+-&gt; JpgJFIFApp0 -&gt; Maybe [JpgFrame]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">$WJpgJFIFApp0 :: JFifUnit -&gt; Word16 -&gt; Word16 -&gt; Maybe Int -&gt; JpgJFIFApp0
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#%24WJpgJFIFApp0"><span class="hs-identifier hs-type hs-type">JpgJFIFApp0</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_jfifUnit :: JFifUnit
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifUnit"><span class="hs-identifier hs-var">_jfifUnit</span></a></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">JFifUnit
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#JFifPixelsPerInch"><span class="hs-identifier hs-var">JFifPixelsPerInch</span></a></span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_jfifDpiX :: Word16
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifDpiX"><span class="hs-identifier hs-var">_jfifDpiX</span></a></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word16
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679205345"><span class="hs-identifier hs-var">dpiX</span></a></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_jfifDpiY :: Word16
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifDpiY"><span class="hs-identifier hs-var">_jfifDpiY</span></a></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word16
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621679205343"><span class="hs-identifier hs-var">dpiY</span></a></span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_jfifThumbnail :: Maybe Int
+</span><a href="Codec.Picture.Jpg.Internal.Types.html#_jfifThumbnail"><span class="hs-identifier hs-var">_jfifThumbnail</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Int
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span></pre></body></html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">ModifyEventsChannel</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModifyEventsChannel.html#receivers"><span class="hs-identifier">receivers</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Discord</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">DiscordHandler</span></span><span>
+</span><span id="line-6"></span><span>               </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">restCall</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Discord.Types</span></span><span>
+</span><span id="line-8"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Channel</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ChannelGuildCategory</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Message</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">messageChannel</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ChannelId</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Discord.Requests</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">R</span></span><span>
+</span><span id="line-13"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">ChannelPermissionsOpts</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ChannelPermissionsOpts</span></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>                             </span><span class="annot"><span class="hs-identifier">channelPermissionsOptsAllow</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">channelPermissionsOptsDeny</span></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>                             </span><span class="annot"><span class="hs-identifier">channelPermissionsOptsType</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ChannelPermissionsOptsType</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">ChannelPermissionsOptsRole</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ChannelRequest</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">EditChannelPermissions</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">GetChannel</span></span><span> </span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Utils.html"><span class="hs-identifier">Utils</span></a></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Utils.html#sendMessageChan"><span class="hs-identifier">sendMessageChan</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Utils.html#newModCommand"><span class="hs-identifier">newModCommand</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Utils.html#moveChannel"><span class="hs-identifier">moveChannel</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UnliftIO</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">MonadIO</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">liftIO</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Owoifier.html"><span class="hs-identifier">Owoifier</span></a></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Owoifier.html#owoify"><span class="hs-identifier">owoify</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="annot"><a href="ModifyEventsChannel.html#receivers"><span class="hs-identifier hs-type">receivers</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-25"></span><span id="receivers"><span class="annot"><span class="annottext">receivers :: [Message -&gt; DiscordHandler ()]
+</span><a href="ModifyEventsChannel.html#receivers"><span class="hs-identifier hs-var hs-var">receivers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Message -&gt; DiscordHandler ()
+</span><a href="ModifyEventsChannel.html#moveEventsChannel"><span class="hs-identifier hs-var">moveEventsChannel</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><a href="ModifyEventsChannel.html#eventsChannelId"><span class="hs-identifier hs-type">eventsChannelId</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ChannelId</span></span><span>
+</span><span id="line-29"></span><span id="eventsChannelId"><span class="annot"><span class="annottext">eventsChannelId :: ChannelId
+</span><a href="ModifyEventsChannel.html#eventsChannelId"><span class="hs-identifier hs-var hs-var">eventsChannelId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">837700461192151120</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- | Move a registered events channel to the top of the server.</span><span>
+</span><span id="line-32"></span><span class="annot"><a href="ModifyEventsChannel.html#moveEventsChannel"><span class="hs-identifier hs-type">moveEventsChannel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span id="moveEventsChannel"><span class="annot"><span class="annottext">moveEventsChannel :: Message -&gt; DiscordHandler ()
+</span><a href="ModifyEventsChannel.html#moveEventsChannel"><span class="hs-identifier hs-var hs-var">moveEventsChannel</span></a></span></span><span> </span><span id="local-6989586621679186623"><span class="annot"><span class="annottext">m :: Message
+</span><a href="#local-6989586621679186623"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+-&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
+</span><a href="Utils.html#newModCommand"><span class="hs-identifier hs-var">newModCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679186623"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;showEvents&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
+-&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+</span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
+</span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679186623"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
+</span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Moving Events Channel.&quot;</span></span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span>    </span><span id="local-6989586621679186622"><span class="annot"><span class="annottext">Either RestCallErrorCode Channel
+</span><a href="#local-6989586621679186622"><span class="hs-identifier hs-var">eChannelObj</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChannelRequest Channel
+-&gt; DiscordHandler (Either RestCallErrorCode Channel)
+forall a (r :: * -&gt; *).
+(FromJSON a, Request (r a)) =&gt;
+r a -&gt; DiscordHandler (Either RestCallErrorCode a)
+</span><span class="hs-identifier hs-var">restCall</span></span><span> </span><span class="annot"><span class="annottext">(ChannelRequest Channel
+ -&gt; DiscordHandler (Either RestCallErrorCode Channel))
+-&gt; ChannelRequest Channel
+-&gt; DiscordHandler (Either RestCallErrorCode Channel)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelRequest Channel
+</span><span class="hs-identifier hs-var">R.GetChannel</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="ModifyEventsChannel.html#eventsChannelId"><span class="hs-identifier hs-var">eventsChannelId</span></a></span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either RestCallErrorCode Channel
+</span><a href="#local-6989586621679186622"><span class="hs-identifier hs-var">eChannelObj</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-38"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679186621"><span class="annot"><span class="annottext">err :: RestCallErrorCode
+</span><a href="#local-6989586621679186621"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; DiscordHandler ()
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; DiscordHandler ()) -&gt; IO () -&gt; DiscordHandler ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">RestCallErrorCode -&gt; IO ()
+forall a. Show a =&gt; a -&gt; IO ()
+</span><span class="hs-identifier hs-var">print</span></span><span> </span><span class="annot"><span class="annottext">RestCallErrorCode
+</span><a href="#local-6989586621679186621"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-39"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679186620"><span class="annot"><span class="annottext">channel :: Channel
+</span><a href="#local-6989586621679186620"><span class="hs-identifier hs-var">channel</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Channel
+</span><a href="#local-6989586621679186620"><span class="hs-identifier hs-var">channel</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-40"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">ChannelGuildCategory</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679186619"><span class="annot"><span class="annottext">guild :: ChannelId
+</span><a href="#local-6989586621679186619"><span class="hs-identifier hs-var">guild</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679186618"><span class="annot"><span class="annottext">position :: Integer
+</span><a href="#local-6989586621679186618"><span class="hs-identifier hs-var">position</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-41"></span><span>                </span><span class="hs-comment">-- Selects the first value if the category is at the top of the channel.</span><span>
+</span><span id="line-42"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186617"><span class="annot"><span class="annottext">selector :: (a, a) -&gt; a
+</span><a href="#local-6989586621679186617"><span class="hs-identifier hs-var hs-var">selector</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679186618"><span class="hs-identifier hs-var">position</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">(a, a) -&gt; a
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(a, a) -&gt; a
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span>
+</span><span id="line-43"></span><span>                    </span><span id="local-6989586621679186616"><span class="annot"><span class="annottext">swapPermOpts :: ChannelPermissionsOpts
+</span><a href="#local-6989586621679186616"><span class="hs-identifier hs-var hs-var">swapPermOpts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelPermissionsOpts :: Integer
+-&gt; Integer -&gt; ChannelPermissionsOptsType -&gt; ChannelPermissionsOpts
+</span><span class="hs-identifier hs-type hs-type">ChannelPermissionsOpts</span></span><span>
+</span><span id="line-44"></span><span>                        </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">channelPermissionsOptsAllow :: Integer
+</span><span class="hs-identifier hs-var">channelPermissionsOptsAllow</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer, Integer) -&gt; Integer
+forall a. (a, a) -&gt; a
+</span><a href="#local-6989586621679186617"><span class="hs-identifier hs-var">selector</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-number">0x000000400</span></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">channelPermissionsOptsDeny :: Integer
+</span><span class="hs-identifier hs-var">channelPermissionsOptsDeny</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer, Integer) -&gt; Integer
+forall a. (a, a) -&gt; a
+</span><a href="#local-6989586621679186617"><span class="hs-identifier hs-var">selector</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0x000000400</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">channelPermissionsOptsType :: ChannelPermissionsOptsType
+</span><span class="hs-identifier hs-var">channelPermissionsOptsType</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelPermissionsOptsType
+</span><span class="hs-identifier hs-var">ChannelPermissionsOptsRole</span></span><span>
+</span><span id="line-47"></span><span>                        </span><span class="hs-special">}</span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span>                </span><span class="hs-comment">-- Guild is used in place of role ID as guildID == @everyone role ID</span><span>
+</span><span id="line-50"></span><span>                </span><span class="annot"><span class="annottext">ChannelRequest () -&gt; DiscordHandler (Either RestCallErrorCode ())
+forall a (r :: * -&gt; *).
+(FromJSON a, Request (r a)) =&gt;
+r a -&gt; DiscordHandler (Either RestCallErrorCode a)
+</span><span class="hs-identifier hs-var">restCall</span></span><span> </span><span class="annot"><span class="annottext">(ChannelRequest () -&gt; DiscordHandler (Either RestCallErrorCode ()))
+-&gt; ChannelRequest ()
+-&gt; DiscordHandler (Either RestCallErrorCode ())
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+-&gt; ChannelId -&gt; ChannelPermissionsOpts -&gt; ChannelRequest ()
+</span><span class="hs-identifier hs-var">R.EditChannelPermissions</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="ModifyEventsChannel.html#eventsChannelId"><span class="hs-identifier hs-var">eventsChannelId</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679186619"><span class="hs-identifier hs-var">guild</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelPermissionsOpts
+</span><a href="#local-6989586621679186616"><span class="hs-identifier hs-var">swapPermOpts</span></a></span><span>
+</span><span id="line-51"></span><span>                </span><span class="hs-comment">-- Shift to opposite of current location (99 is arbitrarily large to shift to the bottom)</span><span>
+</span><span id="line-52"></span><span>                </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelId -&gt; Int -&gt; DiscordHandler ()
+</span><a href="Utils.html#moveChannel"><span class="hs-identifier hs-var">moveChannel</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679186619"><span class="hs-identifier hs-var">guild</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="ModifyEventsChannel.html#eventsChannelId"><span class="hs-identifier hs-var">eventsChannelId</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; DiscordHandler ()) -&gt; Int -&gt; DiscordHandler ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Int
+forall a. (a, a) -&gt; a
+</span><a href="#local-6989586621679186617"><span class="hs-identifier hs-var">selector</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">99</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span>            </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+</span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
+</span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679186623"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>                </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
+</span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;eventsChannelId is not a valid ChannelCategory&quot;</span></span><span>
+</span><span id="line-56"></span></pre></body></html>

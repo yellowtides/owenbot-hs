@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE BangPatterns #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- |</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- Module      : Crypto.Number.ModArithmetic</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- License     : BSD-style</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Maintainer  : Vincent Hanquez &lt;vincent@snarc.org&gt;</span><span>
+</span><span id="line-7"></span><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Portability : Good</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Crypto.Number.ModArithmetic</span><span>
+</span><span id="line-11"></span><span>    </span><span class="hs-special">(</span><span>
+</span><span id="line-12"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Exponentiation</span></span><span>
+</span><span id="line-13"></span><span>      </span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#expSafe"><span class="hs-identifier">expSafe</span></a></span><span>
+</span><span id="line-14"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#expFast"><span class="hs-identifier">expFast</span></a></span><span>
+</span><span id="line-15"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Inverse computing</span></span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#inverse"><span class="hs-identifier">inverse</span></a></span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#inverseCoprimes"><span class="hs-identifier">inverseCoprimes</span></a></span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#jacobi"><span class="hs-identifier">jacobi</span></a></span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">throw</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Exception</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Number.Basic.html"><span class="hs-identifier">Crypto.Number.Basic</span></a></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Number.Compat.html"><span class="hs-identifier">Crypto.Number.Compat</span></a></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-comment">-- | Raised when two numbers are supposed to be coprimes but are not.</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">data</span><span> </span><span id="CoprimesAssertionError"><span class="annot"><a href="Crypto.Number.ModArithmetic.html#CoprimesAssertionError"><span class="hs-identifier hs-var">CoprimesAssertionError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CoprimesAssertionError"><span class="annot"><a href="Crypto.Number.ModArithmetic.html#CoprimesAssertionError"><span class="hs-identifier hs-var">CoprimesAssertionError</span></a></span></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679222224"><span id="local-6989586621679222226"><span id="local-6989586621679222228"><span class="annot"><span class="annottext">Int -&gt; CoprimesAssertionError -&gt; ShowS
+[CoprimesAssertionError] -&gt; ShowS
+CoprimesAssertionError -&gt; String
+(Int -&gt; CoprimesAssertionError -&gt; ShowS)
+-&gt; (CoprimesAssertionError -&gt; String)
+-&gt; ([CoprimesAssertionError] -&gt; ShowS)
+-&gt; Show CoprimesAssertionError
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [CoprimesAssertionError] -&gt; ShowS
+$cshowList :: [CoprimesAssertionError] -&gt; ShowS
+show :: CoprimesAssertionError -&gt; String
+$cshow :: CoprimesAssertionError -&gt; String
+showsPrec :: Int -&gt; CoprimesAssertionError -&gt; ShowS
+$cshowsPrec :: Int -&gt; CoprimesAssertionError -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679222215"><span id="local-6989586621679222217"><span id="local-6989586621679222219"><span class="annot"><span class="hs-identifier hs-type">Exception</span></span><span> </span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#CoprimesAssertionError"><span class="hs-identifier hs-type">CoprimesAssertionError</span></a></span></span></span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- | Compute the modular exponentiation of base^exponent using</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- algorithms design to avoid side channels and timing measurement</span><span>
+</span><span id="line-33"></span><span class="hs-comment">--</span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- Modulo need to be odd otherwise the normal fast modular exponentiation</span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- is used.</span><span>
+</span><span id="line-36"></span><span class="hs-comment">--</span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- When used with integer-simple, this function is not different</span><span>
+</span><span id="line-38"></span><span class="hs-comment">-- from expFast, and thus provide the same unstudied and dubious</span><span>
+</span><span id="line-39"></span><span class="hs-comment">-- timing and side channels claims.</span><span>
+</span><span id="line-40"></span><span class="hs-comment">--</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- Before GHC 8.4.2, powModSecInteger is missing from integer-gmp,</span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- so expSafe has the same security as expFast.</span><span>
+</span><span id="line-43"></span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#expSafe"><span class="hs-identifier hs-type">expSafe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ base</span><span>
+</span><span id="line-44"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ exponent</span><span>
+</span><span id="line-45"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ modulo</span><span>
+</span><span id="line-46"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ result</span><span>
+</span><span id="line-47"></span><span id="expSafe"><span class="annot"><span class="annottext">expSafe :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#expSafe"><span class="hs-identifier hs-var hs-var">expSafe</span></a></span></span><span> </span><span id="local-6989586621679222213"><span class="annot"><span class="annottext">b :: Integer
+</span><a href="#local-6989586621679222213"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679222212"><span class="annot"><span class="annottext">e :: Integer
+</span><a href="#local-6989586621679222212"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679222211"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span></span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">odd</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; GmpSupported Integer
+</span><a href="Crypto.Number.Compat.html#gmpPowModSecInteger"><span class="hs-identifier hs-var">gmpPowModSecInteger</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222212"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">GmpSupported Integer -&gt; Integer -&gt; Integer
+forall a. GmpSupported a -&gt; a -&gt; a
+</span><a href="Crypto.Number.Compat.html#onGmpUnsupported"><span class="hs-operator hs-var">`onGmpUnsupported`</span></a></span><span>
+</span><span id="line-49"></span><span>                  </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; GmpSupported Integer
+</span><a href="Crypto.Number.Compat.html#gmpPowModInteger"><span class="hs-identifier hs-var">gmpPowModInteger</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222212"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span><span>   </span><span class="annot"><span class="annottext">GmpSupported Integer -&gt; Integer -&gt; Integer
+forall a. GmpSupported a -&gt; a -&gt; a
+</span><a href="Crypto.Number.Compat.html#onGmpUnsupported"><span class="hs-operator hs-var">`onGmpUnsupported`</span></a></span><span>
+</span><span id="line-50"></span><span>                  </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-var">exponentiation</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222212"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; GmpSupported Integer
+</span><a href="Crypto.Number.Compat.html#gmpPowModInteger"><span class="hs-identifier hs-var">gmpPowModInteger</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222212"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span><span>    </span><span class="annot"><span class="annottext">GmpSupported Integer -&gt; Integer -&gt; Integer
+forall a. GmpSupported a -&gt; a -&gt; a
+</span><a href="Crypto.Number.Compat.html#onGmpUnsupported"><span class="hs-operator hs-var">`onGmpUnsupported`</span></a></span><span>
+</span><span id="line-52"></span><span>                  </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-var">exponentiation</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222212"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222211"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-comment">-- | Compute the modular exponentiation of base^exponent using</span><span>
+</span><span id="line-55"></span><span class="hs-comment">-- the fastest algorithm without any consideration for</span><span>
+</span><span id="line-56"></span><span class="hs-comment">-- hiding parameters.</span><span>
+</span><span id="line-57"></span><span class="hs-comment">--</span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- Use this function when all the parameters are public,</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- otherwise 'expSafe' should be prefered.</span><span>
+</span><span id="line-60"></span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#expFast"><span class="hs-identifier hs-type">expFast</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ base</span><span>
+</span><span id="line-61"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ exponent</span><span>
+</span><span id="line-62"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ modulo</span><span>
+</span><span id="line-63"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ result</span><span>
+</span><span id="line-64"></span><span id="expFast"><span class="annot"><span class="annottext">expFast :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#expFast"><span class="hs-identifier hs-var hs-var">expFast</span></a></span></span><span> </span><span id="local-6989586621679222205"><span class="annot"><span class="annottext">b :: Integer
+</span><a href="#local-6989586621679222205"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679222204"><span class="annot"><span class="annottext">e :: Integer
+</span><a href="#local-6989586621679222204"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679222203"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679222203"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; GmpSupported Integer
+</span><a href="Crypto.Number.Compat.html#gmpPowModInteger"><span class="hs-identifier hs-var">gmpPowModInteger</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222205"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222204"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222203"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">GmpSupported Integer -&gt; Integer -&gt; Integer
+forall a. GmpSupported a -&gt; a -&gt; a
+</span><a href="Crypto.Number.Compat.html#onGmpUnsupported"><span class="hs-operator hs-var">`onGmpUnsupported`</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-var">exponentiation</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222205"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222204"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222203"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="hs-comment">-- | @exponentiation@ computes modular exponentiation as /b^e mod m/</span><span>
+</span><span id="line-67"></span><span class="hs-comment">-- using repetitive squaring.</span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-type">exponentiation</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-69"></span><span id="exponentiation"><span class="annot"><span class="annottext">exponentiation :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-var hs-var">exponentiation</span></a></span></span><span> </span><span id="local-6989586621679222202"><span class="annot"><span class="annottext">b :: Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679222201"><span class="annot"><span class="annottext">e :: Integer
+</span><a href="#local-6989586621679222201"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679222200"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-71"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222201"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-72"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222201"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-73"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222201"><span class="hs-identifier hs-var">e</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679222197"><span class="annot"><span class="annottext">p :: Integer
+</span><a href="#local-6989586621679222197"><span class="hs-identifier hs-var hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-var">exponentiation</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222201"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-74"></span><span>                   </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222197"><span class="hs-identifier hs-var">p</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2</span></span><span class="hs-glyph">::</span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#exponentiation"><span class="hs-identifier hs-var">exponentiation</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222202"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222201"><span class="hs-identifier hs-var">e</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222200"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="hs-comment">-- | @inverse@ computes the modular inverse as in /g^(-1) mod m/.</span><span>
+</span><span id="line-78"></span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#inverse"><span class="hs-identifier hs-type">inverse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-79"></span><span id="inverse"><span class="annot"><span class="annottext">inverse :: Integer -&gt; Integer -&gt; Maybe Integer
+</span><a href="Crypto.Number.ModArithmetic.html#inverse"><span class="hs-identifier hs-var hs-var">inverse</span></a></span></span><span> </span><span id="local-6989586621679222193"><span class="annot"><span class="annottext">g :: Integer
+</span><a href="#local-6989586621679222193"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679222192"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679222192"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; GmpSupported (Maybe Integer)
+</span><a href="Crypto.Number.Compat.html#gmpInverse"><span class="hs-identifier hs-var">gmpInverse</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222193"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222192"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">GmpSupported (Maybe Integer) -&gt; Maybe Integer -&gt; Maybe Integer
+forall a. GmpSupported a -&gt; a -&gt; a
+</span><a href="Crypto.Number.Compat.html#onGmpUnsupported"><span class="hs-operator hs-var">`onGmpUnsupported`</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Integer
+</span><a href="#local-6989586621679222190"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679222190"><span class="annot"><span class="annottext">v :: Maybe Integer
+</span><a href="#local-6989586621679222190"><span class="hs-identifier hs-var hs-var">v</span></a></span></span><span>
+</span><span id="line-82"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222189"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Integer
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-83"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Integer
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222187"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222192"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679222187"><span class="annot"><span class="annottext">x :: Integer
+</span><a href="#local-6989586621679222187"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span class="hs-identifier">_</span><span class="hs-special">,</span><span id="local-6989586621679222189"><span class="annot"><span class="annottext">d :: Integer
+</span><a href="#local-6989586621679222189"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; (Integer, Integer, Integer)
+</span><a href="Crypto.Number.Basic.html#gcde"><span class="hs-identifier hs-var">gcde</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222193"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222192"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="hs-comment">-- | Compute the modular inverse of two coprime numbers.</span><span>
+</span><span id="line-87"></span><span class="hs-comment">-- This is equivalent to inverse except that the result</span><span>
+</span><span id="line-88"></span><span class="hs-comment">-- is known to exists.</span><span>
+</span><span id="line-89"></span><span class="hs-comment">--</span><span>
+</span><span id="line-90"></span><span class="hs-comment">-- If the numbers are not defined as coprime, this function</span><span>
+</span><span id="line-91"></span><span class="hs-comment">-- will raise a 'CoprimesAssertionError'.</span><span>
+</span><span id="line-92"></span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#inverseCoprimes"><span class="hs-identifier hs-type">inverseCoprimes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-93"></span><span id="inverseCoprimes"><span class="annot"><span class="annottext">inverseCoprimes :: Integer -&gt; Integer -&gt; Integer
+</span><a href="Crypto.Number.ModArithmetic.html#inverseCoprimes"><span class="hs-identifier hs-var hs-var">inverseCoprimes</span></a></span></span><span> </span><span id="local-6989586621679222185"><span class="annot"><span class="annottext">g :: Integer
+</span><a href="#local-6989586621679222185"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679222184"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679222184"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-94"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Maybe Integer
+</span><a href="Crypto.Number.ModArithmetic.html#inverse"><span class="hs-identifier hs-var">inverse</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222185"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222184"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-95"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CoprimesAssertionError -&gt; Integer
+forall a e. Exception e =&gt; e -&gt; a
+</span><span class="hs-identifier hs-var">throw</span></span><span> </span><span class="annot"><span class="annottext">CoprimesAssertionError
+</span><a href="Crypto.Number.ModArithmetic.html#CoprimesAssertionError"><span class="hs-identifier hs-var">CoprimesAssertionError</span></a></span><span>
+</span><span id="line-96"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679222183"><span class="annot"><span class="annottext">i :: Integer
+</span><a href="#local-6989586621679222183"><span class="hs-identifier hs-var">i</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222183"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- | Computes the Jacobi symbol (a/n).</span><span>
+</span><span id="line-99"></span><span class="hs-comment">-- 0 &#8804; a &lt; n; n &#8805; 3 and odd.</span><span>
+</span><span id="line-100"></span><span class="hs-comment">--  </span><span>
+</span><span id="line-101"></span><span class="hs-comment">-- The Legendre and Jacobi symbols are indistinguishable exactly when the</span><span>
+</span><span id="line-102"></span><span class="hs-comment">-- lower argument is an odd prime, in which case they have the same value.</span><span>
+</span><span id="line-103"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-104"></span><span class="hs-comment">-- See algorithm 2.149 in &quot;Handbook of Applied Cryptography&quot; by Alfred J. Menezes et al.</span><span>
+</span><span id="line-105"></span><span class="annot"><a href="Crypto.Number.ModArithmetic.html#jacobi"><span class="hs-identifier hs-type">jacobi</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-106"></span><span id="jacobi"><span class="annot"><span class="annottext">jacobi :: Integer -&gt; Integer -&gt; Maybe Integer
+</span><a href="Crypto.Number.ModArithmetic.html#jacobi"><span class="hs-identifier hs-var hs-var">jacobi</span></a></span></span><span> </span><span id="local-6989586621679222182"><span class="annot"><span class="annottext">a :: Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679222181"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span></span><span>
+</span><span id="line-107"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Integer
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-108"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Integer
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-109"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Maybe Integer
+</span><a href="Crypto.Number.ModArithmetic.html#jacobi"><span class="hs-identifier hs-var">jacobi</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span>       </span><span>
+</span><span id="line-110"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>            </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-111"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679222177"><span class="annot"><span class="annottext">b :: Integer
+</span><a href="#local-6989586621679222177"><span class="hs-identifier hs-var hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="hs-number">4</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-112"></span><span>       </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer) -&gt; Maybe Integer -&gt; Maybe Integer
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222177"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Maybe Integer
+</span><a href="Crypto.Number.ModArithmetic.html#jacobi"><span class="hs-identifier hs-var">jacobi</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-113"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>        </span><span class="hs-glyph">=</span><span>
+</span><span id="line-114"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679222176"><span class="annot"><span class="annottext">e :: Int
+</span><a href="#local-6989586621679222176"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679222175"><span class="annot"><span class="annottext">a1 :: Integer
+</span><a href="#local-6989586621679222175"><span class="hs-identifier hs-var">a1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (Int, Integer)
+</span><a href="Crypto.Number.Basic.html#asPowerOf2AndOdd"><span class="hs-identifier hs-var">asPowerOf2AndOdd</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222182"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-115"></span><span>          </span><span id="local-6989586621679222173"><span class="annot"><span class="annottext">nMod8 :: Integer
+</span><a href="#local-6989586621679222173"><span class="hs-identifier hs-var hs-var">nMod8</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span>
+</span><span id="line-116"></span><span>          </span><span id="local-6989586621679222172"><span class="annot"><span class="annottext">nMod4 :: Integer
+</span><a href="#local-6989586621679222172"><span class="hs-identifier hs-var hs-var">nMod4</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="hs-number">4</span></span><span>
+</span><span id="line-117"></span><span>          </span><span id="local-6989586621679222171"><span class="annot"><span class="annottext">a1Mod4 :: Integer
+</span><a href="#local-6989586621679222171"><span class="hs-identifier hs-var hs-var">a1Mod4</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222175"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="hs-number">4</span></span><span>
+</span><span id="line-118"></span><span>          </span><span id="local-6989586621679222170"><span class="annot"><span class="annottext">s' :: Integer
+</span><a href="#local-6989586621679222170"><span class="hs-identifier hs-var hs-var">s'</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679222176"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222173"><span class="hs-identifier hs-var">nMod8</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222173"><span class="hs-identifier hs-var">nMod8</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">7</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-119"></span><span>          </span><span id="local-6989586621679222169"><span class="annot"><span class="annottext">s :: Integer
+</span><a href="#local-6989586621679222169"><span class="hs-identifier hs-var hs-var">s</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222172"><span class="hs-identifier hs-var">nMod4</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222171"><span class="hs-identifier hs-var">a1Mod4</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222170"><span class="hs-identifier hs-var">s'</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222170"><span class="hs-identifier hs-var">s'</span></a></span><span>
+</span><span id="line-120"></span><span>          </span><span id="local-6989586621679222167"><span class="annot"><span class="annottext">n1 :: Integer
+</span><a href="#local-6989586621679222167"><span class="hs-identifier hs-var hs-var">n1</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222181"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222175"><span class="hs-identifier hs-var">a1</span></a></span><span>
+</span><span id="line-121"></span><span>       </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222175"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Integer
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222169"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-122"></span><span>          </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer) -&gt; Maybe Integer -&gt; Maybe Integer
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222169"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Maybe Integer
+</span><a href="Crypto.Number.ModArithmetic.html#jacobi"><span class="hs-identifier hs-var">jacobi</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222167"><span class="hs-identifier hs-var">n1</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679222175"><span class="hs-identifier hs-var">a1</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span></pre></body></html>

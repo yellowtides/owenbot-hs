@@ -1,0 +1,1149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-comment">{-|
+ Maintainer: Thomas.DuBuisson@gmail.com
+ Stability: beta
+ Portability: portable
+-}</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Crypto.Modes</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-8"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Initialization Vector Type, Modifiers (for all ciphers, all modes that use IVs)</span></span><span>
+</span><span id="line-9"></span><span>          </span><span class="annot"><a href="Crypto.Modes.html#dblIV"><span class="hs-identifier">dblIV</span></a></span><span>
+</span><span id="line-10"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Authentication modes</span></span><span>
+</span><span id="line-11"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cbcMac%27"><span class="hs-identifier">cbcMac'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cbcMac"><span class="hs-identifier">cbcMac</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cMac"><span class="hs-identifier">cMac</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cMac%27"><span class="hs-identifier">cMac'</span></a></span><span>
+</span><span id="line-12"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cMacStar"><span class="hs-identifier">cMacStar</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cMacStar%27"><span class="hs-identifier">cMacStar'</span></a></span><span>
+</span><span id="line-13"></span><span>        </span><span class="hs-comment">-- Combined modes (nothing here yet)</span><span>
+</span><span id="line-14"></span><span>        </span><span class="hs-comment">-- , gmc</span><span>
+</span><span id="line-15"></span><span>        </span><span class="hs-comment">-- , xts</span><span>
+</span><span id="line-16"></span><span>        </span><span class="hs-comment">-- , ccm</span><span>
+</span><span id="line-17"></span><span>        </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Serialize</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Serialize.Put</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SP</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Serialize.Get</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SG</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bits</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">xor</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shift</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.&amp;.)</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.|.)</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">testBit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">setBit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">clearBit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Bits</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">complementBit</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Tagged</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Classes.html"><span class="hs-identifier">Crypto.Classes</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier">BlockCipher</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Util.html#for"><span class="hs-identifier">for</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier">blockSizeBytes</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#incIV"><span class="hs-identifier">incIV</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#zeroIV"><span class="hs-identifier">zeroIV</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#chunkFor"><span class="hs-identifier">chunkFor</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#chunkFor%27"><span class="hs-identifier">chunkFor'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Random.html"><span class="hs-identifier">Crypto.Random</span></a></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Util.html"><span class="hs-identifier">Crypto.Util</span></a></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.CPoly.html"><span class="hs-identifier">Crypto.CPoly</span></a></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Types.html"><span class="hs-identifier">Crypto.Types</span></a></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Entropy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">getEntropy</span></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">liftM</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">forM_</span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">genericDrop</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Word8</span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">genericDrop</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier">genericReplicate</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier">genericLength</span></span><span class="hs-special">)</span><span class="hs-cpp">
+
+#if MIN_VERSION_tagged(0,2,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- |Cipher block chaining message authentication</span><span>
+</span><span id="line-42"></span><span id="local-6989586621679084350"><span class="annot"><a href="Crypto.Modes.html#cbcMac%27"><span class="hs-identifier hs-type">cbcMac'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084350"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084350"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-43"></span><span id="cbcMac%27"><span class="annot"><span class="annottext">cbcMac' :: k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cbcMac%27"><span class="hs-identifier hs-var hs-var">cbcMac'</span></a></span></span><span> </span><span id="local-6989586621679084349"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084349"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084348"><span class="annot"><span class="annottext">pt :: ByteString
+</span><a href="#local-6989586621679084348"><span class="hs-identifier hs-var">pt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IV k -&gt; ByteString
+forall a. Serialize a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">(IV k -&gt; ByteString) -&gt; IV k -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(ByteString, IV k) -&gt; IV k
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((ByteString, IV k) -&gt; IV k) -&gt; (ByteString, IV k) -&gt; IV k
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">k -&gt; IV k -&gt; ByteString -&gt; (ByteString, IV k)
+forall k.
+BlockCipher k =&gt;
+k -&gt; IV k -&gt; ByteString -&gt; (ByteString, IV k)
+</span><a href="Crypto.Classes.html#cbc"><span class="hs-identifier hs-var">cbc</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084349"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">IV k
+forall k. BlockCipher k =&gt; IV k
+</span><a href="Crypto.Classes.html#zeroIV"><span class="hs-identifier hs-var">zeroIV</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084348"><span class="hs-identifier hs-var">pt</span></a></span><span>
+</span><span id="line-44"></span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cbcMac%27"><span class="hs-pragma hs-type">cbcMac'</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- |Cipher block chaining message authentication</span><span>
+</span><span id="line-47"></span><span id="local-6989586621679084345"><span class="annot"><a href="Crypto.Modes.html#cbcMac"><span class="hs-identifier hs-type">cbcMac</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084345"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084345"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span></span><span>
+</span><span id="line-48"></span><span id="cbcMac"><span class="annot"><span class="annottext">cbcMac :: k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cbcMac"><span class="hs-identifier hs-var hs-var">cbcMac</span></a></span></span><span> </span><span id="local-6989586621679084344"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084344"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084343"><span class="annot"><span class="annottext">pt :: ByteString
+</span><a href="#local-6989586621679084343"><span class="hs-identifier hs-var">pt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.fromChunks</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">IV k -&gt; ByteString
+forall a. Serialize a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">(IV k -&gt; ByteString) -&gt; IV k -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(ByteString, IV k) -&gt; IV k
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((ByteString, IV k) -&gt; IV k) -&gt; (ByteString, IV k) -&gt; IV k
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">k -&gt; IV k -&gt; ByteString -&gt; (ByteString, IV k)
+forall k.
+BlockCipher k =&gt;
+k -&gt; IV k -&gt; ByteString -&gt; (ByteString, IV k)
+</span><a href="Crypto.Classes.html#cbcLazy"><span class="hs-identifier hs-var">cbcLazy</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084344"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">IV k
+forall k. BlockCipher k =&gt; IV k
+</span><a href="Crypto.Classes.html#zeroIV"><span class="hs-identifier hs-var">zeroIV</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084343"><span class="hs-identifier hs-var">pt</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-49"></span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Crypto.Modes.html#cbcMac"><span class="hs-pragma hs-type">cbcMac</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span class="hs-comment">-- |Generate cmac subkeys.</span><span>
+</span><span id="line-52"></span><span id="local-6989586621679084411"><span class="annot"><a href="Crypto.Modes.html#cMacSubk"><span class="hs-identifier hs-type">cMacSubk</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084411"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084411"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084411"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084411"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-53"></span><span id="cMacSubk"><span class="annot"><span class="annottext">cMacSubk :: k -&gt; (IV k, IV k)
+</span><a href="Crypto.Modes.html#cMacSubk"><span class="hs-identifier hs-var hs-var">cMacSubk</span></a></span></span><span> </span><span id="local-6989586621679084339"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084339"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IV k
+</span><a href="#local-6989586621679084338"><span class="hs-identifier hs-var">k1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">IV k
+</span><a href="#local-6989586621679084337"><span class="hs-identifier hs-var">k2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(IV k, IV k) -&gt; (IV k, IV k) -&gt; (IV k, IV k)
+forall a b. a -&gt; b -&gt; b
+</span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IV k
+</span><a href="#local-6989586621679084338"><span class="hs-identifier hs-var">k1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">IV k
+</span><a href="#local-6989586621679084337"><span class="hs-identifier hs-var">k2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>       </span><span id="local-6989586621679084336"><span class="annot"><span class="annottext">bSize :: ByteLength
+</span><a href="#local-6989586621679084336"><span class="hs-identifier hs-var hs-var">bSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084339"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-56"></span><span>       </span><span id="local-6989586621679084338"><span class="annot"><span class="annottext">k1 :: IV k
+</span><a href="#local-6989586621679084338"><span class="hs-identifier hs-var hs-var">k1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IV k -&gt; IV k
+forall k. BlockCipher k =&gt; IV k -&gt; IV k
+</span><a href="Crypto.Modes.html#dblIV"><span class="hs-identifier hs-var">dblIV</span></a></span><span> </span><span class="annot"><span class="annottext">(IV k -&gt; IV k) -&gt; IV k -&gt; IV k
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; IV k
+forall k. ByteString -&gt; IV k
+</span><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-var">IV</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; IV k) -&gt; ByteString -&gt; IV k
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; ByteString
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Classes.html#encryptBlock"><span class="hs-identifier hs-var">encryptBlock</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084339"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.replicate</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084336"><span class="hs-identifier hs-var">bSize</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-57"></span><span>       </span><span id="local-6989586621679084337"><span class="annot"><span class="annottext">k2 :: IV k
+</span><a href="#local-6989586621679084337"><span class="hs-identifier hs-var hs-var">k2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IV k -&gt; IV k
+forall k. BlockCipher k =&gt; IV k -&gt; IV k
+</span><a href="Crypto.Modes.html#dblIV"><span class="hs-identifier hs-var">dblIV</span></a></span><span> </span><span class="annot"><span class="annottext">(IV k -&gt; IV k) -&gt; IV k -&gt; IV k
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IV k
+</span><a href="#local-6989586621679084338"><span class="hs-identifier hs-var">k1</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- |Pad the string as required by the cmac algorithm. In theory this</span><span>
+</span><span id="line-60"></span><span class="hs-comment">--  should work at bit level but since the API works at byte level we</span><span>
+</span><span id="line-61"></span><span class="hs-comment">--  do the same</span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-type">cMacPad</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span id="cMacPad"><span class="annot"><span class="annottext">cMacPad :: ([Word8], Bool, ByteLength)
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+</span><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var hs-var">cMacPad</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span class="hs-number">0</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Word8, ([Word8], Bool, ByteLength))
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-64"></span><span class="annot"><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084331"><span class="annot"><span class="annottext">n :: ByteLength
+</span><a href="#local-6989586621679084331"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Word8, ([Word8], Bool, ByteLength))
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084331"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span class="annot"><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084330"><span class="annot"><span class="annottext">n :: ByteLength
+</span><a href="#local-6989586621679084330"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Word8, ([Word8], Bool, ByteLength))
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">128</span></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084330"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span class="annot"><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084329"><span class="annot"><span class="annottext">x :: Word8
+</span><a href="#local-6989586621679084329"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084328"><span class="annot"><span class="annottext">xs :: [Word8]
+</span><a href="#local-6989586621679084328"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084327"><span class="annot"><span class="annottext">b :: Bool
+</span><a href="#local-6989586621679084327"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084326"><span class="annot"><span class="annottext">n :: ByteLength
+</span><a href="#local-6989586621679084326"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">(Word8, ([Word8], Bool, ByteLength))
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084329"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084328"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679084327"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084326"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-comment">-- |Obtain the cmac with the specified subkey for lazy bytestrings</span><span>
+</span><span id="line-69"></span><span id="local-6989586621679084412"><span class="annot"><a href="Crypto.Modes.html#cMacWithSubK"><span class="hs-identifier hs-type">cMacWithSubK</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084412"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084412"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084412"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084412"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span></span><span>
+</span><span id="line-70"></span><span id="cMacWithSubK"><span class="annot"><span class="annottext">cMacWithSubK :: k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacWithSubK"><span class="hs-identifier hs-var hs-var">cMacWithSubK</span></a></span></span><span> </span><span id="local-6989586621679084324"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084324"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span id="local-6989586621679084323"><span class="annot"><span class="annottext">k1 :: ByteString
+</span><a href="#local-6989586621679084323"><span class="hs-identifier hs-var">k1</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span id="local-6989586621679084322"><span class="annot"><span class="annottext">k2 :: ByteString
+</span><a href="#local-6989586621679084322"><span class="hs-identifier hs-var">k2</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679084321"><span class="annot"><span class="annottext">l :: ByteString
+</span><a href="#local-6989586621679084321"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.fromChunks</span></span><span> </span><span class="annot"><span class="annottext">([ByteString] -&gt; ByteString) -&gt; [ByteString] -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084320"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; [ByteString]
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; [ByteString]
+</span><a href="Crypto.Classes.html#chunkFor"><span class="hs-identifier hs-var">chunkFor</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084324"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084319"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.replicate</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084318"><span class="hs-identifier hs-var">bSize1</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">]</span><span>
+</span><span id="line-71"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-72"></span><span>       </span><span id="local-6989586621679084318"><span class="annot"><span class="annottext">bSize1 :: ByteLength
+</span><a href="#local-6989586621679084318"><span class="hs-identifier hs-var hs-var">bSize1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; ByteLength) -&gt; ByteLength -&gt; ByteLength
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084324"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-73"></span><span>       </span><span id="local-6989586621679084317"><span class="annot"><span class="annottext">bSize2 :: Int64
+</span><a href="#local-6989586621679084317"><span class="hs-identifier hs-var hs-var">bSize2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Int64
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; Int64) -&gt; ByteLength -&gt; Int64
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084324"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-74"></span><span>       </span><span class="hs-special">(</span><span id="local-6989586621679084319"><span class="annot"><span class="annottext">t :: ByteString
+</span><a href="#local-6989586621679084319"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084316"><span class="annot"><span class="annottext">e :: ByteString
+</span><a href="#local-6989586621679084316"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span class="hs-identifier hs-var">L.splitAt</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int64
+</span><span class="hs-identifier hs-var">L.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084321"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084317"><span class="hs-identifier hs-var">bSize2</span></a></span><span class="hs-special">)</span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084317"><span class="hs-identifier hs-var">bSize2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084321"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-75"></span><span>       </span><span id="local-6989586621679084311"><span class="annot"><span class="annottext">pe :: ByteString
+</span><a href="#local-6989586621679084311"><span class="hs-identifier hs-var hs-var">pe</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">(ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString)
+-&gt; (ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+-&gt; (([Word8], Bool, ByteLength)
+    -&gt; Maybe (Word8, ([Word8], Bool, ByteLength)))
+-&gt; ([Word8], Bool, ByteLength)
+-&gt; (ByteString, Maybe ([Word8], Bool, ByteLength))
+forall a.
+ByteLength -&gt; (a -&gt; Maybe (Word8, a)) -&gt; a -&gt; (ByteString, Maybe a)
+</span><span class="hs-identifier hs-var">B.unfoldrN</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084318"><span class="hs-identifier hs-var">bSize1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Word8], Bool, ByteLength)
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+</span><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span class="hs-identifier hs-var">L.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084316"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084318"><span class="hs-identifier hs-var">bSize1</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>       </span><span id="local-6989586621679084308"><span class="annot"><span class="annottext">fe :: ByteString
+</span><a href="#local-6989586621679084308"><span class="hs-identifier hs-var hs-var">fe</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084317"><span class="hs-identifier hs-var">bSize2</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int64
+</span><span class="hs-identifier hs-var">L.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084316"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084323"><span class="hs-identifier hs-var">k1</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084311"><span class="hs-identifier hs-var">pe</span></a></span><span>
+</span><span id="line-77"></span><span>          </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084322"><span class="hs-identifier hs-var">k2</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084311"><span class="hs-identifier hs-var">pe</span></a></span><span>
+</span><span id="line-78"></span><span>       </span><span id="local-6989586621679084320"><span class="annot"><span class="annottext">go :: [ByteString] -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084320"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span id="local-6989586621679084306"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679084306"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; ByteString
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Classes.html#encryptBlock"><span class="hs-identifier hs-var">encryptBlock</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084324"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084306"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084308"><span class="hs-identifier hs-var">fe</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>       </span><span class="annot"><a href="#local-6989586621679084320"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084305"><span class="annot"><span class="annottext">x :: ByteString
+</span><a href="#local-6989586621679084305"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084304"><span class="annot"><span class="annottext">xs :: [ByteString]
+</span><a href="#local-6989586621679084304"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679084303"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679084303"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084320"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679084304"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; ByteString
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Classes.html#encryptBlock"><span class="hs-identifier hs-var">encryptBlock</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084324"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084303"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084305"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-comment">-- |Obtain the cmac for lazy bytestrings</span><span>
+</span><span id="line-82"></span><span id="local-6989586621679084302"><span class="annot"><a href="Crypto.Modes.html#cMac"><span class="hs-identifier hs-type">cMac</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084302"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084302"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span></span><span>
+</span><span id="line-83"></span><span id="cMac"><span class="annot"><span class="annottext">cMac :: k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMac"><span class="hs-identifier hs-var hs-var">cMac</span></a></span></span><span> </span><span id="local-6989586621679084301"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084301"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+forall k.
+BlockCipher k =&gt;
+k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacWithSubK"><span class="hs-identifier hs-var">cMacWithSubK</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084301"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k)
+forall k. BlockCipher k =&gt; k -&gt; (IV k, IV k)
+</span><a href="Crypto.Modes.html#cMacSubk"><span class="hs-identifier hs-var">cMacSubk</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084301"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="hs-comment">-- |Obtain the cmac with the specified subkey for strict bytestrings</span><span>
+</span><span id="line-86"></span><span id="local-6989586621679084407"><span class="annot"><a href="Crypto.Modes.html#cMacWithSubK%27"><span class="hs-identifier hs-type">cMacWithSubK'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084407"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084407"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084407"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084407"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-87"></span><span id="cMacWithSubK%27"><span class="annot"><span class="annottext">cMacWithSubK' :: k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacWithSubK%27"><span class="hs-identifier hs-var hs-var">cMacWithSubK'</span></a></span></span><span> </span><span id="local-6989586621679084299"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084299"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span id="local-6989586621679084298"><span class="annot"><span class="annottext">k1 :: ByteString
+</span><a href="#local-6989586621679084298"><span class="hs-identifier hs-var">k1</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span id="local-6989586621679084297"><span class="annot"><span class="annottext">k2 :: ByteString
+</span><a href="#local-6989586621679084297"><span class="hs-identifier hs-var">k2</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679084296"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679084296"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084295"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; [ByteString]
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; [ByteString]
+</span><a href="Crypto.Classes.html#chunkFor%27"><span class="hs-identifier hs-var">chunkFor'</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084299"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084294"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.replicate</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084293"><span class="hs-identifier hs-var">bSize1</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-88"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>       </span><span id="local-6989586621679084293"><span class="annot"><span class="annottext">bSize1 :: ByteLength
+</span><a href="#local-6989586621679084293"><span class="hs-identifier hs-var hs-var">bSize1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; ByteLength) -&gt; ByteLength -&gt; ByteLength
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084299"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-90"></span><span>       </span><span id="local-6989586621679084292"><span class="annot"><span class="annottext">bSize2 :: ByteLength
+</span><a href="#local-6989586621679084292"><span class="hs-identifier hs-var hs-var">bSize2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; ByteLength) -&gt; ByteLength -&gt; ByteLength
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084299"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-91"></span><span>       </span><span class="hs-special">(</span><span id="local-6989586621679084294"><span class="annot"><span class="annottext">t :: ByteString
+</span><a href="#local-6989586621679084294"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084291"><span class="annot"><span class="annottext">e :: ByteString
+</span><a href="#local-6989586621679084291"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span class="hs-identifier hs-var">B.splitAt</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084296"><span class="hs-identifier hs-var">b</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084292"><span class="hs-identifier hs-var">bSize2</span></a></span><span class="hs-special">)</span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084292"><span class="hs-identifier hs-var">bSize2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084296"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-92"></span><span>       </span><span id="local-6989586621679084288"><span class="annot"><span class="annottext">pe :: ByteString
+</span><a href="#local-6989586621679084288"><span class="hs-identifier hs-var hs-var">pe</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">(ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString)
+-&gt; (ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+-&gt; (([Word8], Bool, ByteLength)
+    -&gt; Maybe (Word8, ([Word8], Bool, ByteLength)))
+-&gt; ([Word8], Bool, ByteLength)
+-&gt; (ByteString, Maybe ([Word8], Bool, ByteLength))
+forall a.
+ByteLength -&gt; (a -&gt; Maybe (Word8, a)) -&gt; a -&gt; (ByteString, Maybe a)
+</span><span class="hs-identifier hs-var">B.unfoldrN</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084293"><span class="hs-identifier hs-var">bSize1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Word8], Bool, ByteLength)
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+</span><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span class="hs-identifier hs-var">B.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084291"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084293"><span class="hs-identifier hs-var">bSize1</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span>       </span><span id="local-6989586621679084286"><span class="annot"><span class="annottext">fe :: ByteString
+</span><a href="#local-6989586621679084286"><span class="hs-identifier hs-var hs-var">fe</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084292"><span class="hs-identifier hs-var">bSize2</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084291"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084298"><span class="hs-identifier hs-var">k1</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084288"><span class="hs-identifier hs-var">pe</span></a></span><span>
+</span><span id="line-94"></span><span>          </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084297"><span class="hs-identifier hs-var">k2</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084288"><span class="hs-identifier hs-var">pe</span></a></span><span>
+</span><span id="line-95"></span><span>       </span><span id="local-6989586621679084295"><span class="annot"><span class="annottext">go :: [ByteString] -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084295"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span id="local-6989586621679084285"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679084285"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; ByteString
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Classes.html#encryptBlock"><span class="hs-identifier hs-var">encryptBlock</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084299"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084285"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084286"><span class="hs-identifier hs-var">fe</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span><span>       </span><span class="annot"><a href="#local-6989586621679084295"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084284"><span class="annot"><span class="annottext">x :: ByteString
+</span><a href="#local-6989586621679084284"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084283"><span class="annot"><span class="annottext">xs :: [ByteString]
+</span><a href="#local-6989586621679084283"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679084282"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679084282"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084295"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679084283"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; ByteString
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Classes.html#encryptBlock"><span class="hs-identifier hs-var">encryptBlock</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084299"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084282"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084284"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- |Obtain the cmac for strict bytestrings</span><span>
+</span><span id="line-99"></span><span id="local-6989586621679084281"><span class="annot"><a href="Crypto.Modes.html#cMac%27"><span class="hs-identifier hs-type">cMac'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084281"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084281"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-100"></span><span id="cMac%27"><span class="annot"><span class="annottext">cMac' :: k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMac%27"><span class="hs-identifier hs-var hs-var">cMac'</span></a></span></span><span> </span><span id="local-6989586621679084280"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084280"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+forall k.
+BlockCipher k =&gt;
+k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacWithSubK%27"><span class="hs-identifier hs-var">cMacWithSubK'</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084280"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k)
+forall k. BlockCipher k =&gt; k -&gt; (IV k, IV k)
+</span><a href="Crypto.Modes.html#cMacSubk"><span class="hs-identifier hs-var">cMacSubk</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084280"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span id="local-6989586621679084279"><span class="annot"><a href="Crypto.Modes.html#cMacStar"><span class="hs-identifier hs-type">cMacStar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084279"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084279"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span></span><span>
+</span><span id="line-103"></span><span id="cMacStar"><span class="annot"><span class="annottext">cMacStar :: k -&gt; [ByteString] -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacStar"><span class="hs-identifier hs-var hs-var">cMacStar</span></a></span></span><span> </span><span id="local-6989586621679084278"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084278"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084277"><span class="annot"><span class="annottext">l :: [ByteString]
+</span><a href="#local-6989586621679084277"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; ByteString
+</span><a href="#local-6989586621679084276"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084275"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.replicate</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084273"><span class="hs-identifier hs-var">bSize</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679084277"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-105"></span><span>        </span><span id="local-6989586621679084273"><span class="annot"><span class="annottext">bSize :: Int64
+</span><a href="#local-6989586621679084273"><span class="hs-identifier hs-var hs-var">bSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Int64
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; Int64) -&gt; ByteLength -&gt; Int64
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084278"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-106"></span><span>        </span><span id="local-6989586621679084272"><span class="annot"><span class="annottext">bSizeb :: Integer
+</span><a href="#local-6989586621679084272"><span class="hs-identifier hs-var hs-var">bSizeb</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; Integer) -&gt; ByteLength -&gt; Integer
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSize"><span class="hs-identifier hs-var">blockSize</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084278"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-107"></span><span>        </span><span id="local-6989586621679084275"><span class="annot"><span class="annottext">lcmac :: ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084275"><span class="hs-identifier hs-var hs-var">lcmac</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+forall k.
+BlockCipher k =&gt;
+k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacWithSubK"><span class="hs-identifier hs-var">cMacWithSubK</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084278"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k)
+forall k. BlockCipher k =&gt; k -&gt; (IV k, IV k)
+</span><a href="Crypto.Modes.html#cMacSubk"><span class="hs-identifier hs-var">cMacSubk</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084278"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-108"></span><span>        </span><span id="local-6989586621679084276"><span class="annot"><span class="annottext">go :: ByteString -&gt; [ByteString] -&gt; ByteString
+</span><a href="#local-6989586621679084276"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679084270"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679084270"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084270"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-109"></span><span>        </span><span class="annot"><a href="#local-6989586621679084276"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679084269"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679084269"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">[</span><span id="local-6989586621679084268"><span class="annot"><span class="annottext">x :: ByteString
+</span><a href="#local-6989586621679084268"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int64
+</span><span class="hs-identifier hs-var">L.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084268"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084273"><span class="hs-identifier hs-var">bSize</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084275"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp"><span class="hs-identifier hs-var">zwp</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084268"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">((ByteLength, [Word8]) -&gt; Maybe (Word8, (ByteLength, [Word8])))
+-&gt; (ByteLength, [Word8]) -&gt; ByteString
+forall a. (a -&gt; Maybe (Word8, a)) -&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.unfoldr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+-&gt; (ByteLength, [Word8]) -&gt; Maybe (Word8, (ByteLength, [Word8]))
+</span><a href="Crypto.Modes.html#xorend"><span class="hs-identifier hs-var">xorend</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteLength
+ -&gt; (ByteLength, [Word8]) -&gt; Maybe (Word8, (ByteLength, [Word8])))
+-&gt; ByteLength
+-&gt; (ByteLength, [Word8])
+-&gt; Maybe (Word8, (ByteLength, [Word8]))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084273"><span class="hs-identifier hs-var">bSize</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int64 -&gt; ByteLength) -&gt; Int64 -&gt; ByteLength
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int64
+</span><span class="hs-identifier hs-var">L.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084268"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span class="hs-identifier hs-var">L.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084269"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-110"></span><span>                 </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084275"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp"><span class="hs-identifier hs-var">zwp</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblL"><span class="hs-identifier hs-var">dblL</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084269"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(([Word8], Bool, ByteLength)
+ -&gt; Maybe (Word8, ([Word8], Bool, ByteLength)))
+-&gt; ([Word8], Bool, ByteLength) -&gt; ByteString
+forall a. (a -&gt; Maybe (Word8, a)) -&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.unfoldr</span></span><span> </span><span class="annot"><span class="annottext">([Word8], Bool, ByteLength)
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+</span><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span class="hs-identifier hs-var">L.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084268"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int64 -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679084273"><span class="hs-identifier hs-var">bSize</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>        </span><span class="annot"><a href="#local-6989586621679084276"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679084263"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679084263"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084262"><span class="annot"><span class="annottext">x :: ByteString
+</span><a href="#local-6989586621679084262"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084261"><span class="annot"><span class="annottext">xs :: [ByteString]
+</span><a href="#local-6989586621679084261"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; ByteString
+</span><a href="#local-6989586621679084276"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp"><span class="hs-identifier hs-var">zwp</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblL"><span class="hs-identifier hs-var">dblL</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084263"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084275"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084262"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679084261"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span class="hs-comment">-- |Obtain the CMAC* on strict bytestrings</span><span>
+</span><span id="line-114"></span><span id="local-6989586621679084260"><span class="annot"><a href="Crypto.Modes.html#cMacStar%27"><span class="hs-identifier hs-type">cMacStar'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084260"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084260"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-115"></span><span id="cMacStar%27"><span class="annot"><span class="annottext">cMacStar' :: k -&gt; [ByteString] -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacStar%27"><span class="hs-identifier hs-var hs-var">cMacStar'</span></a></span></span><span> </span><span id="local-6989586621679084259"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084259"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084258"><span class="annot"><span class="annottext">s :: [ByteString]
+</span><a href="#local-6989586621679084258"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; ByteString
+</span><a href="#local-6989586621679084257"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084256"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.replicate</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084255"><span class="hs-identifier hs-var">bSize</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679084258"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-116"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-117"></span><span>       </span><span id="local-6989586621679084255"><span class="annot"><span class="annottext">bSize :: ByteLength
+</span><a href="#local-6989586621679084255"><span class="hs-identifier hs-var hs-var">bSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; ByteLength) -&gt; ByteLength -&gt; ByteLength
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084259"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-118"></span><span>       </span><span id="local-6989586621679084254"><span class="annot"><span class="annottext">bSizeb :: Integer
+</span><a href="#local-6989586621679084254"><span class="hs-identifier hs-var hs-var">bSizeb</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; Integer) -&gt; ByteLength -&gt; Integer
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSize"><span class="hs-identifier hs-var">blockSize</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084259"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-119"></span><span>       </span><span id="local-6989586621679084256"><span class="annot"><span class="annottext">lcmac :: ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084256"><span class="hs-identifier hs-var hs-var">lcmac</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+forall k.
+BlockCipher k =&gt;
+k -&gt; (IV k, IV k) -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#cMacWithSubK%27"><span class="hs-identifier hs-var">cMacWithSubK'</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084259"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; (IV k, IV k)
+forall k. BlockCipher k =&gt; k -&gt; (IV k, IV k)
+</span><a href="Crypto.Modes.html#cMacSubk"><span class="hs-identifier hs-var">cMacSubk</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084259"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-120"></span><span>       </span><span id="local-6989586621679084257"><span class="annot"><span class="annottext">go :: ByteString -&gt; [ByteString] -&gt; ByteString
+</span><a href="#local-6989586621679084257"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679084253"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679084253"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084253"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-121"></span><span>       </span><span class="annot"><a href="#local-6989586621679084257"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679084252"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679084252"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">[</span><span id="local-6989586621679084251"><span class="annot"><span class="annottext">x :: ByteString
+</span><a href="#local-6989586621679084251"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084251"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084255"><span class="hs-identifier hs-var">bSize</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084256"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084251"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(ByteString, Maybe (ByteLength, [Word8])) -&gt; ByteString
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((ByteString, Maybe (ByteLength, [Word8])) -&gt; ByteString)
+-&gt; (ByteString, Maybe (ByteLength, [Word8])) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+-&gt; ((ByteLength, [Word8]) -&gt; Maybe (Word8, (ByteLength, [Word8])))
+-&gt; (ByteLength, [Word8])
+-&gt; (ByteString, Maybe (ByteLength, [Word8]))
+forall a.
+ByteLength -&gt; (a -&gt; Maybe (Word8, a)) -&gt; a -&gt; (ByteString, Maybe a)
+</span><span class="hs-identifier hs-var">B.unfoldrN</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084251"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+-&gt; (ByteLength, [Word8]) -&gt; Maybe (Word8, (ByteLength, [Word8]))
+</span><a href="Crypto.Modes.html#xorend"><span class="hs-identifier hs-var">xorend</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084255"><span class="hs-identifier hs-var">bSize</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(ByteLength -&gt; ByteLength) -&gt; ByteLength -&gt; ByteLength
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084251"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span class="hs-identifier hs-var">B.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084252"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084256"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblB"><span class="hs-identifier hs-var">dblB</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084252"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString)
+-&gt; (ByteString, Maybe ([Word8], Bool, ByteLength)) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+-&gt; (([Word8], Bool, ByteLength)
+    -&gt; Maybe (Word8, ([Word8], Bool, ByteLength)))
+-&gt; ([Word8], Bool, ByteLength)
+-&gt; (ByteString, Maybe ([Word8], Bool, ByteLength))
+forall a.
+ByteLength -&gt; (a -&gt; Maybe (Word8, a)) -&gt; a -&gt; (ByteString, Maybe a)
+</span><span class="hs-identifier hs-var">B.unfoldrN</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084255"><span class="hs-identifier hs-var">bSize</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8], Bool, ByteLength)
+-&gt; Maybe (Word8, ([Word8], Bool, ByteLength))
+</span><a href="Crypto.Modes.html#cMacPad"><span class="hs-identifier hs-var">cMacPad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span class="hs-identifier hs-var">B.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084251"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084255"><span class="hs-identifier hs-var">bSize</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span><span>       </span><span class="annot"><a href="#local-6989586621679084257"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679084249"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679084249"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084248"><span class="annot"><span class="annottext">x :: ByteString
+</span><a href="#local-6989586621679084248"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084247"><span class="annot"><span class="annottext">xs :: [ByteString]
+</span><a href="#local-6989586621679084247"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; ByteString
+</span><a href="#local-6989586621679084257"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblB"><span class="hs-identifier hs-var">dblB</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084249"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679084256"><span class="hs-identifier hs-var">lcmac</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084248"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679084247"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span>
+</span><span id="line-124"></span><span>
+</span><span id="line-125"></span><span class="hs-comment">-- |Generate the xor stream for the last step of the CMAC* algorithm</span><span>
+</span><span id="line-126"></span><span class="annot"><a href="Crypto.Modes.html#xorend"><span class="hs-identifier hs-type">xorend</span></a></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span id="xorend"><span class="annot"><span class="annottext">xorend :: ByteLength
+-&gt; (ByteLength, [Word8]) -&gt; Maybe (Word8, (ByteLength, [Word8]))
+</span><a href="Crypto.Modes.html#xorend"><span class="hs-identifier hs-var hs-var">xorend</span></a></span></span><span> </span><span id="local-6989586621679084246"><span class="annot"><span class="annottext">bsize :: ByteLength
+</span><a href="#local-6989586621679084246"><span class="hs-identifier hs-var">bsize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-number">0</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Word8, (ByteLength, [Word8]))
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-128"></span><span class="annot"><a href="Crypto.Modes.html#xorend"><span class="hs-identifier hs-var">xorend</span></a></span><span> </span><span id="local-6989586621679084245"><span class="annot"><span class="annottext">bsize :: ByteLength
+</span><a href="#local-6989586621679084245"><span class="hs-identifier hs-var">bsize</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084244"><span class="annot"><span class="annottext">n :: ByteLength
+</span><a href="#local-6989586621679084244"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084243"><span class="annot"><span class="annottext">x :: Word8
+</span><a href="#local-6989586621679084243"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084242"><span class="annot"><span class="annottext">xs :: [Word8]
+</span><a href="#local-6989586621679084242"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084244"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084245"><span class="hs-identifier hs-var">bsize</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Word8, (ByteLength, [Word8]))
+-&gt; Maybe (Word8, (ByteLength, [Word8]))
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084243"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084244"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084242"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span>                       </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Word8, (ByteLength, [Word8]))
+-&gt; Maybe (Word8, (ByteLength, [Word8]))
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084244"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084243"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Word8 -&gt; [Word8] -&gt; [Word8]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084242"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="hs-comment">-- |Accumulator based double operation</span><span>
+</span><span id="line-132"></span><span class="annot"><a href="Crypto.Modes.html#dblw"><span class="hs-identifier hs-type">dblw</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">)</span><span>
+</span><span id="line-133"></span><span id="dblw"><span class="annot"><span class="annottext">dblw :: Bool
+-&gt; (ByteLength, [ByteLength], Bool)
+-&gt; Word8
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+</span><a href="Crypto.Modes.html#dblw"><span class="hs-identifier hs-var hs-var">dblw</span></a></span></span><span> </span><span id="local-6989586621679084239"><span class="annot"><span class="annottext">hb :: Bool
+</span><a href="#local-6989586621679084239"><span class="hs-identifier hs-var">hb</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084238"><span class="annot"><span class="annottext">i :: ByteLength
+</span><a href="#local-6989586621679084238"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084237"><span class="annot"><span class="annottext">xs :: [ByteLength]
+</span><a href="#local-6989586621679084237"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084236"><span class="annot"><span class="annottext">b :: Bool
+</span><a href="#local-6989586621679084236"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679084235"><span class="annot"><span class="annottext">w :: Word8
+</span><a href="#local-6989586621679084235"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; ((ByteLength, [ByteLength], Bool), Word8)
+</span><a href="#local-6989586621679084234"><span class="hs-identifier hs-var">dblw'</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679084239"><span class="hs-identifier hs-var">hb</span></a></span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-135"></span><span>       </span><span id="local-6989586621679084233"><span class="annot"><span class="annottext">slw :: Bool -&gt; a -&gt; a
+</span><a href="#local-6989586621679084233"><span class="hs-identifier hs-var hs-var">slw</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span> </span><span id="local-6989586621679084232"><span class="annot"><span class="annottext">w :: a
+</span><a href="#local-6989586621679084232"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; ByteLength -&gt; a
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">setBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; ByteLength -&gt; a
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084232"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-136"></span><span>       </span><span class="annot"><a href="#local-6989586621679084233"><span class="hs-identifier hs-var">slw</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span id="local-6989586621679084231"><span class="annot"><span class="annottext">w :: a
+</span><a href="#local-6989586621679084231"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; ByteLength -&gt; a
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">clearBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; ByteLength -&gt; a
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084231"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-137"></span><span>       </span><span id="local-6989586621679084230"><span class="annot"><span class="annottext">cpolyw :: ByteLength -&gt; [ByteLength] -&gt; t -&gt; ((ByteLength, [ByteLength]), t)
+</span><a href="#local-6989586621679084230"><span class="hs-identifier hs-var hs-var">cpolyw</span></a></span></span><span> </span><span id="local-6989586621679084229"><span class="annot"><span class="annottext">i :: ByteLength
+</span><a href="#local-6989586621679084229"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span id="local-6989586621679084228"><span class="annot"><span class="annottext">w :: t
+</span><a href="#local-6989586621679084228"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084229"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">,</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084228"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-138"></span><span>       </span><span class="annot"><a href="#local-6989586621679084230"><span class="hs-identifier hs-var">cpolyw</span></a></span><span> </span><span id="local-6989586621679084226"><span class="annot"><span class="annottext">i :: ByteLength
+</span><a href="#local-6989586621679084226"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084225"><span class="annot"><span class="annottext">x :: ByteLength
+</span><a href="#local-6989586621679084225"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084224"><span class="annot"><span class="annottext">xs :: [ByteLength]
+</span><a href="#local-6989586621679084224"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679084223"><span class="annot"><span class="annottext">w :: t
+</span><a href="#local-6989586621679084223"><span class="hs-identifier hs-var">w</span></a></span></span><span>
+</span><span id="line-139"></span><span>         </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084225"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084226"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">8</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679084221"><span class="annot"><span class="annottext">a :: (ByteLength, [ByteLength])
+</span><a href="#local-6989586621679084221"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084220"><span class="annot"><span class="annottext">b :: t
+</span><a href="#local-6989586621679084220"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ByteLength, [ByteLength])
+</span><a href="#local-6989586621679084221"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">t -&gt; ByteLength -&gt; t
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">complementBit</span></span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084220"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084225"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084226"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(((ByteLength, [ByteLength]), t)
+ -&gt; ((ByteLength, [ByteLength]), t))
+-&gt; ((ByteLength, [ByteLength]), t)
+-&gt; ((ByteLength, [ByteLength]), t)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; [ByteLength] -&gt; t -&gt; ((ByteLength, [ByteLength]), t)
+</span><a href="#local-6989586621679084230"><span class="hs-identifier hs-var">cpolyw</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084226"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">[ByteLength]
+</span><a href="#local-6989586621679084224"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084223"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-140"></span><span>         </span><span class="hs-glyph">|</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084226"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084225"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">ByteLength -&gt; [ByteLength] -&gt; [ByteLength]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[ByteLength]
+</span><a href="#local-6989586621679084224"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084223"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-141"></span><span>       </span><span id="local-6989586621679084219"><span class="annot"><span class="annottext">b' :: Bool
+</span><a href="#local-6989586621679084219"><span class="hs-identifier hs-var hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; ByteLength -&gt; Bool
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; Bool
+</span><span class="hs-identifier hs-var">testBit</span></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084235"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="hs-number">7</span></span><span>
+</span><span id="line-142"></span><span>       </span><span id="local-6989586621679084218"><span class="annot"><span class="annottext">w' :: Word8
+</span><a href="#local-6989586621679084218"><span class="hs-identifier hs-var hs-var">w'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Word8 -&gt; Word8
+forall a. Bits a =&gt; Bool -&gt; a -&gt; a
+</span><a href="#local-6989586621679084233"><span class="hs-identifier hs-var">slw</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679084236"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084235"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-143"></span><span>       </span><span class="hs-special">(</span><span class="hs-special">(</span><span id="local-6989586621679084217"><span class="annot"><span class="annottext">i' :: ByteLength
+</span><a href="#local-6989586621679084217"><span class="hs-identifier hs-var">i'</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084216"><span class="annot"><span class="annottext">xs' :: [ByteLength]
+</span><a href="#local-6989586621679084216"><span class="hs-identifier hs-var">xs'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span id="local-6989586621679084215"><span class="annot"><span class="annottext">w'' :: Word8
+</span><a href="#local-6989586621679084215"><span class="hs-identifier hs-var">w''</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength
+-&gt; [ByteLength] -&gt; Word8 -&gt; ((ByteLength, [ByteLength]), Word8)
+forall t.
+Bits t =&gt;
+ByteLength -&gt; [ByteLength] -&gt; t -&gt; ((ByteLength, [ByteLength]), t)
+</span><a href="#local-6989586621679084230"><span class="hs-identifier hs-var">cpolyw</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084238"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">[ByteLength]
+</span><a href="#local-6989586621679084237"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084218"><span class="hs-identifier hs-var">w'</span></a></span><span>
+</span><span id="line-144"></span><span>       </span><span id="local-6989586621679084234"><span class="annot"><span class="annottext">dblw' :: Bool -&gt; ((ByteLength, [ByteLength], Bool), Word8)
+</span><a href="#local-6989586621679084234"><span class="hs-identifier hs-var hs-var">dblw'</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084217"><span class="hs-identifier hs-var">i'</span></a></span><span class="annot"><span class="annottext">ByteLength
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+forall a b. a -&gt; b -&gt; b
+</span><span class="hs-operator hs-var">`seq`</span></span><span class="annot"><span class="annottext">[ByteLength]
+</span><a href="#local-6989586621679084216"><span class="hs-identifier hs-var">xs'</span></a></span><span class="annot"><span class="annottext">[ByteLength]
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+forall a b. a -&gt; b -&gt; b
+</span><span class="hs-operator hs-var">`seq`</span></span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084215"><span class="hs-identifier hs-var">w''</span></a></span><span class="annot"><span class="annottext">Word8
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+forall a b. a -&gt; b -&gt; b
+</span><span class="hs-operator hs-var">`seq`</span></span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084238"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">[ByteLength]
+</span><a href="#local-6989586621679084237"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679084219"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084218"><span class="hs-identifier hs-var">w'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-145"></span><span>       </span><span class="annot"><a href="#local-6989586621679084234"><span class="hs-identifier hs-var">dblw'</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084217"><span class="hs-identifier hs-var">i'</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">[ByteLength]
+</span><a href="#local-6989586621679084216"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679084219"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084215"><span class="hs-identifier hs-var">w''</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="hs-comment">-- |Perform doubling as defined by the CMAC and SIV papers</span><span>
+</span><span id="line-148"></span><span id="local-6989586621679084425"><span class="annot"><a href="Crypto.Modes.html#dblIV"><span class="hs-identifier hs-type">dblIV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084425"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084425"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084425"><span class="hs-identifier hs-type">k</span></a></span></span><span>
+</span><span id="line-149"></span><span id="dblIV"><span class="annot"><span class="annottext">dblIV :: IV k -&gt; IV k
+</span><a href="Crypto.Modes.html#dblIV"><span class="hs-identifier hs-var hs-var">dblIV</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span id="local-6989586621679084214"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679084214"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; IV k
+forall k. ByteString -&gt; IV k
+</span><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-var">IV</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; IV k) -&gt; ByteString -&gt; IV k
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblB"><span class="hs-identifier hs-var">dblB</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084214"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span class="hs-comment">-- |Perform doubling as defined by the CMAC and SIV papers</span><span>
+</span><span id="line-152"></span><span class="annot"><a href="Crypto.Modes.html#dblB"><span class="hs-identifier hs-type">dblB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-153"></span><span id="dblB"><span class="annot"><span class="annottext">dblB :: ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblB"><span class="hs-identifier hs-var hs-var">dblB</span></a></span></span><span> </span><span id="local-6989586621679084213"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679084213"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Bool
+</span><span class="hs-identifier hs-var">B.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084213"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-154"></span><span>       </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((ByteLength, [ByteLength], Bool), ByteString) -&gt; ByteString
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(((ByteLength, [ByteLength], Bool), ByteString) -&gt; ByteString)
+-&gt; ((ByteLength, [ByteLength], Bool), ByteString) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">((ByteLength, [ByteLength], Bool)
+ -&gt; Word8 -&gt; ((ByteLength, [ByteLength], Bool), Word8))
+-&gt; (ByteLength, [ByteLength], Bool)
+-&gt; ByteString
+-&gt; ((ByteLength, [ByteLength], Bool), ByteString)
+forall acc.
+(acc -&gt; Word8 -&gt; (acc, Word8))
+-&gt; acc -&gt; ByteString -&gt; (acc, ByteString)
+</span><span class="hs-identifier hs-var">B.mapAccumR</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool
+-&gt; (ByteLength, [ByteLength], Bool)
+-&gt; Word8
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+</span><a href="Crypto.Modes.html#dblw"><span class="hs-identifier hs-var">dblw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8 -&gt; ByteLength -&gt; Bool
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; Bool
+</span><span class="hs-identifier hs-var">testBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Word8
+</span><span class="hs-identifier hs-var">B.head</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084213"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">7</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteLength -&gt; [ByteLength]
+forall a b. (Integral a, Integral b) =&gt; a -&gt; [b]
+</span><a href="Crypto.CPoly.html#cpoly2revlist"><span class="hs-identifier hs-var">cpoly2revlist</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084213"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084213"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-155"></span><span>
+</span><span id="line-156"></span><span class="hs-comment">-- |Perform doubling as defined by the CMAC and SIV papers</span><span>
+</span><span id="line-157"></span><span class="annot"><a href="Crypto.Modes.html#dblL"><span class="hs-identifier hs-type">dblL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-158"></span><span id="dblL"><span class="annot"><span class="annottext">dblL :: ByteString -&gt; ByteString
+</span><a href="Crypto.Modes.html#dblL"><span class="hs-identifier hs-var hs-var">dblL</span></a></span></span><span> </span><span id="local-6989586621679084208"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679084208"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Bool
+</span><span class="hs-identifier hs-var">L.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084208"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084208"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-159"></span><span>       </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((ByteLength, [ByteLength], Bool), ByteString) -&gt; ByteString
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(((ByteLength, [ByteLength], Bool), ByteString) -&gt; ByteString)
+-&gt; ((ByteLength, [ByteLength], Bool), ByteString) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">((ByteLength, [ByteLength], Bool)
+ -&gt; Word8 -&gt; ((ByteLength, [ByteLength], Bool), Word8))
+-&gt; (ByteLength, [ByteLength], Bool)
+-&gt; ByteString
+-&gt; ((ByteLength, [ByteLength], Bool), ByteString)
+forall acc.
+(acc -&gt; Word8 -&gt; (acc, Word8))
+-&gt; acc -&gt; ByteString -&gt; (acc, ByteString)
+</span><span class="hs-identifier hs-var">L.mapAccumR</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool
+-&gt; (ByteLength, [ByteLength], Bool)
+-&gt; Word8
+-&gt; ((ByteLength, [ByteLength], Bool), Word8)
+</span><a href="Crypto.Modes.html#dblw"><span class="hs-identifier hs-var">dblw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8 -&gt; ByteLength -&gt; Bool
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; Bool
+</span><span class="hs-identifier hs-var">testBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Word8
+</span><span class="hs-identifier hs-var">L.head</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084208"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">7</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int64 -&gt; [ByteLength]
+forall a b. (Integral a, Integral b) =&gt; a -&gt; [b]
+</span><a href="Crypto.CPoly.html#cpoly2revlist"><span class="hs-identifier hs-var">cpoly2revlist</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int64
+</span><span class="hs-identifier hs-var">L.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084208"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084208"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-160"></span><span> </span><span>
+</span><span id="line-161"></span><span class="hs-comment">-- |Cast a bigEndian ByteString into an Integer</span><span>
+</span><span id="line-162"></span><span class="annot"><a href="Crypto.Modes.html#decodeB"><span class="hs-identifier hs-type">decodeB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-163"></span><span id="decodeB"><span class="annot"><span class="annottext">decodeB :: ByteString -&gt; Integer
+</span><a href="Crypto.Modes.html#decodeB"><span class="hs-identifier hs-var hs-var">decodeB</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Word8 -&gt; Integer) -&gt; Integer -&gt; ByteString -&gt; Integer
+forall a. (a -&gt; Word8 -&gt; a) -&gt; a -&gt; ByteString -&gt; a
+</span><span class="hs-identifier hs-var">B.foldl'</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679084202"><span class="annot"><span class="annottext">acc :: Integer
+</span><a href="#local-6989586621679084202"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span id="local-6989586621679084201"><span class="annot"><span class="annottext">w :: Word8
+</span><a href="#local-6989586621679084201"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; ByteLength -&gt; Integer
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084202"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Integer
+forall a. Integral a =&gt; a -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084201"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-164"></span><span>
+</span><span id="line-165"></span><span class="hs-comment">-- |Cast an Integer into a bigEndian ByteString of size k.  It will</span><span>
+</span><span id="line-166"></span><span class="hs-comment">-- drop the MSBs in case the number is bigger than k and add 00s if it</span><span>
+</span><span id="line-167"></span><span class="hs-comment">-- is smaller.</span><span>
+</span><span id="line-168"></span><span id="local-6989586621679084200"><span class="annot"><a href="Crypto.Modes.html#encodeB"><span class="hs-identifier hs-type">encodeB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679084200"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679084200"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084200"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-169"></span><span id="encodeB"><span class="annot"><span class="annottext">encodeB :: a -&gt; Integer -&gt; ByteString
+</span><a href="Crypto.Modes.html#encodeB"><span class="hs-identifier hs-var hs-var">encodeB</span></a></span></span><span> </span><span id="local-6989586621679084198"><span class="annot"><span class="annottext">k :: a
+</span><a href="#local-6989586621679084198"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084197"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679084197"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.pack</span></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; ByteString) -&gt; [Word8] -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084195"><span class="hs-identifier hs-var">lr</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084198"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">a -&gt; [Word8] -&gt; [Word8]
+forall t a. (Eq t, Num t) =&gt; t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084193"><span class="hs-identifier hs-var">takel</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084195"><span class="hs-identifier hs-var">lr</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084198"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084192"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">a -&gt; [Word8] -&gt; [Word8]
+forall t a. (Eq t, Num t, Num a) =&gt; t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084191"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084198"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084195"><span class="hs-identifier hs-var">lr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084192"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-170"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-171"></span><span>       </span><span id="local-6989586621679084190"><span class="annot"><span class="annottext">go :: Integer -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084190"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084189"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084189"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084189"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span>
+</span><span id="line-172"></span><span>       </span><span class="annot"><a href="#local-6989586621679084190"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679084188"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679084188"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679084187"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084187"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084190"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; ByteLength -&gt; Integer
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084188"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; a
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084188"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Bits a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">.&amp;.</span></span><span> </span><span class="annot"><span class="hs-number">255</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084187"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-173"></span><span>       </span><span id="local-6989586621679084191"><span class="annot"><span class="annottext">pad :: t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084191"><span class="hs-identifier hs-var hs-var">pad</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084186"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084186"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084186"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-174"></span><span>       </span><span class="annot"><a href="#local-6989586621679084191"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span id="local-6989586621679084185"><span class="annot"><span class="annottext">n :: t
+</span><a href="#local-6989586621679084185"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679084184"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084184"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084191"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084185"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084184"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-175"></span><span>       </span><span id="local-6989586621679084193"><span class="annot"><span class="annottext">takel :: t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084193"><span class="hs-identifier hs-var hs-var">takel</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084183"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084183"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084183"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-176"></span><span>       </span><span class="annot"><a href="#local-6989586621679084193"><span class="hs-identifier hs-var">takel</span></a></span><span> </span><span id="local-6989586621679084182"><span class="annot"><span class="annottext">n :: t
+</span><a href="#local-6989586621679084182"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084181"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084181"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084193"><span class="hs-identifier hs-var">takel</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084182"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084181"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-177"></span><span>       </span><span id="local-6989586621679084192"><span class="annot"><span class="annottext">r :: [Word8]
+</span><a href="#local-6989586621679084192"><span class="hs-identifier hs-var hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Word8] -&gt; [Word8]
+forall a. Num a =&gt; Integer -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084190"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084197"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-178"></span><span>       </span><span id="local-6989586621679084195"><span class="annot"><span class="annottext">lr :: a
+</span><a href="#local-6989586621679084195"><span class="hs-identifier hs-var hs-var">lr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; a
+forall i a. Num i =&gt; [a] -&gt; i
+</span><span class="hs-identifier hs-var">genericLength</span></span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084192"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-179"></span><span>
+</span><span id="line-180"></span><span class="hs-comment">-- |Cast a bigEndian ByteString into an Integer</span><span>
+</span><span id="line-181"></span><span class="annot"><a href="Crypto.Modes.html#decodeL"><span class="hs-identifier hs-type">decodeL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-182"></span><span id="decodeL"><span class="annot"><span class="annottext">decodeL :: ByteString -&gt; Integer
+</span><a href="Crypto.Modes.html#decodeL"><span class="hs-identifier hs-var hs-var">decodeL</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Word8 -&gt; Integer) -&gt; Integer -&gt; ByteString -&gt; Integer
+forall a. (a -&gt; Word8 -&gt; a) -&gt; a -&gt; ByteString -&gt; a
+</span><span class="hs-identifier hs-var">L.foldl'</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679084178"><span class="annot"><span class="annottext">acc :: Integer
+</span><a href="#local-6989586621679084178"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span id="local-6989586621679084177"><span class="annot"><span class="annottext">w :: Word8
+</span><a href="#local-6989586621679084177"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; ByteLength -&gt; Integer
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084178"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Integer
+forall a. Integral a =&gt; a -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084177"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-183"></span><span>
+</span><span id="line-184"></span><span class="hs-comment">-- |Cast an Integer into a bigEndian ByteString of size k.  It will</span><span>
+</span><span id="line-185"></span><span class="hs-comment">-- drop the MSBs in case the number is bigger than k and add 00s if it</span><span>
+</span><span id="line-186"></span><span class="hs-comment">-- is smaller.</span><span>
+</span><span id="line-187"></span><span id="local-6989586621679084176"><span class="annot"><a href="Crypto.Modes.html#encodeL"><span class="hs-identifier hs-type">encodeL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679084176"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679084176"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084176"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span></span><span>
+</span><span id="line-188"></span><span id="encodeL"><span class="annot"><span class="annottext">encodeL :: a -&gt; Integer -&gt; ByteString
+</span><a href="Crypto.Modes.html#encodeL"><span class="hs-identifier hs-var hs-var">encodeL</span></a></span></span><span> </span><span id="local-6989586621679084174"><span class="annot"><span class="annottext">k :: a
+</span><a href="#local-6989586621679084174"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084173"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679084173"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.pack</span></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; ByteString) -&gt; [Word8] -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084171"><span class="hs-identifier hs-var">lr</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084174"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">a -&gt; [Word8] -&gt; [Word8]
+forall t a. (Eq t, Num t) =&gt; t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084170"><span class="hs-identifier hs-var">takel</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084171"><span class="hs-identifier hs-var">lr</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084174"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084169"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">a -&gt; [Word8] -&gt; [Word8]
+forall t a. (Eq t, Num t, Num a) =&gt; t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084168"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084174"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679084171"><span class="hs-identifier hs-var">lr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084169"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-189"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679084167"><span class="annot"><span class="annottext">go :: Integer -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084167"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084166"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084166"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084166"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span>
+</span><span id="line-190"></span><span>        </span><span class="annot"><a href="#local-6989586621679084167"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679084165"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679084165"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679084164"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084164"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084167"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; ByteLength -&gt; Integer
+forall a. Bits a =&gt; a -&gt; ByteLength -&gt; a
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084165"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; a
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084165"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Bits a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">.&amp;.</span></span><span> </span><span class="annot"><span class="hs-number">255</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084164"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-191"></span><span>        </span><span id="local-6989586621679084168"><span class="annot"><span class="annottext">pad :: t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084168"><span class="hs-identifier hs-var hs-var">pad</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084163"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084163"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084163"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-192"></span><span>        </span><span class="annot"><a href="#local-6989586621679084168"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span id="local-6989586621679084162"><span class="annot"><span class="annottext">n :: t
+</span><a href="#local-6989586621679084162"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679084161"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084161"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084168"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084162"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084161"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-193"></span><span>        </span><span id="local-6989586621679084170"><span class="annot"><span class="annottext">takel :: t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084170"><span class="hs-identifier hs-var hs-var">takel</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084160"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084160"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084160"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-194"></span><span>        </span><span class="annot"><a href="#local-6989586621679084170"><span class="hs-identifier hs-var">takel</span></a></span><span> </span><span id="local-6989586621679084159"><span class="annot"><span class="annottext">n :: t
+</span><a href="#local-6989586621679084159"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679084158"><span class="annot"><span class="annottext">xs :: [a]
+</span><a href="#local-6989586621679084158"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084170"><span class="hs-identifier hs-var">takel</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679084159"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679084158"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-195"></span><span>        </span><span id="local-6989586621679084169"><span class="annot"><span class="annottext">r :: [Word8]
+</span><a href="#local-6989586621679084169"><span class="hs-identifier hs-var hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Word8] -&gt; [Word8]
+forall a. Num a =&gt; Integer -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679084167"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679084173"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-196"></span><span>        </span><span id="local-6989586621679084171"><span class="annot"><span class="annottext">lr :: a
+</span><a href="#local-6989586621679084171"><span class="hs-identifier hs-var hs-var">lr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; a
+forall i a. Num i =&gt; [a] -&gt; i
+</span><span class="hs-identifier hs-var">genericLength</span></span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679084169"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-197"></span><span>
+</span><span id="line-198"></span><span class="hs-comment">-- TODO: GCM, GMAC</span><span>
+</span><span id="line-199"></span><span class="hs-comment">-- Consider the AES-only modes of XTS, CCM</span><span>
+</span><span id="line-200"></span></pre></body></html>

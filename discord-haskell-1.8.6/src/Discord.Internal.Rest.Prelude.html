@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- | Utility and base types and functions for the Discord Rest API</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Discord.Internal.Rest.Prelude</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">log</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception.Safe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">throwIO</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.IO.Class</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MonadIO</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">liftIO</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text.Encoding</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">TE</span></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Network.HTTP.Req</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">R</span></span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Types.html"><span class="hs-identifier">Discord.Internal.Types</span></a></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- | The base url (Req) for API requests</span><span>
+</span><span id="line-20"></span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-type">baseUrl</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span>
+</span><span id="line-21"></span><span id="baseUrl"><span class="annot"><span class="annottext">baseUrl :: Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var hs-var">baseUrl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Url 'Https
+</span><span class="hs-identifier hs-var">R.https</span></span><span> </span><span class="annot"><span class="hs-string">&quot;discord.com&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">R./:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;api&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">R./:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679239867"><span class="hs-identifier hs-var">apiVersion</span></a></span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679239867"><span class="annot"><span class="annottext">apiVersion :: Text
+</span><a href="#local-6989586621679239867"><span class="hs-identifier hs-var hs-var">apiVersion</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;v6&quot;</span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- | Discord requires HTTP headers for authentication.</span><span>
+</span><span id="line-25"></span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#authHeader"><span class="hs-identifier hs-type">authHeader</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-type">Auth</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Option</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span>
+</span><span id="line-26"></span><span id="authHeader"><span class="annot"><span class="annottext">authHeader :: Auth -&gt; Option 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#authHeader"><span class="hs-identifier hs-var hs-var">authHeader</span></a></span></span><span> </span><span id="local-6989586621679239865"><span class="annot"><span class="annottext">auth :: Auth
+</span><a href="#local-6989586621679239865"><span class="hs-identifier hs-var">auth</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-27"></span><span>          </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; Option 'Https
+forall (scheme :: Scheme).
+ByteString -&gt; ByteString -&gt; Option scheme
+</span><span class="hs-identifier hs-var">R.header</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Authorization&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; ByteString
+</span><span class="hs-identifier hs-var">TE.encodeUtf8</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Auth -&gt; Text
+</span><a href="Discord.Internal.Types.Prelude.html#authToken"><span class="hs-identifier hs-var">authToken</span></a></span><span> </span><span class="annot"><span class="annottext">Auth
+</span><a href="#local-6989586621679239865"><span class="hs-identifier hs-var">auth</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>       </span><span class="annot"><span class="annottext">Option 'Https -&gt; Option 'Https -&gt; Option 'Https
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; Option 'Https
+forall (scheme :: Scheme).
+ByteString -&gt; ByteString -&gt; Option scheme
+</span><span class="hs-identifier hs-var">R.header</span></span><span> </span><span class="annot"><span class="hs-string">&quot;User-Agent&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679239861"><span class="hs-identifier hs-var">agent</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-comment">-- | https://discord.com/developers/docs/reference#user-agent</span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-comment">-- Second place where the library version is noted</span><span>
+</span><span id="line-32"></span><span>  </span><span id="local-6989586621679239861"><span class="annot"><span class="annottext">agent :: ByteString
+</span><a href="#local-6989586621679239861"><span class="hs-identifier hs-var hs-var">agent</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;DiscordBot (https://github.com/aquarial/discord-haskell, 1.8.6)&quot;</span></span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- Append to an URL</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-type">//</span></a></span><span>
+</span><span id="line-36"></span><span id="local-6989586621679239858"><span id="local-6989586621679239859"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-type">(//)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679239859"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="annot"><a href="#local-6989586621679239858"><span class="hs-identifier hs-type">scheme</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679239859"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="annot"><a href="#local-6989586621679239858"><span class="hs-identifier hs-type">scheme</span></a></span></span></span><span>
+</span><span id="line-37"></span><span id="%2F%2F"><span class="annot"><span class="annottext">// :: Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var hs-var">(//)</span></a></span></span><span> </span><span id="local-6989586621679239857"><span class="annot"><span class="annottext">url :: Url scheme
+</span><a href="#local-6989586621679239857"><span class="hs-identifier hs-var">url</span></a></span></span><span> </span><span id="local-6989586621679239856"><span class="annot"><span class="annottext">part :: a
+</span><a href="#local-6989586621679239856"><span class="hs-identifier hs-var">part</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Url scheme
+</span><a href="#local-6989586621679239857"><span class="hs-identifier hs-var">url</span></a></span><span> </span><span class="annot"><span class="annottext">Url scheme -&gt; Text -&gt; Url scheme
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">R./:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679239856"><span class="hs-identifier hs-var">part</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | Represtents a HTTP request made to an API that supplies a Json response</span><span>
+</span><span id="line-41"></span><span class="hs-keyword">data</span><span> </span><span id="JsonRequest"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-var">JsonRequest</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-42"></span><span>  </span><span id="Delete"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Delete"><span class="hs-identifier hs-var">Delete</span></a></span></span><span> </span><span class="hs-glyph">::</span><span>                 </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>      </span><span class="annot"><span class="hs-identifier hs-type">R.Option</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span id="Get"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Get"><span class="hs-identifier hs-var">Get</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span>                 </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>      </span><span class="annot"><span class="hs-identifier hs-type">R.Option</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621679239850"><span id="Put"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Put"><span class="hs-identifier hs-var">Put</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.HttpBody</span></span><span> </span><span class="annot"><a href="#local-6989586621679239850"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679239850"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Option</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span></span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679239847"><span id="Patch"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Patch"><span class="hs-identifier hs-var">Patch</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.HttpBody</span></span><span> </span><span class="annot"><a href="#local-6989586621679239847"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#RestIO"><span class="hs-identifier hs-type">RestIO</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679239847"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Option</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span></span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679239845"><span id="Post"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Post"><span class="hs-identifier hs-var">Post</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.HttpBody</span></span><span> </span><span class="annot"><a href="#local-6989586621679239845"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Url</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#RestIO"><span class="hs-identifier hs-type">RestIO</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679239845"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.Option</span></span><span> </span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">R.Https</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">class</span><span> </span><span id="Request"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Request"><span class="hs-identifier hs-var">Request</span></a></span></span><span> </span><span id="local-6989586621679239842"><span class="annot"><a href="#local-6989586621679239842"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-49"></span><span>  </span><span id="majorRoute"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#majorRoute"><span class="hs-identifier hs-type">majorRoute</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679239842"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-50"></span><span>  </span><span id="jsonRequest"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#jsonRequest"><span class="hs-identifier hs-type">jsonRequest</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679239842"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="hs-comment">-- | Same Monad as IO. Overwrite Req settings</span><span>
+</span><span id="line-53"></span><span class="hs-keyword">newtype</span><span> </span><span id="RestIO"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#RestIO"><span class="hs-identifier hs-var">RestIO</span></a></span></span><span> </span><span id="local-6989586621679239839"><span class="annot"><a href="#local-6989586621679239839"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="RestIO"><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#RestIO"><span class="hs-identifier hs-var">RestIO</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="restIOtoIO"><span class="annot"><span class="annottext">RestIO a -&gt; IO a
+</span><a href="Discord.Internal.Rest.Prelude.html#restIOtoIO"><span class="hs-identifier hs-var hs-var">restIOtoIO</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679239839"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679239833"><span id="local-6989586621679239835"><span class="annot"><span class="annottext">a -&gt; RestIO b -&gt; RestIO a
+(a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+(forall a b. (a -&gt; b) -&gt; RestIO a -&gt; RestIO b)
+-&gt; (forall a b. a -&gt; RestIO b -&gt; RestIO a) -&gt; Functor RestIO
+forall a b. a -&gt; RestIO b -&gt; RestIO a
+forall a b. (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+&lt;$ :: a -&gt; RestIO b -&gt; RestIO a
+$c&lt;$ :: forall a b. a -&gt; RestIO b -&gt; RestIO a
+fmap :: (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+$cfmap :: forall a b. (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679239821"><span id="local-6989586621679239823"><span id="local-6989586621679239825"><span id="local-6989586621679239827"><span id="local-6989586621679239829"><span class="annot"><span class="annottext">Functor RestIO
+a -&gt; RestIO a
+Functor RestIO =&gt;
+(forall a. a -&gt; RestIO a)
+-&gt; (forall a b. RestIO (a -&gt; b) -&gt; RestIO a -&gt; RestIO b)
+-&gt; (forall a b c.
+    (a -&gt; b -&gt; c) -&gt; RestIO a -&gt; RestIO b -&gt; RestIO c)
+-&gt; (forall a b. RestIO a -&gt; RestIO b -&gt; RestIO b)
+-&gt; (forall a b. RestIO a -&gt; RestIO b -&gt; RestIO a)
+-&gt; Applicative RestIO
+RestIO a -&gt; RestIO b -&gt; RestIO b
+RestIO a -&gt; RestIO b -&gt; RestIO a
+RestIO (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+(a -&gt; b -&gt; c) -&gt; RestIO a -&gt; RestIO b -&gt; RestIO c
+forall a. a -&gt; RestIO a
+forall a b. RestIO a -&gt; RestIO b -&gt; RestIO a
+forall a b. RestIO a -&gt; RestIO b -&gt; RestIO b
+forall a b. RestIO (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+forall a b c. (a -&gt; b -&gt; c) -&gt; RestIO a -&gt; RestIO b -&gt; RestIO c
+forall (f :: * -&gt; *).
+Functor f =&gt;
+(forall a. a -&gt; f a)
+-&gt; (forall a b. f (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c)
+-&gt; (forall a b. f a -&gt; f b -&gt; f b)
+-&gt; (forall a b. f a -&gt; f b -&gt; f a)
+-&gt; Applicative f
+&lt;* :: RestIO a -&gt; RestIO b -&gt; RestIO a
+$c&lt;* :: forall a b. RestIO a -&gt; RestIO b -&gt; RestIO a
+*&gt; :: RestIO a -&gt; RestIO b -&gt; RestIO b
+$c*&gt; :: forall a b. RestIO a -&gt; RestIO b -&gt; RestIO b
+liftA2 :: (a -&gt; b -&gt; c) -&gt; RestIO a -&gt; RestIO b -&gt; RestIO c
+$cliftA2 :: forall a b c. (a -&gt; b -&gt; c) -&gt; RestIO a -&gt; RestIO b -&gt; RestIO c
+&lt;*&gt; :: RestIO (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+$c&lt;*&gt; :: forall a b. RestIO (a -&gt; b) -&gt; RestIO a -&gt; RestIO b
+pure :: a -&gt; RestIO a
+$cpure :: forall a. a -&gt; RestIO a
+$cp1Applicative :: Functor RestIO
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679239813"><span id="local-6989586621679239815"><span id="local-6989586621679239817"><span class="annot"><span class="annottext">Applicative RestIO
+a -&gt; RestIO a
+Applicative RestIO =&gt;
+(forall a b. RestIO a -&gt; (a -&gt; RestIO b) -&gt; RestIO b)
+-&gt; (forall a b. RestIO a -&gt; RestIO b -&gt; RestIO b)
+-&gt; (forall a. a -&gt; RestIO a)
+-&gt; Monad RestIO
+RestIO a -&gt; (a -&gt; RestIO b) -&gt; RestIO b
+RestIO a -&gt; RestIO b -&gt; RestIO b
+forall a. a -&gt; RestIO a
+forall a b. RestIO a -&gt; RestIO b -&gt; RestIO b
+forall a b. RestIO a -&gt; (a -&gt; RestIO b) -&gt; RestIO b
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(forall a b. m a -&gt; (a -&gt; m b) -&gt; m b)
+-&gt; (forall a b. m a -&gt; m b -&gt; m b)
+-&gt; (forall a. a -&gt; m a)
+-&gt; Monad m
+return :: a -&gt; RestIO a
+$creturn :: forall a. a -&gt; RestIO a
+&gt;&gt; :: RestIO a -&gt; RestIO b -&gt; RestIO b
+$c&gt;&gt; :: forall a b. RestIO a -&gt; RestIO b -&gt; RestIO b
+&gt;&gt;= :: RestIO a -&gt; (a -&gt; RestIO b) -&gt; RestIO b
+$c&gt;&gt;= :: forall a b. RestIO a -&gt; (a -&gt; RestIO b) -&gt; RestIO b
+$cp1Monad :: Applicative RestIO
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679239809"><span class="annot"><span class="annottext">Monad RestIO
+Monad RestIO =&gt; (forall a. IO a -&gt; RestIO a) -&gt; MonadIO RestIO
+IO a -&gt; RestIO a
+forall a. IO a -&gt; RestIO a
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall a. IO a -&gt; m a) -&gt; MonadIO m
+liftIO :: IO a -&gt; RestIO a
+$cliftIO :: forall a. IO a -&gt; RestIO a
+$cp1MonadIO :: Monad RestIO
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">MonadIO</span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R.MonadHttp</span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#RestIO"><span class="hs-identifier hs-type">RestIO</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-comment">-- | Throw actual exceptions</span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679239803"><span class="annot"><span class="annottext">handleHttpException :: HttpException -&gt; RestIO a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">handleHttpException</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO a -&gt; RestIO a
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO a -&gt; RestIO a)
+-&gt; (HttpException -&gt; IO a) -&gt; HttpException -&gt; RestIO a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">HttpException -&gt; IO a
+forall (m :: * -&gt; *) e a. (MonadThrow m, Exception e) =&gt; e -&gt; m a
+</span><span class="hs-identifier hs-var">throwIO</span></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-comment">-- | Don't throw exceptions on http error codes like 404</span><span>
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679239800"><span class="annot"><span class="annottext">getHttpConfig :: RestIO HttpConfig
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">getHttpConfig</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HttpConfig -&gt; RestIO HttpConfig
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(HttpConfig -&gt; RestIO HttpConfig)
+-&gt; HttpConfig -&gt; RestIO HttpConfig
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">HttpConfig
+</span><span class="hs-identifier hs-var">R.defaultHttpConfig</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">httpConfigCheckResponse :: forall b.
+Request -&gt; Response b -&gt; ByteString -&gt; Maybe HttpExceptionContent
+</span><a href="#local-6989586621679239797"><span class="hs-identifier hs-var">R.httpConfigCheckResponse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe HttpExceptionContent
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-61"></span></pre></body></html>

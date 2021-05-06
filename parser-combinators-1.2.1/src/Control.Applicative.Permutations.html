@@ -1,0 +1,372 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- |</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- Module      :  Control.Applicative.Permutations</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- Copyright   :  &#169; 2017&#8211;present Alex Washburn</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- License     :  BSD 3 clause</span><span>
+</span><span id="line-5"></span><span class="hs-comment">--</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Maintainer  :  Mark Karpov &lt;markkarpov92@gmail.com&gt;</span><span>
+</span><span id="line-7"></span><span class="hs-comment">-- Stability   :  experimental</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Portability :  portable</span><span>
+</span><span id="line-9"></span><span class="hs-comment">--</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- This module is a generalization of the package @parsec-permutation@</span><span>
+</span><span id="line-11"></span><span class="hs-comment">-- authored by Samuel Hoffstaetter:</span><span>
+</span><span id="line-12"></span><span class="hs-comment">--</span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- https://hackage.haskell.org/package/parsec-permutation</span><span>
+</span><span id="line-14"></span><span class="hs-comment">--</span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- This module also takes inspiration from the algorithm is described in:</span><span>
+</span><span id="line-16"></span><span class="hs-comment">-- /Parsing Permutation Phrases/, by Arthur Baars, Andres L&#246;h and Doaitse</span><span>
+</span><span id="line-17"></span><span class="hs-comment">-- Swierstra. Published as a functional pearl at the Haskell Workshop 2001:</span><span>
+</span><span id="line-18"></span><span class="hs-comment">--</span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- https://www.cs.ox.ac.uk/jeremy.gibbons/wg21/meeting56/loeh-paper.pdf</span><span>
+</span><span id="line-20"></span><span class="hs-comment">--</span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- From these two works we derive a flexible and general method for parsing</span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- permutations over an 'Applicative' structure. Quite useful in conjunction</span><span>
+</span><span id="line-23"></span><span class="hs-comment">-- with \&quot;Free\&quot; constructions of 'Applicative's, 'Monad's, etc.</span><span>
+</span><span id="line-24"></span><span class="hs-comment">--</span><span>
+</span><span id="line-25"></span><span class="hs-comment">-- Other permutation parsing libraries tend towards using special \&quot;almost</span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- applicative\&quot; combinators for construction which denies the library user</span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- the ability to lift and unlift permutation parsing into any 'Applicative'</span><span>
+</span><span id="line-28"></span><span class="hs-comment">-- computational context. We redefine these combinators as convenience</span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- operators here alongside the equivalent 'Applicative' instance.</span><span>
+</span><span id="line-30"></span><span class="hs-comment">--</span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- For example, suppose we want to parse a permutation of: an optional</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- string of @a@'s, the character @b@ and an optional @c@. Using a standard</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- parsing library combinator @char@, this can be described using the</span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- 'Applicative' instance by:</span><span>
+</span><span id="line-35"></span><span class="hs-comment">--</span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- &gt; test = runPermutation $</span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- &gt;          (,,) &lt;$&gt; toPermutationWithDefault &quot;&quot;  (some (char 'a'))</span><span>
+</span><span id="line-38"></span><span class="hs-comment">-- &gt;               &lt;*&gt; toPermutation (char 'b')</span><span>
+</span><span id="line-39"></span><span class="hs-comment">-- &gt;               &lt;*&gt; toPermutationWithDefault '_' (char 'c')</span><span>
+</span><span id="line-40"></span><span class="hs-comment">--</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- @since 0.2.0</span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Control.Applicative.Permutations</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- ** Permutation type</span></span><span>
+</span><span id="line-45"></span><span>    </span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier">Permutation</span></a></span><span>
+</span><span id="line-46"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Permutation evaluators</span></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#runPermutation"><span class="hs-identifier">runPermutation</span></a></span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#intercalateEffect"><span class="hs-identifier">intercalateEffect</span></a></span><span>
+</span><span id="line-49"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Permutation constructors</span></span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#toPermutation"><span class="hs-identifier">toPermutation</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#toPermutationWithDefault"><span class="hs-identifier">toPermutationWithDefault</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span class="hs-keyword">where</span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-comment">-- | An 'Applicative' wrapper-type for constructing permutation parsers.</span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">data</span><span> </span><span id="Permutation"><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-var">Permutation</span></a></span></span><span> </span><span id="local-6989586621679047337"><span class="annot"><a href="#local-6989586621679047337"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679047338"><span class="annot"><a href="#local-6989586621679047338"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="P"><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679047338"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679047337"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047337"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047338"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span id="local-6989586621679047270"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679047267"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679047270"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047270"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679047265"><span class="annot"><span class="annottext">fmap :: (a -&gt; b) -&gt; Permutation m a -&gt; Permutation m b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679047264"><span class="annot"><span class="annottext">f :: a -&gt; b
+</span><a href="#local-6989586621679047264"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047263"><span class="annot"><span class="annottext">v :: Maybe a
+</span><a href="#local-6989586621679047263"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span id="local-6989586621679047262"><span class="annot"><span class="annottext">p :: m (Permutation m a)
+</span><a href="#local-6989586621679047262"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe b -&gt; m (Permutation m b) -&gt; Permutation m b
+forall (m :: * -&gt; *) a.
+Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679047264"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679047263"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; Permutation m a -&gt; Permutation m b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679047264"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(Permutation m a -&gt; Permutation m b)
+-&gt; m (Permutation m a) -&gt; m (Permutation m b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m a)
+</span><a href="#local-6989586621679047262"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span id="local-6989586621679047260"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679047252"><span id="local-6989586621679047254"><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679047260"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047260"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-64"></span><span>  </span><span id="local-6989586621679047250"><span class="annot"><span class="annottext">pure :: a -&gt; Permutation m a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span id="local-6989586621679047249"><span class="annot"><span class="annottext">value :: a
+</span><a href="#local-6989586621679047249"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+forall (m :: * -&gt; *) a.
+Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Maybe a
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679047249"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">m (Permutation m a)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a
+</span><span class="hs-identifier hs-var">empty</span></span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679047247"><span class="annot"><span class="annottext">lhs :: Permutation m (a -&gt; b)
+</span><a href="#local-6989586621679047247"><span class="hs-identifier hs-var">lhs</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047246"><span class="annot"><span class="annottext">f :: Maybe (a -&gt; b)
+</span><a href="#local-6989586621679047246"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679047245"><span class="annot"><span class="annottext">v :: m (Permutation m (a -&gt; b))
+</span><a href="#local-6989586621679047245"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679047244"><span class="annot"><span class="annottext">&lt;*&gt; :: Permutation m (a -&gt; b) -&gt; Permutation m a -&gt; Permutation m b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;*&gt;</span></span></span><span> </span><span id="local-6989586621679047243"><span class="annot"><span class="annottext">rhs :: Permutation m a
+</span><a href="#local-6989586621679047243"><span class="hs-identifier hs-var">rhs</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047242"><span class="annot"><span class="annottext">g :: Maybe a
+</span><a href="#local-6989586621679047242"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679047241"><span class="annot"><span class="annottext">w :: m (Permutation m a)
+</span><a href="#local-6989586621679047241"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe b -&gt; m (Permutation m b) -&gt; Permutation m b
+forall (m :: * -&gt; *) a.
+Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe (a -&gt; b)
+</span><a href="#local-6989586621679047246"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679047242"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">m (Permutation m b)
+</span><a href="#local-6989586621679047240"><span class="hs-identifier hs-var">lhsAlt</span></a></span><span> </span><span class="annot"><span class="annottext">m (Permutation m b) -&gt; m (Permutation m b) -&gt; m (Permutation m b)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m b)
+</span><a href="#local-6989586621679047238"><span class="hs-identifier hs-var">rhsAlt</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>      </span><span id="local-6989586621679047240"><span class="annot"><span class="annottext">lhsAlt :: m (Permutation m b)
+</span><a href="#local-6989586621679047240"><span class="hs-identifier hs-var hs-var">lhsAlt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Permutation m (a -&gt; b) -&gt; Permutation m a -&gt; Permutation m b
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Permutation m a
+</span><a href="#local-6989586621679047243"><span class="hs-identifier hs-var">rhs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Permutation m (a -&gt; b) -&gt; Permutation m b)
+-&gt; m (Permutation m (a -&gt; b)) -&gt; m (Permutation m b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m (a -&gt; b))
+</span><a href="#local-6989586621679047245"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-68"></span><span>      </span><span id="local-6989586621679047238"><span class="annot"><span class="annottext">rhsAlt :: m (Permutation m b)
+</span><a href="#local-6989586621679047238"><span class="hs-identifier hs-var hs-var">rhsAlt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Permutation m (a -&gt; b)
+</span><a href="#local-6989586621679047247"><span class="hs-identifier hs-var">lhs</span></a></span><span> </span><span class="annot"><span class="annottext">Permutation m (a -&gt; b) -&gt; Permutation m a -&gt; Permutation m b
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Permutation m a -&gt; Permutation m b)
+-&gt; m (Permutation m a) -&gt; m (Permutation m b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m a)
+</span><a href="#local-6989586621679047241"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-69"></span><span>  </span><span id="local-6989586621679047237"><span class="annot"><span class="annottext">liftA2 :: (a -&gt; b -&gt; c)
+-&gt; Permutation m a -&gt; Permutation m b -&gt; Permutation m c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftA2</span></span></span><span> </span><span id="local-6989586621679047235"><span class="annot"><span class="annottext">f :: a -&gt; b -&gt; c
+</span><a href="#local-6989586621679047235"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679047234"><span class="annot"><span class="annottext">lhs :: Permutation m a
+</span><a href="#local-6989586621679047234"><span class="hs-identifier hs-var">lhs</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047233"><span class="annot"><span class="annottext">x :: Maybe a
+</span><a href="#local-6989586621679047233"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679047232"><span class="annot"><span class="annottext">v :: m (Permutation m a)
+</span><a href="#local-6989586621679047232"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679047231"><span class="annot"><span class="annottext">rhs :: Permutation m b
+</span><a href="#local-6989586621679047231"><span class="hs-identifier hs-var">rhs</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047230"><span class="annot"><span class="annottext">y :: Maybe b
+</span><a href="#local-6989586621679047230"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679047229"><span class="annot"><span class="annottext">w :: m (Permutation m b)
+</span><a href="#local-6989586621679047229"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe c -&gt; m (Permutation m c) -&gt; Permutation m c
+forall (m :: * -&gt; *) a.
+Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b -&gt; c) -&gt; Maybe a -&gt; Maybe b -&gt; Maybe c
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; c
+</span><a href="#local-6989586621679047235"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679047233"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe b
+</span><a href="#local-6989586621679047230"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">m (Permutation m c)
+</span><a href="#local-6989586621679047228"><span class="hs-identifier hs-var">lhsAlt</span></a></span><span> </span><span class="annot"><span class="annottext">m (Permutation m c) -&gt; m (Permutation m c) -&gt; m (Permutation m c)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m c)
+</span><a href="#local-6989586621679047227"><span class="hs-identifier hs-var">rhsAlt</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>      </span><span id="local-6989586621679047228"><span class="annot"><span class="annottext">lhsAlt :: m (Permutation m c)
+</span><a href="#local-6989586621679047228"><span class="hs-identifier hs-var hs-var">lhsAlt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679047226"><span class="annot"><span class="annottext">p :: Permutation m a
+</span><a href="#local-6989586621679047226"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; c)
+-&gt; Permutation m a -&gt; Permutation m b -&gt; Permutation m c
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; c
+</span><a href="#local-6989586621679047235"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Permutation m a
+</span><a href="#local-6989586621679047226"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Permutation m b
+</span><a href="#local-6989586621679047231"><span class="hs-identifier hs-var">rhs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Permutation m a -&gt; Permutation m c)
+-&gt; m (Permutation m a) -&gt; m (Permutation m c)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m a)
+</span><a href="#local-6989586621679047232"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-72"></span><span>      </span><span id="local-6989586621679047227"><span class="annot"><span class="annottext">rhsAlt :: m (Permutation m c)
+</span><a href="#local-6989586621679047227"><span class="hs-identifier hs-var hs-var">rhsAlt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; c)
+-&gt; Permutation m a -&gt; Permutation m b -&gt; Permutation m c
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; c
+</span><a href="#local-6989586621679047235"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Permutation m a
+</span><a href="#local-6989586621679047234"><span class="hs-identifier hs-var">lhs</span></a></span><span> </span><span class="annot"><span class="annottext">(Permutation m b -&gt; Permutation m c)
+-&gt; m (Permutation m b) -&gt; m (Permutation m c)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m b)
+</span><a href="#local-6989586621679047229"><span class="hs-identifier hs-var">w</span></a></span></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- | \&quot;Unlifts\&quot; a permutation parser into a parser to be evaluated.</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span id="local-6989586621679047295"><span id="local-6989586621679047296"><span class="annot"><a href="Control.Applicative.Permutations.html#runPermutation"><span class="hs-identifier hs-type">runPermutation</span></a></span><span>
+</span><span id="line-77"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679047296"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-78"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679047296"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047296"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047295"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-comment">-- ^ Permutation specification</span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047296"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047295"><span class="hs-identifier hs-type">a</span></a></span><span>             </span><span class="hs-comment">-- ^ Resulting base monad capable of handling the permutation</span></span></span><span>
+</span><span id="line-81"></span><span id="runPermutation"><span class="annot"><span class="annottext">runPermutation :: Permutation m a -&gt; m a
+</span><a href="Control.Applicative.Permutations.html#runPermutation"><span class="hs-identifier hs-var hs-var">runPermutation</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047225"><span class="annot"><span class="annottext">value :: Maybe a
+</span><a href="#local-6989586621679047225"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span id="local-6989586621679047224"><span class="annot"><span class="annottext">parser :: m (Permutation m a)
+</span><a href="#local-6989586621679047224"><span class="hs-identifier hs-var">parser</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m (Permutation m a) -&gt; m (Maybe (Permutation m a))
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f (Maybe a)
+</span><span class="hs-identifier hs-var">optional</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m a)
+</span><a href="#local-6989586621679047224"><span class="hs-identifier hs-var">parser</span></a></span><span> </span><span class="annot"><span class="annottext">m (Maybe (Permutation m a))
+-&gt; (Maybe (Permutation m a) -&gt; m a) -&gt; m a
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Permutation m a) -&gt; m a
+forall (f :: * -&gt; *).
+(Alternative f, Monad f) =&gt;
+Maybe (Permutation f a) -&gt; f a
+</span><a href="#local-6989586621679047222"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-82"></span><span>   </span><span class="hs-keyword">where</span><span>
+</span><span id="line-83"></span><span>      </span><span id="local-6989586621679047222"><span class="annot"><span class="annottext">f :: Maybe (Permutation f a) -&gt; f a
+</span><a href="#local-6989586621679047222"><span class="hs-identifier hs-var hs-var">f</span></a></span></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a -&gt; (a -&gt; f a) -&gt; Maybe a -&gt; f a
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">f a
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a
+</span><span class="hs-identifier hs-var">empty</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679047225"><span class="hs-identifier hs-var">value</span></a></span><span>
+</span><span id="line-84"></span><span>      </span><span class="annot"><a href="#local-6989586621679047222"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679047220"><span class="annot"><span class="annottext">p :: Permutation f a
+</span><a href="#local-6989586621679047220"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Permutation f a -&gt; f a
+forall (m :: * -&gt; *) a.
+(Alternative m, Monad m) =&gt;
+Permutation m a -&gt; m a
+</span><a href="Control.Applicative.Permutations.html#runPermutation"><span class="hs-identifier hs-var">runPermutation</span></a></span><span> </span><span class="annot"><span class="annottext">Permutation f a
+</span><a href="#local-6989586621679047220"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="hs-comment">-- | \&quot;Unlifts\&quot; a permutation parser into a parser to be evaluated with an</span><span>
+</span><span id="line-87"></span><span class="hs-comment">-- intercalated effect. Useful for separators between permutation elements.</span><span>
+</span><span id="line-88"></span><span class="hs-comment">--</span><span>
+</span><span id="line-89"></span><span class="hs-comment">-- For example, suppose that similar to above we want to parse a permutation</span><span>
+</span><span id="line-90"></span><span class="hs-comment">-- of: an optional string of @a@'s, the character @b@ and an optional @c@.</span><span>
+</span><span id="line-91"></span><span class="hs-comment">-- /However/, we also want each element of the permutation to be separated</span><span>
+</span><span id="line-92"></span><span class="hs-comment">-- by a colon. Using a standard parsing library combinator @char@, this can</span><span>
+</span><span id="line-93"></span><span class="hs-comment">-- be described using the 'Applicative' instance by:</span><span>
+</span><span id="line-94"></span><span class="hs-comment">--</span><span>
+</span><span id="line-95"></span><span class="hs-comment">-- &gt; test = intercalateEffect (char ':') $</span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- &gt;          (,,) &lt;$&gt; toPermutationWithDefault &quot;&quot; (some (char 'a'))</span><span>
+</span><span id="line-97"></span><span class="hs-comment">-- &gt;               &lt;*&gt; toPermutation (char 'b')</span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- &gt;               &lt;*&gt; toPermutationWithDefault '_' (char 'c')</span><span>
+</span><span id="line-99"></span><span class="hs-comment">--</span><span>
+</span><span id="line-100"></span><span class="hs-comment">-- This will accept strings such as: \&quot;a:b:c\&quot;, \&quot;b:c:a\&quot;, \&quot;b:aa\&quot;, \&quot;b\&quot;,</span><span>
+</span><span id="line-101"></span><span class="hs-comment">-- etc.</span><span>
+</span><span id="line-102"></span><span class="hs-comment">--</span><span>
+</span><span id="line-103"></span><span class="hs-comment">-- Note that the effect is intercalated /between/ permutation components and</span><span>
+</span><span id="line-104"></span><span class="hs-comment">-- that:</span><span>
+</span><span id="line-105"></span><span class="hs-comment">--</span><span>
+</span><span id="line-106"></span><span class="hs-comment">--     * There is never an effect parsed preceeding the first component of</span><span>
+</span><span id="line-107"></span><span class="hs-comment">--       the permutation.</span><span>
+</span><span id="line-108"></span><span class="hs-comment">--     * There is never an effect parsed following the last component of the</span><span>
+</span><span id="line-109"></span><span class="hs-comment">--       permutation.</span><span>
+</span><span id="line-110"></span><span class="hs-comment">--     * No effects are intercalated between missing components with a</span><span>
+</span><span id="line-111"></span><span class="hs-comment">--       default value.</span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span id="local-6989586621679047217"><span id="local-6989586621679047218"><span id="local-6989586621679047219"><span class="annot"><a href="Control.Applicative.Permutations.html#intercalateEffect"><span class="hs-identifier hs-type">intercalateEffect</span></a></span><span>
+</span><span id="line-114"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679047219"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-115"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679047219"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-116"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047219"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047218"><span class="hs-identifier hs-type">b</span></a></span><span>             </span><span class="hs-comment">-- ^ Effect to be intercalated between permutation components</span><span>
+</span><span id="line-117"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047219"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047217"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-comment">-- ^ Permutation specification</span><span>
+</span><span id="line-118"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047219"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047217"><span class="hs-identifier hs-type">a</span></a></span><span>             </span><span class="hs-comment">-- ^ Resulting base monad capable of handling the permutation</span></span></span></span><span>
+</span><span id="line-119"></span><span id="intercalateEffect"><span class="annot"><span class="annottext">intercalateEffect :: m b -&gt; Permutation m a -&gt; m a
+</span><a href="Control.Applicative.Permutations.html#intercalateEffect"><span class="hs-identifier hs-var hs-var">intercalateEffect</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m () -&gt; m b -&gt; Permutation m a -&gt; m a
+forall (m :: * -&gt; *) c b a.
+(Alternative m, Monad m) =&gt;
+m c -&gt; m b -&gt; Permutation m a -&gt; m a
+</span><a href="#local-6989586621679047216"><span class="hs-identifier hs-var">run</span></a></span><span> </span><span class="annot"><span class="annottext">m ()
+</span><a href="#local-6989586621679047215"><span class="hs-identifier hs-var">noEffect</span></a></span><span>
+</span><span id="line-120"></span><span>   </span><span class="hs-keyword">where</span><span>
+</span><span id="line-121"></span><span>     </span><span id="local-6989586621679047215"><span class="annot"><span class="annottext">noEffect :: m ()
+</span><a href="#local-6989586621679047215"><span class="hs-identifier hs-var hs-var">noEffect</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; m ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span>     </span><span id="local-6989586621679047288"><span id="local-6989586621679047289"><span id="local-6989586621679047290"><span id="local-6989586621679047291"><span class="annot"><a href="#local-6989586621679047216"><span class="hs-identifier hs-type">run</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679047291"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679047291"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047291"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047290"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047291"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047289"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047291"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047288"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047291"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047288"><span class="hs-identifier hs-type">a</span></a></span></span></span></span></span><span>
+</span><span id="line-124"></span><span>     </span><span id="local-6989586621679047216"><span class="annot"><span class="annottext">run :: m c -&gt; m b -&gt; Permutation m a -&gt; m a
+</span><a href="#local-6989586621679047216"><span class="hs-identifier hs-var hs-var">run</span></a></span></span><span> </span><span id="local-6989586621679047214"><span class="annot"><span class="annottext">headSep :: m c
+</span><a href="#local-6989586621679047214"><span class="hs-identifier hs-var">headSep</span></a></span></span><span> </span><span id="local-6989586621679047213"><span class="annot"><span class="annottext">tailSep :: m b
+</span><a href="#local-6989586621679047213"><span class="hs-identifier hs-var">tailSep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679047212"><span class="annot"><span class="annottext">value :: Maybe a
+</span><a href="#local-6989586621679047212"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span id="local-6989586621679047211"><span class="annot"><span class="annottext">parser :: m (Permutation m a)
+</span><a href="#local-6989586621679047211"><span class="hs-identifier hs-var">parser</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m c -&gt; m (Maybe c)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f (Maybe a)
+</span><span class="hs-identifier hs-var">optional</span></span><span> </span><span class="annot"><span class="annottext">m c
+</span><a href="#local-6989586621679047214"><span class="hs-identifier hs-var">headSep</span></a></span><span> </span><span class="annot"><span class="annottext">m (Maybe c) -&gt; (Maybe c -&gt; m a) -&gt; m a
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Maybe c -&gt; m a
+forall a. Maybe a -&gt; m a
+</span><a href="#local-6989586621679047210"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-125"></span><span>       </span><span class="hs-keyword">where</span><span>
+</span><span id="line-126"></span><span>         </span><span id="local-6989586621679047210"><span class="annot"><span class="annottext">f :: Maybe a -&gt; m a
+</span><a href="#local-6989586621679047210"><span class="hs-identifier hs-var hs-var">f</span></a></span></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m a -&gt; (a -&gt; m a) -&gt; Maybe a -&gt; m a
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">m a
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a
+</span><span class="hs-identifier hs-var">empty</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679047212"><span class="hs-identifier hs-var">value</span></a></span><span>
+</span><span id="line-127"></span><span>         </span><span class="annot"><a href="#local-6989586621679047210"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m (Permutation m a) -&gt; m (Maybe (Permutation m a))
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f (Maybe a)
+</span><span class="hs-identifier hs-var">optional</span></span><span> </span><span class="annot"><span class="annottext">m (Permutation m a)
+</span><a href="#local-6989586621679047211"><span class="hs-identifier hs-var">parser</span></a></span><span> </span><span class="annot"><span class="annottext">m (Maybe (Permutation m a))
+-&gt; (Maybe (Permutation m a) -&gt; m a) -&gt; m a
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Permutation m a) -&gt; m a
+</span><a href="#local-6989586621679047209"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-128"></span><span>         </span><span id="local-6989586621679047209"><span class="annot"><span class="annottext">g :: Maybe (Permutation m a) -&gt; m a
+</span><a href="#local-6989586621679047209"><span class="hs-identifier hs-var hs-var">g</span></a></span></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m a -&gt; (a -&gt; m a) -&gt; Maybe a -&gt; m a
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">m a
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a
+</span><span class="hs-identifier hs-var">empty</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679047212"><span class="hs-identifier hs-var">value</span></a></span><span>
+</span><span id="line-129"></span><span>         </span><span class="annot"><a href="#local-6989586621679047209"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679047208"><span class="annot"><span class="annottext">p :: Permutation m a
+</span><a href="#local-6989586621679047208"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m b -&gt; m b -&gt; Permutation m a -&gt; m a
+forall (m :: * -&gt; *) c b a.
+(Alternative m, Monad m) =&gt;
+m c -&gt; m b -&gt; Permutation m a -&gt; m a
+</span><a href="#local-6989586621679047216"><span class="hs-identifier hs-var">run</span></a></span><span> </span><span class="annot"><span class="annottext">m b
+</span><a href="#local-6989586621679047213"><span class="hs-identifier hs-var">tailSep</span></a></span><span> </span><span class="annot"><span class="annottext">m b
+</span><a href="#local-6989586621679047213"><span class="hs-identifier hs-var">tailSep</span></a></span><span> </span><span class="annot"><span class="annottext">Permutation m a
+</span><a href="#local-6989586621679047208"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="hs-comment">-- | \&quot;Lifts\&quot; a parser to a permutation parser.</span><span>
+</span><span id="line-132"></span><span>
+</span><span id="line-133"></span><span id="local-6989586621679047206"><span id="local-6989586621679047207"><span class="annot"><a href="Control.Applicative.Permutations.html#toPermutation"><span class="hs-identifier hs-type">toPermutation</span></a></span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679047207"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047207"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047206"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-comment">-- ^ Permutation component</span><span>
+</span><span id="line-136"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047207"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047206"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-137"></span><span id="toPermutation"><span class="annot"><span class="annottext">toPermutation :: m a -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#toPermutation"><span class="hs-identifier hs-var hs-var">toPermutation</span></a></span></span><span> </span><span id="local-6989586621679047205"><span class="annot"><span class="annottext">p :: m a
+</span><a href="#local-6989586621679047205"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+forall (m :: * -&gt; *) a.
+Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">(m (Permutation m a) -&gt; Permutation m a)
+-&gt; m (Permutation m a) -&gt; Permutation m a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Permutation m a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Permutation m a) -&gt; m a -&gt; m (Permutation m a)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m a
+</span><a href="#local-6989586621679047205"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="hs-comment">-- | \&quot;Lifts\&quot; a parser with a default value to a permutation parser.</span><span>
+</span><span id="line-140"></span><span class="hs-comment">--</span><span>
+</span><span id="line-141"></span><span class="hs-comment">-- If no permutation containing the supplied parser can be parsed from the input,</span><span>
+</span><span id="line-142"></span><span class="hs-comment">-- then the supplied default value is returned in lieu of a parse result.</span><span>
+</span><span id="line-143"></span><span>
+</span><span id="line-144"></span><span id="local-6989586621679047203"><span id="local-6989586621679047204"><span class="annot"><a href="Control.Applicative.Permutations.html#toPermutationWithDefault"><span class="hs-identifier hs-type">toPermutationWithDefault</span></a></span><span>
+</span><span id="line-145"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679047204"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-146"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047203"><span class="hs-identifier hs-type">a</span></a></span><span>   </span><span class="hs-comment">-- ^ Default Value</span><span>
+</span><span id="line-147"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679047204"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047203"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-comment">-- ^ Permutation component</span><span>
+</span><span id="line-148"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Applicative.Permutations.html#Permutation"><span class="hs-identifier hs-type">Permutation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047204"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679047203"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-149"></span><span id="toPermutationWithDefault"><span class="annot"><span class="annottext">toPermutationWithDefault :: a -&gt; m a -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#toPermutationWithDefault"><span class="hs-identifier hs-var hs-var">toPermutationWithDefault</span></a></span></span><span> </span><span id="local-6989586621679047202"><span class="annot"><span class="annottext">v :: a
+</span><a href="#local-6989586621679047202"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span id="local-6989586621679047201"><span class="annot"><span class="annottext">p :: m a
+</span><a href="#local-6989586621679047201"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+forall (m :: * -&gt; *) a.
+Maybe a -&gt; m (Permutation m a) -&gt; Permutation m a
+</span><a href="Control.Applicative.Permutations.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Maybe a
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679047202"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(m (Permutation m a) -&gt; Permutation m a)
+-&gt; m (Permutation m a) -&gt; Permutation m a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Permutation m a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Permutation m a) -&gt; m a -&gt; m (Permutation m a)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">m a
+</span><a href="#local-6989586621679047201"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-150"></span></pre></body></html>

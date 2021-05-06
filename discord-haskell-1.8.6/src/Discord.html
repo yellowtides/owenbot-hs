@@ -1,0 +1,786 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Discord</span><span>
+</span><span id="line-6"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Discord.html#runDiscord"><span class="hs-identifier">runDiscord</span></a></span><span>
+</span><span id="line-7"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#restCall"><span class="hs-identifier">restCall</span></a></span><span>
+</span><span id="line-8"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#sendCommand"><span class="hs-identifier">sendCommand</span></a></span><span>
+</span><span id="line-9"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#readCache"><span class="hs-identifier">readCache</span></a></span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#stopDiscord"><span class="hs-identifier">stopDiscord</span></a></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier">DiscordHandler</span></a></span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Handle.html#DiscordHandle"><span class="hs-identifier">DiscordHandle</span></a></span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier">Cache</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier">RestCallErrorCode</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier">RunDiscordOpts</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">FromJSON</span></span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">def</span></span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">log</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Reader</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ReaderT</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">runReaderT</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">void</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ask</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">liftIO</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">forever</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">FromJSON</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Default</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Default</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">def</span></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text.Encoding</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">TE</span></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UnliftIO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">race</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">try</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">finally</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">SomeException</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">IOException</span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UnliftIO.Concurrent</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Handle.html"><span class="hs-identifier">Discord.Handle</span></a></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.html"><span class="hs-identifier">Discord.Internal.Rest</span></a></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.User.html"><span class="hs-identifier">Discord.Internal.Rest.User</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.User.html#UserRequest"><span class="hs-identifier">UserRequest</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.User.html#GetCurrentUser"><span class="hs-identifier">GetCurrentUser</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.html"><span class="hs-identifier">Discord.Internal.Gateway</span></a></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">type</span><span> </span><span id="DiscordHandler"><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-var">DiscordHandler</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ReaderT</span></span><span> </span><span class="annot"><a href="Discord.Handle.html#DiscordHandle"><span class="hs-identifier hs-type">DiscordHandle</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">data</span><span> </span><span id="RunDiscordOpts"><span class="annot"><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier hs-var">RunDiscordOpts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="RunDiscordOpts"><span class="annot"><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier hs-var">RunDiscordOpts</span></a></span></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="discordToken"><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Text
+</span><a href="Discord.html#discordToken"><span class="hs-identifier hs-var hs-var">discordToken</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="discordOnStart"><span class="annot"><span class="annottext">RunDiscordOpts -&gt; DiscordHandler ()
+</span><a href="Discord.html#discordOnStart"><span class="hs-identifier hs-var hs-var">discordOnStart</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-type">DiscordHandler</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="discordOnEnd"><span class="annot"><span class="annottext">RunDiscordOpts -&gt; IO ()
+</span><a href="Discord.html#discordOnEnd"><span class="hs-identifier hs-var hs-var">discordOnEnd</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="discordOnEvent"><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Event -&gt; DiscordHandler ()
+</span><a href="Discord.html#discordOnEvent"><span class="hs-identifier hs-var hs-var">discordOnEvent</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#Event"><span class="hs-identifier hs-type">Event</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-type">DiscordHandler</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="discordOnLog"><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Text -&gt; IO ()
+</span><a href="Discord.html#discordOnLog"><span class="hs-identifier hs-var hs-var">discordOnLog</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="discordForkThreadForEvents"><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Bool
+</span><a href="Discord.html#discordForkThreadForEvents"><span class="hs-identifier hs-var hs-var">discordForkThreadForEvents</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="annot"><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier hs-type">RunDiscordOpts</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679243004"><span class="annot"><span class="annottext">def :: RunDiscordOpts
+</span><a href="#local-6989586621679243004"><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts :: Text
+-&gt; DiscordHandler ()
+-&gt; IO ()
+-&gt; (Event -&gt; DiscordHandler ())
+-&gt; (Text -&gt; IO ())
+-&gt; Bool
+-&gt; RunDiscordOpts
+</span><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier hs-type hs-type">RunDiscordOpts</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">discordToken :: Text
+</span><a href="Discord.html#discordToken"><span class="hs-identifier hs-var">discordToken</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&quot;</span></span><span>
+</span><span id="line-50"></span><span>                       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordOnStart :: DiscordHandler ()
+</span><a href="Discord.html#discordOnStart"><span class="hs-identifier hs-var">discordOnStart</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>                       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordOnEnd :: IO ()
+</span><a href="Discord.html#discordOnEnd"><span class="hs-identifier hs-var">discordOnEnd</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>                       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordOnEvent :: Event -&gt; DiscordHandler ()
+</span><a href="Discord.html#discordOnEvent"><span class="hs-identifier hs-var">discordOnEvent</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>                       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordOnLog :: Text -&gt; IO ()
+</span><a href="Discord.html#discordOnLog"><span class="hs-identifier hs-var">discordOnLog</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>                       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordForkThreadForEvents :: Bool
+</span><a href="Discord.html#discordForkThreadForEvents"><span class="hs-identifier hs-var">discordForkThreadForEvents</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-55"></span><span>                       </span><span class="hs-special">}</span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><a href="Discord.html#runDiscord"><span class="hs-identifier hs-type">runDiscord</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier hs-type">RunDiscordOpts</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-58"></span><span id="runDiscord"><span class="annot"><span class="annottext">runDiscord :: RunDiscordOpts -&gt; IO Text
+</span><a href="Discord.html#runDiscord"><span class="hs-identifier hs-var hs-var">runDiscord</span></a></span></span><span> </span><span id="local-6989586621679243002"><span class="annot"><span class="annottext">opts :: RunDiscordOpts
+</span><a href="#local-6989586621679243002"><span class="hs-identifier hs-var">opts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-59"></span><span>  </span><span id="local-6989586621679243001"><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679243001"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Chan Text)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; m (Chan a)
+</span><span class="hs-identifier hs-var">newChan</span></span><span>
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679242999"><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242999"><span class="hs-identifier hs-var">logId</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO ThreadId -&gt; IO ThreadId
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO ThreadId -&gt; IO ThreadId) -&gt; IO ThreadId -&gt; IO ThreadId
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; IO ()) -&gt; Chan Text -&gt; IO ThreadId
+</span><a href="Discord.html#startLogger"><span class="hs-identifier hs-var">startLogger</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Text -&gt; IO ()
+</span><a href="Discord.html#discordOnLog"><span class="hs-identifier hs-var hs-var">discordOnLog</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679243002"><span class="hs-identifier hs-var">opts</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679243001"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679242997"><span class="annot"><span class="annottext">cache :: DiscordHandleCache
+</span><a href="#local-6989586621679242997"><span class="hs-identifier hs-var">cache</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242996"><span class="annot"><span class="annottext">cacheId :: ThreadId
+</span><a href="#local-6989586621679242996"><span class="hs-identifier hs-var">cacheId</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (DiscordHandleCache, ThreadId)
+-&gt; IO (DiscordHandleCache, ThreadId)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (DiscordHandleCache, ThreadId)
+ -&gt; IO (DiscordHandleCache, ThreadId))
+-&gt; IO (DiscordHandleCache, ThreadId)
+-&gt; IO (DiscordHandleCache, ThreadId)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Chan Text -&gt; IO (DiscordHandleCache, ThreadId)
+</span><a href="Discord.Internal.Gateway.html#startCacheThread"><span class="hs-identifier hs-var">startCacheThread</span></a></span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679243001"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679242994"><span class="annot"><span class="annottext">rest :: DiscordHandleRestChan
+</span><a href="#local-6989586621679242994"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242993"><span class="annot"><span class="annottext">restId :: ThreadId
+</span><a href="#local-6989586621679242993"><span class="hs-identifier hs-var">restId</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (DiscordHandleRestChan, ThreadId)
+-&gt; IO (DiscordHandleRestChan, ThreadId)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (DiscordHandleRestChan, ThreadId)
+ -&gt; IO (DiscordHandleRestChan, ThreadId))
+-&gt; IO (DiscordHandleRestChan, ThreadId)
+-&gt; IO (DiscordHandleRestChan, ThreadId)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Auth -&gt; Chan Text -&gt; IO (DiscordHandleRestChan, ThreadId)
+</span><a href="Discord.Internal.Rest.html#startRestThread"><span class="hs-identifier hs-var">startRestThread</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Auth
+</span><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-var">Auth</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Text
+</span><a href="Discord.html#discordToken"><span class="hs-identifier hs-var hs-var">discordToken</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679243002"><span class="hs-identifier hs-var">opts</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679243001"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679242990"><span class="annot"><span class="annottext">gate :: DiscordHandleGateway
+</span><a href="#local-6989586621679242990"><span class="hs-identifier hs-var">gate</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242989"><span class="annot"><span class="annottext">gateId :: ThreadId
+</span><a href="#local-6989586621679242989"><span class="hs-identifier hs-var">gateId</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (DiscordHandleGateway, ThreadId)
+-&gt; IO (DiscordHandleGateway, ThreadId)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (DiscordHandleGateway, ThreadId)
+ -&gt; IO (DiscordHandleGateway, ThreadId))
+-&gt; IO (DiscordHandleGateway, ThreadId)
+-&gt; IO (DiscordHandleGateway, ThreadId)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Auth
+-&gt; DiscordHandleCache
+-&gt; Chan Text
+-&gt; IO (DiscordHandleGateway, ThreadId)
+</span><a href="Discord.Internal.Gateway.html#startGatewayThread"><span class="hs-identifier hs-var">startGatewayThread</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Auth
+</span><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-var">Auth</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Text
+</span><a href="Discord.html#discordToken"><span class="hs-identifier hs-var hs-var">discordToken</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679243002"><span class="hs-identifier hs-var">opts</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">DiscordHandleCache
+</span><a href="#local-6989586621679242997"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679243001"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679242987"><span class="annot"><span class="annottext">MVar Text
+</span><a href="#local-6989586621679242987"><span class="hs-identifier hs-var">libE</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (MVar Text)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; m (MVar a)
+</span><span class="hs-identifier hs-var">newEmptyMVar</span></span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679242985"><span class="annot"><span class="annottext">handle :: DiscordHandle
+</span><a href="#local-6989586621679242985"><span class="hs-identifier hs-var hs-var">handle</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DiscordHandle :: DiscordHandleRestChan
+-&gt; DiscordHandleGateway
+-&gt; DiscordHandleCache
+-&gt; [DiscordHandleThreadId]
+-&gt; Chan Text
+-&gt; MVar Text
+-&gt; DiscordHandle
+</span><a href="Discord.Handle.html#DiscordHandle"><span class="hs-identifier hs-type hs-type">DiscordHandle</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">discordHandleRestChan :: DiscordHandleRestChan
+</span><a href="Discord.Handle.html#discordHandleRestChan"><span class="hs-identifier hs-var">discordHandleRestChan</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DiscordHandleRestChan
+</span><a href="#local-6989586621679242994"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-68"></span><span>                             </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordHandleGateway :: DiscordHandleGateway
+</span><a href="Discord.Handle.html#discordHandleGateway"><span class="hs-identifier hs-var">discordHandleGateway</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DiscordHandleGateway
+</span><a href="#local-6989586621679242990"><span class="hs-identifier hs-var">gate</span></a></span><span>
+</span><span id="line-69"></span><span>                             </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordHandleCache :: DiscordHandleCache
+</span><a href="Discord.Handle.html#discordHandleCache"><span class="hs-identifier hs-var">discordHandleCache</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DiscordHandleCache
+</span><a href="#local-6989586621679242997"><span class="hs-identifier hs-var">cache</span></a></span><span>
+</span><span id="line-70"></span><span>                             </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordHandleLog :: Chan Text
+</span><a href="Discord.Handle.html#discordHandleLog"><span class="hs-identifier hs-var">discordHandleLog</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679243001"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><span id="line-71"></span><span>                             </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordHandleLibraryError :: MVar Text
+</span><a href="Discord.Handle.html#discordHandleLibraryError"><span class="hs-identifier hs-var">discordHandleLibraryError</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MVar Text
+</span><a href="#local-6989586621679242987"><span class="hs-identifier hs-var">libE</span></a></span><span>
+</span><span id="line-72"></span><span>                             </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">discordHandleThreads :: [DiscordHandleThreadId]
+</span><a href="Discord.Handle.html#discordHandleThreads"><span class="hs-identifier hs-var">discordHandleThreads</span></a></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-73"></span><span>                                 </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">ThreadId -&gt; DiscordHandleThreadId
+</span><a href="Discord.Handle.html#DiscordHandleThreadIdLogger"><span class="hs-identifier hs-var">DiscordHandleThreadIdLogger</span></a></span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242999"><span class="hs-identifier hs-var">logId</span></a></span><span>
+</span><span id="line-74"></span><span>                                 </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId -&gt; DiscordHandleThreadId
+</span><a href="Discord.Handle.html#DiscordHandleThreadIdRest"><span class="hs-identifier hs-var">DiscordHandleThreadIdRest</span></a></span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242993"><span class="hs-identifier hs-var">restId</span></a></span><span>
+</span><span id="line-75"></span><span>                                 </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId -&gt; DiscordHandleThreadId
+</span><a href="Discord.Handle.html#DiscordHandleThreadIdCache"><span class="hs-identifier hs-var">DiscordHandleThreadIdCache</span></a></span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242996"><span class="hs-identifier hs-var">cacheId</span></a></span><span>
+</span><span id="line-76"></span><span>                                 </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId -&gt; DiscordHandleThreadId
+</span><a href="Discord.Handle.html#DiscordHandleThreadIdGateway"><span class="hs-identifier hs-var">DiscordHandleThreadIdGateway</span></a></span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242989"><span class="hs-identifier hs-var">gateId</span></a></span><span>
+</span><span id="line-77"></span><span>                                 </span><span class="hs-special">]</span><span>
+</span><span id="line-78"></span><span>                             </span><span class="hs-special">}</span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span>  </span><span class="annot"><span class="annottext">IO Text -&gt; IO () -&gt; IO Text
+forall (m :: * -&gt; *) a b. MonadUnliftIO m =&gt; m a -&gt; m b -&gt; m a
+</span><span class="hs-identifier hs-var">finally</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; RunDiscordOpts -&gt; IO Text
+</span><a href="Discord.html#runDiscordLoop"><span class="hs-identifier hs-var">runDiscordLoop</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242985"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679243002"><span class="hs-identifier hs-var">opts</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-81"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; IO ()
+</span><a href="Discord.html#discordOnEnd"><span class="hs-identifier hs-var hs-var">discordOnEnd</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679243002"><span class="hs-identifier hs-var">opts</span></a></span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO () -&gt; IO ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandler () -&gt; DiscordHandle -&gt; IO ()
+forall r (m :: * -&gt; *) a. ReaderT r m a -&gt; r -&gt; m a
+</span><span class="hs-identifier hs-var hs-var">runReaderT</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandler ()
+</span><a href="Discord.html#stopDiscord"><span class="hs-identifier hs-var">stopDiscord</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242985"><span class="hs-identifier hs-var">handle</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="annot"><a href="Discord.html#runDiscordLoop"><span class="hs-identifier hs-type">runDiscordLoop</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Handle.html#DiscordHandle"><span class="hs-identifier hs-type">DiscordHandle</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.html#RunDiscordOpts"><span class="hs-identifier hs-type">RunDiscordOpts</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-84"></span><span id="runDiscordLoop"><span class="annot"><span class="annottext">runDiscordLoop :: DiscordHandle -&gt; RunDiscordOpts -&gt; IO Text
+</span><a href="Discord.html#runDiscordLoop"><span class="hs-identifier hs-var hs-var">runDiscordLoop</span></a></span></span><span> </span><span id="local-6989586621679242971"><span class="annot"><span class="annottext">handle :: DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span></span><span> </span><span id="local-6989586621679242970"><span class="annot"><span class="annottext">opts :: RunDiscordOpts
+</span><a href="#local-6989586621679242970"><span class="hs-identifier hs-var">opts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679242969"><span class="annot"><span class="annottext">Either RestCallInternalException User
+</span><a href="#local-6989586621679242969"><span class="hs-identifier hs-var">resp</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either RestCallInternalException User)
+-&gt; IO (Either RestCallInternalException User)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either RestCallInternalException User)
+ -&gt; IO (Either RestCallInternalException User))
+-&gt; IO (Either RestCallInternalException User)
+-&gt; IO (Either RestCallInternalException User)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandleRestChan
+-&gt; UserRequest User -&gt; IO (Either RestCallInternalException User)
+forall (r :: * -&gt; *) a.
+(Request (r a), FromJSON a) =&gt;
+DiscordHandleRestChan
+-&gt; r a -&gt; IO (Either RestCallInternalException a)
+</span><a href="Discord.Internal.Rest.html#writeRestCall"><span class="hs-identifier hs-var">writeRestCall</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; DiscordHandleRestChan
+</span><a href="Discord.Handle.html#discordHandleRestChan"><span class="hs-identifier hs-var hs-var">discordHandleRestChan</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">UserRequest User
+</span><a href="Discord.Internal.Rest.User.html#GetCurrentUser"><span class="hs-identifier hs-var">GetCurrentUser</span></a></span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either RestCallInternalException User
+</span><a href="#local-6989586621679242969"><span class="hs-identifier hs-var">resp</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-87"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.HTTP.html#RestCallInternalErrorCode"><span class="hs-identifier hs-type">RestCallInternalErrorCode</span></a></span><span> </span><span id="local-6989586621679242966"><span class="annot"><span class="annottext">c :: Int
+</span><a href="#local-6989586621679242966"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679242965"><span class="annot"><span class="annottext">e1 :: ByteString
+</span><a href="#local-6989586621679242965"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span id="local-6989586621679242964"><span class="annot"><span class="annottext">e2 :: ByteString
+</span><a href="#local-6989586621679242964"><span class="hs-identifier hs-var">e2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var">libError</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; IO Text) -&gt; Text -&gt; IO Text
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-88"></span><span>             </span><span class="annot"><span class="hs-string">&quot;HTTP Error Code &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679242966"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="hs-string">&quot; &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><span class="hs-identifier hs-var">TE.decodeUtf8</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679242965"><span class="hs-identifier hs-var">e1</span></a></span><span>
+</span><span id="line-89"></span><span>                                                   </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="hs-string">&quot; &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><span class="hs-identifier hs-var">TE.decodeUtf8</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679242964"><span class="hs-identifier hs-var">e2</span></a></span><span>
+</span><span id="line-90"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.HTTP.html#RestCallInternalHttpException"><span class="hs-identifier hs-type">RestCallInternalHttpException</span></a></span><span> </span><span id="local-6989586621679242958"><span class="annot"><span class="annottext">e :: HttpException
+</span><a href="#local-6989586621679242958"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var">libError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;HTTP Exception -  &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HttpException -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">HttpException
+</span><a href="#local-6989586621679242958"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.HTTP.html#RestCallInternalNoParse"><span class="hs-identifier hs-type">RestCallInternalNoParse</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var">libError</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Couldn't parse GetCurrentUser&quot;</span></span><span>
+</span><span id="line-92"></span><span>    </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679242956"><span class="annot"><span class="annottext">Either SomeException ()
+</span><a href="#local-6989586621679242956"><span class="hs-identifier hs-var">me</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either SomeException ()) -&gt; IO (Either SomeException ())
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either SomeException ()) -&gt; IO (Either SomeException ()))
+-&gt; (DiscordHandle -&gt; IO (Either SomeException ()))
+-&gt; DiscordHandle
+-&gt; IO (Either SomeException ())
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO (Either SomeException ())
+-&gt; DiscordHandle -&gt; IO (Either SomeException ())
+forall r (m :: * -&gt; *) a. ReaderT r m a -&gt; r -&gt; m a
+</span><span class="hs-identifier hs-var hs-var">runReaderT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandler ()
+-&gt; ReaderT DiscordHandle IO (Either SomeException ())
+forall (m :: * -&gt; *) e a.
+(MonadUnliftIO m, Exception e) =&gt;
+m a -&gt; m (Either e a)
+</span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="annot"><span class="annottext">(DiscordHandler ()
+ -&gt; ReaderT DiscordHandle IO (Either SomeException ()))
+-&gt; DiscordHandler ()
+-&gt; ReaderT DiscordHandle IO (Either SomeException ())
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; DiscordHandler ()
+</span><a href="Discord.html#discordOnStart"><span class="hs-identifier hs-var hs-var">discordOnStart</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679242970"><span class="hs-identifier hs-var">opts</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandle -&gt; IO (Either SomeException ()))
+-&gt; DiscordHandle -&gt; IO (Either SomeException ())
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span>
+</span><span id="line-93"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either SomeException ()
+</span><a href="#local-6989586621679242956"><span class="hs-identifier hs-var">me</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-94"></span><span>              </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242954"><span class="annot"><span class="annottext">SomeException
+</span><a href="#local-6989586621679242954"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SomeException</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var">libError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;discordOnStart handler stopped on an exception:\n\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SomeException -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SomeException
+</span><a href="#local-6989586621679242954"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-95"></span><span>              </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IO Text
+</span><a href="#local-6989586621679242953"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-96"></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-97"></span><span>   </span><span class="annot"><a href="#local-6989586621679242963"><span class="hs-identifier hs-type">libError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-98"></span><span>   </span><span id="local-6989586621679242963"><span class="annot"><span class="annottext">libError :: Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var hs-var">libError</span></a></span></span><span> </span><span id="local-6989586621679242952"><span class="annot"><span class="annottext">msg :: Text
+</span><a href="#local-6989586621679242952"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MVar Text -&gt; Text -&gt; IO Bool
+forall (m :: * -&gt; *) a. MonadIO m =&gt; MVar a -&gt; a -&gt; m Bool
+</span><span class="hs-identifier hs-var">tryPutMVar</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; MVar Text
+</span><a href="Discord.Handle.html#discordHandleLibraryError"><span class="hs-identifier hs-var hs-var">discordHandleLibraryError</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679242952"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">IO Bool -&gt; IO Text -&gt; IO Text
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679242952"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span>   </span><span class="annot"><a href="#local-6989586621679242950"><span class="hs-identifier hs-type">gateChan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.EventLoop.html#DiscordHandleGateway"><span class="hs-identifier hs-type">DiscordHandleGateway</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Chan</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.EventLoop.html#GatewayException"><span class="hs-identifier hs-type">GatewayException</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#Event"><span class="hs-identifier hs-type">Event</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>   </span><span id="local-6989586621679242950"><span class="annot"><span class="annottext">gateChan :: DiscordHandleGateway -&gt; Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679242950"><span class="hs-identifier hs-var hs-var">gateChan</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242949"><span class="annot"><span class="annottext">a :: Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679242949"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679242949"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-comment">-- only used right below in loop</span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span>   </span><span class="annot"><a href="#local-6989586621679242953"><span class="hs-identifier hs-type">loop</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-104"></span><span>   </span><span id="local-6989586621679242953"><span class="annot"><span class="annottext">loop :: IO Text
+</span><a href="#local-6989586621679242953"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679242948"><span class="annot"><span class="annottext">Either Text (Either GatewayException Event)
+</span><a href="#local-6989586621679242948"><span class="hs-identifier hs-var">next</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Text
+-&gt; IO (Either GatewayException Event)
+-&gt; IO (Either Text (Either GatewayException Event))
+forall (m :: * -&gt; *) a b.
+MonadUnliftIO m =&gt;
+m a -&gt; m b -&gt; m (Either a b)
+</span><span class="hs-identifier hs-var">race</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MVar Text -&gt; IO Text
+forall (m :: * -&gt; *) a. MonadIO m =&gt; MVar a -&gt; m a
+</span><span class="hs-identifier hs-var">readMVar</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; MVar Text
+</span><a href="Discord.Handle.html#discordHandleLibraryError"><span class="hs-identifier hs-var hs-var">discordHandleLibraryError</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-105"></span><span>                          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+-&gt; IO (Either GatewayException Event)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; Chan a -&gt; m a
+</span><span class="hs-identifier hs-var">readChan</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandleGateway -&gt; Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679242950"><span class="hs-identifier hs-var">gateChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; DiscordHandleGateway
+</span><a href="Discord.Handle.html#discordHandleGateway"><span class="hs-identifier hs-var hs-var">discordHandleGateway</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>             </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either Text (Either GatewayException Event)
+</span><a href="#local-6989586621679242948"><span class="hs-identifier hs-var">next</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-107"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679242945"><span class="annot"><span class="annottext">err :: Text
+</span><a href="#local-6989586621679242945"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var">libError</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679242945"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-108"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679242944"><span class="annot"><span class="annottext">event :: Event
+</span><a href="#local-6989586621679242944"><span class="hs-identifier hs-var">event</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-109"></span><span>                 </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679242943"><span class="annot"><span class="annottext">action :: IO () -&gt; IO ()
+</span><a href="#local-6989586621679242943"><span class="hs-identifier hs-var hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Bool
+</span><a href="Discord.html#discordForkThreadForEvents"><span class="hs-identifier hs-var hs-var">discordForkThreadForEvents</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679242970"><span class="hs-identifier hs-var">opts</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">IO ThreadId -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO ThreadId -&gt; IO ()) -&gt; (IO () -&gt; IO ThreadId) -&gt; IO () -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ThreadId
+forall (m :: * -&gt; *). MonadUnliftIO m =&gt; m () -&gt; m ThreadId
+</span><span class="hs-identifier hs-var">forkIO</span></span><span>
+</span><span id="line-110"></span><span>                                                                 </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ()
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-111"></span><span>                 </span><span class="annot"><span class="annottext">IO () -&gt; IO ()
+</span><a href="#local-6989586621679242943"><span class="hs-identifier hs-var">action</span></a></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679242940"><span class="annot"><span class="annottext">Either SomeException ()
+</span><a href="#local-6989586621679242940"><span class="hs-identifier hs-var">me</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either SomeException ()) -&gt; IO (Either SomeException ())
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either SomeException ()) -&gt; IO (Either SomeException ()))
+-&gt; (DiscordHandle -&gt; IO (Either SomeException ()))
+-&gt; DiscordHandle
+-&gt; IO (Either SomeException ())
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO (Either SomeException ())
+-&gt; DiscordHandle -&gt; IO (Either SomeException ())
+forall r (m :: * -&gt; *) a. ReaderT r m a -&gt; r -&gt; m a
+</span><span class="hs-identifier hs-var hs-var">runReaderT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandler ()
+-&gt; ReaderT DiscordHandle IO (Either SomeException ())
+forall (m :: * -&gt; *) e a.
+(MonadUnliftIO m, Exception e) =&gt;
+m a -&gt; m (Either e a)
+</span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="annot"><span class="annottext">(DiscordHandler ()
+ -&gt; ReaderT DiscordHandle IO (Either SomeException ()))
+-&gt; DiscordHandler ()
+-&gt; ReaderT DiscordHandle IO (Either SomeException ())
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts -&gt; Event -&gt; DiscordHandler ()
+</span><a href="Discord.html#discordOnEvent"><span class="hs-identifier hs-var hs-var">discordOnEvent</span></a></span><span> </span><span class="annot"><span class="annottext">RunDiscordOpts
+</span><a href="#local-6989586621679242970"><span class="hs-identifier hs-var">opts</span></a></span><span> </span><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679242944"><span class="hs-identifier hs-var">event</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandle -&gt; IO (Either SomeException ()))
+-&gt; DiscordHandle -&gt; IO (Either SomeException ())
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span>
+</span><span id="line-112"></span><span>                             </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either SomeException ()
+</span><a href="#local-6989586621679242940"><span class="hs-identifier hs-var">me</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-113"></span><span>                               </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242939"><span class="annot"><span class="annottext">SomeException
+</span><a href="#local-6989586621679242939"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SomeException</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Chan Text -&gt; Text -&gt; IO ()
+forall (m :: * -&gt; *) a. MonadIO m =&gt; Chan a -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">writeChan</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; Chan Text
+</span><a href="Discord.Handle.html#discordHandleLog"><span class="hs-identifier hs-var hs-var">discordHandleLog</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242971"><span class="hs-identifier hs-var">handle</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-114"></span><span>                                         </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;discord-haskell stopped on an exception:\n\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SomeException -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SomeException
+</span><a href="#local-6989586621679242939"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span>                               </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-116"></span><span>                 </span><span class="annot"><span class="annottext">IO Text
+</span><a href="#local-6989586621679242953"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-117"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679242937"><span class="annot"><span class="annottext">err :: GatewayException
+</span><a href="#local-6989586621679242937"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
+</span><a href="#local-6989586621679242963"><span class="hs-identifier hs-var">libError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">GatewayException -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">GatewayException
+</span><a href="#local-6989586621679242937"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span>
+</span><span id="line-120"></span><span class="hs-keyword">data</span><span> </span><span id="RestCallErrorCode"><span class="annot"><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier hs-var">RestCallErrorCode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="RestCallErrorCode"><span class="annot"><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier hs-var">RestCallErrorCode</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-121"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242930"><span id="local-6989586621679242932"><span id="local-6989586621679242934"><span class="annot"><span class="annottext">Int -&gt; RestCallErrorCode -&gt; ShowS
+[RestCallErrorCode] -&gt; ShowS
+RestCallErrorCode -&gt; String
+(Int -&gt; RestCallErrorCode -&gt; ShowS)
+-&gt; (RestCallErrorCode -&gt; String)
+-&gt; ([RestCallErrorCode] -&gt; ShowS)
+-&gt; Show RestCallErrorCode
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [RestCallErrorCode] -&gt; ShowS
+$cshowList :: [RestCallErrorCode] -&gt; ShowS
+show :: RestCallErrorCode -&gt; String
+$cshow :: RestCallErrorCode -&gt; String
+showsPrec :: Int -&gt; RestCallErrorCode -&gt; ShowS
+$cshowsPrec :: Int -&gt; RestCallErrorCode -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242925"><span id="local-6989586621679242927"><span class="annot"><span class="annottext">RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+(RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool)
+-&gt; Eq RestCallErrorCode
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+$c/= :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+== :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+$c== :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242909"><span id="local-6989586621679242911"><span id="local-6989586621679242913"><span id="local-6989586621679242915"><span id="local-6989586621679242917"><span id="local-6989586621679242919"><span id="local-6989586621679242921"><span class="annot"><span class="annottext">Eq RestCallErrorCode
+Eq RestCallErrorCode =&gt;
+(RestCallErrorCode -&gt; RestCallErrorCode -&gt; Ordering)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode)
+-&gt; (RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode)
+-&gt; Ord RestCallErrorCode
+RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+RestCallErrorCode -&gt; RestCallErrorCode -&gt; Ordering
+RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode
+$cmin :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode
+max :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode
+$cmax :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; RestCallErrorCode
+&gt;= :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+$c&gt;= :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+&gt; :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+$c&gt; :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+&lt;= :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+$c&lt;= :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+&lt; :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+$c&lt; :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Bool
+compare :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Ordering
+$ccompare :: RestCallErrorCode -&gt; RestCallErrorCode -&gt; Ordering
+$cp1Ord :: Eq RestCallErrorCode
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-comment">-- | Execute one http request and get a response</span><span>
+</span><span id="line-124"></span><span id="local-6989586621679243050"><span id="local-6989586621679243051"><span class="annot"><a href="Discord.html#restCall"><span class="hs-identifier hs-type">restCall</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621679243051"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Request"><span class="hs-identifier hs-type">Request</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679243050"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679243051"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679243050"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679243051"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-type">DiscordHandler</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier hs-type">RestCallErrorCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679243051"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-125"></span><span id="restCall"><span class="annot"><span class="annottext">restCall :: r a -&gt; DiscordHandler (Either RestCallErrorCode a)
+</span><a href="Discord.html#restCall"><span class="hs-identifier hs-var hs-var">restCall</span></a></span></span><span> </span><span id="local-6989586621679242907"><span class="annot"><span class="annottext">r :: r a
+</span><a href="#local-6989586621679242907"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679242906"><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242906"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO DiscordHandle
+forall r (m :: * -&gt; *). MonadReader r m =&gt; m r
+</span><span class="hs-identifier hs-var">ask</span></span><span>
+</span><span id="line-126"></span><span>                </span><span id="local-6989586621679242905"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679242905"><span class="hs-identifier hs-var">empty</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVar Text -&gt; ReaderT DiscordHandle IO Bool
+forall (m :: * -&gt; *) a. MonadIO m =&gt; MVar a -&gt; m Bool
+</span><span class="hs-identifier hs-var">isEmptyMVar</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; MVar Text
+</span><a href="Discord.Handle.html#discordHandleLibraryError"><span class="hs-identifier hs-var hs-var">discordHandleLibraryError</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242906"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span>                </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679242905"><span class="hs-identifier hs-var">empty</span></a></span><span>
+</span><span id="line-128"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Either RestCallErrorCode a
+-&gt; DiscordHandler (Either RestCallErrorCode a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RestCallErrorCode -&gt; Either RestCallErrorCode a
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text -&gt; RestCallErrorCode
+</span><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier hs-var">RestCallErrorCode</span></a></span><span> </span><span class="annot"><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Library Stopped Working&quot;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-130"></span><span>                    </span><span id="local-6989586621679242902"><span class="annot"><span class="annottext">Either RestCallInternalException a
+</span><a href="#local-6989586621679242902"><span class="hs-identifier hs-var">resp</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either RestCallInternalException a)
+-&gt; ReaderT DiscordHandle IO (Either RestCallInternalException a)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either RestCallInternalException a)
+ -&gt; ReaderT DiscordHandle IO (Either RestCallInternalException a))
+-&gt; IO (Either RestCallInternalException a)
+-&gt; ReaderT DiscordHandle IO (Either RestCallInternalException a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandleRestChan
+-&gt; r a -&gt; IO (Either RestCallInternalException a)
+forall (r :: * -&gt; *) a.
+(Request (r a), FromJSON a) =&gt;
+DiscordHandleRestChan
+-&gt; r a -&gt; IO (Either RestCallInternalException a)
+</span><a href="Discord.Internal.Rest.html#writeRestCall"><span class="hs-identifier hs-var">writeRestCall</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; DiscordHandleRestChan
+</span><a href="Discord.Handle.html#discordHandleRestChan"><span class="hs-identifier hs-var hs-var">discordHandleRestChan</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242906"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">r a
+</span><a href="#local-6989586621679242907"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-131"></span><span>                    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either RestCallInternalException a
+</span><a href="#local-6989586621679242902"><span class="hs-identifier hs-var">resp</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-132"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679242901"><span class="annot"><span class="annottext">x :: a
+</span><a href="#local-6989586621679242901"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either RestCallErrorCode a
+-&gt; DiscordHandler (Either RestCallErrorCode a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Either RestCallErrorCode a
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679242901"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-133"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.HTTP.html#RestCallInternalErrorCode"><span class="hs-identifier hs-type">RestCallInternalErrorCode</span></a></span><span> </span><span id="local-6989586621679242900"><span class="annot"><span class="annottext">c :: Int
+</span><a href="#local-6989586621679242900"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679242899"><span class="annot"><span class="annottext">e1 :: ByteString
+</span><a href="#local-6989586621679242899"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span id="local-6989586621679242898"><span class="annot"><span class="annottext">e2 :: ByteString
+</span><a href="#local-6989586621679242898"><span class="hs-identifier hs-var">e2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-134"></span><span>                        </span><span class="annot"><span class="annottext">Either RestCallErrorCode a
+-&gt; DiscordHandler (Either RestCallErrorCode a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RestCallErrorCode -&gt; Either RestCallErrorCode a
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text -&gt; RestCallErrorCode
+</span><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier hs-var">RestCallErrorCode</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679242900"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><span class="hs-identifier hs-var">TE.decodeUtf8</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679242899"><span class="hs-identifier hs-var">e1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><span class="hs-identifier hs-var">TE.decodeUtf8</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679242898"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-135"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.HTTP.html#RestCallInternalHttpException"><span class="hs-identifier hs-type">RestCallInternalHttpException</span></a></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-136"></span><span>                        </span><span class="annot"><span class="annottext">Int -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadIO m =&gt; Int -&gt; m ()
+</span><span class="hs-identifier hs-var">threadDelay</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">10</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">10</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-number">6</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">DiscordHandler ()
+-&gt; DiscordHandler (Either RestCallErrorCode a)
+-&gt; DiscordHandler (Either RestCallErrorCode a)
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">r a -&gt; DiscordHandler (Either RestCallErrorCode a)
+forall a (r :: * -&gt; *).
+(FromJSON a, Request (r a)) =&gt;
+r a -&gt; DiscordHandler (Either RestCallErrorCode a)
+</span><a href="Discord.html#restCall"><span class="hs-identifier hs-var">restCall</span></a></span><span> </span><span class="annot"><span class="annottext">r a
+</span><a href="#local-6989586621679242907"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-137"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.HTTP.html#RestCallInternalNoParse"><span class="hs-identifier hs-type">RestCallInternalNoParse</span></a></span><span> </span><span id="local-6989586621679242894"><span class="annot"><span class="annottext">err :: String
+</span><a href="#local-6989586621679242894"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span id="local-6989586621679242893"><span class="annot"><span class="annottext">dat :: ByteString
+</span><a href="#local-6989586621679242893"><span class="hs-identifier hs-var">dat</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-138"></span><span>                        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679242892"><span class="annot"><span class="annottext">formaterr :: Text
+</span><a href="#local-6989586621679242892"><span class="hs-identifier hs-var hs-var">formaterr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;Parse Exception &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679242894"><span class="hs-identifier hs-var">err</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="hs-string">&quot; for &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679242893"><span class="hs-identifier hs-var">dat</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>                        </span><span class="annot"><span class="annottext">Chan Text -&gt; Text -&gt; DiscordHandler ()
+forall (m :: * -&gt; *) a. MonadIO m =&gt; Chan a -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">writeChan</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; Chan Text
+</span><a href="Discord.Handle.html#discordHandleLog"><span class="hs-identifier hs-var hs-var">discordHandleLog</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242906"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679242892"><span class="hs-identifier hs-var">formaterr</span></a></span><span>
+</span><span id="line-140"></span><span>                        </span><span class="annot"><span class="annottext">Either RestCallErrorCode a
+-&gt; DiscordHandler (Either RestCallErrorCode a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">RestCallErrorCode -&gt; Either RestCallErrorCode a
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text -&gt; RestCallErrorCode
+</span><a href="Discord.html#RestCallErrorCode"><span class="hs-identifier hs-var">RestCallErrorCode</span></a></span><span> </span><span class="annot"><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Library Stopped Working&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679242892"><span class="hs-identifier hs-var">formaterr</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span class="hs-comment">-- | Send a GatewaySendable, but not Heartbeat, Identify, or Resume</span><span>
+</span><span id="line-143"></span><span class="annot"><a href="Discord.html#sendCommand"><span class="hs-identifier hs-type">sendCommand</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Gateway.html#GatewaySendable"><span class="hs-identifier hs-type">GatewaySendable</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-type">DiscordHandler</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span id="sendCommand"><span class="annot"><span class="annottext">sendCommand :: GatewaySendable -&gt; DiscordHandler ()
+</span><a href="Discord.html#sendCommand"><span class="hs-identifier hs-var hs-var">sendCommand</span></a></span></span><span> </span><span id="local-6989586621679242891"><span class="annot"><span class="annottext">e :: GatewaySendable
+</span><a href="#local-6989586621679242891"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-145"></span><span>  </span><span id="local-6989586621679242890"><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242890"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO DiscordHandle
+forall r (m :: * -&gt; *). MonadReader r m =&gt; m r
+</span><span class="hs-identifier hs-var">ask</span></span><span>
+</span><span id="line-146"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">GatewaySendable
+</span><a href="#local-6989586621679242891"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-147"></span><span>    </span><span class="annot"><a href="Discord.Internal.Types.Gateway.html#Heartbeat"><span class="hs-identifier hs-type">Heartbeat</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-148"></span><span>    </span><span class="annot"><a href="Discord.Internal.Types.Gateway.html#Identify"><span class="hs-identifier hs-type">Identify</span></a></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span>    </span><span class="annot"><a href="Discord.Internal.Types.Gateway.html#Resume"><span class="hs-identifier hs-type">Resume</span></a></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-150"></span><span>    </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679242886"><span class="annot"><span class="annottext">sendChan :: (a, b, c) -&gt; b
+</span><a href="#local-6989586621679242886"><span class="hs-identifier hs-var hs-var">sendChan</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242885"><span class="annot"><span class="annottext">b :: b
+</span><a href="#local-6989586621679242885"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679242885"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-151"></span><span>         </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Chan GatewaySendable -&gt; GatewaySendable -&gt; DiscordHandler ()
+forall (m :: * -&gt; *) a. MonadIO m =&gt; Chan a -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">writeChan</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandleGateway -&gt; Chan GatewaySendable
+forall a b c. (a, b, c) -&gt; b
+</span><a href="#local-6989586621679242886"><span class="hs-identifier hs-var">sendChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; DiscordHandleGateway
+</span><a href="Discord.Handle.html#discordHandleGateway"><span class="hs-identifier hs-var hs-var">discordHandleGateway</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242890"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">GatewaySendable
+</span><a href="#local-6989586621679242891"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-152"></span><span>
+</span><span id="line-153"></span><span class="hs-comment">-- | Access the current state of the gateway cache</span><span>
+</span><span id="line-154"></span><span class="annot"><a href="Discord.html#readCache"><span class="hs-identifier hs-type">readCache</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-type">DiscordHandler</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier hs-type">Cache</span></a></span><span>
+</span><span id="line-155"></span><span id="readCache"><span class="annot"><span class="annottext">readCache :: DiscordHandler Cache
+</span><a href="Discord.html#readCache"><span class="hs-identifier hs-var hs-var">readCache</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-156"></span><span>  </span><span id="local-6989586621679242884"><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242884"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO DiscordHandle
+forall r (m :: * -&gt; *). MonadReader r m =&gt; m r
+</span><span class="hs-identifier hs-var">ask</span></span><span>
+</span><span id="line-157"></span><span>  </span><span id="local-6989586621679242883"><span class="annot"><span class="annottext">Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679242883"><span class="hs-identifier hs-var">merr</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+-&gt; ReaderT
+     DiscordHandle IO (Either (Cache, GatewayException) Cache)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; MVar a -&gt; m a
+</span><span class="hs-identifier hs-var">readMVar</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandleCache -&gt; MVar (Either (Cache, GatewayException) Cache)
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; DiscordHandleCache
+</span><a href="Discord.Handle.html#discordHandleCache"><span class="hs-identifier hs-var hs-var">discordHandleCache</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242884"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-158"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679242883"><span class="hs-identifier hs-var">merr</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-159"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242882"><span class="annot"><span class="annottext">c :: Cache
+</span><a href="#local-6989586621679242882"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Cache -&gt; DiscordHandler Cache
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Cache
+</span><a href="#local-6989586621679242882"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-160"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679242881"><span class="annot"><span class="annottext">c :: Cache
+</span><a href="#local-6989586621679242881"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Cache -&gt; DiscordHandler Cache
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Cache
+</span><a href="#local-6989586621679242881"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-161"></span><span>
+</span><span id="line-162"></span><span>
+</span><span id="line-163"></span><span class="hs-comment">-- | Stop all the background threads</span><span>
+</span><span id="line-164"></span><span class="annot"><a href="Discord.html#stopDiscord"><span class="hs-identifier hs-type">stopDiscord</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.html#DiscordHandler"><span class="hs-identifier hs-type">DiscordHandler</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-165"></span><span id="stopDiscord"><span class="annot"><span class="annottext">stopDiscord :: DiscordHandler ()
+</span><a href="Discord.html#stopDiscord"><span class="hs-identifier hs-var hs-var">stopDiscord</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679242880"><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242880"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO DiscordHandle
+forall r (m :: * -&gt; *). MonadReader r m =&gt; m r
+</span><span class="hs-identifier hs-var">ask</span></span><span>
+</span><span id="line-166"></span><span>                 </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVar Text -&gt; Text -&gt; ReaderT DiscordHandle IO Bool
+forall (m :: * -&gt; *) a. MonadIO m =&gt; MVar a -&gt; a -&gt; m Bool
+</span><span class="hs-identifier hs-var">tryPutMVar</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; MVar Text
+</span><a href="Discord.Handle.html#discordHandleLibraryError"><span class="hs-identifier hs-var hs-var">discordHandleLibraryError</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242880"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-string">&quot;Library has closed&quot;</span></span><span>
+</span><span id="line-167"></span><span>                 </span><span class="annot"><span class="annottext">Int -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadIO m =&gt; Int -&gt; m ()
+</span><span class="hs-identifier hs-var">threadDelay</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">10</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-number">6</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="hs-number">10</span></span><span class="hs-special">)</span><span>
+</span><span id="line-168"></span><span>                 </span><span class="annot"><span class="annottext">(DiscordHandleThreadId -&gt; DiscordHandler ())
+-&gt; [DiscordHandleThreadId] -&gt; DiscordHandler ()
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Foldable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m ()
+</span><span class="hs-identifier hs-var">mapM_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ThreadId -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadIO m =&gt; ThreadId -&gt; m ()
+</span><span class="hs-identifier hs-var">killThread</span></span><span> </span><span class="annot"><span class="annottext">(ThreadId -&gt; DiscordHandler ())
+-&gt; (DiscordHandleThreadId -&gt; ThreadId)
+-&gt; DiscordHandleThreadId
+-&gt; DiscordHandler ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandleThreadId -&gt; ThreadId
+</span><a href="#local-6989586621679242876"><span class="hs-identifier hs-var">toId</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DiscordHandle -&gt; [DiscordHandleThreadId]
+</span><a href="Discord.Handle.html#discordHandleThreads"><span class="hs-identifier hs-var hs-var">discordHandleThreads</span></a></span><span> </span><span class="annot"><span class="annottext">DiscordHandle
+</span><a href="#local-6989586621679242880"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-169"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679242876"><span class="annot"><span class="annottext">toId :: DiscordHandleThreadId -&gt; ThreadId
+</span><a href="#local-6989586621679242876"><span class="hs-identifier hs-var hs-var">toId</span></a></span></span><span> </span><span id="local-6989586621679242875"><span class="annot"><span class="annottext">t :: DiscordHandleThreadId
+</span><a href="#local-6989586621679242875"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">DiscordHandleThreadId
+</span><a href="#local-6989586621679242875"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-170"></span><span>                   </span><span class="annot"><a href="Discord.Handle.html#DiscordHandleThreadIdRest"><span class="hs-identifier hs-type">DiscordHandleThreadIdRest</span></a></span><span> </span><span id="local-6989586621679242874"><span class="annot"><span class="annottext">a :: ThreadId
+</span><a href="#local-6989586621679242874"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242874"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-171"></span><span>                   </span><span class="annot"><a href="Discord.Handle.html#DiscordHandleThreadIdGateway"><span class="hs-identifier hs-type">DiscordHandleThreadIdGateway</span></a></span><span> </span><span id="local-6989586621679242873"><span class="annot"><span class="annottext">a :: ThreadId
+</span><a href="#local-6989586621679242873"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242873"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-172"></span><span>                   </span><span class="annot"><a href="Discord.Handle.html#DiscordHandleThreadIdCache"><span class="hs-identifier hs-type">DiscordHandleThreadIdCache</span></a></span><span> </span><span id="local-6989586621679242872"><span class="annot"><span class="annottext">a :: ThreadId
+</span><a href="#local-6989586621679242872"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242872"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-173"></span><span>                   </span><span class="annot"><a href="Discord.Handle.html#DiscordHandleThreadIdLogger"><span class="hs-identifier hs-type">DiscordHandleThreadIdLogger</span></a></span><span> </span><span id="local-6989586621679242871"><span class="annot"><span class="annottext">a :: ThreadId
+</span><a href="#local-6989586621679242871"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679242871"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-174"></span><span>
+</span><span id="line-175"></span><span class="annot"><a href="Discord.html#startLogger"><span class="hs-identifier hs-type">startLogger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Chan</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ThreadId</span></span><span>
+</span><span id="line-176"></span><span id="startLogger"><span class="annot"><span class="annottext">startLogger :: (Text -&gt; IO ()) -&gt; Chan Text -&gt; IO ThreadId
+</span><a href="Discord.html#startLogger"><span class="hs-identifier hs-var hs-var">startLogger</span></a></span></span><span> </span><span id="local-6989586621679242870"><span class="annot"><span class="annottext">handle :: Text -&gt; IO ()
+</span><a href="#local-6989586621679242870"><span class="hs-identifier hs-var">handle</span></a></span></span><span> </span><span id="local-6989586621679242869"><span class="annot"><span class="annottext">logC :: Chan Text
+</span><a href="#local-6989586621679242869"><span class="hs-identifier hs-var">logC</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ThreadId
+forall (m :: * -&gt; *). MonadUnliftIO m =&gt; m () -&gt; m ThreadId
+</span><span class="hs-identifier hs-var">forkIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ThreadId) -&gt; IO () -&gt; IO ThreadId
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">forever</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-177"></span><span>  </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679242868"><span class="annot"><span class="annottext">Either IOException ()
+</span><a href="#local-6989586621679242868"><span class="hs-identifier hs-var">me</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO (Either IOException ())
+forall (m :: * -&gt; *) e a.
+(MonadUnliftIO m, Exception e) =&gt;
+m a -&gt; m (Either e a)
+</span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO (Either IOException ()))
+-&gt; IO () -&gt; IO (Either IOException ())
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Chan Text -&gt; IO Text
+forall (m :: * -&gt; *) a. MonadIO m =&gt; Chan a -&gt; m a
+</span><span class="hs-identifier hs-var">readChan</span></span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679242869"><span class="hs-identifier hs-var">logC</span></a></span><span> </span><span class="annot"><span class="annottext">IO Text -&gt; (Text -&gt; IO ()) -&gt; IO ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO ()
+</span><a href="#local-6989586621679242870"><span class="hs-identifier hs-var">handle</span></a></span><span>
+</span><span id="line-178"></span><span>     </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either IOException ()
+</span><a href="#local-6989586621679242868"><span class="hs-identifier hs-var">me</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-179"></span><span>       </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-180"></span><span>       </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IOException
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IOException</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-181"></span><span>         </span><span class="hs-comment">-- writeChan logC &quot;Log handler failed&quot;</span><span>
+</span><span id="line-182"></span><span>         </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-183"></span><span>
+</span><span id="line-184"></span></pre></body></html>

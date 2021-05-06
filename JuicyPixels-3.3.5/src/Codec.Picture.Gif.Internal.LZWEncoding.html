@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE BangPatterns, CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Codec.Picture.Gif.Internal.LZWEncoding</span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#lzwEncode"><span class="hs-identifier">lzwEncode</span></a></span><span> </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span class="hs-cpp">
+
+#if !MIN_VERSION_base(4,8,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Control.Applicative</span><span class="hs-special">(</span><span> </span><span class="hs-special">(</span><span class="hs-operator">&lt;$&gt;</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Monoid</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">mempty</span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.ST</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">runST</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">fromMaybe</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Word8</span></span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+
+#if MIN_VERSION_containers(0,5,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.IntMap.Strict</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">I</span></span><span class="hs-cpp">
+#else
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-identifier">Data.IntMap</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="hs-identifier">I</span><span class="hs-cpp">
+#endif
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector.Storable</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">V</span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.BitWriter.html"><span class="hs-identifier">Codec.Picture.BitWriter</span></a></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">type</span><span> </span><span id="Trie"><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#Trie"><span class="hs-identifier hs-var">Trie</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">I.IntMap</span></span><span> </span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#TrieNode"><span class="hs-identifier hs-type">TrieNode</span></a></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">data</span><span> </span><span id="TrieNode"><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#TrieNode"><span class="hs-identifier hs-var">TrieNode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TrieNode"><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#TrieNode"><span class="hs-identifier hs-var">TrieNode</span></a></span></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="trieIndex"><span class="annot"><span class="annottext">TrieNode -&gt; Int
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#trieIndex"><span class="hs-identifier hs-var hs-var">trieIndex</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-pragma">{-# UNPACK</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="trieSub"><span class="annot"><span class="annottext">TrieNode -&gt; Trie
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#trieSub"><span class="hs-identifier hs-var hs-var">trieSub</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#Trie"><span class="hs-identifier hs-type">Trie</span></a></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#emptyNode"><span class="hs-identifier hs-type">emptyNode</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#TrieNode"><span class="hs-identifier hs-type">TrieNode</span></a></span><span>
+</span><span id="line-31"></span><span id="emptyNode"><span class="annot"><span class="annottext">emptyNode :: TrieNode
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#emptyNode"><span class="hs-identifier hs-var hs-var">emptyNode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WTrieNode :: Int -&gt; Trie -&gt; TrieNode
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#%24WTrieNode"><span class="hs-identifier hs-type hs-type">TrieNode</span></a></span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">trieIndex :: Int
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#trieIndex"><span class="hs-identifier hs-var">trieIndex</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">trieSub :: Trie
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#trieSub"><span class="hs-identifier hs-var">trieSub</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Trie
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#initialTrie"><span class="hs-identifier hs-type">initialTrie</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#Trie"><span class="hs-identifier hs-type">Trie</span></a></span><span>
+</span><span id="line-37"></span><span id="initialTrie"><span class="annot"><span class="annottext">initialTrie :: Trie
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#initialTrie"><span class="hs-identifier hs-var hs-var">initialTrie</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Int, TrieNode)] -&gt; Trie
+forall a. [(Int, a)] -&gt; IntMap a
+</span><span class="hs-identifier hs-var">I.fromList</span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207537"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TrieNode
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#emptyNode"><span class="hs-identifier hs-var">emptyNode</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">trieIndex :: Int
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#trieIndex"><span class="hs-identifier hs-var">trieIndex</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207537"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679207537"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207537"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="hs-number">255</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#lookupUpdate"><span class="hs-identifier hs-type">lookupUpdate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#Trie"><span class="hs-identifier hs-type">Trie</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#Trie"><span class="hs-identifier hs-type">Trie</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span id="lookupUpdate"><span class="annot"><span class="annottext">lookupUpdate :: Vector Word8 -&gt; Int -&gt; Int -&gt; Trie -&gt; (Int, Int, Trie)
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#lookupUpdate"><span class="hs-identifier hs-var hs-var">lookupUpdate</span></a></span></span><span> </span><span id="local-6989586621679207535"><span class="annot"><span class="annottext">vector :: Vector Word8
+</span><a href="#local-6989586621679207535"><span class="hs-identifier hs-var">vector</span></a></span></span><span> </span><span id="local-6989586621679207534"><span class="annot"><span class="annottext">freeIndex :: Int
+</span><a href="#local-6989586621679207534"><span class="hs-identifier hs-var">freeIndex</span></a></span></span><span> </span><span id="local-6989586621679207533"><span class="annot"><span class="annottext">firstIndex :: Int
+</span><a href="#local-6989586621679207533"><span class="hs-identifier hs-var">firstIndex</span></a></span></span><span> </span><span id="local-6989586621679207532"><span class="annot"><span class="annottext">trie :: Trie
+</span><a href="#local-6989586621679207532"><span class="hs-identifier hs-var">trie</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-42"></span><span>    </span><span class="annot"><span class="annottext">(Int, Int, Maybe Trie) -&gt; (Int, Int, Trie)
+forall a b. (a, b, Maybe Trie) -&gt; (a, b, Trie)
+</span><a href="#local-6989586621679207531"><span class="hs-identifier hs-var">matchUpdate</span></a></span><span> </span><span class="annot"><span class="annottext">((Int, Int, Maybe Trie) -&gt; (Int, Int, Trie))
+-&gt; (Int, Int, Maybe Trie) -&gt; (Int, Int, Trie)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Trie -&gt; Int -&gt; Int -&gt; (Int, Int, Maybe Trie)
+</span><a href="#local-6989586621679207530"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207532"><span class="hs-identifier hs-var">trie</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207533"><span class="hs-identifier hs-var">firstIndex</span></a></span><span> </span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-44"></span><span>    </span><span id="local-6989586621679207531"><span class="annot"><span class="annottext">matchUpdate :: (a, b, Maybe Trie) -&gt; (a, b, Trie)
+</span><a href="#local-6989586621679207531"><span class="hs-identifier hs-var hs-var">matchUpdate</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679207529"><span class="annot"><span class="annottext">lzwOutputIndex :: a
+</span><a href="#local-6989586621679207529"><span class="hs-identifier hs-var">lzwOutputIndex</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679207528"><span class="annot"><span class="annottext">nextReadIndex :: b
+</span><a href="#local-6989586621679207528"><span class="hs-identifier hs-var">nextReadIndex</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679207527"><span class="annot"><span class="annottext">sub :: Maybe Trie
+</span><a href="#local-6989586621679207527"><span class="hs-identifier hs-var">sub</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-45"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679207529"><span class="hs-identifier hs-var">lzwOutputIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679207528"><span class="hs-identifier hs-var">nextReadIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie -&gt; Maybe Trie -&gt; Trie
+forall a. a -&gt; Maybe a -&gt; a
+</span><span class="hs-identifier hs-var">fromMaybe</span></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207532"><span class="hs-identifier hs-var">trie</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Trie
+</span><a href="#local-6989586621679207527"><span class="hs-identifier hs-var">sub</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679207526"><span class="annot"><span class="annottext">maxi :: Int
+</span><a href="#local-6989586621679207526"><span class="hs-identifier hs-var hs-var">maxi</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Word8 -&gt; Int
+forall a. Storable a =&gt; Vector a -&gt; Int
+</span><span class="hs-identifier hs-var">V.length</span></span><span> </span><span class="annot"><span class="annottext">Vector Word8
+</span><a href="#local-6989586621679207535"><span class="hs-identifier hs-var">vector</span></a></span><span>
+</span><span id="line-48"></span><span>    </span><span id="local-6989586621679207530"><span class="annot"><span class="annottext">go :: Trie -&gt; Int -&gt; Int -&gt; (Int, Int, Maybe Trie)
+</span><a href="#local-6989586621679207530"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679207524"><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207524"><span class="hs-identifier hs-var">currentTrie</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679207523"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207523"><span class="hs-identifier hs-var">prevIndex</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679207522"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span></span><span>
+</span><span id="line-49"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207526"><span class="hs-identifier hs-var">maxi</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207523"><span class="hs-identifier hs-var">prevIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe Trie
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Trie -&gt; Maybe TrieNode
+forall a. Int -&gt; IntMap a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">I.lookup</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207520"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207524"><span class="hs-identifier hs-var">currentTrie</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-51"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#TrieNode"><span class="hs-identifier hs-type">TrieNode</span></a></span><span> </span><span id="local-6989586621679207519"><span class="annot"><span class="annottext">ix :: Int
+</span><a href="#local-6989586621679207519"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679207518"><span class="annot"><span class="annottext">subTable :: Trie
+</span><a href="#local-6989586621679207518"><span class="hs-identifier hs-var">subTable</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-52"></span><span>              </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679207517"><span class="annot"><span class="annottext">lzwOutputIndex :: Int
+</span><a href="#local-6989586621679207517"><span class="hs-identifier hs-var">lzwOutputIndex</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679207516"><span class="annot"><span class="annottext">nextReadIndex :: Int
+</span><a href="#local-6989586621679207516"><span class="hs-identifier hs-var">nextReadIndex</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679207515"><span class="annot"><span class="annottext">newTable :: Maybe Trie
+</span><a href="#local-6989586621679207515"><span class="hs-identifier hs-var">newTable</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-53"></span><span>                        </span><span class="annot"><span class="annottext">Trie -&gt; Int -&gt; Int -&gt; (Int, Int, Maybe Trie)
+</span><a href="#local-6989586621679207530"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207518"><span class="hs-identifier hs-var">subTable</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207519"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; (Int, Int, Maybe Trie)) -&gt; Int -&gt; (Int, Int, Maybe Trie)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-54"></span><span>                  </span><span id="local-6989586621679207513"><span class="annot"><span class="annottext">tableUpdater :: Trie -&gt; Trie
+</span><a href="#local-6989586621679207513"><span class="hs-identifier hs-var hs-var">tableUpdater</span></a></span></span><span> </span><span id="local-6989586621679207512"><span class="annot"><span class="annottext">t :: Trie
+</span><a href="#local-6989586621679207512"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-55"></span><span>                      </span><span class="annot"><span class="annottext">Int -&gt; TrieNode -&gt; Trie -&gt; Trie
+forall a. Int -&gt; a -&gt; IntMap a -&gt; IntMap a
+</span><span class="hs-identifier hs-var">I.insert</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207520"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Trie -&gt; TrieNode
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#TrieNode"><span class="hs-identifier hs-var">TrieNode</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207519"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207512"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207524"><span class="hs-identifier hs-var">currentTrie</span></a></span><span>
+</span><span id="line-56"></span><span>              </span><span class="hs-keyword">in</span><span>
+</span><span id="line-57"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207517"><span class="hs-identifier hs-var">lzwOutputIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207516"><span class="hs-identifier hs-var">nextReadIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie -&gt; Trie
+</span><a href="#local-6989586621679207513"><span class="hs-identifier hs-var">tableUpdater</span></a></span><span> </span><span class="annot"><span class="annottext">(Trie -&gt; Trie) -&gt; Maybe Trie -&gt; Maybe Trie
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Trie
+</span><a href="#local-6989586621679207515"><span class="hs-identifier hs-var">newTable</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207526"><span class="hs-identifier hs-var">maxi</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207523"><span class="hs-identifier hs-var">prevIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe Trie
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>                  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207523"><span class="hs-identifier hs-var">prevIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie -&gt; Maybe Trie
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Trie -&gt; Maybe Trie) -&gt; Trie -&gt; Maybe Trie
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; TrieNode -&gt; Trie -&gt; Trie
+forall a. Int -&gt; a -&gt; IntMap a -&gt; IntMap a
+</span><span class="hs-identifier hs-var">I.insert</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207520"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="annot"><span class="annottext">TrieNode
+</span><a href="#local-6989586621679207509"><span class="hs-identifier hs-var">newNode</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207524"><span class="hs-identifier hs-var">currentTrie</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679207520"><span class="annot"><span class="annottext">val :: Int
+</span><a href="#local-6989586621679207520"><span class="hs-identifier hs-var hs-var">val</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; Int) -&gt; Word8 -&gt; Int
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Vector Word8
+</span><a href="#local-6989586621679207535"><span class="hs-identifier hs-var">vector</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Word8 -&gt; Int -&gt; Word8
+forall a. Storable a =&gt; Vector a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">`V.unsafeIndex`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207522"><span class="hs-identifier hs-var">index</span></a></span><span>
+</span><span id="line-63"></span><span>            </span><span id="local-6989586621679207509"><span class="annot"><span class="annottext">newNode :: TrieNode
+</span><a href="#local-6989586621679207509"><span class="hs-identifier hs-var hs-var">newNode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TrieNode
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#emptyNode"><span class="hs-identifier hs-var">emptyNode</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">trieIndex :: Int
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#trieIndex"><span class="hs-identifier hs-var">trieIndex</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207534"><span class="hs-identifier hs-var">freeIndex</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="annot"><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#lzwEncode"><span class="hs-identifier hs-type">lzwEncode</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-66"></span><span id="lzwEncode"><span class="annot"><span class="annottext">lzwEncode :: Int -&gt; Vector Word8 -&gt; ByteString
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#lzwEncode"><span class="hs-identifier hs-var hs-var">lzwEncode</span></a></span></span><span> </span><span id="local-6989586621679207507"><span class="annot"><span class="annottext">initialKeySize :: Int
+</span><a href="#local-6989586621679207507"><span class="hs-identifier hs-var">initialKeySize</span></a></span></span><span> </span><span id="local-6989586621679207506"><span class="annot"><span class="annottext">vec :: Vector Word8
+</span><a href="#local-6989586621679207506"><span class="hs-identifier hs-var">vec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s ByteString) -&gt; ByteString
+forall a. (forall s. ST s a) -&gt; a
+</span><span class="hs-identifier hs-var">runST</span></span><span> </span><span class="annot"><span class="annottext">((forall s. ST s ByteString) -&gt; ByteString)
+-&gt; (forall s. ST s ByteString) -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621679207505"><span class="annot"><span class="annottext">BoolWriteStateRef s
+</span><a href="#local-6989586621679207505"><span class="hs-identifier hs-var">bitWriter</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s (BoolWriteStateRef s)
+forall s. ST s (BoolWriteStateRef s)
+</span><a href="Codec.Picture.BitWriter.html#newWriteStateRef"><span class="hs-identifier hs-var">newWriteStateRef</span></a></span><span> </span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679207503"><span class="annot"><span class="annottext">updateCodeSize :: Int -&gt; Int -&gt; Trie -&gt; ST s (Int, Int, Trie)
+</span><a href="#local-6989586621679207503"><span class="hs-identifier hs-var hs-var">updateCodeSize</span></a></span></span><span> </span><span class="hs-number">12</span><span> </span><span id="local-6989586621679207502"><span class="annot"><span class="annottext">writeIdx :: Int
+</span><a href="#local-6989586621679207502"><span class="hs-identifier hs-var">writeIdx</span></a></span></span><span> </span><span class="hs-identifier">_</span><span>
+</span><span id="line-70"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207502"><span class="hs-identifier hs-var">writeIdx</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">12</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-71"></span><span>               </span><span class="annot"><span class="annottext">BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+forall s. BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+</span><a href="Codec.Picture.BitWriter.html#writeBitsGif"><span class="hs-identifier hs-var">writeBitsGif</span></a></span><span> </span><span class="annot"><span class="annottext">BoolWriteStateRef s
+</span><a href="#local-6989586621679207505"><span class="hs-identifier hs-var">bitWriter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207499"><span class="hs-identifier hs-var">clearCode</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">12</span></span><span>
+</span><span id="line-72"></span><span>               </span><span class="annot"><span class="annottext">(Int, Int, Trie) -&gt; ST s (Int, Int, Trie)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207498"><span class="hs-identifier hs-var">startCodeSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207497"><span class="hs-identifier hs-var">firstFreeIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#initialTrie"><span class="hs-identifier hs-var">initialTrie</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span>        </span><span class="annot"><a href="#local-6989586621679207503"><span class="hs-identifier hs-var">updateCodeSize</span></a></span><span> </span><span id="local-6989586621679207496"><span class="annot"><span class="annottext">codeSize :: Int
+</span><a href="#local-6989586621679207496"><span class="hs-identifier hs-var">codeSize</span></a></span></span><span> </span><span id="local-6989586621679207495"><span class="annot"><span class="annottext">writeIdx :: Int
+</span><a href="#local-6989586621679207495"><span class="hs-identifier hs-var">writeIdx</span></a></span></span><span> </span><span id="local-6989586621679207494"><span class="annot"><span class="annottext">trie :: Trie
+</span><a href="#local-6989586621679207494"><span class="hs-identifier hs-var">trie</span></a></span></span><span>
+</span><span id="line-75"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207495"><span class="hs-identifier hs-var">writeIdx</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207496"><span class="hs-identifier hs-var">codeSize</span></a></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-76"></span><span>                </span><span class="annot"><span class="annottext">(Int, Int, Trie) -&gt; ST s (Int, Int, Trie)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207496"><span class="hs-identifier hs-var">codeSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207495"><span class="hs-identifier hs-var">writeIdx</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207494"><span class="hs-identifier hs-var">trie</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, Int, Trie) -&gt; ST s (Int, Int, Trie)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207496"><span class="hs-identifier hs-var">codeSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207495"><span class="hs-identifier hs-var">writeIdx</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207494"><span class="hs-identifier hs-var">trie</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span>        </span><span id="local-6989586621679207493"><span class="annot"><span class="annottext">go :: Int -&gt; (Int, Int, Trie) -&gt; ST s ()
+</span><a href="#local-6989586621679207493"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679207492"><span class="annot"><span class="annottext">readIndex :: Int
+</span><a href="#local-6989586621679207492"><span class="hs-identifier hs-var">readIndex</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679207491"><span class="annot"><span class="annottext">codeSize :: Int
+</span><a href="#local-6989586621679207491"><span class="hs-identifier hs-var">codeSize</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207492"><span class="hs-identifier hs-var">readIndex</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207490"><span class="hs-identifier hs-var">maxi</span></a></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-80"></span><span>            </span><span class="annot"><span class="annottext">BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+forall s. BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+</span><a href="Codec.Picture.BitWriter.html#writeBitsGif"><span class="hs-identifier hs-var">writeBitsGif</span></a></span><span> </span><span class="annot"><span class="annottext">BoolWriteStateRef s
+</span><a href="#local-6989586621679207505"><span class="hs-identifier hs-var">bitWriter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207489"><span class="hs-identifier hs-var">endOfInfo</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207491"><span class="hs-identifier hs-var">codeSize</span></a></span><span>
+</span><span id="line-81"></span><span>        </span><span class="annot"><a href="#local-6989586621679207493"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679207488"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207488"><span class="hs-identifier hs-var">readIndex</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679207487"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207487"><span class="hs-identifier hs-var">codeSize</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679207486"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207486"><span class="hs-identifier hs-var">writeIndex</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679207485"><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207485"><span class="hs-identifier hs-var">trie</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-82"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679207484"><span class="annot"><span class="annottext">indexToWrite :: Int
+</span><a href="#local-6989586621679207484"><span class="hs-identifier hs-var">indexToWrite</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679207483"><span class="annot"><span class="annottext">endIndex :: Int
+</span><a href="#local-6989586621679207483"><span class="hs-identifier hs-var">endIndex</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679207482"><span class="annot"><span class="annottext">trie' :: Trie
+</span><a href="#local-6989586621679207482"><span class="hs-identifier hs-var">trie'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-83"></span><span>                    </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Trie -&gt; (Int, Int, Trie)
+</span><a href="#local-6989586621679207481"><span class="hs-identifier hs-var">lookuper</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207486"><span class="hs-identifier hs-var">writeIndex</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207488"><span class="hs-identifier hs-var">readIndex</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207485"><span class="hs-identifier hs-var">trie</span></a></span><span>
+</span><span id="line-84"></span><span>            </span><span class="annot"><span class="annottext">BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+forall s. BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+</span><a href="Codec.Picture.BitWriter.html#writeBitsGif"><span class="hs-identifier hs-var">writeBitsGif</span></a></span><span> </span><span class="annot"><span class="annottext">BoolWriteStateRef s
+</span><a href="#local-6989586621679207505"><span class="hs-identifier hs-var">bitWriter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207484"><span class="hs-identifier hs-var">indexToWrite</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207487"><span class="hs-identifier hs-var">codeSize</span></a></span><span>
+</span><span id="line-85"></span><span>            </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Trie -&gt; ST s (Int, Int, Trie)
+</span><a href="#local-6989586621679207503"><span class="hs-identifier hs-var">updateCodeSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207487"><span class="hs-identifier hs-var">codeSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207486"><span class="hs-identifier hs-var">writeIndex</span></a></span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="#local-6989586621679207482"><span class="hs-identifier hs-var">trie'</span></a></span><span>
+</span><span id="line-86"></span><span>                </span><span class="annot"><span class="annottext">ST s (Int, Int, Trie) -&gt; ((Int, Int, Trie) -&gt; ST s ()) -&gt; ST s ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Int, Int, Trie) -&gt; ST s ()
+</span><a href="#local-6989586621679207493"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207483"><span class="hs-identifier hs-var">endIndex</span></a></span><span> </span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span>    </span><span class="annot"><span class="annottext">BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+forall s. BoolWriteStateRef s -&gt; Word32 -&gt; Int -&gt; ST s ()
+</span><a href="Codec.Picture.BitWriter.html#writeBitsGif"><span class="hs-identifier hs-var">writeBitsGif</span></a></span><span> </span><span class="annot"><span class="annottext">BoolWriteStateRef s
+</span><a href="#local-6989586621679207505"><span class="hs-identifier hs-var">bitWriter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207499"><span class="hs-identifier hs-var">clearCode</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207498"><span class="hs-identifier hs-var">startCodeSize</span></a></span><span>
+</span><span id="line-89"></span><span>    </span><span class="annot"><span class="annottext">Int -&gt; (Int, Int, Trie) -&gt; ST s ()
+</span><a href="#local-6989586621679207493"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207498"><span class="hs-identifier hs-var">startCodeSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207497"><span class="hs-identifier hs-var">firstFreeIndex</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Trie
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#initialTrie"><span class="hs-identifier hs-var">initialTrie</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">BoolWriteStateRef s -&gt; ST s ByteString
+forall s. BoolWriteStateRef s -&gt; ST s ByteString
+</span><a href="Codec.Picture.BitWriter.html#finalizeBoolWriterGif"><span class="hs-identifier hs-var">finalizeBoolWriterGif</span></a></span><span> </span><span class="annot"><span class="annottext">BoolWriteStateRef s
+</span><a href="#local-6989586621679207505"><span class="hs-identifier hs-var">bitWriter</span></a></span><span>
+</span><span id="line-92"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-93"></span><span>    </span><span id="local-6989586621679207490"><span class="annot"><span class="annottext">maxi :: Int
+</span><a href="#local-6989586621679207490"><span class="hs-identifier hs-var hs-var">maxi</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Word8 -&gt; Int
+forall a. Storable a =&gt; Vector a -&gt; Int
+</span><span class="hs-identifier hs-var">V.length</span></span><span> </span><span class="annot"><span class="annottext">Vector Word8
+</span><a href="#local-6989586621679207506"><span class="hs-identifier hs-var">vec</span></a></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span>    </span><span id="local-6989586621679207498"><span class="annot"><span class="annottext">startCodeSize :: Int
+</span><a href="#local-6989586621679207498"><span class="hs-identifier hs-var hs-var">startCodeSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207507"><span class="hs-identifier hs-var">initialKeySize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span>    </span><span id="local-6989586621679207499"><span class="annot"><span class="annottext">clearCode :: Int
+</span><a href="#local-6989586621679207499"><span class="hs-identifier hs-var hs-var">clearCode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207507"><span class="hs-identifier hs-var">initialKeySize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679207489"><span class="annot"><span class="annottext">endOfInfo :: Int
+</span><a href="#local-6989586621679207489"><span class="hs-identifier hs-var hs-var">endOfInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207499"><span class="hs-identifier hs-var">clearCode</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-99"></span><span>    </span><span id="local-6989586621679207497"><span class="annot"><span class="annottext">firstFreeIndex :: Int
+</span><a href="#local-6989586621679207497"><span class="hs-identifier hs-var hs-var">firstFreeIndex</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679207489"><span class="hs-identifier hs-var">endOfInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-100"></span><span>    </span><span>
+</span><span id="line-101"></span><span>    </span><span id="local-6989586621679207481"><span class="annot"><span class="annottext">lookuper :: Int -&gt; Int -&gt; Trie -&gt; (Int, Int, Trie)
+</span><a href="#local-6989586621679207481"><span class="hs-identifier hs-var hs-var">lookuper</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Word8 -&gt; Int -&gt; Int -&gt; Trie -&gt; (Int, Int, Trie)
+</span><a href="Codec.Picture.Gif.Internal.LZWEncoding.html#lookupUpdate"><span class="hs-identifier hs-var">lookupUpdate</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Word8
+</span><a href="#local-6989586621679207506"><span class="hs-identifier hs-var">vec</span></a></span><span>
+</span><span id="line-102"></span></pre></body></html>

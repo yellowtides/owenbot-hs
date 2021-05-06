@@ -1,0 +1,940 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Codec.Picture.Tiff.Internal.Metadata</span><span>
+</span><span id="line-3"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffMetadata"><span class="hs-identifier">extractTiffMetadata</span></a></span><span>
+</span><span id="line-4"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#encodeTiffStringMetadata"><span class="hs-identifier">encodeTiffStringMetadata</span></a></span><span>
+</span><span id="line-5"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#exifOffsetIfd"><span class="hs-identifier">exifOffsetIfd</span></a></span><span>
+</span><span id="line-6"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span class="hs-cpp">
+
+#if !MIN_VERSION_base(4,8,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Monoid</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">mempty</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Foldable</span><span class="hs-special">(</span><span> </span><span class="hs-identifier">foldMap</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Control.Applicative</span><span class="hs-special">(</span><span> </span><span class="hs-special">(</span><span class="hs-operator">&lt;$&gt;</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bits</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">unsafeShiftL</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.|.)</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">find</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">sortBy</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Function</span></span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">on</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">F</span></span><span class="hs-cpp">
+#if !MIN_VERSION_base(4,11,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data.Monoid</span><span class="hs-special">(</span><span> </span><span class="hs-special">(</span><span class="hs-operator">&lt;&gt;</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier">Metadatas</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Char8</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BC</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Met</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector.Generic</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">V</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html"><span class="hs-identifier">Codec.Picture.Tiff.Internal.Types</span></a></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html"><span class="hs-identifier">Codec.Picture.Metadata</span></a></span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#extractExifMetas"><span class="hs-identifier">extractExifMetas</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html"><span class="hs-identifier">Codec.Picture.Metadata.Exif</span></a></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#exifOffsetIfd"><span class="hs-identifier hs-type">exifOffsetIfd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-32"></span><span id="exifOffsetIfd"><span class="annot"><span class="annottext">exifOffsetIfd :: ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#exifOffsetIfd"><span class="hs-identifier hs-var hs-var">exifOffsetIfd</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagExifOffset"><span class="hs-identifier hs-var">TagExifOffset</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeLong"><span class="hs-identifier hs-var">TypeLong</span></a></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-var">ExifNone</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#typeOfData"><span class="hs-identifier hs-type">typeOfData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifData"><span class="hs-identifier hs-type">ExifData</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#IfdType"><span class="hs-identifier hs-type">IfdType</span></a></span><span>
+</span><span id="line-41"></span><span id="typeOfData"><span class="annot"><span class="annottext">typeOfData :: ExifData -&gt; IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#typeOfData"><span class="hs-identifier hs-var hs-var">typeOfData</span></a></span></span><span> </span><span id="local-6989586621679197566"><span class="annot"><span class="annottext">d :: ExifData
+</span><a href="#local-6989586621679197566"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197566"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-42"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-type">ExifNone</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; IfdType
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Impossible - typeOfData : ExifNone&quot;</span></span><span>
+</span><span id="line-43"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifIFD"><span class="hs-identifier hs-type">ExifIFD</span></a></span><span> </span><span id="local-6989586621679197563"><span class="annot"><span class="annottext">_exifs :: [(ExifTag, ExifData)]
+</span><a href="#local-6989586621679197563"><span class="hs-identifier hs-var">_exifs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; IfdType
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Impossible - typeOfData : ExifIFD&quot;</span></span><span>
+</span><span id="line-44"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifLong"><span class="hs-identifier hs-type">ExifLong</span></a></span><span> </span><span id="local-6989586621679197561"><span class="annot"><span class="annottext">_l :: Word32
+</span><a href="#local-6989586621679197561"><span class="hs-identifier hs-var">_l</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeLong"><span class="hs-identifier hs-var">TypeLong</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifLongs"><span class="hs-identifier hs-type">ExifLongs</span></a></span><span> </span><span id="local-6989586621679197559"><span class="annot"><span class="annottext">_l :: Vector Word32
+</span><a href="#local-6989586621679197559"><span class="hs-identifier hs-var">_l</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeLong"><span class="hs-identifier hs-var">TypeLong</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifShort"><span class="hs-identifier hs-type">ExifShort</span></a></span><span> </span><span id="local-6989586621679197557"><span class="annot"><span class="annottext">_s :: Word16
+</span><a href="#local-6989586621679197557"><span class="hs-identifier hs-var">_s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-var">TypeShort</span></a></span><span>
+</span><span id="line-47"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifShorts"><span class="hs-identifier hs-type">ExifShorts</span></a></span><span> </span><span id="local-6989586621679197554"><span class="annot"><span class="annottext">_s :: Vector Word16
+</span><a href="#local-6989586621679197554"><span class="hs-identifier hs-var">_s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-var">TypeShort</span></a></span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197552"><span class="annot"><span class="annottext">_str :: ByteString
+</span><a href="#local-6989586621679197552"><span class="hs-identifier hs-var">_str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeAscii"><span class="hs-identifier hs-var">TypeAscii</span></a></span><span>
+</span><span id="line-49"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifUndefined"><span class="hs-identifier hs-type">ExifUndefined</span></a></span><span> </span><span id="local-6989586621679197549"><span class="annot"><span class="annottext">_undef :: ByteString
+</span><a href="#local-6989586621679197549"><span class="hs-identifier hs-var">_undef</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeUndefined"><span class="hs-identifier hs-var">TypeUndefined</span></a></span><span>
+</span><span id="line-50"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifRational"><span class="hs-identifier hs-type">ExifRational</span></a></span><span> </span><span id="local-6989586621679197546"><span class="annot"><span class="annottext">_r1 :: Word32
+</span><a href="#local-6989586621679197546"><span class="hs-identifier hs-var">_r1</span></a></span></span><span> </span><span id="local-6989586621679197545"><span class="annot"><span class="annottext">_r2 :: Word32
+</span><a href="#local-6989586621679197545"><span class="hs-identifier hs-var">_r2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeRational"><span class="hs-identifier hs-var">TypeRational</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifSignedRational"><span class="hs-identifier hs-type">ExifSignedRational</span></a></span><span> </span><span id="local-6989586621679197542"><span class="annot"><span class="annottext">_sr1 :: Int32
+</span><a href="#local-6989586621679197542"><span class="hs-identifier hs-var">_sr1</span></a></span></span><span> </span><span id="local-6989586621679197541"><span class="annot"><span class="annottext">_sr2 :: Int32
+</span><a href="#local-6989586621679197541"><span class="hs-identifier hs-var">_sr2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeSignedRational"><span class="hs-identifier hs-var">TypeSignedRational</span></a></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-type">makeIfd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifTag"><span class="hs-identifier hs-type">ExifTag</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifData"><span class="hs-identifier hs-type">ExifData</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-54"></span><span id="makeIfd"><span class="annot"><span class="annottext">makeIfd :: ExifTag -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var hs-var">makeIfd</span></a></span></span><span> </span><span id="local-6989586621679197538"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197538"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifShort"><span class="hs-identifier hs-type">ExifShort</span></a></span><span> </span><span id="local-6989586621679197537"><span class="annot"><span class="annottext">v :: Word16
+</span><a href="#local-6989586621679197537"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197538"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-var">TypeShort</span></a></span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-58"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679197537"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Int -&gt; Word32
+forall a. Bits a =&gt; a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">`unsafeShiftL`</span></span><span> </span><span class="annot"><span class="hs-number">16</span></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-var">ExifNone</span></a></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-61"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span id="local-6989586621679197536"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197536"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifLong"><span class="hs-identifier hs-type">ExifLong</span></a></span><span> </span><span id="local-6989586621679197535"><span class="annot"><span class="annottext">v :: Word32
+</span><a href="#local-6989586621679197535"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span> </span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197536"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeLong"><span class="hs-identifier hs-var">TypeLong</span></a></span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197535"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-var">ExifNone</span></a></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span id="local-6989586621679197534"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197534"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679197533"><span class="annot"><span class="annottext">d :: ExifData
+</span><a href="#local-6989586621679197533"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifShorts"><span class="hs-identifier hs-type">ExifShorts</span></a></span><span> </span><span id="local-6989586621679197532"><span class="annot"><span class="annottext">v :: Vector Word16
+</span><a href="#local-6989586621679197532"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197531"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197534"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-71"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-var">TypeShort</span></a></span><span>
+</span><span id="line-72"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">2</span></span><span>
+</span><span id="line-73"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197530"><span class="hs-identifier hs-var">combined</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-var">ExifNone</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-77"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197534"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-78"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-var">TypeShort</span></a></span><span>
+</span><span id="line-79"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197531"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><span id="line-80"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-81"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197533"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-83"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679197531"><span class="annot"><span class="annottext">size :: Word32
+</span><a href="#local-6989586621679197531"><span class="hs-identifier hs-var hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Word32) -&gt; Int -&gt; Word32
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Vector Word16 -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">F.length</span></span><span> </span><span class="annot"><span class="annottext">Vector Word16
+</span><a href="#local-6989586621679197532"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-85"></span><span>    </span><span id="local-6989586621679197528"><span class="annot"><span class="annottext">at :: Int -&gt; b
+</span><a href="#local-6989586621679197528"><span class="hs-identifier hs-var hs-var">at</span></a></span></span><span> </span><span id="local-6989586621679197527"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679197527"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; b
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word16 -&gt; b) -&gt; Word16 -&gt; b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Vector Word16
+</span><a href="#local-6989586621679197532"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Word16 -&gt; Int -&gt; Word16
+forall (v :: * -&gt; *) a. Vector v a =&gt; v a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">V.!</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679197527"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-86"></span><span>    </span><span id="local-6989586621679197530"><span class="annot"><span class="annottext">combined :: Word32
+</span><a href="#local-6989586621679197530"><span class="hs-identifier hs-var hs-var">combined</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall b. Num b =&gt; Int -&gt; b
+</span><a href="#local-6989586621679197528"><span class="hs-identifier hs-var">at</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>  </span><span class="annot"><span class="annottext">Word32 -&gt; Int -&gt; Word32
+forall a. Bits a =&gt; a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">`unsafeShiftL`</span></span><span> </span><span class="annot"><span class="hs-number">16</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Word32
+forall a. Bits a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">.|.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall b. Num b =&gt; Int -&gt; b
+</span><a href="#local-6989586621679197528"><span class="hs-identifier hs-var">at</span></a></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-87"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span id="local-6989586621679197525"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197525"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679197524"><span class="annot"><span class="annottext">d :: ExifData
+</span><a href="#local-6989586621679197524"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifLongs"><span class="hs-identifier hs-type">ExifLongs</span></a></span><span> </span><span id="local-6989586621679197523"><span class="annot"><span class="annottext">v :: Vector Word32
+</span><a href="#local-6989586621679197523"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197522"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-89"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197525"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-90"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeLong"><span class="hs-identifier hs-var">TypeLong</span></a></span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-92"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Word32
+</span><a href="#local-6989586621679197523"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Word32 -&gt; Int -&gt; Word32
+forall (v :: * -&gt; *) a. Vector v a =&gt; v a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">V.!</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-93"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-var">ExifNone</span></a></span><span>
+</span><span id="line-94"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-96"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197525"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-97"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeLong"><span class="hs-identifier hs-var">TypeLong</span></a></span><span>
+</span><span id="line-98"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197522"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><span id="line-99"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-100"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197524"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-101"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679197522"><span class="annot"><span class="annottext">size :: Word32
+</span><a href="#local-6989586621679197522"><span class="hs-identifier hs-var hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Word32) -&gt; Int -&gt; Word32
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Vector Word32 -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">F.length</span></span><span> </span><span class="annot"><span class="annottext">Vector Word32
+</span><a href="#local-6989586621679197523"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-103"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span id="local-6989586621679197521"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197521"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679197520"><span class="annot"><span class="annottext">s :: ExifData
+</span><a href="#local-6989586621679197520"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197519"><span class="annot"><span class="annottext">str :: ByteString
+</span><a href="#local-6989586621679197519"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-104"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197521"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-105"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeAscii"><span class="hs-identifier hs-var">TypeAscii</span></a></span><span>
+</span><span id="line-106"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Word32) -&gt; Int -&gt; Word32
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><span class="hs-identifier hs-var">BC.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197519"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><span id="line-107"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-108"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197520"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-109"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-110"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span id="local-6989586621679197517"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197517"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679197516"><span class="annot"><span class="annottext">s :: ExifData
+</span><a href="#local-6989586621679197516"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifUndefined"><span class="hs-identifier hs-type">ExifUndefined</span></a></span><span> </span><span id="local-6989586621679197515"><span class="annot"><span class="annottext">str :: ByteString
+</span><a href="#local-6989586621679197515"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197514"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">4</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-112"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197517"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-113"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeUndefined"><span class="hs-identifier hs-var">TypeUndefined</span></a></span><span>
+</span><span id="line-114"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197514"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><span id="line-115"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-116"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197516"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-118"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-119"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197517"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-120"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#TypeUndefined"><span class="hs-identifier hs-var">TypeUndefined</span></a></span><span>
+</span><span id="line-121"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197514"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197512"><span class="hs-identifier hs-var">ofs</span></a></span><span>
+</span><span id="line-123"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifNone"><span class="hs-identifier hs-var">ExifNone</span></a></span><span>
+</span><span id="line-124"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-125"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-126"></span><span>    </span><span id="local-6989586621679197514"><span class="annot"><span class="annottext">size :: Word32
+</span><a href="#local-6989586621679197514"><span class="hs-identifier hs-var hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Word32) -&gt; Int -&gt; Word32
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><span class="hs-identifier hs-var">BC.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197515"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><span id="line-127"></span><span>    </span><span id="local-6989586621679197511"><span class="annot"><span class="annottext">at :: Int -&gt; p
+</span><a href="#local-6989586621679197511"><span class="hs-identifier hs-var hs-var">at</span></a></span></span><span> </span><span id="local-6989586621679197510"><span class="annot"><span class="annottext">ix :: Int
+</span><a href="#local-6989586621679197510"><span class="hs-identifier hs-var">ix</span></a></span></span><span>
+</span><span id="line-128"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679197510"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197514"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; p
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; p) -&gt; Word8 -&gt; p
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int -&gt; Word8
+</span><span class="hs-identifier hs-var">B.index</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197515"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679197510"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Word8
+forall a. Bits a =&gt; a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">`unsafeShiftL`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">4</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">8</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679197510"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-130"></span><span>    </span><span id="local-6989586621679197512"><span class="annot"><span class="annottext">ofs :: Word32
+</span><a href="#local-6989586621679197512"><span class="hs-identifier hs-var hs-var">ofs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall b. Num b =&gt; Int -&gt; b
+</span><a href="#local-6989586621679197511"><span class="hs-identifier hs-var">at</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Word32
+forall a. Bits a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">.|.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall b. Num b =&gt; Int -&gt; b
+</span><a href="#local-6989586621679197511"><span class="hs-identifier hs-var">at</span></a></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Word32
+forall a. Bits a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">.|.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall b. Num b =&gt; Int -&gt; b
+</span><a href="#local-6989586621679197511"><span class="hs-identifier hs-var">at</span></a></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Word32
+forall a. Bits a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">.|.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Word32
+forall b. Num b =&gt; Int -&gt; b
+</span><a href="#local-6989586621679197511"><span class="hs-identifier hs-var">at</span></a></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span>
+</span><span id="line-131"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span id="local-6989586621679197506"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197506"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679197505"><span class="annot"><span class="annottext">d :: ExifData
+</span><a href="#local-6989586621679197505"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WImageFileDirectory :: ExifTag
+-&gt; IfdType -&gt; Word32 -&gt; Word32 -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#%24WImageFileDirectory"><span class="hs-identifier hs-type hs-type">ImageFileDirectory</span></a></span><span>
+</span><span id="line-132"></span><span>  </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdIdentifier :: ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var">ifdIdentifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197506"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-133"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdType :: IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var">ifdType</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData -&gt; IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#typeOfData"><span class="hs-identifier hs-var">typeOfData</span></a></span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197505"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdCount :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdCount"><span class="hs-identifier hs-var">ifdCount</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdOffset :: Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var">ifdOffset</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-136"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197505"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-137"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#encodeTiffStringMetadata"><span class="hs-identifier hs-type">encodeTiffStringMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-140"></span><span id="encodeTiffStringMetadata"><span class="annot"><span class="annottext">encodeTiffStringMetadata :: Metadatas -&gt; [ImageFileDirectory]
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#encodeTiffStringMetadata"><span class="hs-identifier hs-var hs-var">encodeTiffStringMetadata</span></a></span></span><span> </span><span id="local-6989586621679197504"><span class="annot"><span class="annottext">metas :: Metadatas
+</span><a href="#local-6989586621679197504"><span class="hs-identifier hs-var">metas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ImageFileDirectory -&gt; ImageFileDirectory -&gt; Ordering)
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a. (a -&gt; a -&gt; Ordering) -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">sortBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Ordering
+forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
+</span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="annot"><span class="annottext">(Word16 -&gt; Word16 -&gt; Ordering)
+-&gt; (ImageFileDirectory -&gt; Word16)
+-&gt; ImageFileDirectory
+-&gt; ImageFileDirectory
+-&gt; Ordering
+forall b c a. (b -&gt; b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">`on`</span></span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; Word16
+</span><a href="Codec.Picture.Metadata.Exif.html#word16OfTag"><span class="hs-identifier hs-var">word16OfTag</span></a></span><span> </span><span class="annot"><span class="annottext">(ExifTag -&gt; Word16)
+-&gt; (ImageFileDirectory -&gt; ExifTag) -&gt; ImageFileDirectory -&gt; Word16
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var hs-var">ifdIdentifier</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([ImageFileDirectory] -&gt; [ImageFileDirectory])
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197500"><span class="hs-identifier hs-var">allTags</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-141"></span><span>  </span><span id="local-6989586621679197499"><span class="annot"><span class="annottext">keyStr :: ExifTag -&gt; Keys [Char] -&gt; f ImageFileDirectory
+</span><a href="#local-6989586621679197499"><span class="hs-identifier hs-var hs-var">keyStr</span></a></span></span><span> </span><span id="local-6989586621679197498"><span class="annot"><span class="annottext">tag :: ExifTag
+</span><a href="#local-6989586621679197498"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span id="local-6989586621679197497"><span class="annot"><span class="annottext">k :: Keys [Char]
+</span><a href="#local-6989586621679197497"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; Metadatas -&gt; Maybe [Char]
+forall a. Keys a -&gt; Metadatas -&gt; Maybe a
+</span><a href="Codec.Picture.Metadata.html#lookup"><span class="hs-identifier hs-var">Met.lookup</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="#local-6989586621679197497"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197504"><span class="hs-identifier hs-var">metas</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-142"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f ImageFileDirectory
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-143"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679197495"><span class="annot"><span class="annottext">v :: [Char]
+</span><a href="#local-6989586621679197495"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; f ImageFileDirectory
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(ImageFileDirectory -&gt; f ImageFileDirectory)
+-&gt; (ByteString -&gt; ImageFileDirectory)
+-&gt; ByteString
+-&gt; f ImageFileDirectory
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197498"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="annot"><span class="annottext">(ExifData -&gt; ImageFileDirectory)
+-&gt; (ByteString -&gt; ExifData) -&gt; ByteString -&gt; ImageFileDirectory
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-var">ExifString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; f ImageFileDirectory)
+-&gt; ByteString -&gt; f ImageFileDirectory
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; ByteString
+</span><span class="hs-identifier hs-var">BC.pack</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679197495"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-144"></span><span>  </span><span id="local-6989586621679197500"><span class="annot"><span class="annottext">allTags :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197500"><span class="hs-identifier hs-var hs-var">allTags</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197493"><span class="hs-identifier hs-var">copyright</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197492"><span class="hs-identifier hs-var">artist</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197491"><span class="hs-identifier hs-var">title</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197490"><span class="hs-identifier hs-var">description</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197489"><span class="hs-identifier hs-var">software</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+-&gt; [ImageFileDirectory] -&gt; [ImageFileDirectory]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197488"><span class="hs-identifier hs-var">allPureExif</span></a></span><span>
+</span><span id="line-145"></span><span>
+</span><span id="line-146"></span><span>  </span><span id="local-6989586621679197488"><span class="annot"><span class="annottext">allPureExif :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197488"><span class="hs-identifier hs-var hs-var">allPureExif</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((ExifTag, ExifData) -&gt; ImageFileDirectory)
+-&gt; [(ExifTag, ExifData)] -&gt; [ImageFileDirectory]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ExifTag -&gt; ExifData -&gt; ImageFileDirectory)
+-&gt; (ExifTag, ExifData) -&gt; ImageFileDirectory
+forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
+</span><span class="hs-identifier hs-var">uncurry</span></span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; ExifData -&gt; ImageFileDirectory
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#makeIfd"><span class="hs-identifier hs-var">makeIfd</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(ExifTag, ExifData)] -&gt; [ImageFileDirectory])
+-&gt; [(ExifTag, ExifData)] -&gt; [ImageFileDirectory]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Metadatas -&gt; [(ExifTag, ExifData)]
+</span><a href="Codec.Picture.Metadata.html#extractExifMetas"><span class="hs-identifier hs-var">extractExifMetas</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197504"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span><span>  </span><span id="local-6989586621679197493"><span class="annot"><span class="annottext">copyright :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197493"><span class="hs-identifier hs-var hs-var">copyright</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; Keys [Char] -&gt; [ImageFileDirectory]
+forall (f :: * -&gt; *).
+(Monoid (f ImageFileDirectory), Applicative f) =&gt;
+ExifTag -&gt; Keys [Char] -&gt; f ImageFileDirectory
+</span><a href="#local-6989586621679197499"><span class="hs-identifier hs-var">keyStr</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagCopyright"><span class="hs-identifier hs-var">TagCopyright</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Copyright"><span class="hs-identifier hs-var">Met.Copyright</span></a></span><span>
+</span><span id="line-149"></span><span>  </span><span id="local-6989586621679197492"><span class="annot"><span class="annottext">artist :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197492"><span class="hs-identifier hs-var hs-var">artist</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; Keys [Char] -&gt; [ImageFileDirectory]
+forall (f :: * -&gt; *).
+(Monoid (f ImageFileDirectory), Applicative f) =&gt;
+ExifTag -&gt; Keys [Char] -&gt; f ImageFileDirectory
+</span><a href="#local-6989586621679197499"><span class="hs-identifier hs-var">keyStr</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagArtist"><span class="hs-identifier hs-var">TagArtist</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Author"><span class="hs-identifier hs-var">Met.Author</span></a></span><span>
+</span><span id="line-150"></span><span>  </span><span id="local-6989586621679197491"><span class="annot"><span class="annottext">title :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197491"><span class="hs-identifier hs-var hs-var">title</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; Keys [Char] -&gt; [ImageFileDirectory]
+forall (f :: * -&gt; *).
+(Monoid (f ImageFileDirectory), Applicative f) =&gt;
+ExifTag -&gt; Keys [Char] -&gt; f ImageFileDirectory
+</span><a href="#local-6989586621679197499"><span class="hs-identifier hs-var">keyStr</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagDocumentName"><span class="hs-identifier hs-var">TagDocumentName</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Title"><span class="hs-identifier hs-var">Met.Title</span></a></span><span>
+</span><span id="line-151"></span><span>  </span><span id="local-6989586621679197490"><span class="annot"><span class="annottext">description :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197490"><span class="hs-identifier hs-var hs-var">description</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; Keys [Char] -&gt; [ImageFileDirectory]
+forall (f :: * -&gt; *).
+(Monoid (f ImageFileDirectory), Applicative f) =&gt;
+ExifTag -&gt; Keys [Char] -&gt; f ImageFileDirectory
+</span><a href="#local-6989586621679197499"><span class="hs-identifier hs-var">keyStr</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagImageDescription"><span class="hs-identifier hs-var">TagImageDescription</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Description"><span class="hs-identifier hs-var">Met.Description</span></a></span><span>
+</span><span id="line-152"></span><span>  </span><span id="local-6989586621679197489"><span class="annot"><span class="annottext">software :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197489"><span class="hs-identifier hs-var hs-var">software</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; Keys [Char] -&gt; [ImageFileDirectory]
+forall (f :: * -&gt; *).
+(Monoid (f ImageFileDirectory), Applicative f) =&gt;
+ExifTag -&gt; Keys [Char] -&gt; f ImageFileDirectory
+</span><a href="#local-6989586621679197499"><span class="hs-identifier hs-var">keyStr</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagSoftware"><span class="hs-identifier hs-var">TagSoftware</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Software"><span class="hs-identifier hs-var">Met.Software</span></a></span><span>
+</span><span id="line-153"></span><span>
+</span><span id="line-154"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffStringMetadata"><span class="hs-identifier hs-type">extractTiffStringMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-155"></span><span id="extractTiffStringMetadata"><span class="annot"><span class="annottext">extractTiffStringMetadata :: [ImageFileDirectory] -&gt; Metadatas
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffStringMetadata"><span class="hs-identifier hs-var hs-var">extractTiffStringMetadata</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Keys SourceFormat -&gt; SourceFormat -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="annot"><span class="annottext">Keys SourceFormat
+</span><a href="Codec.Picture.Metadata.html#Format"><span class="hs-identifier hs-var">Met.Format</span></a></span><span> </span><span class="annot"><span class="annottext">SourceFormat
+</span><a href="Codec.Picture.Metadata.html#SourceTiff"><span class="hs-identifier hs-var">Met.SourceTiff</span></a></span><span> </span><span class="annot"><span class="annottext">(Metadatas -&gt; Metadatas)
+-&gt; ([ImageFileDirectory] -&gt; Metadatas)
+-&gt; [ImageFileDirectory]
+-&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(ImageFileDirectory -&gt; Metadatas)
+-&gt; [ImageFileDirectory] -&gt; Metadatas
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Metadatas
+</span><a href="#local-6989586621679197471"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-156"></span><span>  </span><span id="local-6989586621679197470"><span class="annot"><span class="annottext">strMeta :: Keys [Char] -&gt; ByteString -&gt; Metadatas
+</span><a href="#local-6989586621679197470"><span class="hs-identifier hs-var hs-var">strMeta</span></a></span></span><span> </span><span id="local-6989586621679197469"><span class="annot"><span class="annottext">k :: Keys [Char]
+</span><a href="#local-6989586621679197469"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; [Char] -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="#local-6989586621679197469"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; Metadatas)
+-&gt; (ByteString -&gt; [Char]) -&gt; ByteString -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [Char]
+</span><span class="hs-identifier hs-var">BC.unpack</span></span><span>
+</span><span id="line-157"></span><span>  </span><span id="local-6989586621679197466"><span class="annot"><span class="annottext">exif :: ImageFileDirectory -&gt; Metadatas
+</span><a href="#local-6989586621679197466"><span class="hs-identifier hs-var hs-var">exif</span></a></span></span><span> </span><span id="local-6989586621679197465"><span class="annot"><span class="annottext">ifd :: ImageFileDirectory
+</span><a href="#local-6989586621679197465"><span class="hs-identifier hs-var">ifd</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-158"></span><span>    </span><span class="annot"><span class="annottext">Keys ExifData -&gt; ExifData -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; Keys ExifData
+</span><a href="Codec.Picture.Metadata.html#Exif"><span class="hs-identifier hs-var">Met.Exif</span></a></span><span> </span><span class="annot"><span class="annottext">(ExifTag -&gt; Keys ExifData) -&gt; ExifTag -&gt; Keys ExifData
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var hs-var">ifdIdentifier</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197465"><span class="hs-identifier hs-var">ifd</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ExifData -&gt; Metadatas) -&gt; ExifData -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var hs-var">ifdExtended</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197465"><span class="hs-identifier hs-var">ifd</span></a></span><span>
+</span><span id="line-159"></span><span>  </span><span id="local-6989586621679197463"><span class="annot"><span class="annottext">inserter :: Metadatas -&gt; (ExifTag, ExifData) -&gt; Metadatas
+</span><a href="#local-6989586621679197463"><span class="hs-identifier hs-var hs-var">inserter</span></a></span></span><span> </span><span id="local-6989586621679197462"><span class="annot"><span class="annottext">acc :: Metadatas
+</span><a href="#local-6989586621679197462"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679197461"><span class="annot"><span class="annottext">k :: ExifTag
+</span><a href="#local-6989586621679197461"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679197460"><span class="annot"><span class="annottext">v :: ExifData
+</span><a href="#local-6989586621679197460"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Keys ExifData -&gt; ExifData -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; Keys ExifData
+</span><a href="Codec.Picture.Metadata.html#Exif"><span class="hs-identifier hs-var">Met.Exif</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197461"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197460"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197462"><span class="hs-identifier hs-var">acc</span></a></span><span>
+</span><span id="line-160"></span><span>  </span><span id="local-6989586621679197459"><span class="annot"><span class="annottext">exifShort :: ImageFileDirectory -&gt; Metadatas
+</span><a href="#local-6989586621679197459"><span class="hs-identifier hs-var hs-var">exifShort</span></a></span></span><span> </span><span id="local-6989586621679197458"><span class="annot"><span class="annottext">ifd :: ImageFileDirectory
+</span><a href="#local-6989586621679197458"><span class="hs-identifier hs-var">ifd</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-161"></span><span>    </span><span class="annot"><span class="annottext">Keys ExifData -&gt; ExifData -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; Keys ExifData
+</span><a href="Codec.Picture.Metadata.html#Exif"><span class="hs-identifier hs-var">Met.Exif</span></a></span><span> </span><span class="annot"><span class="annottext">(ExifTag -&gt; Keys ExifData) -&gt; ExifTag -&gt; Keys ExifData
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var hs-var">ifdIdentifier</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197458"><span class="hs-identifier hs-var">ifd</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ExifData -&gt; Metadatas)
+-&gt; (Word32 -&gt; ExifData) -&gt; Word32 -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word16 -&gt; ExifData
+</span><a href="Codec.Picture.Metadata.Exif.html#ExifShort"><span class="hs-identifier hs-var">ExifShort</span></a></span><span> </span><span class="annot"><span class="annottext">(Word16 -&gt; ExifData) -&gt; (Word32 -&gt; Word16) -&gt; Word32 -&gt; ExifData
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word16
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Word32 -&gt; Metadatas) -&gt; Word32 -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var hs-var">ifdOffset</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197458"><span class="hs-identifier hs-var">ifd</span></a></span><span>
+</span><span id="line-162"></span><span>
+</span><span id="line-163"></span><span>  </span><span class="annot"><a href="#local-6989586621679197471"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-164"></span><span>  </span><span id="local-6989586621679197471"><span class="annot"><span class="annottext">go :: ImageFileDirectory -&gt; Metadatas
+</span><a href="#local-6989586621679197471"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679197457"><span class="annot"><span class="annottext">ifd :: ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var hs-var">ifdIdentifier</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var hs-var">ifdExtended</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-165"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagArtist"><span class="hs-identifier hs-type">TagArtist</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197456"><span class="annot"><span class="annottext">v :: ByteString
+</span><a href="#local-6989586621679197456"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; ByteString -&gt; Metadatas
+</span><a href="#local-6989586621679197470"><span class="hs-identifier hs-var">strMeta</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Author"><span class="hs-identifier hs-var">Met.Author</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197456"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-166"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagBitsPerSample"><span class="hs-identifier hs-type">TagBitsPerSample</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-167"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagColorMap"><span class="hs-identifier hs-type">TagColorMap</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-168"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagCompression"><span class="hs-identifier hs-type">TagCompression</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-169"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagCopyright"><span class="hs-identifier hs-type">TagCopyright</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197452"><span class="annot"><span class="annottext">v :: ByteString
+</span><a href="#local-6989586621679197452"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; ByteString -&gt; Metadatas
+</span><a href="#local-6989586621679197470"><span class="hs-identifier hs-var">strMeta</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Copyright"><span class="hs-identifier hs-var">Met.Copyright</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197452"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-170"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagDocumentName"><span class="hs-identifier hs-type">TagDocumentName</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197451"><span class="annot"><span class="annottext">v :: ByteString
+</span><a href="#local-6989586621679197451"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; ByteString -&gt; Metadatas
+</span><a href="#local-6989586621679197470"><span class="hs-identifier hs-var">strMeta</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Title"><span class="hs-identifier hs-var">Met.Title</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197451"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-171"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagExifOffset"><span class="hs-identifier hs-type">TagExifOffset</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifIFD"><span class="hs-identifier hs-type">ExifIFD</span></a></span><span> </span><span id="local-6989586621679197450"><span class="annot"><span class="annottext">lst :: [(ExifTag, ExifData)]
+</span><a href="#local-6989586621679197450"><span class="hs-identifier hs-var">lst</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Metadatas -&gt; (ExifTag, ExifData) -&gt; Metadatas)
+-&gt; Metadatas -&gt; [(ExifTag, ExifData)] -&gt; Metadatas
+forall (t :: * -&gt; *) b a.
+Foldable t =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">F.foldl'</span></span><span> </span><span class="annot"><span class="annottext">Metadatas -&gt; (ExifTag, ExifData) -&gt; Metadatas
+</span><a href="#local-6989586621679197463"><span class="hs-identifier hs-var">inserter</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="annot"><span class="annottext">[(ExifTag, ExifData)]
+</span><a href="#local-6989586621679197450"><span class="hs-identifier hs-var">lst</span></a></span><span>
+</span><span id="line-172"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagImageDescription"><span class="hs-identifier hs-type">TagImageDescription</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197448"><span class="annot"><span class="annottext">v :: ByteString
+</span><a href="#local-6989586621679197448"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; ByteString -&gt; Metadatas
+</span><a href="#local-6989586621679197470"><span class="hs-identifier hs-var">strMeta</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Description"><span class="hs-identifier hs-var">Met.Description</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197448"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-173"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagImageLength"><span class="hs-identifier hs-type">TagImageLength</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#Height"><span class="hs-identifier hs-var">Met.Height</span></a></span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Metadatas) -&gt; (Word32 -&gt; Word) -&gt; Word32 -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word32 -&gt; Metadatas) -&gt; Word32 -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var hs-var">ifdOffset</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span><span>
+</span><span id="line-174"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagImageWidth"><span class="hs-identifier hs-type">TagImageWidth</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; Word -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#Width"><span class="hs-identifier hs-var">Met.Width</span></a></span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Metadatas) -&gt; (Word32 -&gt; Word) -&gt; Word32 -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word32 -&gt; Metadatas) -&gt; Word32 -&gt; Metadatas
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var hs-var">ifdOffset</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span><span>
+</span><span id="line-175"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGACTables"><span class="hs-identifier hs-type">TagJPEGACTables</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-176"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGDCTables"><span class="hs-identifier hs-type">TagJPEGDCTables</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-177"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGInterchangeFormat"><span class="hs-identifier hs-type">TagJPEGInterchangeFormat</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-178"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGInterchangeFormatLength"><span class="hs-identifier hs-type">TagJPEGInterchangeFormatLength</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-179"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGLosslessPredictors"><span class="hs-identifier hs-type">TagJPEGLosslessPredictors</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-180"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGPointTransforms"><span class="hs-identifier hs-type">TagJPEGPointTransforms</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-181"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGQTables"><span class="hs-identifier hs-type">TagJPEGQTables</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-182"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJPEGRestartInterval"><span class="hs-identifier hs-type">TagJPEGRestartInterval</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-183"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagJpegProc"><span class="hs-identifier hs-type">TagJpegProc</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-184"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagModel"><span class="hs-identifier hs-type">TagModel</span></a></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679197433"><span class="annot"><span class="annottext">v :: ExifData
+</span><a href="#local-6989586621679197433"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys ExifData -&gt; ExifData -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; Keys ExifData
+</span><a href="Codec.Picture.Metadata.html#Exif"><span class="hs-identifier hs-var">Met.Exif</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagModel"><span class="hs-identifier hs-var">TagModel</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197433"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-185"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagMake"><span class="hs-identifier hs-type">TagMake</span></a></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679197431"><span class="annot"><span class="annottext">v :: ExifData
+</span><a href="#local-6989586621679197431"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys ExifData -&gt; ExifData -&gt; Metadatas
+forall a. (Show a, NFData a) =&gt; Keys a -&gt; a -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#singleton"><span class="hs-identifier hs-var">Met.singleton</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; Keys ExifData
+</span><a href="Codec.Picture.Metadata.html#Exif"><span class="hs-identifier hs-var">Met.Exif</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagMake"><span class="hs-identifier hs-var">TagMake</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ExifData
+</span><a href="#local-6989586621679197431"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-186"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagOrientation"><span class="hs-identifier hs-type">TagOrientation</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Metadatas
+</span><a href="#local-6989586621679197459"><span class="hs-identifier hs-var">exifShort</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span><span>
+</span><span id="line-187"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagResolutionUnit"><span class="hs-identifier hs-type">TagResolutionUnit</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-188"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagRowPerStrip"><span class="hs-identifier hs-type">TagRowPerStrip</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-189"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagSamplesPerPixel"><span class="hs-identifier hs-type">TagSamplesPerPixel</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-190"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagSoftware"><span class="hs-identifier hs-type">TagSoftware</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifString"><span class="hs-identifier hs-type">ExifString</span></a></span><span> </span><span id="local-6989586621679197426"><span class="annot"><span class="annottext">v :: ByteString
+</span><a href="#local-6989586621679197426"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Keys [Char] -&gt; ByteString -&gt; Metadatas
+</span><a href="#local-6989586621679197470"><span class="hs-identifier hs-var">strMeta</span></a></span><span> </span><span class="annot"><span class="annottext">Keys [Char]
+</span><a href="Codec.Picture.Metadata.html#Software"><span class="hs-identifier hs-var">Met.Software</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679197426"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-191"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagStripByteCounts"><span class="hs-identifier hs-type">TagStripByteCounts</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-192"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagStripOffsets"><span class="hs-identifier hs-type">TagStripOffsets</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-193"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagTileByteCount"><span class="hs-identifier hs-type">TagTileByteCount</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-194"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagTileLength"><span class="hs-identifier hs-type">TagTileLength</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-195"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagTileOffset"><span class="hs-identifier hs-type">TagTileOffset</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-196"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagTileWidth"><span class="hs-identifier hs-type">TagTileWidth</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-197"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagUnknown"><span class="hs-identifier hs-type">TagUnknown</span></a></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Metadatas
+</span><a href="#local-6989586621679197466"><span class="hs-identifier hs-var">exif</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197457"><span class="hs-identifier hs-var">ifd</span></a></span><span>
+</span><span id="line-198"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagXResolution"><span class="hs-identifier hs-type">TagXResolution</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-199"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagYCbCrCoeff"><span class="hs-identifier hs-type">TagYCbCrCoeff</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-200"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagYCbCrPositioning"><span class="hs-identifier hs-type">TagYCbCrPositioning</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-201"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagYCbCrSubsampling"><span class="hs-identifier hs-type">TagYCbCrSubsampling</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-202"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#TagYResolution"><span class="hs-identifier hs-type">TagYResolution</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-203"></span><span>    </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-204"></span><span>
+</span><span id="line-205"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#byTag"><span class="hs-identifier hs-type">byTag</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifTag"><span class="hs-identifier hs-type">ExifTag</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-206"></span><span id="byTag"><span class="annot"><span class="annottext">byTag :: ExifTag -&gt; ImageFileDirectory -&gt; Bool
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#byTag"><span class="hs-identifier hs-var hs-var">byTag</span></a></span></span><span> </span><span id="local-6989586621679197412"><span class="annot"><span class="annottext">t :: ExifTag
+</span><a href="#local-6989586621679197412"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679197411"><span class="annot"><span class="annottext">ifd :: ImageFileDirectory
+</span><a href="#local-6989586621679197411"><span class="hs-identifier hs-var">ifd</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; ExifTag
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdIdentifier"><span class="hs-identifier hs-var hs-var">ifdIdentifier</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197411"><span class="hs-identifier hs-var">ifd</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag -&gt; ExifTag -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197412"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-207"></span><span>
+</span><span id="line-208"></span><span class="hs-keyword">data</span><span> </span><span id="TiffResolutionUnit"><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#TiffResolutionUnit"><span class="hs-identifier hs-var">TiffResolutionUnit</span></a></span></span><span>
+</span><span id="line-209"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="ResolutionUnitUnknown"><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitUnknown"><span class="hs-identifier hs-var">ResolutionUnitUnknown</span></a></span></span><span>
+</span><span id="line-210"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ResolutionUnitInch"><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitInch"><span class="hs-identifier hs-var">ResolutionUnitInch</span></a></span></span><span>
+</span><span id="line-211"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ResolutionUnitCentimeter"><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitCentimeter"><span class="hs-identifier hs-var">ResolutionUnitCentimeter</span></a></span></span><span>
+</span><span id="line-212"></span><span>
+</span><span id="line-213"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#unitOfIfd"><span class="hs-identifier hs-type">unitOfIfd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#TiffResolutionUnit"><span class="hs-identifier hs-type">TiffResolutionUnit</span></a></span><span>
+</span><span id="line-214"></span><span id="unitOfIfd"><span class="annot"><span class="annottext">unitOfIfd :: ImageFileDirectory -&gt; TiffResolutionUnit
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#unitOfIfd"><span class="hs-identifier hs-var hs-var">unitOfIfd</span></a></span></span><span> </span><span id="local-6989586621679197406"><span class="annot"><span class="annottext">ifd :: ImageFileDirectory
+</span><a href="#local-6989586621679197406"><span class="hs-identifier hs-var">ifd</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; IfdType
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdType"><span class="hs-identifier hs-var hs-var">ifdType</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197406"><span class="hs-identifier hs-var">ifd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; Word32
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdOffset"><span class="hs-identifier hs-var hs-var">ifdOffset</span></a></span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory
+</span><a href="#local-6989586621679197406"><span class="hs-identifier hs-var">ifd</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-215"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-type">TypeShort</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TiffResolutionUnit
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitUnknown"><span class="hs-identifier hs-var">ResolutionUnitUnknown</span></a></span><span>
+</span><span id="line-216"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-type">TypeShort</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-number">2</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TiffResolutionUnit
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitInch"><span class="hs-identifier hs-var">ResolutionUnitInch</span></a></span><span>
+</span><span id="line-217"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#TypeShort"><span class="hs-identifier hs-type">TypeShort</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-number">3</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TiffResolutionUnit
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitCentimeter"><span class="hs-identifier hs-var">ResolutionUnitCentimeter</span></a></span><span>
+</span><span id="line-218"></span><span>  </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TiffResolutionUnit
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitUnknown"><span class="hs-identifier hs-var">ResolutionUnitUnknown</span></a></span><span>
+</span><span id="line-219"></span><span>
+</span><span id="line-220"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffDpiMetadata"><span class="hs-identifier hs-type">extractTiffDpiMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-221"></span><span id="extractTiffDpiMetadata"><span class="annot"><span class="annottext">extractTiffDpiMetadata :: [ImageFileDirectory] -&gt; Metadatas
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffDpiMetadata"><span class="hs-identifier hs-var hs-var">extractTiffDpiMetadata</span></a></span></span><span> </span><span id="local-6989586621679197404"><span class="annot"><span class="annottext">lst :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197404"><span class="hs-identifier hs-var">lst</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197403"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-222"></span><span>  </span><span id="local-6989586621679197403"><span class="annot"><span class="annottext">go :: Metadatas
+</span><a href="#local-6989586621679197403"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ImageFileDirectory -&gt; TiffResolutionUnit
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#unitOfIfd"><span class="hs-identifier hs-var">unitOfIfd</span></a></span><span> </span><span class="annot"><span class="annottext">(ImageFileDirectory -&gt; TiffResolutionUnit)
+-&gt; Maybe ImageFileDirectory -&gt; Maybe TiffResolutionUnit
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(ImageFileDirectory -&gt; Bool)
+-&gt; [ImageFileDirectory] -&gt; Maybe ImageFileDirectory
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">find</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; ImageFileDirectory -&gt; Bool
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#byTag"><span class="hs-identifier hs-var">byTag</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagResolutionUnit"><span class="hs-identifier hs-var">TagResolutionUnit</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197404"><span class="hs-identifier hs-var">lst</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-223"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-224"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitUnknown"><span class="hs-identifier hs-type">ResolutionUnitUnknown</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-225"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitCentimeter"><span class="hs-identifier hs-type">ResolutionUnitCentimeter</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+forall b. Num b =&gt; (b -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679197401"><span class="hs-identifier hs-var">findDpis</span></a></span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word
+</span><a href="Codec.Picture.Metadata.html#dotsPerCentiMeterToDotPerInch"><span class="hs-identifier hs-var">Met.dotsPerCentiMeterToDotPerInch</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-226"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#ResolutionUnitInch"><span class="hs-identifier hs-type">ResolutionUnitInch</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Word -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+forall b. Num b =&gt; (b -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679197401"><span class="hs-identifier hs-var">findDpis</span></a></span><span> </span><span class="annot"><span class="annottext">Word -&gt; Word
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span> </span><span class="annot"><span class="annottext">Metadatas
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-227"></span><span>
+</span><span id="line-228"></span><span>  </span><span id="local-6989586621679197401"><span class="annot"><span class="annottext">findDpis :: (b -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679197401"><span class="hs-identifier hs-var hs-var">findDpis</span></a></span></span><span> </span><span id="local-6989586621679197398"><span class="annot"><span class="annottext">toDpi :: b -&gt; Word
+</span><a href="#local-6989586621679197398"><span class="hs-identifier hs-var">toDpi</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-229"></span><span>     </span><span class="annot"><span class="annottext">Keys Word -&gt; ExifTag -&gt; (b -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+forall a b.
+(Show a, NFData a, Num b) =&gt;
+Keys a -&gt; ExifTag -&gt; (b -&gt; a) -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679197397"><span class="hs-identifier hs-var">findDpi</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiX"><span class="hs-identifier hs-var">Met.DpiX</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagXResolution"><span class="hs-identifier hs-var">TagXResolution</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; Word
+</span><a href="#local-6989586621679197398"><span class="hs-identifier hs-var">toDpi</span></a></span><span> </span><span class="annot"><span class="annottext">(Metadatas -&gt; Metadatas)
+-&gt; (Metadatas -&gt; Metadatas) -&gt; Metadatas -&gt; Metadatas
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Keys Word -&gt; ExifTag -&gt; (b -&gt; Word) -&gt; Metadatas -&gt; Metadatas
+forall a b.
+(Show a, NFData a, Num b) =&gt;
+Keys a -&gt; ExifTag -&gt; (b -&gt; a) -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679197397"><span class="hs-identifier hs-var">findDpi</span></a></span><span> </span><span class="annot"><span class="annottext">Keys Word
+</span><a href="Codec.Picture.Metadata.html#DpiY"><span class="hs-identifier hs-var">Met.DpiY</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="Codec.Picture.Metadata.Exif.html#TagYResolution"><span class="hs-identifier hs-var">TagYResolution</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; Word
+</span><a href="#local-6989586621679197398"><span class="hs-identifier hs-var">toDpi</span></a></span><span>
+</span><span id="line-230"></span><span>
+</span><span id="line-231"></span><span>  </span><span id="local-6989586621679197397"><span class="annot"><span class="annottext">findDpi :: Keys a -&gt; ExifTag -&gt; (b -&gt; a) -&gt; Metadatas -&gt; Metadatas
+</span><a href="#local-6989586621679197397"><span class="hs-identifier hs-var hs-var">findDpi</span></a></span></span><span> </span><span id="local-6989586621679197394"><span class="annot"><span class="annottext">k :: Keys a
+</span><a href="#local-6989586621679197394"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679197393"><span class="annot"><span class="annottext">tag :: ExifTag
+</span><a href="#local-6989586621679197393"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span id="local-6989586621679197392"><span class="annot"><span class="annottext">toDpi :: b -&gt; a
+</span><a href="#local-6989586621679197392"><span class="hs-identifier hs-var">toDpi</span></a></span></span><span> </span><span id="local-6989586621679197391"><span class="annot"><span class="annottext">metas :: Metadatas
+</span><a href="#local-6989586621679197391"><span class="hs-identifier hs-var">metas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(ImageFileDirectory -&gt; Bool)
+-&gt; [ImageFileDirectory] -&gt; Maybe ImageFileDirectory
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">find</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExifTag -&gt; ImageFileDirectory -&gt; Bool
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#byTag"><span class="hs-identifier hs-var">byTag</span></a></span><span> </span><span class="annot"><span class="annottext">ExifTag
+</span><a href="#local-6989586621679197393"><span class="hs-identifier hs-var">tag</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197404"><span class="hs-identifier hs-var">lst</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-232"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197391"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-233"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ifdExtended :: ImageFileDirectory -&gt; ExifData
+</span><a href="Codec.Picture.Tiff.Internal.Types.html#ifdExtended"><span class="hs-identifier hs-var">ifdExtended</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.Exif.html#ExifRational"><span class="hs-identifier hs-type">ExifRational</span></a></span><span> </span><span id="local-6989586621679197390"><span class="annot"><span class="annottext">num :: Word32
+</span><a href="#local-6989586621679197390"><span class="hs-identifier hs-var">num</span></a></span></span><span> </span><span id="local-6989586621679197389"><span class="annot"><span class="annottext">den :: Word32
+</span><a href="#local-6989586621679197389"><span class="hs-identifier hs-var">den</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-234"></span><span>      </span><span class="annot"><span class="annottext">Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+forall a.
+(Show a, NFData a) =&gt;
+Keys a -&gt; a -&gt; Metadatas -&gt; Metadatas
+</span><a href="Codec.Picture.Metadata.html#insert"><span class="hs-identifier hs-var">Met.insert</span></a></span><span> </span><span class="annot"><span class="annottext">Keys a
+</span><a href="#local-6989586621679197394"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; a
+</span><a href="#local-6989586621679197392"><span class="hs-identifier hs-var">toDpi</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; a) -&gt; (Word32 -&gt; b) -&gt; Word32 -&gt; a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; b
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Word32 -&gt; a) -&gt; Word32 -&gt; a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197390"><span class="hs-identifier hs-var">num</span></a></span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Word32 -&gt; Word32
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679197389"><span class="hs-identifier hs-var">den</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197391"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-235"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Metadatas
+</span><a href="#local-6989586621679197391"><span class="hs-identifier hs-var">metas</span></a></span><span>
+</span><span id="line-236"></span><span>
+</span><span id="line-237"></span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffMetadata"><span class="hs-identifier hs-type">extractTiffMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Codec.Picture.Tiff.Internal.Types.html#ImageFileDirectory"><span class="hs-identifier hs-type">ImageFileDirectory</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Picture.Metadata.html#Metadatas"><span class="hs-identifier hs-type">Metadatas</span></a></span><span>
+</span><span id="line-238"></span><span id="extractTiffMetadata"><span class="annot"><span class="annottext">extractTiffMetadata :: [ImageFileDirectory] -&gt; Metadatas
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffMetadata"><span class="hs-identifier hs-var hs-var">extractTiffMetadata</span></a></span></span><span> </span><span id="local-6989586621679197387"><span class="annot"><span class="annottext">lst :: [ImageFileDirectory]
+</span><a href="#local-6989586621679197387"><span class="hs-identifier hs-var">lst</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory] -&gt; Metadatas
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffDpiMetadata"><span class="hs-identifier hs-var">extractTiffDpiMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197387"><span class="hs-identifier hs-var">lst</span></a></span><span> </span><span class="annot"><span class="annottext">Metadatas -&gt; Metadatas -&gt; Metadatas
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory] -&gt; Metadatas
+</span><a href="Codec.Picture.Tiff.Internal.Metadata.html#extractTiffStringMetadata"><span class="hs-identifier hs-var">extractTiffStringMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">[ImageFileDirectory]
+</span><a href="#local-6989586621679197387"><span class="hs-identifier hs-var">lst</span></a></span><span>
+</span><span id="line-239"></span><span>
+</span><span id="line-240"></span></pre></body></html>

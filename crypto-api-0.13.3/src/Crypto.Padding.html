@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-|
+  Maintainer: Thomas.DuBuisson@gmail.com
+  Stability: beta
+  Portability: portable
+
+PKCS5 (RFC 1423) and IPSec ESP (RFC 4303)
+padding methods are implemented both as trivial functions operating on
+bytestrings and as 'Put' routines usable from the &quot;Data.Serialize&quot;
+module.  These methods do not work for algorithms or pad sizes in
+excess of 255 bytes (2040 bits, so extremely large as far as cipher
+needs are concerned).
+
+-}</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Crypto.Padding</span><span>
+</span><span id="line-16"></span><span>        </span><span class="hs-special">(</span><span>
+</span><span id="line-17"></span><span>        </span><span class="annot"><span class="hs-comment">-- * PKCS5 (RFC 1423) based [un]padding routines</span></span><span>
+</span><span id="line-18"></span><span>          </span><span class="annot"><a href="Crypto.Padding.html#padPKCS5"><span class="hs-identifier">padPKCS5</span></a></span><span>
+</span><span id="line-19"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#padBlockSize"><span class="hs-identifier">padBlockSize</span></a></span><span>
+</span><span id="line-20"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#putPaddedPKCS5"><span class="hs-identifier">putPaddedPKCS5</span></a></span><span>
+</span><span id="line-21"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#unpadPKCS5safe"><span class="hs-identifier">unpadPKCS5safe</span></a></span><span>
+</span><span id="line-22"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#unpadPKCS5"><span class="hs-identifier">unpadPKCS5</span></a></span><span>
+</span><span id="line-23"></span><span>        </span><span class="annot"><span class="hs-comment">-- * ESP (RFC 4303) [un]padding routines</span></span><span>
+</span><span id="line-24"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#padESP"><span class="hs-identifier">padESP</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#unpadESP"><span class="hs-identifier">unpadESP</span></a></span><span>
+</span><span id="line-25"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#padESPBlockSize"><span class="hs-identifier">padESPBlockSize</span></a></span><span>
+</span><span id="line-26"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#putPadESPBlockSize"><span class="hs-identifier">putPadESPBlockSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Padding.html#putPadESP"><span class="hs-identifier">putPadESP</span></a></span><span>
+</span><span id="line-27"></span><span>        </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Serialize.Put</span></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Classes.html"><span class="hs-identifier">Crypto.Classes</span></a></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Types.html"><span class="hs-identifier">Crypto.Types</span></a></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- |PKCS5 (aka RFC1423) padding method.</span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- This method will not work properly for pad modulos &gt; 256</span><span>
+</span><span id="line-37"></span><span class="annot"><a href="Crypto.Padding.html#padPKCS5"><span class="hs-identifier hs-type">padPKCS5</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-38"></span><span id="padPKCS5"><span class="annot"><span class="annottext">padPKCS5 :: ByteLength -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Padding.html#padPKCS5"><span class="hs-identifier hs-var hs-var">padPKCS5</span></a></span></span><span> </span><span id="local-6989586621679084117"><span class="annot"><span class="annottext">len :: ByteLength
+</span><a href="#local-6989586621679084117"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span id="local-6989586621679084116"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084116"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Put -&gt; ByteString
+</span><span class="hs-identifier hs-var">runPut</span></span><span> </span><span class="annot"><span class="annottext">(Put -&gt; ByteString) -&gt; Put -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPaddedPKCS5"><span class="hs-identifier hs-var">putPaddedPKCS5</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084117"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084116"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | Ex:</span><span>
+</span><span id="line-41"></span><span class="hs-comment">--</span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-43"></span><span class="hs-comment">--     putPaddedPKCS5 m bs</span><span>
+</span><span id="line-44"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-45"></span><span class="hs-comment">--</span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- Will pad out `bs` to a byte multiple</span><span>
+</span><span id="line-47"></span><span class="hs-comment">-- of `m` and put both the bytestring and it's padding via 'Put'</span><span>
+</span><span id="line-48"></span><span class="hs-comment">-- (this saves on copying if you are already using Cereal).</span><span>
+</span><span id="line-49"></span><span class="annot"><a href="Crypto.Padding.html#putPaddedPKCS5"><span class="hs-identifier hs-type">putPaddedPKCS5</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Put</span></span><span>
+</span><span id="line-50"></span><span id="putPaddedPKCS5"><span class="annot"><span class="annottext">putPaddedPKCS5 :: ByteLength -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPaddedPKCS5"><span class="hs-identifier hs-var hs-var">putPaddedPKCS5</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084114"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084114"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084114"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">Put -&gt; Put -&gt; Put
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Putter Word8
+</span><span class="hs-identifier hs-var">putWord8</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-51"></span><span class="annot"><a href="Crypto.Padding.html#putPaddedPKCS5"><span class="hs-identifier hs-var">putPaddedPKCS5</span></a></span><span> </span><span id="local-6989586621679084111"><span class="annot"><span class="annottext">len :: ByteLength
+</span><a href="#local-6989586621679084111"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span id="local-6989586621679084110"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084110"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084110"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">Put -&gt; Put -&gt; Put
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084109"><span class="hs-identifier hs-var">pad</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-53"></span><span>  </span><span id="local-6989586621679084109"><span class="annot"><span class="annottext">pad :: ByteString
+</span><a href="#local-6989586621679084109"><span class="hs-identifier hs-var hs-var">pad</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.replicate</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084107"><span class="hs-identifier hs-var">padLen</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084106"><span class="hs-identifier hs-var">padValue</span></a></span><span>
+</span><span id="line-54"></span><span>  </span><span id="local-6989586621679084105"><span class="annot"><span class="annottext">r :: ByteLength
+</span><a href="#local-6989586621679084105"><span class="hs-identifier hs-var hs-var">r</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084111"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084110"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`rem`</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084111"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>  </span><span id="local-6989586621679084107"><span class="annot"><span class="annottext">padLen :: ByteLength
+</span><a href="#local-6989586621679084107"><span class="hs-identifier hs-var hs-var">padLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084105"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084111"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084105"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679084106"><span class="annot"><span class="annottext">padValue :: Word8
+</span><a href="#local-6989586621679084106"><span class="hs-identifier hs-var hs-var">padValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Word8
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084107"><span class="hs-identifier hs-var">padLen</span></a></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- |PKCS5 (aka RFC1423) padding method using the BlockCipher instance</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- to determine the pad size.</span><span>
+</span><span id="line-60"></span><span id="local-6989586621679084102"><span class="annot"><a href="Crypto.Padding.html#padBlockSize"><span class="hs-identifier hs-type">padBlockSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084102"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084102"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-61"></span><span id="padBlockSize"><span class="annot"><span class="annottext">padBlockSize :: k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Padding.html#padBlockSize"><span class="hs-identifier hs-var hs-var">padBlockSize</span></a></span></span><span> </span><span id="local-6989586621679084101"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084101"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Put -&gt; ByteString
+</span><span class="hs-identifier hs-var">runPut</span></span><span> </span><span class="annot"><span class="annottext">(Put -&gt; ByteString)
+-&gt; (ByteString -&gt; Put) -&gt; ByteString -&gt; ByteString
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; Put
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPaddedBlockSize"><span class="hs-identifier hs-var">putPaddedBlockSize</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084101"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- |Leverages 'putPaddedPKCS5' to put the bytestring and padding</span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- of sufficient length for use by the specified block cipher.</span><span>
+</span><span id="line-65"></span><span id="local-6989586621679084138"><span class="annot"><a href="Crypto.Padding.html#putPaddedBlockSize"><span class="hs-identifier hs-type">putPaddedBlockSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084138"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084138"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Put</span></span></span><span>
+</span><span id="line-66"></span><span id="putPaddedBlockSize"><span class="annot"><span class="annottext">putPaddedBlockSize :: k -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPaddedBlockSize"><span class="hs-identifier hs-var hs-var">putPaddedBlockSize</span></a></span></span><span> </span><span id="local-6989586621679084098"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084098"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084097"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084097"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPaddedPKCS5"><span class="hs-identifier hs-var">putPaddedPKCS5</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084098"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084097"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-comment">-- | unpad a strict bytestring padded in the typical PKCS5 manner.</span><span>
+</span><span id="line-69"></span><span class="hs-comment">-- This routine verifies all pad bytes and pad length match correctly.</span><span>
+</span><span id="line-70"></span><span class="annot"><a href="Crypto.Padding.html#unpadPKCS5safe"><span class="hs-identifier hs-type">unpadPKCS5safe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-71"></span><span id="unpadPKCS5safe"><span class="annot"><span class="annottext">unpadPKCS5safe :: ByteString -&gt; Maybe ByteString
+</span><a href="Crypto.Padding.html#unpadPKCS5safe"><span class="hs-identifier hs-var hs-var">unpadPKCS5safe</span></a></span></span><span> </span><span id="local-6989586621679084094"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084094"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
+</span><span id="line-72"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084093"><span class="hs-identifier hs-var">bsLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; Bool) -&gt; ByteString -&gt; Bool
+</span><span class="hs-identifier hs-var">B.all</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084089"><span class="hs-identifier hs-var">padLen</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084088"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084088"><span class="hs-identifier hs-var">pad</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084087"><span class="hs-identifier hs-var">pLen</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe ByteString
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084086"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><span id="line-73"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ByteString
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-75"></span><span>  </span><span id="local-6989586621679084093"><span class="annot"><span class="annottext">bsLen :: ByteLength
+</span><a href="#local-6989586621679084093"><span class="hs-identifier hs-var hs-var">bsLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084094"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-76"></span><span>  </span><span id="local-6989586621679084089"><span class="annot"><span class="annottext">padLen :: Word8
+</span><a href="#local-6989586621679084089"><span class="hs-identifier hs-var hs-var">padLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Word8
+</span><span class="hs-identifier hs-var">B.last</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084094"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-77"></span><span>  </span><span id="local-6989586621679084087"><span class="annot"><span class="annottext">pLen :: ByteLength
+</span><a href="#local-6989586621679084087"><span class="hs-identifier hs-var hs-var">pLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084089"><span class="hs-identifier hs-var">padLen</span></a></span><span>
+</span><span id="line-78"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679084086"><span class="annot"><span class="annottext">msg :: ByteString
+</span><a href="#local-6989586621679084086"><span class="hs-identifier hs-var">msg</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084088"><span class="annot"><span class="annottext">pad :: ByteString
+</span><a href="#local-6989586621679084088"><span class="hs-identifier hs-var">pad</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span class="hs-identifier hs-var">B.splitAt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084093"><span class="hs-identifier hs-var">bsLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084087"><span class="hs-identifier hs-var">pLen</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084094"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="hs-comment">-- |unpad a strict bytestring without checking the pad bytes and</span><span>
+</span><span id="line-81"></span><span class="hs-comment">-- length any more than necessary.</span><span>
+</span><span id="line-82"></span><span class="annot"><a href="Crypto.Padding.html#unpadPKCS5"><span class="hs-identifier hs-type">unpadPKCS5</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-83"></span><span id="unpadPKCS5"><span class="annot"><span class="annottext">unpadPKCS5 :: ByteString -&gt; ByteString
+</span><a href="Crypto.Padding.html#unpadPKCS5"><span class="hs-identifier hs-var hs-var">unpadPKCS5</span></a></span></span><span> </span><span id="local-6989586621679084083"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084083"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084082"><span class="hs-identifier hs-var">bsLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084083"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084081"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><span id="line-84"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679084082"><span class="annot"><span class="annottext">bsLen :: ByteLength
+</span><a href="#local-6989586621679084082"><span class="hs-identifier hs-var hs-var">bsLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084083"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-86"></span><span>  </span><span id="local-6989586621679084080"><span class="annot"><span class="annottext">padLen :: Word8
+</span><a href="#local-6989586621679084080"><span class="hs-identifier hs-var hs-var">padLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Word8
+</span><span class="hs-identifier hs-var">B.last</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084083"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-87"></span><span>  </span><span id="local-6989586621679084079"><span class="annot"><span class="annottext">pLen :: ByteLength
+</span><a href="#local-6989586621679084079"><span class="hs-identifier hs-var hs-var">pLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084080"><span class="hs-identifier hs-var">padLen</span></a></span><span>
+</span><span id="line-88"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679084081"><span class="annot"><span class="annottext">msg :: ByteString
+</span><a href="#local-6989586621679084081"><span class="hs-identifier hs-var">msg</span></a></span></span><span class="hs-special">,</span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span class="hs-identifier hs-var">B.splitAt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084082"><span class="hs-identifier hs-var">bsLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084079"><span class="hs-identifier hs-var">pLen</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084083"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span class="hs-comment">-- | Pad a bytestring to the IPSEC esp specification</span><span>
+</span><span id="line-91"></span><span class="hs-comment">--</span><span>
+</span><span id="line-92"></span><span class="hs-comment">-- &gt; padESP m payload</span><span>
+</span><span id="line-93"></span><span class="hs-comment">--</span><span>
+</span><span id="line-94"></span><span class="hs-comment">-- is equivilent to:</span><span>
+</span><span id="line-95"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-97"></span><span class="hs-comment">--               (msg)       (padding)       (length field)</span><span>
+</span><span id="line-98"></span><span class="hs-comment">--     B.concat [payload, B.pack [1,2,3,4..], B.pack [padLen]]</span><span>
+</span><span id="line-99"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-100"></span><span class="hs-comment">--</span><span>
+</span><span id="line-101"></span><span class="hs-comment">-- Where:</span><span>
+</span><span id="line-102"></span><span class="hs-comment">--</span><span>
+</span><span id="line-103"></span><span class="hs-comment">-- * the msg is any payload, including TFC.</span><span>
+</span><span id="line-104"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-105"></span><span class="hs-comment">-- * the padding is &lt;= 255</span><span>
+</span><span id="line-106"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-107"></span><span class="hs-comment">-- * the length field is one byte.</span><span>
+</span><span id="line-108"></span><span class="hs-comment">--</span><span>
+</span><span id="line-109"></span><span class="hs-comment">--  Notice the result bytesting length remainder `r` equals zero.  The lack</span><span>
+</span><span id="line-110"></span><span class="hs-comment">--  of a \&quot;next header\&quot; field means this function is not directly useable for</span><span>
+</span><span id="line-111"></span><span class="hs-comment">--  an IPSec implementation (copy/paste the 4 line function and add in a</span><span>
+</span><span id="line-112"></span><span class="hs-comment">--  \&quot;next header\&quot; field if you are making IPSec ESP).</span><span>
+</span><span id="line-113"></span><span class="annot"><a href="Crypto.Padding.html#padESP"><span class="hs-identifier hs-type">padESP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-114"></span><span id="padESP"><span class="annot"><span class="annottext">padESP :: ByteLength -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Padding.html#padESP"><span class="hs-identifier hs-var hs-var">padESP</span></a></span></span><span> </span><span id="local-6989586621679084078"><span class="annot"><span class="annottext">i :: ByteLength
+</span><a href="#local-6989586621679084078"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679084077"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084077"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Put -&gt; ByteString
+</span><span class="hs-identifier hs-var">runPut</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPadESP"><span class="hs-identifier hs-var">putPadESP</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084078"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084077"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span>
+</span><span id="line-116"></span><span class="hs-comment">-- | Like padESP but use the BlockCipher instance to determine padding size</span><span>
+</span><span id="line-117"></span><span id="local-6989586621679084076"><span class="annot"><a href="Crypto.Padding.html#padESPBlockSize"><span class="hs-identifier hs-type">padESPBlockSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084076"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084076"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span></span><span>
+</span><span id="line-118"></span><span id="padESPBlockSize"><span class="annot"><span class="annottext">padESPBlockSize :: k -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Padding.html#padESPBlockSize"><span class="hs-identifier hs-var hs-var">padESPBlockSize</span></a></span></span><span> </span><span id="local-6989586621679084075"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084075"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084074"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084074"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Put -&gt; ByteString
+</span><span class="hs-identifier hs-var">runPut</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k -&gt; ByteString -&gt; Put
+forall k. BlockCipher k =&gt; k -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPadESPBlockSize"><span class="hs-identifier hs-var">putPadESPBlockSize</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084075"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084074"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>
+</span><span id="line-120"></span><span class="hs-comment">-- | Like putPadESP but using the BlockCipher instance to determine padding size</span><span>
+</span><span id="line-121"></span><span id="local-6989586621679084073"><span class="annot"><a href="Crypto.Padding.html#putPadESPBlockSize"><span class="hs-identifier hs-type">putPadESPBlockSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084073"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084073"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Put</span></span></span><span>
+</span><span id="line-122"></span><span id="putPadESPBlockSize"><span class="annot"><span class="annottext">putPadESPBlockSize :: k -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPadESPBlockSize"><span class="hs-identifier hs-var hs-var">putPadESPBlockSize</span></a></span></span><span> </span><span id="local-6989586621679084072"><span class="annot"><span class="annottext">k :: k
+</span><a href="#local-6989586621679084072"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679084071"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084071"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPadESP"><span class="hs-identifier hs-var">putPadESP</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Tagged k ByteLength
+forall k. BlockCipher k =&gt; Tagged k ByteLength
+</span><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier hs-var">blockSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged k ByteLength -&gt; k -&gt; ByteLength
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679084072"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084071"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="hs-comment">-- | Pad a bytestring to the IPSEC ESP specification using 'Put'.</span><span>
+</span><span id="line-125"></span><span class="hs-comment">-- This can reduce copying if you are already using 'Put'.</span><span>
+</span><span id="line-126"></span><span class="annot"><a href="Crypto.Padding.html#putPadESP"><span class="hs-identifier hs-type">putPadESP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Put</span></span><span>
+</span><span id="line-127"></span><span id="putPadESP"><span class="annot"><span class="annottext">putPadESP :: ByteLength -&gt; ByteString -&gt; Put
+</span><a href="Crypto.Padding.html#putPadESP"><span class="hs-identifier hs-var hs-var">putPadESP</span></a></span></span><span> </span><span class="hs-number">0</span><span> </span><span id="local-6989586621679084070"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084070"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084070"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">Put -&gt; Put -&gt; Put
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Putter Word8
+</span><span class="hs-identifier hs-var">putWord8</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-128"></span><span class="annot"><a href="Crypto.Padding.html#putPadESP"><span class="hs-identifier hs-var">putPadESP</span></a></span><span> </span><span id="local-6989586621679084069"><span class="annot"><span class="annottext">l :: ByteLength
+</span><a href="#local-6989586621679084069"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679084068"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084068"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-129"></span><span>        </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084068"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-130"></span><span>        </span><span class="annot"><span class="annottext">ByteString -&gt; Put
+</span><span class="hs-identifier hs-var">putByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084067"><span class="hs-identifier hs-var">pad</span></a></span><span>
+</span><span id="line-131"></span><span>        </span><span class="annot"><span class="annottext">Putter Word8
+</span><span class="hs-identifier hs-var">putWord8</span></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084066"><span class="hs-identifier hs-var">pLen</span></a></span><span>
+</span><span id="line-132"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-133"></span><span>  </span><span id="local-6989586621679084067"><span class="annot"><span class="annottext">pad :: ByteString
+</span><a href="#local-6989586621679084067"><span class="hs-identifier hs-var hs-var">pad</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.take</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084064"><span class="hs-identifier hs-var">padLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Crypto.Padding.html#espPad"><span class="hs-identifier hs-var">espPad</span></a></span><span>
+</span><span id="line-134"></span><span>  </span><span id="local-6989586621679084064"><span class="annot"><span class="annottext">padLen :: ByteLength
+</span><a href="#local-6989586621679084064"><span class="hs-identifier hs-var hs-var">padLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084069"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084068"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`rem`</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084069"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-135"></span><span>  </span><span id="local-6989586621679084066"><span class="annot"><span class="annottext">pLen :: Word8
+</span><a href="#local-6989586621679084066"><span class="hs-identifier hs-var hs-var">pLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; Word8
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084064"><span class="hs-identifier hs-var">padLen</span></a></span><span>
+</span><span id="line-136"></span><span>
+</span><span id="line-137"></span><span class="hs-comment">-- |A static espPad allows reuse of a single B.pack'ed pad for all calls to padESP</span><span>
+</span><span id="line-138"></span><span id="espPad"><span class="annot"><span class="annottext">espPad :: ByteString
+</span><a href="Crypto.Padding.html#espPad"><span class="hs-identifier hs-var hs-var">espPad</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.pack</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-glyph">..</span><span class="annot"><span class="hs-number">255</span></span><span class="hs-special">]</span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span class="hs-comment">-- | unpad and return the padded message ('Nothing' is returned if the padding is invalid)</span><span>
+</span><span id="line-141"></span><span class="annot"><a href="Crypto.Padding.html#unpadESP"><span class="hs-identifier hs-type">unpadESP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-142"></span><span id="unpadESP"><span class="annot"><span class="annottext">unpadESP :: ByteString -&gt; Maybe ByteString
+</span><a href="Crypto.Padding.html#unpadESP"><span class="hs-identifier hs-var hs-var">unpadESP</span></a></span></span><span> </span><span id="local-6989586621679084060"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679084060"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-143"></span><span>        </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084059"><span class="hs-identifier hs-var">bsLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; Bool
+</span><a href="Crypto.Util.html#constTimeEq"><span class="hs-identifier hs-var">constTimeEq</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.take</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084055"><span class="hs-identifier hs-var">pLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084054"><span class="hs-identifier hs-var">pad</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.take</span></span><span> </span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084055"><span class="hs-identifier hs-var">pLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="Crypto.Padding.html#espPad"><span class="hs-identifier hs-var">espPad</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Maybe ByteString
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-145"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe ByteString
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084053"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><span id="line-146"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-147"></span><span>  </span><span id="local-6989586621679084059"><span class="annot"><span class="annottext">bsLen :: ByteLength
+</span><a href="#local-6989586621679084059"><span class="hs-identifier hs-var hs-var">bsLen</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteLength
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084060"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-148"></span><span>  </span><span id="local-6989586621679084052"><span class="annot"><span class="annottext">padLen :: Word8
+</span><a href="#local-6989586621679084052"><span class="hs-identifier hs-var hs-var">padLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Word8
+</span><span class="hs-identifier hs-var">B.last</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084060"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-149"></span><span>  </span><span id="local-6989586621679084055"><span class="annot"><span class="annottext">pLen :: ByteLength
+</span><a href="#local-6989586621679084055"><span class="hs-identifier hs-var hs-var">pLen</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; ByteLength
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679084052"><span class="hs-identifier hs-var">padLen</span></a></span><span>
+</span><span id="line-150"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679084053"><span class="annot"><span class="annottext">msg :: ByteString
+</span><a href="#local-6989586621679084053"><span class="hs-identifier hs-var">msg</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679084054"><span class="annot"><span class="annottext">pad :: ByteString
+</span><a href="#local-6989586621679084054"><span class="hs-identifier hs-var">pad</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span class="hs-identifier hs-var">B.splitAt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084059"><span class="hs-identifier hs-var">bsLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteLength
+</span><a href="#local-6989586621679084055"><span class="hs-identifier hs-var">pLen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteLength -&gt; ByteLength -&gt; ByteLength
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084060"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-151"></span></pre></body></html>

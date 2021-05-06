@@ -1,0 +1,719 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Codec.Crypto.RSA.Exceptions</span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>         </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#RSAError"><span class="hs-identifier">RSAError</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-3"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier">HashInfo</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span>       </span><span class="annot"><span class="hs-comment">-- * Keys and key generation</span></span><span>
+</span><span id="line-5"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">PrivateKey</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">PublicKey</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#generateKeyPair"><span class="hs-identifier">generateKeyPair</span></a></span><span>
+</span><span id="line-8"></span><span>       </span><span class="annot"><span class="hs-comment">-- * High-level encryption and signature functions</span></span><span>
+</span><span id="line-9"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#encrypt"><span class="hs-identifier">encrypt</span></a></span><span>
+</span><span id="line-10"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#encryptOAEP"><span class="hs-identifier">encryptOAEP</span></a></span><span>
+</span><span id="line-11"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#encryptPKCS"><span class="hs-identifier">encryptPKCS</span></a></span><span>
+</span><span id="line-12"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#decrypt"><span class="hs-identifier">decrypt</span></a></span><span>
+</span><span id="line-13"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#decryptOAEP"><span class="hs-identifier">decryptOAEP</span></a></span><span>
+</span><span id="line-14"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#decryptPKCS"><span class="hs-identifier">decryptPKCS</span></a></span><span>
+</span><span id="line-15"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#sign"><span class="hs-identifier">sign</span></a></span><span>
+</span><span id="line-16"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#verify"><span class="hs-identifier">verify</span></a></span><span>
+</span><span id="line-17"></span><span>       </span><span class="annot"><span class="hs-comment">-- * Core routines for OAEP</span></span><span>
+</span><span id="line-18"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier">MGF</span></a></span><span>
+</span><span id="line-19"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#generateMGF1"><span class="hs-identifier">generateMGF1</span></a></span><span>
+</span><span id="line-20"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_oaep_encrypt"><span class="hs-identifier">rsaes_oaep_encrypt</span></a></span><span>
+</span><span id="line-21"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_oaep_decrypt"><span class="hs-identifier">rsaes_oaep_decrypt</span></a></span><span>
+</span><span id="line-22"></span><span>       </span><span class="annot"><span class="hs-comment">-- * Core PSS routines</span></span><span>
+</span><span id="line-23"></span><span>       </span><span class="hs-comment">-- $pss</span><span>
+</span><span id="line-24"></span><span>       </span><span class="hs-comment">-- * Core PKCS1 (v1.5) Routines</span><span>
+</span><span id="line-25"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_pkcs1_v1_5_encrypt"><span class="hs-identifier">rsaes_pkcs1_v1_5_encrypt</span></a></span><span>
+</span><span id="line-26"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_pkcs1_v1_5_decrypt"><span class="hs-identifier">rsaes_pkcs1_v1_5_decrypt</span></a></span><span>
+</span><span id="line-27"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsassa_pkcs1_v1_5_sign"><span class="hs-identifier">rsassa_pkcs1_v1_5_sign</span></a></span><span>
+</span><span id="line-28"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsassa_pkcs1_v1_5_verify"><span class="hs-identifier">rsassa_pkcs1_v1_5_verify</span></a></span><span>
+</span><span id="line-29"></span><span>       </span><span class="annot"><span class="hs-comment">-- * Hashing algorithm declarations for use in RSA functions</span></span><span>
+</span><span id="line-30"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA1"><span class="hs-identifier">hashSHA1</span></a></span><span>
+</span><span id="line-31"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA224"><span class="hs-identifier">hashSHA224</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA256"><span class="hs-identifier">hashSHA256</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA384"><span class="hs-identifier">hashSHA384</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA512"><span class="hs-identifier">hashSHA512</span></a></span><span>
+</span><span id="line-32"></span><span>       </span><span class="annot"><span class="hs-comment">-- * Other mathematical functions that are handy for implementing</span></span><span>
+</span><span id="line-33"></span><span>       </span><span class="hs-comment">-- other RSA primitives.</span><span>
+</span><span id="line-34"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#largeRandomPrime"><span class="hs-identifier">largeRandomPrime</span></a></span><span>
+</span><span id="line-35"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#generatePQ"><span class="hs-identifier">generatePQ</span></a></span><span>
+</span><span id="line-36"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#chunkify"><span class="hs-identifier">chunkify</span></a></span><span>
+</span><span id="line-37"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#os2ip"><span class="hs-identifier">os2ip</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#i2osp"><span class="hs-identifier">i2osp</span></a></span><span>
+</span><span id="line-38"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_dp"><span class="hs-identifier">rsa_dp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_ep"><span class="hs-identifier">rsa_ep</span></a></span><span>
+</span><span id="line-39"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_vp1"><span class="hs-identifier">rsa_vp1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_sp1"><span class="hs-identifier">rsa_sp1</span></a></span><span>
+</span><span id="line-40"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#modular_inverse"><span class="hs-identifier">modular_inverse</span></a></span><span>
+</span><span id="line-41"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#modular_exponentiation"><span class="hs-identifier">modular_exponentiation</span></a></span><span>
+</span><span id="line-42"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#randomBS"><span class="hs-identifier">randomBS</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#randomNZBS"><span class="hs-identifier">randomNZBS</span></a></span><span>
+</span><span id="line-43"></span><span>       </span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html"><span class="hs-identifier">Codec.Crypto.RSA.Pure</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Pure</span></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html"><span class="hs-identifier">Codec.Crypto.RSA.Pure</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier">HashInfo</span></a></span><span class="hs-special">,</span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#RSAError"><span class="hs-identifier">RSAError</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Crypto.Random</span></span><span>
+</span><span id="line-49"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Crypto.Types.PubKey.RSA</span></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ByteString</span></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Int</span></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-comment">-- |Randomly generate a key pair of the given modules length (in bits) to use</span><span>
+</span><span id="line-54"></span><span class="hs-comment">-- in any of the following functions. Use of a good random number generator is</span><span>
+</span><span id="line-55"></span><span class="hs-comment">-- of considerable importance when using this function. The input</span><span>
+</span><span id="line-56"></span><span class="hs-comment">-- CryptoRandomGen should never be used again for any other purpose; either</span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- use the output'd generator or throw it all away.</span><span>
+</span><span id="line-58"></span><span id="local-6989586621679077328"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#generateKeyPair"><span class="hs-identifier hs-type">generateKeyPair</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077328"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-59"></span><span>                   </span><span class="annot"><a href="#local-6989586621679077328"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-60"></span><span>                   </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077328"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-61"></span><span id="generateKeyPair"><span class="annot"><span class="annottext">generateKeyPair :: g -&gt; Int -&gt; (PublicKey, PrivateKey, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#generateKeyPair"><span class="hs-identifier hs-var hs-var">generateKeyPair</span></a></span></span><span> </span><span id="local-6989586621679077327"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077327"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077326"><span class="annot"><span class="annottext">sizeBits :: Int
+</span><a href="#local-6989586621679077326"><span class="hs-identifier hs-var">sizeBits</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (PublicKey, PrivateKey, g)
+-&gt; (PublicKey, PrivateKey, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; Int -&gt; Either RSAError (PublicKey, PrivateKey, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; Int -&gt; Either RSAError (PublicKey, PrivateKey, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#generateKeyPair"><span class="hs-identifier hs-var">Pure.generateKeyPair</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077327"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679077326"><span class="hs-identifier hs-var">sizeBits</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- |Compute a signature for the given ByteString, using the SHA256 algorithm</span><span>
+</span><span id="line-66"></span><span class="hs-comment">-- in the computation. This is currently defined as rsassa_pkcs1_v1_5_sign</span><span>
+</span><span id="line-67"></span><span class="hs-comment">-- hashSHA256. If you want to use a different function, simply use the PKCS</span><span>
+</span><span id="line-68"></span><span class="hs-comment">-- function, below; it will accept arbitrarily-length messages.</span><span>
+</span><span id="line-69"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#sign"><span class="hs-identifier hs-type">sign</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-70"></span><span id="sign"><span class="annot"><span class="annottext">sign :: PrivateKey -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#sign"><span class="hs-identifier hs-var hs-var">sign</span></a></span></span><span> </span><span id="local-6989586621679077323"><span class="annot"><span class="annottext">pk :: PrivateKey
+</span><a href="#local-6989586621679077323"><span class="hs-identifier hs-var">pk</span></a></span></span><span> </span><span id="local-6989586621679077322"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679077322"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; ByteString -&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#sign"><span class="hs-identifier hs-var">Pure.sign</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077323"><span class="hs-identifier hs-var">pk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077322"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span class="hs-comment">-- |Verify a signature for the given ByteString, using the SHA25 algorithm in</span><span>
+</span><span id="line-73"></span><span class="hs-comment">-- the computation. Again, if you'd like to use a different algorithm, use the</span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- rsassa_pkcs1_v1_5_verify function.</span><span>
+</span><span id="line-75"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#verify"><span class="hs-identifier hs-type">verify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-comment">{- ^The key of the signer -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-76"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The message -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-77"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The purported signature -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-78"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-79"></span><span id="verify"><span class="annot"><span class="annottext">verify :: PublicKey -&gt; ByteString -&gt; ByteString -&gt; Bool
+</span><a href="Codec.Crypto.RSA.Exceptions.html#verify"><span class="hs-identifier hs-var hs-var">verify</span></a></span></span><span> </span><span id="local-6989586621679077320"><span class="annot"><span class="annottext">pk :: PublicKey
+</span><a href="#local-6989586621679077320"><span class="hs-identifier hs-var">pk</span></a></span></span><span> </span><span id="local-6989586621679077319"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077319"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679077318"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679077318"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError Bool -&gt; Bool
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PublicKey -&gt; ByteString -&gt; ByteString -&gt; Either RSAError Bool
+</span><a href="Codec.Crypto.RSA.Pure.html#verify"><span class="hs-identifier hs-var">Pure.verify</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077320"><span class="hs-identifier hs-var">pk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077319"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077318"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-comment">-- |Encrypt an arbitrarily-sized message given the public key and reasonable</span><span>
+</span><span id="line-84"></span><span class="hs-comment">-- options. This is equivalent to calling encryptOAEP with SHA-256 as the</span><span>
+</span><span id="line-85"></span><span class="hs-comment">-- hash function, MGF1(SHA-256) as the mask generation function, and no label.</span><span>
+</span><span id="line-86"></span><span class="hs-comment">-- NOTE: This hash choice means that your key size must be 1024 bits or larger.</span><span>
+</span><span id="line-87"></span><span id="local-6989586621679077316"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#encrypt"><span class="hs-identifier hs-type">encrypt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077316"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-88"></span><span>           </span><span class="annot"><a href="#local-6989586621679077316"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-89"></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077316"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-90"></span><span id="encrypt"><span class="annot"><span class="annottext">encrypt :: g -&gt; PublicKey -&gt; ByteString -&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#encrypt"><span class="hs-identifier hs-var hs-var">encrypt</span></a></span></span><span> </span><span id="local-6989586621679077315"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077315"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077314"><span class="annot"><span class="annottext">k :: PublicKey
+</span><a href="#local-6989586621679077314"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077313"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077313"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; PublicKey -&gt; ByteString -&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; PublicKey -&gt; ByteString -&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#encrypt"><span class="hs-identifier hs-var">Pure.encrypt</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077315"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077314"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077313"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="hs-comment">-- |Encrypt an arbitrarily-sized message using OAEP encoding. This is the</span><span>
+</span><span id="line-93"></span><span class="hs-comment">-- encouraged encoding for doing RSA encryption. Note that your key size</span><span>
+</span><span id="line-94"></span><span class="hs-comment">-- must be greater than (2 * hash length + 2) * 8. (For example, the</span><span>
+</span><span id="line-95"></span><span class="hs-comment">-- 'encrypt' convenience function uses a 256 bit / 32 byte hash function.</span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- Thus, its key must be greater than (2 * 32 + 2) * 8 = 528 bits long,</span><span>
+</span><span id="line-97"></span><span class="hs-comment">-- and we suggest 1024 as a lower bound.)</span><span>
+</span><span id="line-98"></span><span id="local-6989586621679077311"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#encryptOAEP"><span class="hs-identifier hs-type">encryptOAEP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077311"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-99"></span><span>               </span><span class="annot"><a href="#local-6989586621679077311"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-100"></span><span>               </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">{- ^The hash function to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-101"></span><span>               </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier hs-type">MGF</span></a></span><span> </span><span class="hs-comment">{- ^The mask generation function to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-102"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^An optional label to include -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-103"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-comment">{- ^The public key to encrypt with -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-104"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The message to encrypt -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-105"></span><span>               </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077311"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-106"></span><span id="encryptOAEP"><span class="annot"><span class="annottext">encryptOAEP :: g
+-&gt; (ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; ByteString
+-&gt; PublicKey
+-&gt; ByteString
+-&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#encryptOAEP"><span class="hs-identifier hs-var hs-var">encryptOAEP</span></a></span></span><span> </span><span id="local-6989586621679077310"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077310"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077309"><span class="annot"><span class="annottext">hash :: ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077309"><span class="hs-identifier hs-var">hash</span></a></span></span><span> </span><span id="local-6989586621679077308"><span class="annot"><span class="annottext">mgf :: MGF
+</span><a href="#local-6989586621679077308"><span class="hs-identifier hs-var">mgf</span></a></span></span><span> </span><span id="local-6989586621679077307"><span class="annot"><span class="annottext">l :: ByteString
+</span><a href="#local-6989586621679077307"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679077306"><span class="annot"><span class="annottext">k :: PublicKey
+</span><a href="#local-6989586621679077306"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077305"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077305"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g
+-&gt; (ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; ByteString
+-&gt; PublicKey
+-&gt; ByteString
+-&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g
+-&gt; (ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; ByteString
+-&gt; PublicKey
+-&gt; ByteString
+-&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#encryptOAEP"><span class="hs-identifier hs-var">Pure.encryptOAEP</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077310"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077309"><span class="hs-identifier hs-var">hash</span></a></span><span> </span><span class="annot"><span class="annottext">MGF
+</span><a href="#local-6989586621679077308"><span class="hs-identifier hs-var">mgf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077307"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077306"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077305"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="hs-comment">-- |Encrypt an arbitrarily-sized message using PKCS1 v1.5 encoding. This</span><span>
+</span><span id="line-109"></span><span class="hs-comment">-- encoding is deprecated, and should only be used when interacting with</span><span>
+</span><span id="line-110"></span><span class="hs-comment">-- legacy software that cannot be modified.</span><span>
+</span><span id="line-111"></span><span id="local-6989586621679077303"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#encryptPKCS"><span class="hs-identifier hs-type">encryptPKCS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077303"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-112"></span><span>               </span><span class="annot"><a href="#local-6989586621679077303"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-113"></span><span>               </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077303"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-114"></span><span id="encryptPKCS"><span class="annot"><span class="annottext">encryptPKCS :: g -&gt; PublicKey -&gt; ByteString -&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#encryptPKCS"><span class="hs-identifier hs-var hs-var">encryptPKCS</span></a></span></span><span> </span><span id="local-6989586621679077302"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077302"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077301"><span class="annot"><span class="annottext">k :: PublicKey
+</span><a href="#local-6989586621679077301"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077300"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077300"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; PublicKey -&gt; ByteString -&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; PublicKey -&gt; ByteString -&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#encryptPKCS"><span class="hs-identifier hs-var">Pure.encryptPKCS</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077302"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077301"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077300"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span>
+</span><span id="line-116"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-117"></span><span>
+</span><span id="line-118"></span><span class="hs-comment">-- |Decrypt an arbitrarily-sized message given the public key and reasonable</span><span>
+</span><span id="line-119"></span><span class="hs-comment">-- options. This is equivalent to calling encryptOAEP with SHA-256 as the</span><span>
+</span><span id="line-120"></span><span class="hs-comment">-- hash function, MGF1(SHA-256) as the mask generation function, and no label.</span><span>
+</span><span id="line-121"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#decrypt"><span class="hs-identifier hs-type">decrypt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-122"></span><span id="decrypt"><span class="annot"><span class="annottext">decrypt :: PrivateKey -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#decrypt"><span class="hs-identifier hs-var hs-var">decrypt</span></a></span></span><span> </span><span id="local-6989586621679077298"><span class="annot"><span class="annottext">k :: PrivateKey
+</span><a href="#local-6989586621679077298"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077297"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077297"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; ByteString -&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#decrypt"><span class="hs-identifier hs-var">Pure.decrypt</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077298"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077297"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="hs-comment">-- |Decrypt an arbitrarily-sized message using OAEP encoding. This is the</span><span>
+</span><span id="line-125"></span><span class="hs-comment">-- encouraged encoding for doing RSA encryption.</span><span>
+</span><span id="line-126"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#decryptOAEP"><span class="hs-identifier hs-type">decryptOAEP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">{- ^The hash function to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-127"></span><span>               </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier hs-type">MGF</span></a></span><span> </span><span class="hs-comment">{- ^The mask generation function to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-128"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^An optional label to include -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-129"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-comment">{- ^The public key to encrypt with -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-130"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The message to decrypt -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-131"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-132"></span><span id="decryptOAEP"><span class="annot"><span class="annottext">decryptOAEP :: (ByteString -&gt; ByteString)
+-&gt; MGF -&gt; ByteString -&gt; PrivateKey -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#decryptOAEP"><span class="hs-identifier hs-var hs-var">decryptOAEP</span></a></span></span><span> </span><span id="local-6989586621679077295"><span class="annot"><span class="annottext">hash :: ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077295"><span class="hs-identifier hs-var">hash</span></a></span></span><span> </span><span id="local-6989586621679077294"><span class="annot"><span class="annottext">mgf :: MGF
+</span><a href="#local-6989586621679077294"><span class="hs-identifier hs-var">mgf</span></a></span></span><span> </span><span id="local-6989586621679077293"><span class="annot"><span class="annottext">l :: ByteString
+</span><a href="#local-6989586621679077293"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679077292"><span class="annot"><span class="annottext">k :: PrivateKey
+</span><a href="#local-6989586621679077292"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077291"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077291"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; ByteString
+-&gt; PrivateKey
+-&gt; ByteString
+-&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#decryptOAEP"><span class="hs-identifier hs-var">Pure.decryptOAEP</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077295"><span class="hs-identifier hs-var">hash</span></a></span><span> </span><span class="annot"><span class="annottext">MGF
+</span><a href="#local-6989586621679077294"><span class="hs-identifier hs-var">mgf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077293"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077292"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077291"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-133"></span><span>
+</span><span id="line-134"></span><span class="hs-comment">-- |Decrypt an arbitrarily-sized message using PKCS1 v1.5 encoding. This</span><span>
+</span><span id="line-135"></span><span class="hs-comment">-- encoding is deprecated, and should only be used when interacting with</span><span>
+</span><span id="line-136"></span><span class="hs-comment">-- legacy software that cannot be modified.</span><span>
+</span><span id="line-137"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#decryptPKCS"><span class="hs-identifier hs-type">decryptPKCS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-138"></span><span id="decryptPKCS"><span class="annot"><span class="annottext">decryptPKCS :: PrivateKey -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#decryptPKCS"><span class="hs-identifier hs-var hs-var">decryptPKCS</span></a></span></span><span> </span><span id="local-6989586621679077289"><span class="annot"><span class="annottext">k :: PrivateKey
+</span><a href="#local-6989586621679077289"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077288"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077288"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; ByteString -&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#decryptPKCS"><span class="hs-identifier hs-var">Pure.decryptPKCS</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077289"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077288"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#chunkify"><span class="hs-identifier hs-type">chunkify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">]</span><span>
+</span><span id="line-143"></span><span id="chunkify"><span class="annot"><span class="annottext">chunkify :: ByteString -&gt; Int64 -&gt; [ByteString]
+</span><a href="Codec.Crypto.RSA.Exceptions.html#chunkify"><span class="hs-identifier hs-var hs-var">chunkify</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int64 -&gt; [ByteString]
+</span><a href="Codec.Crypto.RSA.Pure.html#chunkify"><span class="hs-identifier hs-var">Pure.chunkify</span></a></span><span>
+</span><span id="line-144"></span><span>
+</span><span id="line-145"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="hs-comment">-- |The generalized implementation of RSAES-OAEP-ENCRYPT. Using the default</span><span>
+</span><span id="line-148"></span><span class="hs-comment">-- instantiontion of this, provided by the 'encrypt' function, is a pretty</span><span>
+</span><span id="line-149"></span><span class="hs-comment">-- good plan if this makes no sense to you, as it is instantiated with</span><span>
+</span><span id="line-150"></span><span class="hs-comment">-- reasonable defaults.</span><span>
+</span><span id="line-151"></span><span class="hs-comment">--</span><span>
+</span><span id="line-152"></span><span class="hs-comment">-- The message to be encrypted may not be longer then (k - 2*hLen - 2),</span><span>
+</span><span id="line-153"></span><span class="hs-comment">-- where k is the length of the RSA modulus in bytes and hLen is the length</span><span>
+</span><span id="line-154"></span><span class="hs-comment">-- of a hash in bytes. Passing in a larger message will generate an error,</span><span>
+</span><span id="line-155"></span><span class="hs-comment">-- represented by the Left constructor. Note that this means that OAEP</span><span>
+</span><span id="line-156"></span><span class="hs-comment">-- encryption cannot be used with keys smaller than 512 bits.</span><span>
+</span><span id="line-157"></span><span class="hs-comment">--</span><span>
+</span><span id="line-158"></span><span class="hs-comment">-- I have not put in a check for the length of the label, because I don't</span><span>
+</span><span id="line-159"></span><span class="hs-comment">-- expect you to use more than 2^32 bytes. So don't make me regret that, eh?</span><span>
+</span><span id="line-160"></span><span class="hs-comment">--</span><span>
+</span><span id="line-161"></span><span id="local-6989586621679077285"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_oaep_encrypt"><span class="hs-identifier hs-type">rsaes_oaep_encrypt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077285"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-162"></span><span>                      </span><span class="annot"><a href="#local-6989586621679077285"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-163"></span><span>                      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-glyph">-&gt;</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">{-^The hash function to use-}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-164"></span><span>                      </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier hs-type">MGF</span></a></span><span> </span><span class="hs-comment">{- ^An appropriate mask genereation function -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-165"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-comment">{- ^The recipient's public key -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-166"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^A label to associate with the message
+                                    (feel free to use BS.empty) -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-168"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The message to encrypt -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-169"></span><span>                      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077285"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-170"></span><span id="rsaes_oaep_encrypt"><span class="annot"><span class="annottext">rsaes_oaep_encrypt :: g
+-&gt; (ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; PublicKey
+-&gt; ByteString
+-&gt; ByteString
+-&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_oaep_encrypt"><span class="hs-identifier hs-var hs-var">rsaes_oaep_encrypt</span></a></span></span><span> </span><span id="local-6989586621679077284"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077284"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077283"><span class="annot"><span class="annottext">hash :: ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077283"><span class="hs-identifier hs-var">hash</span></a></span></span><span> </span><span id="local-6989586621679077282"><span class="annot"><span class="annottext">mgf :: MGF
+</span><a href="#local-6989586621679077282"><span class="hs-identifier hs-var">mgf</span></a></span></span><span> </span><span id="local-6989586621679077281"><span class="annot"><span class="annottext">k :: PublicKey
+</span><a href="#local-6989586621679077281"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077280"><span class="annot"><span class="annottext">l :: ByteString
+</span><a href="#local-6989586621679077280"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679077279"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077279"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-171"></span><span>  </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g
+-&gt; (ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; PublicKey
+-&gt; ByteString
+-&gt; ByteString
+-&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g
+-&gt; (ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; PublicKey
+-&gt; ByteString
+-&gt; ByteString
+-&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#rsaes_oaep_encrypt"><span class="hs-identifier hs-var">Pure.rsaes_oaep_encrypt</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077284"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077283"><span class="hs-identifier hs-var">hash</span></a></span><span> </span><span class="annot"><span class="annottext">MGF
+</span><a href="#local-6989586621679077282"><span class="hs-identifier hs-var">mgf</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077281"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077280"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077279"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-172"></span><span>
+</span><span id="line-173"></span><span class="hs-comment">-- |The generalized implementation of RSAES-OAEP-DECRYPT. Again, 'decrypt'</span><span>
+</span><span id="line-174"></span><span class="hs-comment">-- initializes this with a pretty good set of defaults if you don't understand</span><span>
+</span><span id="line-175"></span><span class="hs-comment">-- what all of the arguments involve.</span><span>
+</span><span id="line-176"></span><span class="hs-comment">--</span><span>
+</span><span id="line-177"></span><span class="hs-comment">-- The ciphertext message passed to this function must be k bytes long, where</span><span>
+</span><span id="line-178"></span><span class="hs-comment">-- k is the size of the modulus in bytes. If it is not, this function will</span><span>
+</span><span id="line-179"></span><span class="hs-comment">-- generate an error, represented by the Left constructor.</span><span>
+</span><span id="line-180"></span><span class="hs-comment">--</span><span>
+</span><span id="line-181"></span><span class="hs-comment">-- Futher, k (the length of the ciphertext in bytes) must be greater than or</span><span>
+</span><span id="line-182"></span><span class="hs-comment">-- equal to (2 * hLen + 2), where hLen is the length of the output of the </span><span>
+</span><span id="line-183"></span><span class="hs-comment">-- hash function in bytes. If this equation does not hold, a (different)</span><span>
+</span><span id="line-184"></span><span class="hs-comment">-- error will be generated.</span><span>
+</span><span id="line-185"></span><span class="hs-comment">--</span><span>
+</span><span id="line-186"></span><span class="hs-comment">-- Finally, there are any number of internal situations that may generate</span><span>
+</span><span id="line-187"></span><span class="hs-comment">-- an error indicating that decryption failed.</span><span>
+</span><span id="line-188"></span><span class="hs-comment">--</span><span>
+</span><span id="line-189"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_oaep_decrypt"><span class="hs-identifier hs-type">rsaes_oaep_decrypt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-glyph">-&gt;</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">{-^The hash function to use-}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-190"></span><span>                      </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier hs-type">MGF</span></a></span><span> </span><span class="hs-comment">{- ^A mask generation function -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-191"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-comment">{- ^The private key to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-192"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^An optional label whose
+                                     association with the message
+                                     should be verified. -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-195"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The ciphertext to decrypt -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-196"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-197"></span><span id="rsaes_oaep_decrypt"><span class="annot"><span class="annottext">rsaes_oaep_decrypt :: (ByteString -&gt; ByteString)
+-&gt; MGF -&gt; PrivateKey -&gt; ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_oaep_decrypt"><span class="hs-identifier hs-var hs-var">rsaes_oaep_decrypt</span></a></span></span><span> </span><span id="local-6989586621679077277"><span class="annot"><span class="annottext">hash :: ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077277"><span class="hs-identifier hs-var">hash</span></a></span></span><span> </span><span id="local-6989586621679077276"><span class="annot"><span class="annottext">mgf :: MGF
+</span><a href="#local-6989586621679077276"><span class="hs-identifier hs-var">mgf</span></a></span></span><span> </span><span id="local-6989586621679077275"><span class="annot"><span class="annottext">k :: PrivateKey
+</span><a href="#local-6989586621679077275"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077274"><span class="annot"><span class="annottext">l :: ByteString
+</span><a href="#local-6989586621679077274"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679077273"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679077273"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-198"></span><span>  </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString)
+-&gt; MGF
+-&gt; PrivateKey
+-&gt; ByteString
+-&gt; ByteString
+-&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#rsaes_oaep_decrypt"><span class="hs-identifier hs-var">Pure.rsaes_oaep_decrypt</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="#local-6989586621679077277"><span class="hs-identifier hs-var">hash</span></a></span><span> </span><span class="annot"><span class="annottext">MGF
+</span><a href="#local-6989586621679077276"><span class="hs-identifier hs-var">mgf</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077275"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077274"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077273"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-199"></span><span>
+</span><span id="line-200"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-201"></span><span>
+</span><span id="line-202"></span><span class="hs-comment">-- |Implements RSAES-PKCS1-v1.5-Encrypt, for completeness and backward</span><span>
+</span><span id="line-203"></span><span class="hs-comment">-- compatibility. Also because I've already written everything else, so why not?</span><span>
+</span><span id="line-204"></span><span class="hs-comment">--</span><span>
+</span><span id="line-205"></span><span class="hs-comment">-- This encryption / padding mechanism has several known attacks, which are</span><span>
+</span><span id="line-206"></span><span class="hs-comment">-- described in the literature. So unless you absolutely need to use this</span><span>
+</span><span id="line-207"></span><span class="hs-comment">-- for some historical reason, you should avoid it.</span><span>
+</span><span id="line-208"></span><span class="hs-comment">--</span><span>
+</span><span id="line-209"></span><span class="hs-comment">-- The message to be encrypted must be less then or equal to (k - 11) bytes</span><span>
+</span><span id="line-210"></span><span class="hs-comment">-- long, where k is the length of the key modulus in bytes.</span><span>
+</span><span id="line-211"></span><span class="hs-comment">--</span><span>
+</span><span id="line-212"></span><span class="hs-comment">-- Because this function uses an unknown amount of randomly-generated data,</span><span>
+</span><span id="line-213"></span><span class="hs-comment">-- it takes an instance of RandomGen rather than taking a random number as</span><span>
+</span><span id="line-214"></span><span class="hs-comment">-- input, and returns the resultant generator as output. You should take care</span><span>
+</span><span id="line-215"></span><span class="hs-comment">-- that you (a) do not reuse the input generator, thus losing important</span><span>
+</span><span id="line-216"></span><span class="hs-comment">-- randomness, and (b) choose a decent instance of RandomGen for passing to</span><span>
+</span><span id="line-217"></span><span class="hs-comment">-- this function.</span><span>
+</span><span id="line-218"></span><span id="local-6989586621679077271"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_pkcs1_v1_5_encrypt"><span class="hs-identifier hs-type">rsaes_pkcs1_v1_5_encrypt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077271"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-219"></span><span>                            </span><span class="annot"><a href="#local-6989586621679077271"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-220"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-221"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-222"></span><span>                            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077271"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-223"></span><span id="rsaes_pkcs1_v1_5_encrypt"><span class="annot"><span class="annottext">rsaes_pkcs1_v1_5_encrypt :: g -&gt; PublicKey -&gt; ByteString -&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_pkcs1_v1_5_encrypt"><span class="hs-identifier hs-var hs-var">rsaes_pkcs1_v1_5_encrypt</span></a></span></span><span> </span><span id="local-6989586621679077270"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077270"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077269"><span class="annot"><span class="annottext">k :: PublicKey
+</span><a href="#local-6989586621679077269"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077268"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077268"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-224"></span><span>  </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; PublicKey -&gt; ByteString -&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; PublicKey -&gt; ByteString -&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#rsaes_pkcs1_v1_5_encrypt"><span class="hs-identifier hs-var">Pure.rsaes_pkcs1_v1_5_encrypt</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077270"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077269"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077268"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-225"></span><span>
+</span><span id="line-226"></span><span class="hs-comment">-- |Implements RSAES-PKCS1-v1.5-Decrypt, for completeness and possible backward</span><span>
+</span><span id="line-227"></span><span class="hs-comment">-- compatibility. Please see the notes for rsaes_pkcs_v1_5_encrypt regarding</span><span>
+</span><span id="line-228"></span><span class="hs-comment">-- use of this function in new applications without backwards compatibility</span><span>
+</span><span id="line-229"></span><span class="hs-comment">-- requirements.</span><span>
+</span><span id="line-230"></span><span class="hs-comment">--</span><span>
+</span><span id="line-231"></span><span class="hs-comment">-- The ciphertext message passed to this function must be of length k, where</span><span>
+</span><span id="line-232"></span><span class="hs-comment">-- k is the length of the key modulus in bytes.</span><span>
+</span><span id="line-233"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_pkcs1_v1_5_decrypt"><span class="hs-identifier hs-type">rsaes_pkcs1_v1_5_decrypt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-234"></span><span id="rsaes_pkcs1_v1_5_decrypt"><span class="annot"><span class="annottext">rsaes_pkcs1_v1_5_decrypt :: PrivateKey -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsaes_pkcs1_v1_5_decrypt"><span class="hs-identifier hs-var hs-var">rsaes_pkcs1_v1_5_decrypt</span></a></span></span><span> </span><span id="local-6989586621679077266"><span class="annot"><span class="annottext">k :: PrivateKey
+</span><a href="#local-6989586621679077266"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077265"><span class="annot"><span class="annottext">c :: ByteString
+</span><a href="#local-6989586621679077265"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; ByteString -&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#rsaes_pkcs1_v1_5_decrypt"><span class="hs-identifier hs-var">Pure.rsaes_pkcs1_v1_5_decrypt</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077266"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077265"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-235"></span><span>
+</span><span id="line-236"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-237"></span><span>
+</span><span id="line-238"></span><span class="hs-comment">-- $pss</span><span>
+</span><span id="line-239"></span><span class="hs-comment">-- |RSASSA-PSS-Sign, RSASSA-PSS-Verify, and the related functions are not</span><span>
+</span><span id="line-240"></span><span class="hs-comment">-- included because they are covered by U.S. Patent 7036014, and it's not clear</span><span>
+</span><span id="line-241"></span><span class="hs-comment">-- what the restrictions on implementation are. Sorry.</span><span>
+</span><span id="line-242"></span><span>
+</span><span id="line-243"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-244"></span><span>
+</span><span id="line-245"></span><span class="hs-comment">-- |Generate a signature for the given message using the given private key,</span><span>
+</span><span id="line-246"></span><span class="hs-comment">-- using the RSASSA-PKCS1-v1.5-Sign algorithm. Note that in researching the</span><span>
+</span><span id="line-247"></span><span class="hs-comment">-- requirements for this project, several independent sources suggested not</span><span>
+</span><span id="line-248"></span><span class="hs-comment">-- using the same key across sign/validate and encrypt/decrypt contexts. You've</span><span>
+</span><span id="line-249"></span><span class="hs-comment">-- been warned.</span><span>
+</span><span id="line-250"></span><span class="hs-comment">--</span><span>
+</span><span id="line-251"></span><span class="hs-comment">-- The output of this function is the signature only, not the message and</span><span>
+</span><span id="line-252"></span><span class="hs-comment">-- the signature.</span><span>
+</span><span id="line-253"></span><span class="hs-comment">--</span><span>
+</span><span id="line-254"></span><span class="hs-comment">-- SIZE CONSTRAINT: The size of the public key (in bytes) must be greater</span><span>
+</span><span id="line-255"></span><span class="hs-comment">-- than or equal to the length of the hash identifier plus the length of</span><span>
+</span><span id="line-256"></span><span class="hs-comment">-- a hash plus 1. Thus, for example, you cannot use a 256 bit RSA key with</span><span>
+</span><span id="line-257"></span><span class="hs-comment">-- MD5: 32 (the size of a 256-bit RSA key in bytes) is less than 18 (the</span><span>
+</span><span id="line-258"></span><span class="hs-comment">-- size of MD5's identier) + 16 (the size of an MD5 hash in bytes) + 1,</span><span>
+</span><span id="line-259"></span><span class="hs-comment">-- or 35.</span><span>
+</span><span id="line-260"></span><span class="hs-comment">--</span><span>
+</span><span id="line-261"></span><span class="hs-comment">-- Thus,</span><span>
+</span><span id="line-262"></span><span class="hs-comment">--   * for SHA1 and SHA256, use 512+ bit keys</span><span>
+</span><span id="line-263"></span><span class="hs-comment">--   * for SHA384 and SHA512, use 1024+ bit keys</span><span>
+</span><span id="line-264"></span><span class="hs-comment">--</span><span>
+</span><span id="line-265"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsassa_pkcs1_v1_5_sign"><span class="hs-identifier hs-type">rsassa_pkcs1_v1_5_sign</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span> </span><span class="hs-comment">{- ^The hash function to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-266"></span><span>                          </span><span class="annot"><span class="hs-identifier hs-type">PrivateKey</span></span><span> </span><span class="hs-comment">{- ^The private key to sign with -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-267"></span><span>                          </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The message to sign -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-268"></span><span>                          </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">-- ^ The signature</span><span>
+</span><span id="line-269"></span><span id="rsassa_pkcs1_v1_5_sign"><span class="annot"><span class="annottext">rsassa_pkcs1_v1_5_sign :: HashInfo -&gt; PrivateKey -&gt; ByteString -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsassa_pkcs1_v1_5_sign"><span class="hs-identifier hs-var hs-var">rsassa_pkcs1_v1_5_sign</span></a></span></span><span> </span><span id="local-6989586621679077263"><span class="annot"><span class="annottext">hi :: HashInfo
+</span><a href="#local-6989586621679077263"><span class="hs-identifier hs-var">hi</span></a></span></span><span> </span><span id="local-6989586621679077262"><span class="annot"><span class="annottext">k :: PrivateKey
+</span><a href="#local-6989586621679077262"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077261"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077261"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-270"></span><span>  </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HashInfo -&gt; PrivateKey -&gt; ByteString -&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#rsassa_pkcs1_v1_5_sign"><span class="hs-identifier hs-var">Pure.rsassa_pkcs1_v1_5_sign</span></a></span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="#local-6989586621679077263"><span class="hs-identifier hs-var">hi</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679077262"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077261"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-271"></span><span>
+</span><span id="line-272"></span><span class="hs-comment">-- |Validate a signature for the given message using the given public key. The</span><span>
+</span><span id="line-273"></span><span class="hs-comment">-- signature must be exactly k bytes long, where k is the size of the RSA</span><span>
+</span><span id="line-274"></span><span class="hs-comment">-- modulus IN BYTES.</span><span>
+</span><span id="line-275"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsassa_pkcs1_v1_5_verify"><span class="hs-identifier hs-type">rsassa_pkcs1_v1_5_verify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span> </span><span class="hs-comment">{- ^The hash function to use -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-276"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">PublicKey</span></span><span> </span><span class="hs-comment">{-^The public key to validate against-}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-277"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The message that was signed -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-278"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">{- ^The purported signature -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-279"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-280"></span><span id="rsassa_pkcs1_v1_5_verify"><span class="annot"><span class="annottext">rsassa_pkcs1_v1_5_verify :: HashInfo -&gt; PublicKey -&gt; ByteString -&gt; ByteString -&gt; Bool
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsassa_pkcs1_v1_5_verify"><span class="hs-identifier hs-var hs-var">rsassa_pkcs1_v1_5_verify</span></a></span></span><span> </span><span id="local-6989586621679077259"><span class="annot"><span class="annottext">hi :: HashInfo
+</span><a href="#local-6989586621679077259"><span class="hs-identifier hs-var">hi</span></a></span></span><span> </span><span id="local-6989586621679077258"><span class="annot"><span class="annottext">k :: PublicKey
+</span><a href="#local-6989586621679077258"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679077257"><span class="annot"><span class="annottext">m :: ByteString
+</span><a href="#local-6989586621679077257"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679077256"><span class="annot"><span class="annottext">s :: ByteString
+</span><a href="#local-6989586621679077256"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-281"></span><span>  </span><span class="annot"><span class="annottext">Either RSAError Bool -&gt; Bool
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HashInfo
+-&gt; PublicKey -&gt; ByteString -&gt; ByteString -&gt; Either RSAError Bool
+</span><a href="Codec.Crypto.RSA.Pure.html#rsassa_pkcs1_v1_5_verify"><span class="hs-identifier hs-var">Pure.rsassa_pkcs1_v1_5_verify</span></a></span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="#local-6989586621679077259"><span class="hs-identifier hs-var">hi</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679077258"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077257"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679077256"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-282"></span><span>
+</span><span id="line-283"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-284"></span><span>
+</span><span id="line-285"></span><span class="hs-comment">-- |A 'mask generation function'. The input is a bytestring, and the output</span><span>
+</span><span id="line-286"></span><span class="hs-comment">-- is a hash of the given length. Unless you know what you're doing, you </span><span>
+</span><span id="line-287"></span><span class="hs-comment">-- should probably use a MGF1 formulation created with generate_MGF1.</span><span>
+</span><span id="line-288"></span><span class="hs-keyword">type</span><span> </span><span id="MGF"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier hs-var">MGF</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#RSAError"><span class="hs-identifier hs-type">RSAError</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-289"></span><span>
+</span><span id="line-290"></span><span class="hs-comment">-- |Generate a mask generation function for the rsaes_oaep_*. As </span><span>
+</span><span id="line-291"></span><span class="hs-comment">-- suggested by the name, the generated function is an instance of the MGF1</span><span>
+</span><span id="line-292"></span><span class="hs-comment">-- function. The arguments are the underlying hash function to use and the </span><span>
+</span><span id="line-293"></span><span class="hs-comment">-- size of a hash in bytes.</span><span>
+</span><span id="line-294"></span><span class="hs-comment">--</span><span>
+</span><span id="line-295"></span><span class="hs-comment">-- The bytestring passed to the generated function cannot be longer than</span><span>
+</span><span id="line-296"></span><span class="hs-comment">-- 2^32 * hLen, where hLen is the passed length of the hash. </span><span>
+</span><span id="line-297"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#generateMGF1"><span class="hs-identifier hs-type">generateMGF1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#MGF"><span class="hs-identifier hs-type">MGF</span></a></span><span>
+</span><span id="line-298"></span><span id="generateMGF1"><span class="annot"><span class="annottext">generateMGF1 :: (ByteString -&gt; ByteString) -&gt; MGF
+</span><a href="Codec.Crypto.RSA.Exceptions.html#generateMGF1"><span class="hs-identifier hs-var hs-var">generateMGF1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; MGF
+</span><a href="Codec.Crypto.RSA.Pure.html#generateMGF1"><span class="hs-identifier hs-var">Pure.generateMGF1</span></a></span><span>
+</span><span id="line-299"></span><span>
+</span><span id="line-300"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-301"></span><span>
+</span><span id="line-302"></span><span class="hs-comment">-- &quot;i2osp converts a nonnegative integer to an octet string of a specified</span><span>
+</span><span id="line-303"></span><span class="hs-comment">-- length&quot; -- RFC 3447</span><span>
+</span><span id="line-304"></span><span id="local-6989586621679077253"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#i2osp"><span class="hs-identifier hs-type">i2osp</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679077253"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077253"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span></span><span>
+</span><span id="line-305"></span><span id="i2osp"><span class="annot"><span class="annottext">i2osp :: a -&gt; Int -&gt; ByteString
+</span><a href="Codec.Crypto.RSA.Exceptions.html#i2osp"><span class="hs-identifier hs-var hs-var">i2osp</span></a></span></span><span> </span><span id="local-6989586621679077252"><span class="annot"><span class="annottext">x :: a
+</span><a href="#local-6989586621679077252"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679077251"><span class="annot"><span class="annottext">len :: Int
+</span><a href="#local-6989586621679077251"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError ByteString -&gt; ByteString
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Int -&gt; Either RSAError ByteString
+forall a. Integral a =&gt; a -&gt; Int -&gt; Either RSAError ByteString
+</span><a href="Codec.Crypto.RSA.Pure.html#i2osp"><span class="hs-identifier hs-var">Pure.i2osp</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077252"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679077251"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-306"></span><span>
+</span><span id="line-307"></span><span class="hs-comment">-- &quot;os2ip converts an octet string to a nonnegative integer&quot; - RFC 3447</span><span>
+</span><span id="line-308"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#os2ip"><span class="hs-identifier hs-type">os2ip</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-309"></span><span id="os2ip"><span class="annot"><span class="annottext">os2ip :: ByteString -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#os2ip"><span class="hs-identifier hs-var hs-var">os2ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#os2ip"><span class="hs-identifier hs-var">Pure.os2ip</span></a></span><span>
+</span><span id="line-310"></span><span>
+</span><span id="line-311"></span><span class="hs-comment">-- the RSA encryption function</span><span>
+</span><span id="line-312"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_ep"><span class="hs-identifier hs-type">rsa_ep</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-313"></span><span id="rsa_ep"><span class="annot"><span class="annottext">rsa_ep :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsa_ep"><span class="hs-identifier hs-var hs-var">rsa_ep</span></a></span></span><span> </span><span id="local-6989586621679077248"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679077248"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679077247"><span class="annot"><span class="annottext">e :: Integer
+</span><a href="#local-6989586621679077247"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679077246"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679077246"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError Integer -&gt; Integer
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Either RSAError Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#rsa_ep"><span class="hs-identifier hs-var">Pure.rsa_ep</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077248"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077247"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077246"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-314"></span><span>
+</span><span id="line-315"></span><span class="hs-comment">-- the RSA decryption function</span><span>
+</span><span id="line-316"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_dp"><span class="hs-identifier hs-type">rsa_dp</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-317"></span><span id="rsa_dp"><span class="annot"><span class="annottext">rsa_dp :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsa_dp"><span class="hs-identifier hs-var hs-var">rsa_dp</span></a></span></span><span> </span><span id="local-6989586621679077244"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679077244"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679077243"><span class="annot"><span class="annottext">d :: Integer
+</span><a href="#local-6989586621679077243"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span id="local-6989586621679077242"><span class="annot"><span class="annottext">c :: Integer
+</span><a href="#local-6989586621679077242"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError Integer -&gt; Integer
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Either RSAError Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#rsa_dp"><span class="hs-identifier hs-var">Pure.rsa_dp</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077244"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077243"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077242"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-318"></span><span>
+</span><span id="line-319"></span><span class="hs-comment">-- the RSA signature generation function</span><span>
+</span><span id="line-320"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_sp1"><span class="hs-identifier hs-type">rsa_sp1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-321"></span><span id="rsa_sp1"><span class="annot"><span class="annottext">rsa_sp1 :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsa_sp1"><span class="hs-identifier hs-var hs-var">rsa_sp1</span></a></span></span><span> </span><span id="local-6989586621679077240"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679077240"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679077239"><span class="annot"><span class="annottext">d :: Integer
+</span><a href="#local-6989586621679077239"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span id="local-6989586621679077238"><span class="annot"><span class="annottext">m :: Integer
+</span><a href="#local-6989586621679077238"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError Integer -&gt; Integer
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Either RSAError Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#rsa_sp1"><span class="hs-identifier hs-var">Pure.rsa_sp1</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077240"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077239"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077238"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-322"></span><span>
+</span><span id="line-323"></span><span class="hs-comment">-- the RSA signature verification function</span><span>
+</span><span id="line-324"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#rsa_vp1"><span class="hs-identifier hs-type">rsa_vp1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-325"></span><span id="rsa_vp1"><span class="annot"><span class="annottext">rsa_vp1 :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#rsa_vp1"><span class="hs-identifier hs-var hs-var">rsa_vp1</span></a></span></span><span> </span><span id="local-6989586621679077236"><span class="annot"><span class="annottext">n :: Integer
+</span><a href="#local-6989586621679077236"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679077235"><span class="annot"><span class="annottext">e :: Integer
+</span><a href="#local-6989586621679077235"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679077234"><span class="annot"><span class="annottext">s :: Integer
+</span><a href="#local-6989586621679077234"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError Integer -&gt; Integer
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Either RSAError Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#rsa_vp1"><span class="hs-identifier hs-var">Pure.rsa_vp1</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077236"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077235"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679077234"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-326"></span><span>
+</span><span id="line-327"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-328"></span><span>
+</span><span id="line-329"></span><span class="hs-comment">-- Generate p and q. This is not necessarily the best way to do this, but it</span><span>
+</span><span id="line-330"></span><span class="hs-comment">-- appears to work. </span><span>
+</span><span id="line-331"></span><span id="local-6989586621679077232"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#generatePQ"><span class="hs-identifier hs-type">generatePQ</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077232"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-332"></span><span>              </span><span class="annot"><a href="#local-6989586621679077232"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-333"></span><span>              </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-334"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077232"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-335"></span><span id="generatePQ"><span class="annot"><span class="annottext">generatePQ :: g -&gt; Int -&gt; (Integer, Integer, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#generatePQ"><span class="hs-identifier hs-var hs-var">generatePQ</span></a></span></span><span> </span><span id="local-6989586621679077231"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077231"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077230"><span class="annot"><span class="annottext">len :: Int
+</span><a href="#local-6989586621679077230"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (Integer, Integer, g) -&gt; (Integer, Integer, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; Int -&gt; Either RSAError (Integer, Integer, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; Int -&gt; Either RSAError (Integer, Integer, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#generatePQ"><span class="hs-identifier hs-var">Pure.generatePQ</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077231"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679077230"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-336"></span><span>
+</span><span id="line-337"></span><span class="hs-comment">-- |Generate a large random prime of a given length in bytes.</span><span>
+</span><span id="line-338"></span><span id="local-6989586621679077228"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#largeRandomPrime"><span class="hs-identifier hs-type">largeRandomPrime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077228"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077228"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077228"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-339"></span><span id="largeRandomPrime"><span class="annot"><span class="annottext">largeRandomPrime :: g -&gt; Int -&gt; (Integer, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#largeRandomPrime"><span class="hs-identifier hs-var hs-var">largeRandomPrime</span></a></span></span><span> </span><span id="local-6989586621679077227"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077227"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077226"><span class="annot"><span class="annottext">len :: Int
+</span><a href="#local-6989586621679077226"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (Integer, g) -&gt; (Integer, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; Int -&gt; Either RSAError (Integer, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; Int -&gt; Either RSAError (Integer, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#largeRandomPrime"><span class="hs-identifier hs-var">Pure.largeRandomPrime</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077227"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679077226"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-340"></span><span>
+</span><span id="line-341"></span><span class="hs-comment">-- |Generate a random ByteString of the given length</span><span>
+</span><span id="line-342"></span><span id="local-6989586621679077224"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#randomBS"><span class="hs-identifier hs-type">randomBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077224"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077224"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077224"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-343"></span><span id="randomBS"><span class="annot"><span class="annottext">randomBS :: g -&gt; Int -&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#randomBS"><span class="hs-identifier hs-var hs-var">randomBS</span></a></span></span><span> </span><span id="local-6989586621679077223"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679077223"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679077222"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679077222"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; Int -&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; Int -&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#randomBS"><span class="hs-identifier hs-var">Pure.randomBS</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077223"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679077222"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-344"></span><span>
+</span><span id="line-345"></span><span class="hs-comment">-- |Create a random bytestring of non-zero bytes of the given length.</span><span>
+</span><span id="line-346"></span><span id="local-6989586621679077220"><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#randomNZBS"><span class="hs-identifier hs-type">randomNZBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CryptoRandomGen</span></span><span> </span><span class="annot"><a href="#local-6989586621679077220"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077220"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679077220"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-347"></span><span id="randomNZBS"><span class="annot"><span class="annottext">randomNZBS :: g -&gt; Int -&gt; (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Exceptions.html#randomNZBS"><span class="hs-identifier hs-var hs-var">randomNZBS</span></a></span></span><span> </span><span id="local-6989586621679077219"><span class="annot"><span class="annottext">gen :: g
+</span><a href="#local-6989586621679077219"><span class="hs-identifier hs-var">gen</span></a></span></span><span> </span><span id="local-6989586621679077218"><span class="annot"><span class="annottext">size :: Int
+</span><a href="#local-6989586621679077218"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either RSAError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><span class="hs-identifier hs-var">throwLeft</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; Int -&gt; Either RSAError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+g -&gt; Int -&gt; Either RSAError (ByteString, g)
+</span><a href="Codec.Crypto.RSA.Pure.html#randomNZBS"><span class="hs-identifier hs-var">Pure.randomNZBS</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679077219"><span class="hs-identifier hs-var">gen</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679077218"><span class="hs-identifier hs-var">size</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-348"></span><span>
+</span><span id="line-349"></span><span class="hs-comment">-- |Computes a^b mod c using a moderately good algorithm.</span><span>
+</span><span id="line-350"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#modular_exponentiation"><span class="hs-identifier hs-type">modular_exponentiation</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-351"></span><span id="modular_exponentiation"><span class="annot"><span class="annottext">modular_exponentiation :: Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#modular_exponentiation"><span class="hs-identifier hs-var hs-var">modular_exponentiation</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#modular_exponentiation"><span class="hs-identifier hs-var">Pure.modular_exponentiation</span></a></span><span>
+</span><span id="line-352"></span><span>
+</span><span id="line-353"></span><span class="hs-comment">-- |Compute the modular inverse (d = e^-1 mod phi) via the extended euclidean</span><span>
+</span><span id="line-354"></span><span class="hs-comment">-- algorithm.</span><span>
+</span><span id="line-355"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#modular_inverse"><span class="hs-identifier hs-type">modular_inverse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">{- ^e -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-356"></span><span>                   </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">{- ^phi -}</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-357"></span><span>                   </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-358"></span><span id="modular_inverse"><span class="annot"><span class="annottext">modular_inverse :: Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Exceptions.html#modular_inverse"><span class="hs-identifier hs-var hs-var">modular_inverse</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="Codec.Crypto.RSA.Pure.html#modular_inverse"><span class="hs-identifier hs-var">Pure.modular_inverse</span></a></span><span>
+</span><span id="line-359"></span><span>
+</span><span id="line-360"></span><span class="hs-comment">-- ----------------------------------------------------------------------------</span><span>
+</span><span id="line-361"></span><span>
+</span><span id="line-362"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA1"><span class="hs-identifier hs-type">hashSHA1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span>
+</span><span id="line-363"></span><span id="hashSHA1"><span class="annot"><span class="annottext">hashSHA1 :: HashInfo
+</span><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA1"><span class="hs-identifier hs-var hs-var">hashSHA1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="Codec.Crypto.RSA.Pure.html#hashSHA1"><span class="hs-identifier hs-var">Pure.hashSHA1</span></a></span><span>
+</span><span id="line-364"></span><span>
+</span><span id="line-365"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA224"><span class="hs-identifier hs-type">hashSHA224</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span>
+</span><span id="line-366"></span><span id="hashSHA224"><span class="annot"><span class="annottext">hashSHA224 :: HashInfo
+</span><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA224"><span class="hs-identifier hs-var hs-var">hashSHA224</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="Codec.Crypto.RSA.Pure.html#hashSHA224"><span class="hs-identifier hs-var">Pure.hashSHA224</span></a></span><span>
+</span><span id="line-367"></span><span>
+</span><span id="line-368"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA256"><span class="hs-identifier hs-type">hashSHA256</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span>
+</span><span id="line-369"></span><span id="hashSHA256"><span class="annot"><span class="annottext">hashSHA256 :: HashInfo
+</span><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA256"><span class="hs-identifier hs-var hs-var">hashSHA256</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="Codec.Crypto.RSA.Pure.html#hashSHA256"><span class="hs-identifier hs-var">Pure.hashSHA256</span></a></span><span>
+</span><span id="line-370"></span><span>
+</span><span id="line-371"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA384"><span class="hs-identifier hs-type">hashSHA384</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span>
+</span><span id="line-372"></span><span id="hashSHA384"><span class="annot"><span class="annottext">hashSHA384 :: HashInfo
+</span><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA384"><span class="hs-identifier hs-var hs-var">hashSHA384</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="Codec.Crypto.RSA.Pure.html#hashSHA384"><span class="hs-identifier hs-var">Pure.hashSHA384</span></a></span><span>
+</span><span id="line-373"></span><span>
+</span><span id="line-374"></span><span class="annot"><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA512"><span class="hs-identifier hs-type">hashSHA512</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Crypto.RSA.Pure.html#HashInfo"><span class="hs-identifier hs-type">HashInfo</span></a></span><span>
+</span><span id="line-375"></span><span id="hashSHA512"><span class="annot"><span class="annottext">hashSHA512 :: HashInfo
+</span><a href="Codec.Crypto.RSA.Exceptions.html#hashSHA512"><span class="hs-identifier hs-var hs-var">hashSHA512</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashInfo
+</span><a href="Codec.Crypto.RSA.Pure.html#hashSHA512"><span class="hs-identifier hs-var">Pure.hashSHA512</span></a></span><span>
+</span><span id="line-376"></span></pre></body></html>

@@ -1,0 +1,966 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- | Data structures pertaining to gateway dispatch 'Event's</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Discord.Internal.Types.Events</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">id</span></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Time.ISO8601</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">parseISO8601</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Time</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">UTCTime</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Time.Clock.POSIX</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">posixSecondsToUTCTime</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Aeson.Types</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html"><span class="hs-identifier">Discord.Internal.Types.Prelude</span></a></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Channel.html"><span class="hs-identifier">Discord.Internal.Types.Channel</span></a></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Guild.html"><span class="hs-identifier">Discord.Internal.Types.Guild</span></a></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html"><span class="hs-identifier">Discord.Internal.Types.User</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier">User</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- | Represents possible events sent by discord. Detailed information can be found at https://discord.com/developers/docs/topics/gateway.</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">data</span><span> </span><span id="Event"><span class="annot"><a href="Discord.Internal.Types.Events.html#Event"><span class="hs-identifier hs-var">Event</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-24"></span><span>    </span><span id="Ready"><span class="annot"><a href="Discord.Internal.Types.Events.html#Ready"><span class="hs-identifier hs-var">Ready</span></a></span></span><span>                   </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Guild.html#GuildUnavailable"><span class="hs-identifier hs-type">GuildUnavailable</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Resumed"><span class="annot"><a href="Discord.Internal.Types.Events.html#Resumed"><span class="hs-identifier hs-var">Resumed</span></a></span></span><span>                 </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ChannelCreate"><span class="annot"><a href="Discord.Internal.Types.Events.html#ChannelCreate"><span class="hs-identifier hs-var">ChannelCreate</span></a></span></span><span>           </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ChannelUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#ChannelUpdate"><span class="hs-identifier hs-var">ChannelUpdate</span></a></span></span><span>           </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ChannelDelete"><span class="annot"><a href="Discord.Internal.Types.Events.html#ChannelDelete"><span class="hs-identifier hs-var">ChannelDelete</span></a></span></span><span>           </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ChannelPinsUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#ChannelPinsUpdate"><span class="hs-identifier hs-var">ChannelPinsUpdate</span></a></span></span><span>       </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildCreate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildCreate"><span class="hs-identifier hs-var">GuildCreate</span></a></span></span><span>             </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#Guild"><span class="hs-identifier hs-type">Guild</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#GuildInfo"><span class="hs-identifier hs-type">GuildInfo</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildUpdate"><span class="hs-identifier hs-var">GuildUpdate</span></a></span></span><span>             </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#Guild"><span class="hs-identifier hs-type">Guild</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildDelete"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildDelete"><span class="hs-identifier hs-var">GuildDelete</span></a></span></span><span>             </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#GuildUnavailable"><span class="hs-identifier hs-type">GuildUnavailable</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildBanAdd"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildBanAdd"><span class="hs-identifier hs-var">GuildBanAdd</span></a></span></span><span>             </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildBanRemove"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildBanRemove"><span class="hs-identifier hs-var">GuildBanRemove</span></a></span></span><span>          </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildEmojiUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildEmojiUpdate"><span class="hs-identifier hs-var">GuildEmojiUpdate</span></a></span></span><span>        </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Emoji"><span class="hs-identifier hs-type">Emoji</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildIntegrationsUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildIntegrationsUpdate"><span class="hs-identifier hs-var">GuildIntegrationsUpdate</span></a></span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildMemberAdd"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildMemberAdd"><span class="hs-identifier hs-var">GuildMemberAdd</span></a></span></span><span>          </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#GuildMember"><span class="hs-identifier hs-type">GuildMember</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildMemberRemove"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildMemberRemove"><span class="hs-identifier hs-var">GuildMemberRemove</span></a></span></span><span>       </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildMemberUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildMemberUpdate"><span class="hs-identifier hs-var">GuildMemberUpdate</span></a></span></span><span>       </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#RoleId"><span class="hs-identifier hs-type">RoleId</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildMemberChunk"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildMemberChunk"><span class="hs-identifier hs-var">GuildMemberChunk</span></a></span></span><span>        </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Guild.html#GuildMember"><span class="hs-identifier hs-type">GuildMember</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildRoleCreate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildRoleCreate"><span class="hs-identifier hs-var">GuildRoleCreate</span></a></span></span><span>         </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#Role"><span class="hs-identifier hs-type">Role</span></a></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildRoleUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildRoleUpdate"><span class="hs-identifier hs-var">GuildRoleUpdate</span></a></span></span><span>         </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#Role"><span class="hs-identifier hs-type">Role</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="GuildRoleDelete"><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildRoleDelete"><span class="hs-identifier hs-var">GuildRoleDelete</span></a></span></span><span>         </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#RoleId"><span class="hs-identifier hs-type">RoleId</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageCreate"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageCreate"><span class="hs-identifier hs-var">MessageCreate</span></a></span></span><span>           </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageUpdate"><span class="hs-identifier hs-var">MessageUpdate</span></a></span></span><span>           </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-type">MessageId</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageDelete"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageDelete"><span class="hs-identifier hs-var">MessageDelete</span></a></span></span><span>           </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-type">MessageId</span></a></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageDeleteBulk"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageDeleteBulk"><span class="hs-identifier hs-var">MessageDeleteBulk</span></a></span></span><span>       </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-type">MessageId</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageReactionAdd"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageReactionAdd"><span class="hs-identifier hs-var">MessageReactionAdd</span></a></span></span><span>      </span><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionInfo"><span class="hs-identifier hs-type">ReactionInfo</span></a></span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageReactionRemove"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageReactionRemove"><span class="hs-identifier hs-var">MessageReactionRemove</span></a></span></span><span>   </span><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionInfo"><span class="hs-identifier hs-type">ReactionInfo</span></a></span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageReactionRemoveAll"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageReactionRemoveAll"><span class="hs-identifier hs-var">MessageReactionRemoveAll</span></a></span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-type">MessageId</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MessageReactionRemoveEmoji"><span class="annot"><a href="Discord.Internal.Types.Events.html#MessageReactionRemoveEmoji"><span class="hs-identifier hs-var">MessageReactionRemoveEmoji</span></a></span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionRemoveInfo"><span class="hs-identifier hs-type">ReactionRemoveInfo</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PresenceUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#PresenceUpdate"><span class="hs-identifier hs-var">PresenceUpdate</span></a></span></span><span>          </span><span class="annot"><a href="Discord.Internal.Types.Events.html#PresenceInfo"><span class="hs-identifier hs-type">PresenceInfo</span></a></span><span>
+</span><span id="line-53"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="TypingStart"><span class="annot"><a href="Discord.Internal.Types.Events.html#TypingStart"><span class="hs-identifier hs-var">TypingStart</span></a></span></span><span>             </span><span class="annot"><a href="Discord.Internal.Types.Events.html#TypingInfo"><span class="hs-identifier hs-type">TypingInfo</span></a></span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="UserUpdate"><span class="annot"><a href="Discord.Internal.Types.Events.html#UserUpdate"><span class="hs-identifier hs-var">UserUpdate</span></a></span></span><span>              </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-comment">-- | VoiceStateUpdate</span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-comment">-- | VoiceServerUpdate</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="UnknownEvent"><span class="annot"><a href="Discord.Internal.Types.Events.html#UnknownEvent"><span class="hs-identifier hs-var">UnknownEvent</span></a></span></span><span>     </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span>
+</span><span id="line-58"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679238915"><span id="local-6989586621679238917"><span id="local-6989586621679238919"><span class="annot"><span class="annottext">Int -&gt; Event -&gt; ShowS
+[Event] -&gt; ShowS
+Event -&gt; String
+(Int -&gt; Event -&gt; ShowS)
+-&gt; (Event -&gt; String) -&gt; ([Event] -&gt; ShowS) -&gt; Show Event
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Event] -&gt; ShowS
+$cshowList :: [Event] -&gt; ShowS
+show :: Event -&gt; String
+$cshow :: Event -&gt; String
+showsPrec :: Int -&gt; Event -&gt; ShowS
+$cshowsPrec :: Int -&gt; Event -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238910"><span id="local-6989586621679238912"><span class="annot"><span class="annottext">Event -&gt; Event -&gt; Bool
+(Event -&gt; Event -&gt; Bool) -&gt; (Event -&gt; Event -&gt; Bool) -&gt; Eq Event
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Event -&gt; Event -&gt; Bool
+$c/= :: Event -&gt; Event -&gt; Bool
+== :: Event -&gt; Event -&gt; Bool
+$c== :: Event -&gt; Event -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">data</span><span> </span><span id="ReactionInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionInfo"><span class="hs-identifier hs-var">ReactionInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ReactionInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionInfo"><span class="hs-identifier hs-var">ReactionInfo</span></a></span></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="reactionUserId"><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionUserId"><span class="hs-identifier hs-var hs-var">reactionUserId</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#UserId"><span class="hs-identifier hs-type">UserId</span></a></span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionGuildId"><span class="annot"><span class="annottext">ReactionInfo -&gt; Maybe UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionGuildId"><span class="hs-identifier hs-var hs-var">reactionGuildId</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionChannelId"><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionChannelId"><span class="hs-identifier hs-var hs-var">reactionChannelId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionMessageId"><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionMessageId"><span class="hs-identifier hs-var hs-var">reactionMessageId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-type">MessageId</span></a></span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionEmoji"><span class="annot"><span class="annottext">ReactionInfo -&gt; Emoji
+</span><a href="Discord.Internal.Types.Events.html#reactionEmoji"><span class="hs-identifier hs-var hs-var">reactionEmoji</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Emoji"><span class="hs-identifier hs-type">Emoji</span></a></span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679238897"><span id="local-6989586621679238899"><span id="local-6989586621679238901"><span class="annot"><span class="annottext">Int -&gt; ReactionInfo -&gt; ShowS
+[ReactionInfo] -&gt; ShowS
+ReactionInfo -&gt; String
+(Int -&gt; ReactionInfo -&gt; ShowS)
+-&gt; (ReactionInfo -&gt; String)
+-&gt; ([ReactionInfo] -&gt; ShowS)
+-&gt; Show ReactionInfo
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [ReactionInfo] -&gt; ShowS
+$cshowList :: [ReactionInfo] -&gt; ShowS
+show :: ReactionInfo -&gt; String
+$cshow :: ReactionInfo -&gt; String
+showsPrec :: Int -&gt; ReactionInfo -&gt; ShowS
+$cshowsPrec :: Int -&gt; ReactionInfo -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238893"><span id="local-6989586621679238895"><span class="annot"><span class="annottext">ReactionInfo -&gt; ReactionInfo -&gt; Bool
+(ReactionInfo -&gt; ReactionInfo -&gt; Bool)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; Bool) -&gt; Eq ReactionInfo
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+$c/= :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+== :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+$c== :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238878"><span id="local-6989586621679238880"><span id="local-6989586621679238882"><span id="local-6989586621679238884"><span id="local-6989586621679238886"><span id="local-6989586621679238888"><span id="local-6989586621679238890"><span class="annot"><span class="annottext">Eq ReactionInfo
+Eq ReactionInfo =&gt;
+(ReactionInfo -&gt; ReactionInfo -&gt; Ordering)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; Bool)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; Bool)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; Bool)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; Bool)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo)
+-&gt; (ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo)
+-&gt; Ord ReactionInfo
+ReactionInfo -&gt; ReactionInfo -&gt; Bool
+ReactionInfo -&gt; ReactionInfo -&gt; Ordering
+ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo
+$cmin :: ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo
+max :: ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo
+$cmax :: ReactionInfo -&gt; ReactionInfo -&gt; ReactionInfo
+&gt;= :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+$c&gt;= :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+&gt; :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+$c&gt; :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+&lt;= :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+$c&lt;= :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+&lt; :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+$c&lt; :: ReactionInfo -&gt; ReactionInfo -&gt; Bool
+compare :: ReactionInfo -&gt; ReactionInfo -&gt; Ordering
+$ccompare :: ReactionInfo -&gt; ReactionInfo -&gt; Ordering
+$cp1Ord :: Eq ReactionInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679238874"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionInfo"><span class="hs-identifier hs-type">ReactionInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>  </span><span id="local-6989586621679238872"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser ReactionInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+-&gt; (Object -&gt; Parser ReactionInfo) -&gt; Value -&gt; Parser ReactionInfo
+forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;ReactionInfo&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser ReactionInfo) -&gt; Value -&gt; Parser ReactionInfo)
+-&gt; (Object -&gt; Parser ReactionInfo) -&gt; Value -&gt; Parser ReactionInfo
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679238869"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621679238869"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-70"></span><span>    </span><span class="annot"><span class="annottext">UserId -&gt; Maybe UserId -&gt; UserId -&gt; UserId -&gt; Emoji -&gt; ReactionInfo
+</span><a href="Discord.Internal.Types.Events.html#ReactionInfo"><span class="hs-identifier hs-var">ReactionInfo</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId
+ -&gt; Maybe UserId -&gt; UserId -&gt; UserId -&gt; Emoji -&gt; ReactionInfo)
+-&gt; Parser UserId
+-&gt; Parser
+     (Maybe UserId -&gt; UserId -&gt; UserId -&gt; Emoji -&gt; ReactionInfo)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238869"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;user_id&quot;</span></span><span>
+</span><span id="line-71"></span><span>                 </span><span class="annot"><span class="annottext">Parser (Maybe UserId -&gt; UserId -&gt; UserId -&gt; Emoji -&gt; ReactionInfo)
+-&gt; Parser (Maybe UserId)
+-&gt; Parser (UserId -&gt; UserId -&gt; Emoji -&gt; ReactionInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238869"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe UserId)
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span>
+</span><span id="line-72"></span><span>                 </span><span class="annot"><span class="annottext">Parser (UserId -&gt; UserId -&gt; Emoji -&gt; ReactionInfo)
+-&gt; Parser UserId -&gt; Parser (UserId -&gt; Emoji -&gt; ReactionInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238869"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span>
+</span><span id="line-73"></span><span>                 </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Emoji -&gt; ReactionInfo)
+-&gt; Parser UserId -&gt; Parser (Emoji -&gt; ReactionInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238869"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;message_id&quot;</span></span><span>
+</span><span id="line-74"></span><span>                 </span><span class="annot"><span class="annottext">Parser (Emoji -&gt; ReactionInfo)
+-&gt; Parser Emoji -&gt; Parser ReactionInfo
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238869"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Emoji
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;emoji&quot;</span></span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="hs-keyword">data</span><span> </span><span id="ReactionRemoveInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionRemoveInfo"><span class="hs-identifier hs-var">ReactionRemoveInfo</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="ReactionRemoveInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionRemoveInfo"><span class="hs-identifier hs-var">ReactionRemoveInfo</span></a></span></span><span>
+</span><span id="line-77"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="reactionRemoveChannelId"><span class="annot"><span class="annottext">ReactionRemoveInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionRemoveChannelId"><span class="hs-identifier hs-var hs-var">reactionRemoveChannelId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span>
+</span><span id="line-78"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionRemoveGuildId"><span class="annot"><span class="annottext">ReactionRemoveInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionRemoveGuildId"><span class="hs-identifier hs-var hs-var">reactionRemoveGuildId</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionRemoveMessageId"><span class="annot"><span class="annottext">ReactionRemoveInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#reactionRemoveMessageId"><span class="hs-identifier hs-var hs-var">reactionRemoveMessageId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-type">MessageId</span></a></span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="reactionRemoveEmoji"><span class="annot"><span class="annottext">ReactionRemoveInfo -&gt; Emoji
+</span><a href="Discord.Internal.Types.Events.html#reactionRemoveEmoji"><span class="hs-identifier hs-var hs-var">reactionRemoveEmoji</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Emoji"><span class="hs-identifier hs-type">Emoji</span></a></span><span>
+</span><span id="line-81"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679238855"><span id="local-6989586621679238857"><span id="local-6989586621679238859"><span class="annot"><span class="annottext">Int -&gt; ReactionRemoveInfo -&gt; ShowS
+[ReactionRemoveInfo] -&gt; ShowS
+ReactionRemoveInfo -&gt; String
+(Int -&gt; ReactionRemoveInfo -&gt; ShowS)
+-&gt; (ReactionRemoveInfo -&gt; String)
+-&gt; ([ReactionRemoveInfo] -&gt; ShowS)
+-&gt; Show ReactionRemoveInfo
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [ReactionRemoveInfo] -&gt; ShowS
+$cshowList :: [ReactionRemoveInfo] -&gt; ShowS
+show :: ReactionRemoveInfo -&gt; String
+$cshow :: ReactionRemoveInfo -&gt; String
+showsPrec :: Int -&gt; ReactionRemoveInfo -&gt; ShowS
+$cshowsPrec :: Int -&gt; ReactionRemoveInfo -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238851"><span id="local-6989586621679238853"><span class="annot"><span class="annottext">ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+(ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool)
+-&gt; Eq ReactionRemoveInfo
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+$c/= :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+== :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+$c== :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238836"><span id="local-6989586621679238838"><span id="local-6989586621679238840"><span id="local-6989586621679238842"><span id="local-6989586621679238844"><span id="local-6989586621679238846"><span id="local-6989586621679238848"><span class="annot"><span class="annottext">Eq ReactionRemoveInfo
+Eq ReactionRemoveInfo =&gt;
+(ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Ordering)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo)
+-&gt; (ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo)
+-&gt; Ord ReactionRemoveInfo
+ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Ordering
+ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo
+$cmin :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo
+max :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo
+$cmax :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; ReactionRemoveInfo
+&gt;= :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+$c&gt;= :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+&gt; :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+$c&gt; :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+&lt;= :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+$c&lt;= :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+&lt; :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+$c&lt; :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Bool
+compare :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Ordering
+$ccompare :: ReactionRemoveInfo -&gt; ReactionRemoveInfo -&gt; Ordering
+$cp1Ord :: Eq ReactionRemoveInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679238833"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#ReactionRemoveInfo"><span class="hs-identifier hs-type">ReactionRemoveInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>  </span><span id="local-6989586621679238832"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser ReactionRemoveInfo
+</span><a href="#local-6989586621679238832"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+-&gt; (Object -&gt; Parser ReactionRemoveInfo)
+-&gt; Value
+-&gt; Parser ReactionRemoveInfo
+forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;ReactionRemoveInfo&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser ReactionRemoveInfo)
+ -&gt; Value -&gt; Parser ReactionRemoveInfo)
+-&gt; (Object -&gt; Parser ReactionRemoveInfo)
+-&gt; Value
+-&gt; Parser ReactionRemoveInfo
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679238831"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621679238831"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-85"></span><span>    </span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; UserId -&gt; Emoji -&gt; ReactionRemoveInfo
+</span><a href="Discord.Internal.Types.Events.html#ReactionRemoveInfo"><span class="hs-identifier hs-var">ReactionRemoveInfo</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; UserId -&gt; UserId -&gt; Emoji -&gt; ReactionRemoveInfo)
+-&gt; Parser UserId
+-&gt; Parser (UserId -&gt; UserId -&gt; Emoji -&gt; ReactionRemoveInfo)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238831"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span>
+</span><span id="line-86"></span><span>                       </span><span class="annot"><span class="annottext">Parser (UserId -&gt; UserId -&gt; Emoji -&gt; ReactionRemoveInfo)
+-&gt; Parser UserId -&gt; Parser (UserId -&gt; Emoji -&gt; ReactionRemoveInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238831"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span>
+</span><span id="line-87"></span><span>                       </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Emoji -&gt; ReactionRemoveInfo)
+-&gt; Parser UserId -&gt; Parser (Emoji -&gt; ReactionRemoveInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238831"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;message_id&quot;</span></span><span>
+</span><span id="line-88"></span><span>                       </span><span class="annot"><span class="annottext">Parser (Emoji -&gt; ReactionRemoveInfo)
+-&gt; Parser Emoji -&gt; Parser ReactionRemoveInfo
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238831"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Emoji
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;emoji&quot;</span></span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span class="hs-keyword">data</span><span> </span><span id="PresenceInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#PresenceInfo"><span class="hs-identifier hs-var">PresenceInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PresenceInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#PresenceInfo"><span class="hs-identifier hs-var">PresenceInfo</span></a></span></span><span>
+</span><span id="line-91"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="presenceUserId"><span class="annot"><span class="annottext">PresenceInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#presenceUserId"><span class="hs-identifier hs-var hs-var">presenceUserId</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#UserId"><span class="hs-identifier hs-type">UserId</span></a></span><span>
+</span><span id="line-92"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="presenceRoles"><span class="annot"><span class="annottext">PresenceInfo -&gt; [UserId]
+</span><a href="Discord.Internal.Types.Events.html#presenceRoles"><span class="hs-identifier hs-var hs-var">presenceRoles</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#RoleId"><span class="hs-identifier hs-type">RoleId</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-93"></span><span>  </span><span class="hs-comment">-- , presenceGame :: Maybe Activity</span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="presenceGuildId"><span class="annot"><span class="annottext">PresenceInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#presenceGuildId"><span class="hs-identifier hs-var hs-var">presenceGuildId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="presenceStatus"><span class="annot"><span class="annottext">PresenceInfo -&gt; Text
+</span><a href="Discord.Internal.Types.Events.html#presenceStatus"><span class="hs-identifier hs-var hs-var">presenceStatus</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679238820"><span id="local-6989586621679238822"><span id="local-6989586621679238824"><span class="annot"><span class="annottext">Int -&gt; PresenceInfo -&gt; ShowS
+[PresenceInfo] -&gt; ShowS
+PresenceInfo -&gt; String
+(Int -&gt; PresenceInfo -&gt; ShowS)
+-&gt; (PresenceInfo -&gt; String)
+-&gt; ([PresenceInfo] -&gt; ShowS)
+-&gt; Show PresenceInfo
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PresenceInfo] -&gt; ShowS
+$cshowList :: [PresenceInfo] -&gt; ShowS
+show :: PresenceInfo -&gt; String
+$cshow :: PresenceInfo -&gt; String
+showsPrec :: Int -&gt; PresenceInfo -&gt; ShowS
+$cshowsPrec :: Int -&gt; PresenceInfo -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238816"><span id="local-6989586621679238818"><span class="annot"><span class="annottext">PresenceInfo -&gt; PresenceInfo -&gt; Bool
+(PresenceInfo -&gt; PresenceInfo -&gt; Bool)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; Bool) -&gt; Eq PresenceInfo
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+$c/= :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+== :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+$c== :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238801"><span id="local-6989586621679238803"><span id="local-6989586621679238805"><span id="local-6989586621679238807"><span id="local-6989586621679238809"><span id="local-6989586621679238811"><span id="local-6989586621679238813"><span class="annot"><span class="annottext">Eq PresenceInfo
+Eq PresenceInfo =&gt;
+(PresenceInfo -&gt; PresenceInfo -&gt; Ordering)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; Bool)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; Bool)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; Bool)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; Bool)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo)
+-&gt; (PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo)
+-&gt; Ord PresenceInfo
+PresenceInfo -&gt; PresenceInfo -&gt; Bool
+PresenceInfo -&gt; PresenceInfo -&gt; Ordering
+PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo
+$cmin :: PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo
+max :: PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo
+$cmax :: PresenceInfo -&gt; PresenceInfo -&gt; PresenceInfo
+&gt;= :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+$c&gt;= :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+&gt; :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+$c&gt; :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+&lt;= :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+$c&lt;= :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+&lt; :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+$c&lt; :: PresenceInfo -&gt; PresenceInfo -&gt; Bool
+compare :: PresenceInfo -&gt; PresenceInfo -&gt; Ordering
+$ccompare :: PresenceInfo -&gt; PresenceInfo -&gt; Ordering
+$cp1Ord :: Eq PresenceInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679238798"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#PresenceInfo"><span class="hs-identifier hs-type">PresenceInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-99"></span><span>  </span><span id="local-6989586621679238797"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser PresenceInfo
+</span><a href="#local-6989586621679238797"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+-&gt; (Object -&gt; Parser PresenceInfo) -&gt; Value -&gt; Parser PresenceInfo
+forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;PresenceInfo&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser PresenceInfo) -&gt; Value -&gt; Parser PresenceInfo)
+-&gt; (Object -&gt; Parser PresenceInfo) -&gt; Value -&gt; Parser PresenceInfo
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679238796"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621679238796"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-100"></span><span>    </span><span class="annot"><span class="annottext">UserId -&gt; [UserId] -&gt; UserId -&gt; Text -&gt; PresenceInfo
+</span><a href="Discord.Internal.Types.Events.html#PresenceInfo"><span class="hs-identifier hs-var">PresenceInfo</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; [UserId] -&gt; UserId -&gt; Text -&gt; PresenceInfo)
+-&gt; Parser UserId
+-&gt; Parser ([UserId] -&gt; UserId -&gt; Text -&gt; PresenceInfo)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238796"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Object
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Object -&gt; (Object -&gt; Parser UserId) -&gt; Parser UserId
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>                 </span><span class="annot"><span class="annottext">Parser ([UserId] -&gt; UserId -&gt; Text -&gt; PresenceInfo)
+-&gt; Parser [UserId] -&gt; Parser (UserId -&gt; Text -&gt; PresenceInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238796"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [UserId]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;roles&quot;</span></span><span>
+</span><span id="line-102"></span><span>              </span><span class="hs-comment">-- &lt;*&gt; o .: &quot;game&quot;</span><span>
+</span><span id="line-103"></span><span>                 </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Text -&gt; PresenceInfo)
+-&gt; Parser UserId -&gt; Parser (Text -&gt; PresenceInfo)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238796"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span>
+</span><span id="line-104"></span><span>                 </span><span class="annot"><span class="annottext">Parser (Text -&gt; PresenceInfo) -&gt; Parser Text -&gt; Parser PresenceInfo
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238796"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;status&quot;</span></span><span>
+</span><span id="line-105"></span><span>
+</span><span id="line-106"></span><span class="hs-keyword">data</span><span> </span><span id="TypingInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#TypingInfo"><span class="hs-identifier hs-var">TypingInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TypingInfo"><span class="annot"><a href="Discord.Internal.Types.Events.html#TypingInfo"><span class="hs-identifier hs-var">TypingInfo</span></a></span></span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="typingUserId"><span class="annot"><span class="annottext">TypingInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#typingUserId"><span class="hs-identifier hs-var hs-var">typingUserId</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#UserId"><span class="hs-identifier hs-type">UserId</span></a></span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="typingChannelId"><span class="annot"><span class="annottext">TypingInfo -&gt; UserId
+</span><a href="Discord.Internal.Types.Events.html#typingChannelId"><span class="hs-identifier hs-var hs-var">typingChannelId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span>
+</span><span id="line-109"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="typingTimestamp"><span class="annot"><span class="annottext">TypingInfo -&gt; UTCTime
+</span><a href="Discord.Internal.Types.Events.html#typingTimestamp"><span class="hs-identifier hs-var hs-var">typingTimestamp</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679238786"><span id="local-6989586621679238788"><span id="local-6989586621679238790"><span class="annot"><span class="annottext">Int -&gt; TypingInfo -&gt; ShowS
+[TypingInfo] -&gt; ShowS
+TypingInfo -&gt; String
+(Int -&gt; TypingInfo -&gt; ShowS)
+-&gt; (TypingInfo -&gt; String)
+-&gt; ([TypingInfo] -&gt; ShowS)
+-&gt; Show TypingInfo
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [TypingInfo] -&gt; ShowS
+$cshowList :: [TypingInfo] -&gt; ShowS
+show :: TypingInfo -&gt; String
+$cshow :: TypingInfo -&gt; String
+showsPrec :: Int -&gt; TypingInfo -&gt; ShowS
+$cshowsPrec :: Int -&gt; TypingInfo -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238782"><span id="local-6989586621679238784"><span class="annot"><span class="annottext">TypingInfo -&gt; TypingInfo -&gt; Bool
+(TypingInfo -&gt; TypingInfo -&gt; Bool)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; Bool) -&gt; Eq TypingInfo
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: TypingInfo -&gt; TypingInfo -&gt; Bool
+$c/= :: TypingInfo -&gt; TypingInfo -&gt; Bool
+== :: TypingInfo -&gt; TypingInfo -&gt; Bool
+$c== :: TypingInfo -&gt; TypingInfo -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679238767"><span id="local-6989586621679238769"><span id="local-6989586621679238771"><span id="local-6989586621679238773"><span id="local-6989586621679238775"><span id="local-6989586621679238777"><span id="local-6989586621679238779"><span class="annot"><span class="annottext">Eq TypingInfo
+Eq TypingInfo =&gt;
+(TypingInfo -&gt; TypingInfo -&gt; Ordering)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; Bool)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; Bool)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; Bool)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; Bool)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; TypingInfo)
+-&gt; (TypingInfo -&gt; TypingInfo -&gt; TypingInfo)
+-&gt; Ord TypingInfo
+TypingInfo -&gt; TypingInfo -&gt; Bool
+TypingInfo -&gt; TypingInfo -&gt; Ordering
+TypingInfo -&gt; TypingInfo -&gt; TypingInfo
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: TypingInfo -&gt; TypingInfo -&gt; TypingInfo
+$cmin :: TypingInfo -&gt; TypingInfo -&gt; TypingInfo
+max :: TypingInfo -&gt; TypingInfo -&gt; TypingInfo
+$cmax :: TypingInfo -&gt; TypingInfo -&gt; TypingInfo
+&gt;= :: TypingInfo -&gt; TypingInfo -&gt; Bool
+$c&gt;= :: TypingInfo -&gt; TypingInfo -&gt; Bool
+&gt; :: TypingInfo -&gt; TypingInfo -&gt; Bool
+$c&gt; :: TypingInfo -&gt; TypingInfo -&gt; Bool
+&lt;= :: TypingInfo -&gt; TypingInfo -&gt; Bool
+$c&lt;= :: TypingInfo -&gt; TypingInfo -&gt; Bool
+&lt; :: TypingInfo -&gt; TypingInfo -&gt; Bool
+$c&lt; :: TypingInfo -&gt; TypingInfo -&gt; Bool
+compare :: TypingInfo -&gt; TypingInfo -&gt; Ordering
+$ccompare :: TypingInfo -&gt; TypingInfo -&gt; Ordering
+$cp1Ord :: Eq TypingInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679238764"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#TypingInfo"><span class="hs-identifier hs-type">TypingInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-113"></span><span>  </span><span id="local-6989586621679238763"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser TypingInfo
+</span><a href="#local-6989586621679238763"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+-&gt; (Object -&gt; Parser TypingInfo) -&gt; Value -&gt; Parser TypingInfo
+forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;TypingInfo&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser TypingInfo) -&gt; Value -&gt; Parser TypingInfo)
+-&gt; (Object -&gt; Parser TypingInfo) -&gt; Value -&gt; Parser TypingInfo
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679238762"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621679238762"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-114"></span><span>    </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679238761"><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679238761"><span class="hs-identifier hs-var">cid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238762"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span>
+</span><span id="line-115"></span><span>       </span><span id="local-6989586621679238760"><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679238760"><span class="hs-identifier hs-var">uid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238762"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user_id&quot;</span></span><span>
+</span><span id="line-116"></span><span>       </span><span id="local-6989586621679238759"><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679238759"><span class="hs-identifier hs-var">posix</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238762"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser POSIXTime
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;timestamp&quot;</span></span><span>
+</span><span id="line-117"></span><span>       </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679238758"><span class="annot"><span class="annottext">utc :: UTCTime
+</span><a href="#local-6989586621679238758"><span class="hs-identifier hs-var hs-var">utc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; UTCTime
+</span><span class="hs-identifier hs-var">posixSecondsToUTCTime</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679238759"><span class="hs-identifier hs-var">posix</span></a></span><span>
+</span><span id="line-118"></span><span>       </span><span class="annot"><span class="annottext">TypingInfo -&gt; Parser TypingInfo
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; UTCTime -&gt; TypingInfo
+</span><a href="Discord.Internal.Types.Events.html#TypingInfo"><span class="hs-identifier hs-var">TypingInfo</span></a></span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679238760"><span class="hs-identifier hs-var">uid</span></a></span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679238761"><span class="hs-identifier hs-var">cid</span></a></span><span> </span><span class="annot"><span class="annottext">UTCTime
+</span><a href="#local-6989586621679238758"><span class="hs-identifier hs-var">utc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span class="hs-comment">-- | Convert ToJSON value to FromJSON value</span><span>
+</span><span id="line-123"></span><span id="local-6989586621679238965"><span id="local-6989586621679238966"><span class="annot"><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-type">reparse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621679238966"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621679238965"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679238966"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="annot"><a href="#local-6989586621679238965"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-124"></span><span id="reparse"><span class="annot"><span class="annottext">reparse :: a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var hs-var">reparse</span></a></span></span><span> </span><span id="local-6989586621679238756"><span class="annot"><span class="annottext">val :: a
+</span><a href="#local-6989586621679238756"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Parser b) -&gt; Value -&gt; Either String b
+forall a b. (a -&gt; Parser b) -&gt; a -&gt; Either String b
+</span><span class="hs-identifier hs-var">parseEither</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser b
+forall a. FromJSON a =&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Either String b) -&gt; Value -&gt; Either String b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679238756"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-125"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679238753"><span class="annot"><span class="annottext">r :: String
+</span><a href="#local-6989586621679238753"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser b
+forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
+</span><span class="hs-identifier hs-var">fail</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679238753"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-126"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679238752"><span class="annot"><span class="annottext">b :: b
+</span><a href="#local-6989586621679238752"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; Parser b
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679238752"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="annot"><a href="Discord.Internal.Types.Events.html#eventParse"><span class="hs-identifier hs-type">eventParse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#Event"><span class="hs-identifier hs-type">Event</span></a></span><span>
+</span><span id="line-129"></span><span id="eventParse"><span class="annot"><span class="annottext">eventParse :: Text -&gt; Object -&gt; Parser Event
+</span><a href="Discord.Internal.Types.Events.html#eventParse"><span class="hs-identifier hs-var hs-var">eventParse</span></a></span></span><span> </span><span id="local-6989586621679238750"><span class="annot"><span class="annottext">t :: Text
+</span><a href="#local-6989586621679238750"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679238749"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679238750"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-130"></span><span>    </span><span class="hs-string">&quot;READY&quot;</span><span>                     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; User -&gt; [Channel] -&gt; [GuildUnavailable] -&gt; Text -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#Ready"><span class="hs-identifier hs-var">Ready</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; User -&gt; [Channel] -&gt; [GuildUnavailable] -&gt; Text -&gt; Event)
+-&gt; Parser Int
+-&gt; Parser
+     (User -&gt; [Channel] -&gt; [GuildUnavailable] -&gt; Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Int
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;v&quot;</span></span><span>
+</span><span id="line-131"></span><span>                                         </span><span class="annot"><span class="annottext">Parser (User -&gt; [Channel] -&gt; [GuildUnavailable] -&gt; Text -&gt; Event)
+-&gt; Parser User
+-&gt; Parser ([Channel] -&gt; [GuildUnavailable] -&gt; Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser User
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user&quot;</span></span><span>
+</span><span id="line-132"></span><span>                                         </span><span class="annot"><span class="annottext">Parser ([Channel] -&gt; [GuildUnavailable] -&gt; Text -&gt; Event)
+-&gt; Parser [Channel] -&gt; Parser ([GuildUnavailable] -&gt; Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [Channel]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;private_channels&quot;</span></span><span>
+</span><span id="line-133"></span><span>                                         </span><span class="annot"><span class="annottext">Parser ([GuildUnavailable] -&gt; Text -&gt; Event)
+-&gt; Parser [GuildUnavailable] -&gt; Parser (Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [GuildUnavailable]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guilds&quot;</span></span><span>
+</span><span id="line-134"></span><span>                                         </span><span class="annot"><span class="annottext">Parser (Text -&gt; Event) -&gt; Parser Text -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;session_id&quot;</span></span><span>
+</span><span id="line-135"></span><span>    </span><span class="hs-string">&quot;RESUMED&quot;</span><span>                   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#Resumed"><span class="hs-identifier hs-var">Resumed</span></a></span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Event) -&gt; Parser [Text] -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [Text]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;_trace&quot;</span></span><span>
+</span><span id="line-136"></span><span>    </span><span class="hs-string">&quot;CHANNEL_CREATE&quot;</span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Channel -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#ChannelCreate"><span class="hs-identifier hs-var">ChannelCreate</span></a></span><span>             </span><span class="annot"><span class="annottext">(Channel -&gt; Event) -&gt; Parser Channel -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Channel
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-137"></span><span>    </span><span class="hs-string">&quot;CHANNEL_UPDATE&quot;</span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Channel -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#ChannelUpdate"><span class="hs-identifier hs-var">ChannelUpdate</span></a></span><span>             </span><span class="annot"><span class="annottext">(Channel -&gt; Event) -&gt; Parser Channel -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Channel
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-138"></span><span>    </span><span class="hs-string">&quot;CHANNEL_DELETE&quot;</span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Channel -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#ChannelDelete"><span class="hs-identifier hs-var">ChannelDelete</span></a></span><span>             </span><span class="annot"><span class="annottext">(Channel -&gt; Event) -&gt; Parser Channel -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Channel
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-139"></span><span>    </span><span class="hs-string">&quot;CHANNEL_PINS_UPDATE&quot;</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679238748"><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679238748"><span class="hs-identifier hs-var">id</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span>
+</span><span id="line-140"></span><span>                                      </span><span id="local-6989586621679238747"><span class="annot"><span class="annottext">Maybe String
+</span><a href="#local-6989586621679238747"><span class="hs-identifier hs-var">stamp</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe String)
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;last_pin_timestamp&quot;</span></span><span>
+</span><span id="line-141"></span><span>                                      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679238746"><span class="annot"><span class="annottext">utc :: Maybe UTCTime
+</span><a href="#local-6989586621679238746"><span class="hs-identifier hs-var hs-var">utc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe String
+</span><a href="#local-6989586621679238747"><span class="hs-identifier hs-var">stamp</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe String -&gt; (String -&gt; Maybe UTCTime) -&gt; Maybe UTCTime
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe UTCTime
+</span><span class="hs-identifier hs-var">parseISO8601</span></span><span>
+</span><span id="line-142"></span><span>                                      </span><span class="annot"><span class="annottext">Event -&gt; Parser Event
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId -&gt; Maybe UTCTime -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#ChannelPinsUpdate"><span class="hs-identifier hs-var">ChannelPinsUpdate</span></a></span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679238748"><span class="hs-identifier hs-var">id</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime
+</span><a href="#local-6989586621679238746"><span class="hs-identifier hs-var">utc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>    </span><span class="hs-string">&quot;GUILD_CREATE&quot;</span><span>              </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Guild -&gt; GuildInfo -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildCreate"><span class="hs-identifier hs-var">GuildCreate</span></a></span><span>               </span><span class="annot"><span class="annottext">(Guild -&gt; GuildInfo -&gt; Event)
+-&gt; Parser Guild -&gt; Parser (GuildInfo -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Guild
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (GuildInfo -&gt; Event) -&gt; Parser GuildInfo -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser GuildInfo
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-144"></span><span>    </span><span class="hs-string">&quot;GUILD_UPDATE&quot;</span><span>              </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Guild -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildUpdate"><span class="hs-identifier hs-var">GuildUpdate</span></a></span><span>               </span><span class="annot"><span class="annottext">(Guild -&gt; Event) -&gt; Parser Guild -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Guild
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-145"></span><span>    </span><span class="hs-string">&quot;GUILD_DELETE&quot;</span><span>              </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GuildUnavailable -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildDelete"><span class="hs-identifier hs-var">GuildDelete</span></a></span><span>               </span><span class="annot"><span class="annottext">(GuildUnavailable -&gt; Event)
+-&gt; Parser GuildUnavailable -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser GuildUnavailable
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-146"></span><span>    </span><span class="hs-string">&quot;GUILD_BAN_ADD&quot;</span><span>             </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; User -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildBanAdd"><span class="hs-identifier hs-var">GuildBanAdd</span></a></span><span>    </span><span class="annot"><span class="annottext">(UserId -&gt; User -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (User -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (User -&gt; Event) -&gt; Parser User -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser User
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user&quot;</span></span><span>
+</span><span id="line-147"></span><span>    </span><span class="hs-string">&quot;GUILD_BAN_REMOVE&quot;</span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; User -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildBanRemove"><span class="hs-identifier hs-var">GuildBanRemove</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; User -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (User -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (User -&gt; Event) -&gt; Parser User -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser User
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user&quot;</span></span><span>
+</span><span id="line-148"></span><span>    </span><span class="hs-string">&quot;GUILD_EMOJI_UPDATE&quot;</span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; [Emoji] -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildEmojiUpdate"><span class="hs-identifier hs-var">GuildEmojiUpdate</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; [Emoji] -&gt; Event)
+-&gt; Parser UserId -&gt; Parser ([Emoji] -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser ([Emoji] -&gt; Event) -&gt; Parser [Emoji] -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [Emoji]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;emojis&quot;</span></span><span>
+</span><span id="line-149"></span><span>    </span><span class="hs-string">&quot;GUILD_INTEGRATIONS_UPDATE&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildIntegrationsUpdate"><span class="hs-identifier hs-var">GuildIntegrationsUpdate</span></a></span><span>   </span><span class="annot"><span class="annottext">(UserId -&gt; Event) -&gt; Parser UserId -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span>
+</span><span id="line-150"></span><span>    </span><span class="hs-string">&quot;GUILD_MEMBER_ADD&quot;</span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; GuildMember -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildMemberAdd"><span class="hs-identifier hs-var">GuildMemberAdd</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; GuildMember -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (GuildMember -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (GuildMember -&gt; Event) -&gt; Parser GuildMember -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser GuildMember
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-151"></span><span>    </span><span class="hs-string">&quot;GUILD_MEMBER_REMOVE&quot;</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; User -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildMemberRemove"><span class="hs-identifier hs-var">GuildMemberRemove</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; User -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (User -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (User -&gt; Event) -&gt; Parser User -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser User
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user&quot;</span></span><span>
+</span><span id="line-152"></span><span>    </span><span class="hs-string">&quot;GUILD_MEMBER_UPDATE&quot;</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; [UserId] -&gt; User -&gt; Maybe Text -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildMemberUpdate"><span class="hs-identifier hs-var">GuildMemberUpdate</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; [UserId] -&gt; User -&gt; Maybe Text -&gt; Event)
+-&gt; Parser UserId
+-&gt; Parser ([UserId] -&gt; User -&gt; Maybe Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span>
+</span><span id="line-153"></span><span>                                                     </span><span class="annot"><span class="annottext">Parser ([UserId] -&gt; User -&gt; Maybe Text -&gt; Event)
+-&gt; Parser [UserId] -&gt; Parser (User -&gt; Maybe Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [UserId]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;roles&quot;</span></span><span>
+</span><span id="line-154"></span><span>                                                     </span><span class="annot"><span class="annottext">Parser (User -&gt; Maybe Text -&gt; Event)
+-&gt; Parser User -&gt; Parser (Maybe Text -&gt; Event)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser User
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;user&quot;</span></span><span>
+</span><span id="line-155"></span><span>                                                     </span><span class="annot"><span class="annottext">Parser (Maybe Text -&gt; Event) -&gt; Parser (Maybe Text) -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Text)
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;nick&quot;</span></span><span>
+</span><span id="line-156"></span><span>    </span><span class="hs-string">&quot;GUILD_MEMBERS_CHUNK&quot;</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; [GuildMember] -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildMemberChunk"><span class="hs-identifier hs-var">GuildMemberChunk</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; [GuildMember] -&gt; Event)
+-&gt; Parser UserId -&gt; Parser ([GuildMember] -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser ([GuildMember] -&gt; Event)
+-&gt; Parser [GuildMember] -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [GuildMember]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;members&quot;</span></span><span>
+</span><span id="line-157"></span><span>    </span><span class="hs-string">&quot;GUILD_ROLE_CREATE&quot;</span><span>         </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Role -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildRoleCreate"><span class="hs-identifier hs-var">GuildRoleCreate</span></a></span><span>  </span><span class="annot"><span class="annottext">(UserId -&gt; Role -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (Role -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Role -&gt; Event) -&gt; Parser Role -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Role
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;role&quot;</span></span><span>
+</span><span id="line-158"></span><span>    </span><span class="hs-string">&quot;GUILD_ROLE_UPDATE&quot;</span><span>         </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Role -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildRoleUpdate"><span class="hs-identifier hs-var">GuildRoleUpdate</span></a></span><span>  </span><span class="annot"><span class="annottext">(UserId -&gt; Role -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (Role -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Role -&gt; Event) -&gt; Parser Role -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Role
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;role&quot;</span></span><span>
+</span><span id="line-159"></span><span>    </span><span class="hs-string">&quot;GUILD_ROLE_DELETE&quot;</span><span>         </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#GuildRoleDelete"><span class="hs-identifier hs-var">GuildRoleDelete</span></a></span><span>  </span><span class="annot"><span class="annottext">(UserId -&gt; UserId -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (UserId -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;guild_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Event) -&gt; Parser UserId -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;role_id&quot;</span></span><span>
+</span><span id="line-160"></span><span>    </span><span class="hs-string">&quot;MESSAGE_CREATE&quot;</span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageCreate"><span class="hs-identifier hs-var">MessageCreate</span></a></span><span>     </span><span class="annot"><span class="annottext">(Message -&gt; Event) -&gt; Parser Message -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Message
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-161"></span><span>    </span><span class="hs-string">&quot;MESSAGE_UPDATE&quot;</span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageUpdate"><span class="hs-identifier hs-var">MessageUpdate</span></a></span><span>     </span><span class="annot"><span class="annottext">(UserId -&gt; UserId -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (UserId -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Event) -&gt; Parser UserId -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span>
+</span><span id="line-162"></span><span>    </span><span class="hs-string">&quot;MESSAGE_DELETE&quot;</span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageDelete"><span class="hs-identifier hs-var">MessageDelete</span></a></span><span>     </span><span class="annot"><span class="annottext">(UserId -&gt; UserId -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (UserId -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Event) -&gt; Parser UserId -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span>
+</span><span id="line-163"></span><span>    </span><span class="hs-string">&quot;MESSAGE_DELETE_BULK&quot;</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; [UserId] -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageDeleteBulk"><span class="hs-identifier hs-var">MessageDeleteBulk</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; [UserId] -&gt; Event)
+-&gt; Parser UserId -&gt; Parser ([UserId] -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser ([UserId] -&gt; Event) -&gt; Parser [UserId] -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [UserId]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;ids&quot;</span></span><span>
+</span><span id="line-164"></span><span>    </span><span class="hs-string">&quot;MESSAGE_REACTION_ADD&quot;</span><span>      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageReactionAdd"><span class="hs-identifier hs-var">MessageReactionAdd</span></a></span><span> </span><span class="annot"><span class="annottext">(ReactionInfo -&gt; Event) -&gt; Parser ReactionInfo -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser ReactionInfo
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-165"></span><span>    </span><span class="hs-string">&quot;MESSAGE_REACTION_REMOVE&quot;</span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageReactionRemove"><span class="hs-identifier hs-var">MessageReactionRemove</span></a></span><span> </span><span class="annot"><span class="annottext">(ReactionInfo -&gt; Event) -&gt; Parser ReactionInfo -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser ReactionInfo
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-166"></span><span>    </span><span class="hs-string">&quot;MESSAGE_REACTION_REMOVE_ALL&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageReactionRemoveAll"><span class="hs-identifier hs-var">MessageReactionRemoveAll</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; UserId -&gt; Event)
+-&gt; Parser UserId -&gt; Parser (UserId -&gt; Event)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span>
+</span><span id="line-167"></span><span>                                                              </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Event) -&gt; Parser UserId -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;message_id&quot;</span></span><span>
+</span><span id="line-168"></span><span>    </span><span class="hs-string">&quot;MESSAGE_REACTION_REMOVE_EMOJI&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ReactionRemoveInfo -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#MessageReactionRemoveEmoji"><span class="hs-identifier hs-var">MessageReactionRemoveEmoji</span></a></span><span> </span><span class="annot"><span class="annottext">(ReactionRemoveInfo -&gt; Event)
+-&gt; Parser ReactionRemoveInfo -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser ReactionRemoveInfo
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-169"></span><span>    </span><span class="hs-string">&quot;PRESENCE_UPDATE&quot;</span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PresenceInfo -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#PresenceUpdate"><span class="hs-identifier hs-var">PresenceUpdate</span></a></span><span>            </span><span class="annot"><span class="annottext">(PresenceInfo -&gt; Event) -&gt; Parser PresenceInfo -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser PresenceInfo
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-170"></span><span>    </span><span class="hs-string">&quot;TYPING_START&quot;</span><span>              </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TypingInfo -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#TypingStart"><span class="hs-identifier hs-var">TypingStart</span></a></span><span>               </span><span class="annot"><span class="annottext">(TypingInfo -&gt; Event) -&gt; Parser TypingInfo -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser TypingInfo
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-171"></span><span>    </span><span class="hs-string">&quot;USER_UPDATE&quot;</span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">User -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#UserUpdate"><span class="hs-identifier hs-var">UserUpdate</span></a></span><span>                </span><span class="annot"><span class="annottext">(User -&gt; Event) -&gt; Parser User -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser User
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-172"></span><span> </span><span class="hs-comment">-- &quot;VOICE_STATE_UPDATE&quot;        -&gt; VoiceStateUpdate          &lt;$&gt; reparse o</span><span>
+</span><span id="line-173"></span><span> </span><span class="hs-comment">-- &quot;VOICE_SERVER_UPDATE&quot;       -&gt; VoiceServerUpdate         &lt;$&gt; reparse o</span><span>
+</span><span id="line-174"></span><span>    </span><span id="local-6989586621679238745"><span class="annot"><span class="annottext">_other_event :: Text
+</span><a href="#local-6989586621679238745"><span class="hs-identifier hs-var">_other_event</span></a></span></span><span>                </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Object -&gt; Event
+</span><a href="Discord.Internal.Types.Events.html#UnknownEvent"><span class="hs-identifier hs-var">UnknownEvent</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679238750"><span class="hs-identifier hs-var">t</span></a></span><span>            </span><span class="annot"><span class="annottext">(Object -&gt; Event) -&gt; Parser Object -&gt; Parser Event
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Parser Object
+forall a b. (ToJSON a, FromJSON b) =&gt; a -&gt; Parser b
+</span><a href="Discord.Internal.Types.Events.html#reparse"><span class="hs-identifier hs-var">reparse</span></a></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679238749"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-175"></span></pre></body></html>

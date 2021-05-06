@@ -1,0 +1,920 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_LvHsMHgM4gPEhGw4fyf9Mj"><span id="%24con2tag_HvU7MRgIk3eA4G0aUNrjin"></span></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances, TypeSynonymInstances, DeriveDataTypeable, CPP,
+             BangPatterns #-}</span><span>
+</span><span id="line-3"></span><span class="hs-comment">{-|
+ Maintainer: Thomas.DuBuisson@gmail.com
+ Stability: beta
+ Portability: portable 
+
+
+ This module is for instantiating cryptographicly strong
+determinitic random bit generators (DRBGs, aka PRNGs) For the simple
+use case of using the system random number generator
+('System.Entropy') to seed the DRBG:
+
+@   g &lt;- newGenIO
+@
+
+ Users needing to provide their own entropy can call 'newGen' directly
+ 
+@    entropy &lt;- getEntropy nrBytes
+    let generator = newGen entropy
+@
+
+-}</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Crypto.Random</span><span>
+</span><span id="line-26"></span><span>       </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- * Basic Interface</span></span><span>
+</span><span id="line-27"></span><span>         </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier">CryptoRandomGen</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier">GenError</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#ReseedInfo"><span class="hs-identifier">ReseedInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>         </span><span class="annot"><span class="hs-comment">-- * Helper functions and expanded interface</span></span><span>
+</span><span id="line-31"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#splitGen"><span class="hs-identifier">splitGen</span></a></span><span>
+</span><span id="line-32"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Util.html#throwLeft"><span class="hs-identifier">throwLeft</span></a></span><span>
+</span><span id="line-33"></span><span>         </span><span class="annot"><span class="hs-comment">-- * Instances</span></span><span>
+</span><span id="line-34"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#SystemRandom"><span class="hs-identifier">SystemRandom</span></a></span><span>
+</span><span id="line-35"></span><span>       </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">liftM</span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Types.html"><span class="hs-identifier">Crypto.Types</span></a></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Crypto.Util.html"><span class="hs-identifier">Crypto.Util</span></a></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bits</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">xor</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">setBit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shiftR</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shiftL</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.&amp;.)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Data</span></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">foldl'</span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Tagged</span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Typeable</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Entropy</span></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.IO.Unsafe</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">unsafeInterleaveIO</span></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.ForeignPtr</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">FP</span></span><span class="hs-cpp">
+
+#if MIN_VERSION_tagged(0,2,0)
+</span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- |Generator failures should always return the appropriate GenError.</span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- Note 'GenError' in an instance of exception but wether or not an</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- exception is thrown depends on if the selected generator (read:</span><span>
+</span><span id="line-60"></span><span class="hs-comment">-- if you don't want execptions from code that uses 'throw' then</span><span>
+</span><span id="line-61"></span><span class="hs-comment">-- pass in a generator that never has an error for the used functions)</span><span>
+</span><span id="line-62"></span><span class="hs-keyword">data</span><span> </span><span id="GenError"><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-var">GenError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-63"></span><span>          </span><span id="GenErrorOther"><span class="annot"><a href="Crypto.Random.html#GenErrorOther"><span class="hs-identifier hs-var">GenErrorOther</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>  </span><span class="hs-comment">-- ^ Misc</span><span>
+</span><span id="line-64"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="RequestedTooManyBytes"><span class="annot"><a href="Crypto.Random.html#RequestedTooManyBytes"><span class="hs-identifier hs-var">RequestedTooManyBytes</span></a></span></span><span> </span><span class="hs-comment">-- ^ Requested more bytes than a</span><span>
+</span><span id="line-65"></span><span>                                </span><span class="hs-comment">-- single pass can generate (The</span><span>
+</span><span id="line-66"></span><span>                                </span><span class="hs-comment">-- maximum request is generator</span><span>
+</span><span id="line-67"></span><span>                                </span><span class="hs-comment">-- dependent)</span><span>
+</span><span id="line-68"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="RangeInvalid"><span class="annot"><a href="Crypto.Random.html#RangeInvalid"><span class="hs-identifier hs-var">RangeInvalid</span></a></span></span><span>          </span><span class="hs-comment">-- ^ When using @genInteger g (l,h)@</span><span>
+</span><span id="line-69"></span><span>                                </span><span class="hs-comment">-- and @logBase 2 (h - l) &gt; (maxBound</span><span>
+</span><span id="line-70"></span><span>                                </span><span class="hs-comment">-- :: Int)@.</span><span>
+</span><span id="line-71"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="NeedReseed"><span class="annot"><a href="Crypto.Random.html#NeedReseed"><span class="hs-identifier hs-var">NeedReseed</span></a></span></span><span>            </span><span class="hs-comment">-- ^ Some generators cease operation</span><span>
+</span><span id="line-72"></span><span>                                </span><span class="hs-comment">-- after too high a count without a</span><span>
+</span><span id="line-73"></span><span>                                </span><span class="hs-comment">-- reseed (ex: NIST SP 800-90)</span><span>
+</span><span id="line-74"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="NotEnoughEntropy"><span class="annot"><a href="Crypto.Random.html#NotEnoughEntropy"><span class="hs-identifier hs-var">NotEnoughEntropy</span></a></span></span><span>      </span><span class="hs-comment">-- ^ For instantiating new generators</span><span>
+</span><span id="line-75"></span><span>                                </span><span class="hs-comment">-- (or reseeding)</span><span>
+</span><span id="line-76"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="NeedsInfiniteSeed"><span class="annot"><a href="Crypto.Random.html#NeedsInfiniteSeed"><span class="hs-identifier hs-var">NeedsInfiniteSeed</span></a></span></span><span>     </span><span class="hs-comment">-- ^ This generator can not be</span><span>
+</span><span id="line-77"></span><span>                                </span><span class="hs-comment">-- instantiated or reseeded with a</span><span>
+</span><span id="line-78"></span><span>                                </span><span class="hs-comment">-- finite seed (ex: 'SystemRandom')</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679083133"><span id="local-6989586621679083135"><span class="annot"><span class="annottext">GenError -&gt; GenError -&gt; Bool
+(GenError -&gt; GenError -&gt; Bool)
+-&gt; (GenError -&gt; GenError -&gt; Bool) -&gt; Eq GenError
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: GenError -&gt; GenError -&gt; Bool
+$c/= :: GenError -&gt; GenError -&gt; Bool
+== :: GenError -&gt; GenError -&gt; Bool
+$c== :: GenError -&gt; GenError -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679083117"><span id="local-6989586621679083119"><span id="local-6989586621679083121"><span id="local-6989586621679083123"><span id="local-6989586621679083125"><span id="local-6989586621679083127"><span id="local-6989586621679083129"><span class="annot"><span class="annottext">Eq GenError
+Eq GenError =&gt;
+(GenError -&gt; GenError -&gt; Ordering)
+-&gt; (GenError -&gt; GenError -&gt; Bool)
+-&gt; (GenError -&gt; GenError -&gt; Bool)
+-&gt; (GenError -&gt; GenError -&gt; Bool)
+-&gt; (GenError -&gt; GenError -&gt; Bool)
+-&gt; (GenError -&gt; GenError -&gt; GenError)
+-&gt; (GenError -&gt; GenError -&gt; GenError)
+-&gt; Ord GenError
+GenError -&gt; GenError -&gt; Bool
+GenError -&gt; GenError -&gt; Ordering
+GenError -&gt; GenError -&gt; GenError
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: GenError -&gt; GenError -&gt; GenError
+$cmin :: GenError -&gt; GenError -&gt; GenError
+max :: GenError -&gt; GenError -&gt; GenError
+$cmax :: GenError -&gt; GenError -&gt; GenError
+&gt;= :: GenError -&gt; GenError -&gt; Bool
+$c&gt;= :: GenError -&gt; GenError -&gt; Bool
+&gt; :: GenError -&gt; GenError -&gt; Bool
+$c&gt; :: GenError -&gt; GenError -&gt; Bool
+&lt;= :: GenError -&gt; GenError -&gt; Bool
+$c&lt;= :: GenError -&gt; GenError -&gt; Bool
+&lt; :: GenError -&gt; GenError -&gt; Bool
+$c&lt; :: GenError -&gt; GenError -&gt; Bool
+compare :: GenError -&gt; GenError -&gt; Ordering
+$ccompare :: GenError -&gt; GenError -&gt; Ordering
+$cp1Ord :: Eq GenError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679083110"><span id="local-6989586621679083112"><span id="local-6989586621679083114"><span class="annot"><span class="annottext">Int -&gt; GenError -&gt; ShowS
+[GenError] -&gt; ShowS
+GenError -&gt; String
+(Int -&gt; GenError -&gt; ShowS)
+-&gt; (GenError -&gt; String) -&gt; ([GenError] -&gt; ShowS) -&gt; Show GenError
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [GenError] -&gt; ShowS
+$cshowList :: [GenError] -&gt; ShowS
+show :: GenError -&gt; String
+$cshow :: GenError -&gt; String
+showsPrec :: Int -&gt; GenError -&gt; ShowS
+$cshowsPrec :: Int -&gt; GenError -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679083101"><span id="local-6989586621679083103"><span id="local-6989586621679083105"><span id="local-6989586621679083107"><span class="annot"><span class="annottext">ReadPrec [GenError]
+ReadPrec GenError
+Int -&gt; ReadS GenError
+ReadS [GenError]
+(Int -&gt; ReadS GenError)
+-&gt; ReadS [GenError]
+-&gt; ReadPrec GenError
+-&gt; ReadPrec [GenError]
+-&gt; Read GenError
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [GenError]
+$creadListPrec :: ReadPrec [GenError]
+readPrec :: ReadPrec GenError
+$creadPrec :: ReadPrec GenError
+readList :: ReadS [GenError]
+$creadList :: ReadS [GenError]
+readsPrec :: Int -&gt; ReadS GenError
+$creadsPrec :: Int -&gt; ReadS GenError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="%24cNeedsInfiniteSeed"><span id="%24cNotEnoughEntropy"><span id="%24cNeedReseed"><span id="%24cRangeInvalid"><span id="%24cRequestedTooManyBytes"><span id="%24cGenErrorOther"><span id="%24tGenError"><span id="local-6989586621679083071"><span id="local-6989586621679083073"><span id="local-6989586621679083075"><span id="local-6989586621679083077"><span id="local-6989586621679083079"><span id="local-6989586621679083081"><span id="local-6989586621679083083"><span id="local-6989586621679083085"><span id="local-6989586621679083087"><span id="local-6989586621679083089"><span id="local-6989586621679083091"><span id="local-6989586621679083093"><span id="local-6989586621679083095"><span id="local-6989586621679083097"><span class="annot"><span class="annottext">Typeable GenError
+DataType
+Constr
+Typeable GenError =&gt;
+(forall (c :: * -&gt; *).
+ (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+ -&gt; (forall g. g -&gt; c g) -&gt; GenError -&gt; c GenError)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c GenError)
+-&gt; (GenError -&gt; Constr)
+-&gt; (GenError -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c GenError))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c GenError))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; GenError -&gt; GenError)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError)
+-&gt; Data GenError
+GenError -&gt; DataType
+GenError -&gt; Constr
+(forall b. Data b =&gt; b -&gt; b) -&gt; GenError -&gt; GenError
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; GenError -&gt; c GenError
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c GenError
+forall a.
+Typeable a =&gt;
+(forall (c :: * -&gt; *).
+ (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+ -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
+-&gt; (a -&gt; Constr)
+-&gt; (a -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c a))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c a))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; a -&gt; a)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; Data a
+forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; u
+forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; [u]
+forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r
+forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c GenError
+forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; GenError -&gt; c GenError
+forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c GenError)
+forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c GenError)
+$cNeedsInfiniteSeed :: Constr
+$cNotEnoughEntropy :: Constr
+$cNeedReseed :: Constr
+$cRangeInvalid :: Constr
+$cRequestedTooManyBytes :: Constr
+$cGenErrorOther :: Constr
+$tGenError :: DataType
+gmapMo :: (forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+$cgmapMo :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+gmapMp :: (forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+$cgmapMp :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+gmapM :: (forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+$cgmapM :: forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; GenError -&gt; m GenError
+gmapQi :: Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; u
+$cgmapQi :: forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; u
+gmapQ :: (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; [u]
+$cgmapQ :: forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; GenError -&gt; [u]
+gmapQr :: (r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r
+$cgmapQr :: forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r
+gmapQl :: (r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r
+$cgmapQl :: forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; GenError -&gt; r
+gmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; GenError -&gt; GenError
+$cgmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; GenError -&gt; GenError
+dataCast2 :: (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c GenError)
+$cdataCast2 :: forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c GenError)
+dataCast1 :: (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c GenError)
+$cdataCast1 :: forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c GenError)
+dataTypeOf :: GenError -&gt; DataType
+$cdataTypeOf :: GenError -&gt; DataType
+toConstr :: GenError -&gt; Constr
+$ctoConstr :: GenError -&gt; Constr
+gunfold :: (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c GenError
+$cgunfold :: forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c GenError
+gfoldl :: (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; GenError -&gt; c GenError
+$cgfoldl :: forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; GenError -&gt; c GenError
+$cp1Data :: Typeable GenError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-keyword">data</span><span> </span><span id="ReseedInfo"><span class="annot"><a href="Crypto.Random.html#ReseedInfo"><span class="hs-identifier hs-var">ReseedInfo</span></a></span></span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="InXBytes"><span class="annot"><a href="Crypto.Random.html#InXBytes"><span class="hs-identifier hs-var">InXBytes</span></a></span></span><span> </span><span class="hs-pragma">{-# UNPACK</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span>   </span><span class="hs-comment">-- ^ Generator needs reseeded in X bytes</span><span>
+</span><span id="line-83"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="InXCalls"><span class="annot"><a href="Crypto.Random.html#InXCalls"><span class="hs-identifier hs-var">InXCalls</span></a></span></span><span> </span><span class="hs-pragma">{-# UNPACK</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span>   </span><span class="hs-comment">-- ^ Generator needs reseeded in X calls</span><span>
+</span><span id="line-84"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="NotSoon"><span class="annot"><a href="Crypto.Random.html#NotSoon"><span class="hs-identifier hs-var">NotSoon</span></a></span></span><span>                           </span><span class="hs-comment">-- ^ The bound is over 2^64 bytes or calls</span><span>
+</span><span id="line-85"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Never"><span class="annot"><a href="Crypto.Random.html#Never"><span class="hs-identifier hs-var">Never</span></a></span></span><span>                             </span><span class="hs-comment">-- ^ This generator never reseeds (ex: 'SystemRandom')</span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679083055"><span id="local-6989586621679083057"><span class="annot"><span class="annottext">ReseedInfo -&gt; ReseedInfo -&gt; Bool
+(ReseedInfo -&gt; ReseedInfo -&gt; Bool)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; Bool) -&gt; Eq ReseedInfo
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+$c/= :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+== :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+$c== :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679083040"><span id="local-6989586621679083042"><span id="local-6989586621679083044"><span id="local-6989586621679083046"><span id="local-6989586621679083048"><span id="local-6989586621679083050"><span id="local-6989586621679083052"><span class="annot"><span class="annottext">Eq ReseedInfo
+Eq ReseedInfo =&gt;
+(ReseedInfo -&gt; ReseedInfo -&gt; Ordering)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; Bool)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; Bool)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; Bool)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; Bool)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo)
+-&gt; (ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo)
+-&gt; Ord ReseedInfo
+ReseedInfo -&gt; ReseedInfo -&gt; Bool
+ReseedInfo -&gt; ReseedInfo -&gt; Ordering
+ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo
+$cmin :: ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo
+max :: ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo
+$cmax :: ReseedInfo -&gt; ReseedInfo -&gt; ReseedInfo
+&gt;= :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+$c&gt;= :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+&gt; :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+$c&gt; :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+&lt;= :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+$c&lt;= :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+&lt; :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+$c&lt; :: ReseedInfo -&gt; ReseedInfo -&gt; Bool
+compare :: ReseedInfo -&gt; ReseedInfo -&gt; Ordering
+$ccompare :: ReseedInfo -&gt; ReseedInfo -&gt; Ordering
+$cp1Ord :: Eq ReseedInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679083034"><span id="local-6989586621679083036"><span id="local-6989586621679083038"><span class="annot"><span class="annottext">Int -&gt; ReseedInfo -&gt; ShowS
+[ReseedInfo] -&gt; ShowS
+ReseedInfo -&gt; String
+(Int -&gt; ReseedInfo -&gt; ShowS)
+-&gt; (ReseedInfo -&gt; String)
+-&gt; ([ReseedInfo] -&gt; ShowS)
+-&gt; Show ReseedInfo
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [ReseedInfo] -&gt; ShowS
+$cshowList :: [ReseedInfo] -&gt; ShowS
+show :: ReseedInfo -&gt; String
+$cshow :: ReseedInfo -&gt; String
+showsPrec :: Int -&gt; ReseedInfo -&gt; ShowS
+$cshowsPrec :: Int -&gt; ReseedInfo -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679083026"><span id="local-6989586621679083028"><span id="local-6989586621679083030"><span id="local-6989586621679083032"><span class="annot"><span class="annottext">ReadPrec [ReseedInfo]
+ReadPrec ReseedInfo
+Int -&gt; ReadS ReseedInfo
+ReadS [ReseedInfo]
+(Int -&gt; ReadS ReseedInfo)
+-&gt; ReadS [ReseedInfo]
+-&gt; ReadPrec ReseedInfo
+-&gt; ReadPrec [ReseedInfo]
+-&gt; Read ReseedInfo
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [ReseedInfo]
+$creadListPrec :: ReadPrec [ReseedInfo]
+readPrec :: ReadPrec ReseedInfo
+$creadPrec :: ReadPrec ReseedInfo
+readList :: ReadS [ReseedInfo]
+$creadList :: ReadS [ReseedInfo]
+readsPrec :: Int -&gt; ReadS ReseedInfo
+$creadsPrec :: Int -&gt; ReadS ReseedInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="%24cNever"><span id="%24cNotSoon"><span id="%24cInXCalls"><span id="%24cInXBytes"><span id="%24tReseedInfo"><span id="local-6989586621679082997"><span id="local-6989586621679082999"><span id="local-6989586621679083001"><span id="local-6989586621679083003"><span id="local-6989586621679083005"><span id="local-6989586621679083007"><span id="local-6989586621679083009"><span id="local-6989586621679083011"><span id="local-6989586621679083013"><span id="local-6989586621679083015"><span id="local-6989586621679083017"><span id="local-6989586621679083019"><span id="local-6989586621679083021"><span id="local-6989586621679083023"><span class="annot"><span class="annottext">Typeable ReseedInfo
+DataType
+Constr
+Typeable ReseedInfo =&gt;
+(forall (c :: * -&gt; *).
+ (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+ -&gt; (forall g. g -&gt; c g) -&gt; ReseedInfo -&gt; c ReseedInfo)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c ReseedInfo)
+-&gt; (ReseedInfo -&gt; Constr)
+-&gt; (ReseedInfo -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c ReseedInfo))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e))
+    -&gt; Maybe (c ReseedInfo))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; ReseedInfo -&gt; ReseedInfo)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; [u])
+-&gt; (forall u.
+    Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo)
+-&gt; Data ReseedInfo
+ReseedInfo -&gt; DataType
+ReseedInfo -&gt; Constr
+(forall b. Data b =&gt; b -&gt; b) -&gt; ReseedInfo -&gt; ReseedInfo
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; ReseedInfo -&gt; c ReseedInfo
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c ReseedInfo
+forall a.
+Typeable a =&gt;
+(forall (c :: * -&gt; *).
+ (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+ -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
+-&gt; (a -&gt; Constr)
+-&gt; (a -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c a))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c a))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; a -&gt; a)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; Data a
+forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; u
+forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; [u]
+forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r
+forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c ReseedInfo
+forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; ReseedInfo -&gt; c ReseedInfo
+forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c ReseedInfo)
+forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c ReseedInfo)
+$cNever :: Constr
+$cNotSoon :: Constr
+$cInXCalls :: Constr
+$cInXBytes :: Constr
+$tReseedInfo :: DataType
+gmapMo :: (forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+$cgmapMo :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+gmapMp :: (forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+$cgmapMp :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+gmapM :: (forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+$cgmapM :: forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; ReseedInfo -&gt; m ReseedInfo
+gmapQi :: Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; u
+$cgmapQi :: forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; u
+gmapQ :: (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; [u]
+$cgmapQ :: forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; ReseedInfo -&gt; [u]
+gmapQr :: (r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r
+$cgmapQr :: forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r
+gmapQl :: (r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r
+$cgmapQl :: forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; ReseedInfo -&gt; r
+gmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; ReseedInfo -&gt; ReseedInfo
+$cgmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; ReseedInfo -&gt; ReseedInfo
+dataCast2 :: (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c ReseedInfo)
+$cdataCast2 :: forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c ReseedInfo)
+dataCast1 :: (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c ReseedInfo)
+$cdataCast1 :: forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c ReseedInfo)
+dataTypeOf :: ReseedInfo -&gt; DataType
+$cdataTypeOf :: ReseedInfo -&gt; DataType
+toConstr :: ReseedInfo -&gt; Constr
+$ctoConstr :: ReseedInfo -&gt; Constr
+gunfold :: (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c ReseedInfo
+$cgunfold :: forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c ReseedInfo
+gfoldl :: (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; ReseedInfo -&gt; c ReseedInfo
+$cgfoldl :: forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; ReseedInfo -&gt; c ReseedInfo
+$cp1Data :: Typeable ReseedInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082984"><span id="local-6989586621679082986"><span id="local-6989586621679082988"><span class="annot"><span class="hs-identifier hs-type">Exception</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span></span></span></span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span class="hs-comment">-- |A class of random bit generators that allows for the possibility</span><span>
+</span><span id="line-91"></span><span class="hs-comment">-- of failure, reseeding, providing entropy at the same time as</span><span>
+</span><span id="line-92"></span><span class="hs-comment">-- requesting bytes</span><span>
+</span><span id="line-93"></span><span class="hs-comment">--</span><span>
+</span><span id="line-94"></span><span class="hs-comment">-- Minimum complete definition: `newGen`, `genSeedLength`, `genBytes`,</span><span>
+</span><span id="line-95"></span><span class="hs-comment">-- `reseed`, `reseedInfo`, `reseedPeriod`.</span><span>
+</span><span id="line-96"></span><span class="hs-keyword">class</span><span> </span><span id="CryptoRandomGen"><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-var">CryptoRandomGen</span></a></span></span><span> </span><span id="local-6989586621679083205"><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-97"></span><span>        </span><span class="hs-comment">-- |Instantiate a new random bit generator.  The provided</span><span>
+</span><span id="line-98"></span><span>        </span><span class="hs-comment">-- bytestring should be of length &gt;= genSeedLength.  If the</span><span>
+</span><span id="line-99"></span><span>        </span><span class="hs-comment">-- bytestring is shorter then the call may fail (suggested</span><span>
+</span><span id="line-100"></span><span>        </span><span class="hs-comment">-- error: `NotEnoughEntropy`).  If the bytestring is of</span><span>
+</span><span id="line-101"></span><span>        </span><span class="hs-comment">-- sufficent length the call should always succeed.</span><span>
+</span><span id="line-102"></span><span>        </span><span id="newGen"><span class="annot"><a href="Crypto.Random.html#newGen"><span class="hs-identifier hs-type">newGen</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span>        </span><span class="hs-comment">-- |Length of input entropy necessary to instantiate or reseed</span><span>
+</span><span id="line-105"></span><span>        </span><span class="hs-comment">-- a generator</span><span>
+</span><span id="line-106"></span><span>        </span><span id="genSeedLength"><span class="annot"><a href="Crypto.Random.html#genSeedLength"><span class="hs-identifier hs-type">genSeedLength</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Tagged</span></span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span>        </span><span class="hs-comment">-- | @genBytes len g@ generates a random ByteString of length</span><span>
+</span><span id="line-109"></span><span>        </span><span class="hs-comment">-- @len@ and new generator.  The &quot;MonadCryptoRandom&quot; package</span><span>
+</span><span id="line-110"></span><span>        </span><span class="hs-comment">-- has routines useful for converting the ByteString to</span><span>
+</span><span id="line-111"></span><span>        </span><span class="hs-comment">-- commonly needed values (but &quot;cereal&quot; or other</span><span>
+</span><span id="line-112"></span><span>        </span><span class="hs-comment">-- deserialization libraries would also work).</span><span>
+</span><span id="line-113"></span><span>        </span><span class="hs-comment">--</span><span>
+</span><span id="line-114"></span><span>        </span><span class="hs-comment">-- This routine can fail if the generator has gone too long</span><span>
+</span><span id="line-115"></span><span>        </span><span class="hs-comment">-- without a reseed (usually this is in the ball-park of 2^48</span><span>
+</span><span id="line-116"></span><span>        </span><span class="hs-comment">-- requests).  Suggested error in this cases is `NeedReseed`</span><span>
+</span><span id="line-117"></span><span>        </span><span id="genBytes"><span class="annot"><a href="Crypto.Random.html#genBytes"><span class="hs-identifier hs-type">genBytes</span></a></span></span><span>        </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span>        </span><span class="hs-comment">-- | Indicates how soon a reseed is needed</span><span>
+</span><span id="line-120"></span><span>        </span><span id="reseedInfo"><span class="annot"><a href="Crypto.Random.html#reseedInfo"><span class="hs-identifier hs-type">reseedInfo</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Random.html#ReseedInfo"><span class="hs-identifier hs-type">ReseedInfo</span></a></span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span>        </span><span class="hs-comment">-- | Indicates the period between reseeds (constant for most generators).</span><span>
+</span><span id="line-123"></span><span>        </span><span id="reseedPeriod"><span class="annot"><a href="Crypto.Random.html#reseedPeriod"><span class="hs-identifier hs-type">reseedPeriod</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Random.html#ReseedInfo"><span class="hs-identifier hs-type">ReseedInfo</span></a></span><span>
+</span><span id="line-124"></span><span>
+</span><span id="line-125"></span><span>        </span><span class="hs-comment">-- |@genBytesWithEntropy g i entropy@ generates @i@ random</span><span>
+</span><span id="line-126"></span><span>        </span><span class="hs-comment">-- bytes and use the additional input @entropy@ in the</span><span>
+</span><span id="line-127"></span><span>        </span><span class="hs-comment">-- generation of the requested data to increase the confidence</span><span>
+</span><span id="line-128"></span><span>        </span><span class="hs-comment">-- our generated data is a secure random stream.</span><span>
+</span><span id="line-129"></span><span>        </span><span class="hs-comment">--</span><span>
+</span><span id="line-130"></span><span>        </span><span class="hs-comment">-- Some generators use @entropy@ to perturb the state of the</span><span>
+</span><span id="line-131"></span><span>        </span><span class="hs-comment">-- generator, meaning:</span><span>
+</span><span id="line-132"></span><span>        </span><span class="hs-comment">--</span><span>
+</span><span id="line-133"></span><span>        </span><span class="hs-comment">-- @</span><span>
+</span><span id="line-134"></span><span>        </span><span class="hs-comment">--     (_,g2') &lt;- genBytesWithEntropy len g1 ent</span><span>
+</span><span id="line-135"></span><span>        </span><span class="hs-comment">--     (_,g2 ) &lt;- genBytes len g1</span><span>
+</span><span id="line-136"></span><span>        </span><span class="hs-comment">--     g2 /= g2'</span><span>
+</span><span id="line-137"></span><span>        </span><span class="hs-comment">-- @</span><span>
+</span><span id="line-138"></span><span>        </span><span class="hs-comment">--</span><span>
+</span><span id="line-139"></span><span>        </span><span class="hs-comment">-- But this is not required.</span><span>
+</span><span id="line-140"></span><span>        </span><span class="hs-comment">--</span><span>
+</span><span id="line-141"></span><span>        </span><span class="hs-comment">-- Default:</span><span>
+</span><span id="line-142"></span><span>        </span><span class="hs-comment">-- </span><span>
+</span><span id="line-143"></span><span>        </span><span class="hs-comment">-- @</span><span>
+</span><span id="line-144"></span><span>        </span><span class="hs-comment">--     genBytesWithEntropy g bytes entropy = xor entropy (genBytes g bytes)</span><span>
+</span><span id="line-145"></span><span>        </span><span class="hs-comment">-- @</span><span>
+</span><span id="line-146"></span><span>        </span><span id="genBytesWithEntropy"><span class="annot"><a href="Crypto.Random.html#genBytesWithEntropy"><span class="hs-identifier hs-type">genBytesWithEntropy</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-147"></span><span>        </span><span id="local-6989586621679082975"><span class="annot"><a href="Crypto.Random.html#genBytesWithEntropy"><span class="hs-identifier hs-var hs-var">genBytesWithEntropy</span></a></span><span> </span><span id="local-6989586621679082974"><span class="annot"><span class="annottext">len :: Int
+</span><a href="#local-6989586621679082974"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span id="local-6989586621679082973"><span class="annot"><span class="annottext">entropy :: ByteString
+</span><a href="#local-6989586621679082973"><span class="hs-identifier hs-var">entropy</span></a></span></span><span> </span><span id="local-6989586621679082972"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679082972"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-148"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082971"><span class="annot"><span class="annottext">res :: Either GenError (ByteString, g)
+</span><a href="#local-6989586621679082971"><span class="hs-identifier hs-var hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; g -&gt; Either GenError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+Int -&gt; g -&gt; Either GenError (ByteString, g)
+</span><a href="Crypto.Random.html#genBytes"><span class="hs-identifier hs-var">genBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082974"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679082972"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-149"></span><span>                </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either GenError (ByteString, g)
+</span><a href="#local-6989586621679082971"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-150"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679082970"><span class="annot"><span class="annottext">err :: GenError
+</span><a href="#local-6989586621679082970"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; Either GenError (ByteString, g)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">GenError
+</span><a href="#local-6989586621679082970"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-151"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082969"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679082969"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679082968"><span class="annot"><span class="annottext">g' :: g
+</span><a href="#local-6989586621679082968"><span class="hs-identifier hs-var">g'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-152"></span><span>                                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082967"><span class="annot"><span class="annottext">entropy' :: ByteString
+</span><a href="#local-6989586621679082967"><span class="hs-identifier hs-var hs-var">entropy'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.append</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082973"><span class="hs-identifier hs-var">entropy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word8 -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.replicate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082974"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082973"><span class="hs-identifier hs-var">entropy</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-153"></span><span>                                </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">(ByteString, g) -&gt; Either GenError (ByteString, g)
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="Crypto.Util.html#zwp%27"><span class="hs-identifier hs-var">zwp'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082967"><span class="hs-identifier hs-var">entropy'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082969"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679082968"><span class="hs-identifier hs-var">g'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-154"></span><span>
+</span><span id="line-155"></span><span>        </span><span class="hs-comment">-- |If the generator has produced too many random bytes on its</span><span>
+</span><span id="line-156"></span><span>        </span><span class="hs-comment">-- existing seed it will return `NeedReseed`.  In that case,</span><span>
+</span><span id="line-157"></span><span>        </span><span class="hs-comment">-- reseed the generator using this function and a new</span><span>
+</span><span id="line-158"></span><span>        </span><span class="hs-comment">-- high-entropy seed of length &gt;= `genSeedLength`.  Using</span><span>
+</span><span id="line-159"></span><span>        </span><span class="hs-comment">-- bytestrings that are too short can result in an error</span><span>
+</span><span id="line-160"></span><span>        </span><span class="hs-comment">-- (`NotEnoughEntropy`).</span></span><span>
+</span><span id="line-161"></span><span>        </span><span id="reseed"><span class="annot"><a href="Crypto.Random.html#reseed"><span class="hs-identifier hs-type">reseed</span></a></span></span><span>          </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-162"></span><span>
+</span><span id="line-163"></span><span>        </span><span class="hs-comment">-- |By default this uses &quot;System.Entropy&quot; to obtain</span><span>
+</span><span id="line-164"></span><span>        </span><span class="hs-comment">-- entropy for `newGen`.</span><span>
+</span><span id="line-165"></span><span>        </span><span class="hs-comment">-- WARNING: The default implementation opens a file handle which will never be closed!</span><span>
+</span><span id="line-166"></span><span>        </span><span id="newGenIO"><span class="annot"><a href="Crypto.Random.html#newGenIO"><span class="hs-identifier hs-type">newGenIO</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679083205"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-167"></span><span>        </span><span id="local-6989586621679082960"><span class="annot"><a href="Crypto.Random.html#newGenIO"><span class="hs-identifier hs-var hs-var">newGenIO</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; IO g
+forall t b. (Eq t, Num t, CryptoRandomGen b) =&gt; t -&gt; IO b
+</span><a href="#local-6989586621679082959"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-168"></span><span>          </span><span class="hs-keyword">where</span><span>
+</span><span id="line-169"></span><span>          </span><span id="local-6989586621679082959"><span class="annot"><span class="annottext">go :: t -&gt; IO b
+</span><a href="#local-6989586621679082959"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-number">1000</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; IO b
+forall a e. Exception e =&gt; e -&gt; a
+</span><span class="hs-identifier hs-var">throw</span></span><span> </span><span class="annot"><span class="annottext">(GenError -&gt; IO b) -&gt; GenError -&gt; IO b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; GenError
+</span><a href="Crypto.Random.html#GenErrorOther"><span class="hs-identifier hs-var">GenErrorOther</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; GenError) -&gt; String -&gt; GenError
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-170"></span><span>                          </span><span class="annot"><span class="hs-string">&quot;The generator instance requested by&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span>
+</span><span id="line-171"></span><span>                          </span><span class="annot"><span class="hs-string">&quot;newGenIO never instantiates (1000 tries). &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span>
+</span><span id="line-172"></span><span>                          </span><span class="annot"><span class="hs-string">&quot;It must be broken.&quot;</span></span><span>
+</span><span id="line-173"></span><span>          </span><span class="annot"><a href="#local-6989586621679082959"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679082957"><span class="annot"><span class="annottext">i :: t
+</span><a href="#local-6989586621679082957"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-174"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082956"><span class="annot"><span class="annottext">p :: Proxy t
+</span><a href="#local-6989586621679082956"><span class="hs-identifier hs-var hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Proxy t
+forall k (t :: k). Proxy t
+</span><span class="hs-identifier hs-var">Proxy</span></span><span>
+</span><span id="line-175"></span><span>                    </span><span id="local-6989586621679083178"><span class="annot"><a href="#local-6989586621679082954"><span class="hs-identifier hs-type">getTypedGen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679083178"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="annot"><a href="#local-6989586621679083178"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679083178"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-176"></span><span>                    </span><span id="local-6989586621679082954"><span class="annot"><span class="annottext">getTypedGen :: Proxy g -&gt; IO (Either GenError g)
+</span><a href="#local-6989586621679082954"><span class="hs-identifier hs-var hs-var">getTypedGen</span></a></span></span><span> </span><span id="local-6989586621679082953"><span class="annot"><span class="annottext">pr :: Proxy g
+</span><a href="#local-6989586621679082953"><span class="hs-identifier hs-var">pr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Either GenError g)
+-&gt; IO ByteString -&gt; IO (Either GenError g)
+forall (m :: * -&gt; *) a1 r. Monad m =&gt; (a1 -&gt; r) -&gt; m a1 -&gt; m r
+</span><span class="hs-identifier hs-var">liftM</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either GenError g
+forall g. CryptoRandomGen g =&gt; ByteString -&gt; Either GenError g
+</span><a href="Crypto.Random.html#newGen"><span class="hs-identifier hs-var">newGen</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; IO ByteString
+</span><span class="hs-identifier hs-var">getEntropy</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; IO ByteString) -&gt; Int -&gt; IO ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Tagged g Int -&gt; Proxy g -&gt; Int
+forall k (s :: k) a (proxy :: k -&gt; *). Tagged s a -&gt; proxy s -&gt; a
+</span><span class="hs-identifier hs-var">proxy</span></span><span> </span><span class="annot"><span class="annottext">Tagged g Int
+forall g. CryptoRandomGen g =&gt; Tagged g Int
+</span><a href="Crypto.Random.html#genSeedLength"><span class="hs-identifier hs-var">genSeedLength</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy g
+</span><a href="#local-6989586621679082953"><span class="hs-identifier hs-var">pr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-177"></span><span>                </span><span id="local-6989586621679082950"><span class="annot"><span class="annottext">Either GenError b
+</span><a href="#local-6989586621679082950"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Proxy b -&gt; IO (Either GenError b)
+forall g. CryptoRandomGen g =&gt; Proxy g -&gt; IO (Either GenError g)
+</span><a href="#local-6989586621679082954"><span class="hs-identifier hs-var">getTypedGen</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy b
+forall t. Proxy t
+</span><a href="#local-6989586621679082956"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-178"></span><span>                </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either GenError b
+</span><a href="#local-6989586621679082950"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-179"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">t -&gt; IO b
+</span><a href="#local-6989586621679082959"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679082957"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-180"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679082948"><span class="annot"><span class="annottext">g :: b
+</span><a href="#local-6989586621679082948"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; IO b
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082948"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; Proxy b -&gt; b
+forall a (proxy :: * -&gt; *). a -&gt; proxy a -&gt; a
+</span><span class="hs-operator hs-var">`asProxyTypeOf`</span></span><span> </span><span class="annot"><span class="annottext">Proxy b
+forall t. Proxy t
+</span><a href="#local-6989586621679082956"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-181"></span><span>
+</span><span id="line-182"></span><span class="hs-comment">-- | Get a random number generator based on the standard system entropy source</span><span>
+</span><span id="line-183"></span><span class="hs-comment">--   WARNING: This function opens a file handle which will never be closed!</span><span>
+</span><span id="line-184"></span><span class="annot"><a href="Crypto.Random.html#getSystemGen"><span class="hs-identifier hs-type">getSystemGen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#SystemRandom"><span class="hs-identifier hs-type">SystemRandom</span></a></span><span>
+</span><span id="line-185"></span><span id="getSystemGen"><span class="annot"><span class="annottext">getSystemGen :: IO SystemRandom
+</span><a href="Crypto.Random.html#getSystemGen"><span class="hs-identifier hs-var hs-var">getSystemGen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-186"></span><span>        </span><span id="local-6989586621679082945"><span class="annot"><span class="annottext">CryptHandle
+</span><a href="#local-6989586621679082945"><span class="hs-identifier hs-var">ch</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO CryptHandle
+</span><span class="hs-identifier hs-var">openHandle</span></span><span>
+</span><span id="line-187"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082943"><span class="annot"><span class="annottext">getBS :: IO [ByteString]
+</span><a href="#local-6989586621679082943"><span class="hs-identifier hs-var hs-var">getBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO [ByteString] -&gt; IO [ByteString]
+forall a. IO a -&gt; IO a
+</span><span class="hs-identifier hs-var">unsafeInterleaveIO</span></span><span> </span><span class="annot"><span class="annottext">(IO [ByteString] -&gt; IO [ByteString])
+-&gt; IO [ByteString] -&gt; IO [ByteString]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-188"></span><span>                </span><span id="local-6989586621679082942"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082942"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">CryptHandle -&gt; Int -&gt; IO ByteString
+</span><span class="hs-identifier hs-var">hGetEntropy</span></span><span> </span><span class="annot"><span class="annottext">CryptHandle
+</span><a href="#local-6989586621679082945"><span class="hs-identifier hs-var">ch</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2</span></span><span class="annot"><span class="annottext">Int -&gt; Integer -&gt; Int
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span class="annot"><span class="hs-number">15</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">16</span></span><span class="hs-special">)</span><span>
+</span><span id="line-189"></span><span>                </span><span id="local-6989586621679082939"><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679082939"><span class="hs-identifier hs-var">more</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [ByteString]
+</span><a href="#local-6989586621679082943"><span class="hs-identifier hs-var">getBS</span></a></span><span>
+</span><span id="line-190"></span><span>                </span><span class="annot"><span class="annottext">[ByteString] -&gt; IO [ByteString]
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082942"><span class="hs-identifier hs-var">bs</span></a></span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; [ByteString]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679082939"><span class="hs-identifier hs-var">more</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-191"></span><span>        </span><span class="annot"><span class="annottext">([ByteString] -&gt; SystemRandom)
+-&gt; IO [ByteString] -&gt; IO SystemRandom
+forall (m :: * -&gt; *) a1 r. Monad m =&gt; (a1 -&gt; r) -&gt; m a1 -&gt; m r
+</span><span class="hs-identifier hs-var">liftM</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; SystemRandom
+</span><a href="Crypto.Random.html#SysRandom"><span class="hs-identifier hs-var">SysRandom</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; SystemRandom)
+-&gt; ([ByteString] -&gt; ByteString) -&gt; [ByteString] -&gt; SystemRandom
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.fromChunks</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IO [ByteString]
+</span><a href="#local-6989586621679082943"><span class="hs-identifier hs-var">getBS</span></a></span><span>
+</span><span id="line-192"></span><span>
+</span><span id="line-193"></span><span class="hs-comment">-- |Not that it is technically correct as an instance of</span><span>
+</span><span id="line-194"></span><span class="hs-comment">-- 'CryptoRandomGen', but simply because it's a reasonable engineering</span><span>
+</span><span id="line-195"></span><span class="hs-comment">-- choice here is a CryptoRandomGen which streams the system</span><span>
+</span><span id="line-196"></span><span class="hs-comment">-- randoms. Take note:</span><span>
+</span><span id="line-197"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-198"></span><span class="hs-comment">--  * It uses the default definition of 'genByteWithEntropy'</span><span>
+</span><span id="line-199"></span><span class="hs-comment">--</span><span>
+</span><span id="line-200"></span><span class="hs-comment">--  * 'newGen' will always fail!</span><span>
+</span><span id="line-201"></span><span class="hs-comment">--</span><span>
+</span><span id="line-202"></span><span class="hs-comment">--  * 'reseed' will always fail!</span><span>
+</span><span id="line-203"></span><span class="hs-comment">--</span><span>
+</span><span id="line-204"></span><span class="hs-comment">--  * the handle to the system random is never closed</span><span>
+</span><span id="line-205"></span><span class="hs-comment">--</span><span>
+</span><span id="line-206"></span><span class="hs-keyword">data</span><span> </span><span id="SystemRandom"><span class="annot"><a href="Crypto.Random.html#SystemRandom"><span class="hs-identifier hs-var">SystemRandom</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SysRandom"><span class="annot"><a href="Crypto.Random.html#SysRandom"><span class="hs-identifier hs-var">SysRandom</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span>
+</span><span id="line-207"></span><span>
+</span><span id="line-208"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082929"><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="Crypto.Random.html#SystemRandom"><span class="hs-identifier hs-type">SystemRandom</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-209"></span><span>  </span><span id="local-6989586621679082925"><span class="annot"><span class="annottext">newGen :: ByteString -&gt; Either GenError SystemRandom
+</span><a href="#local-6989586621679082925"><span class="hs-identifier hs-var hs-var hs-var hs-var">newGen</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; Either GenError SystemRandom
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">GenError
+</span><a href="Crypto.Random.html#NeedsInfiniteSeed"><span class="hs-identifier hs-var">NeedsInfiniteSeed</span></a></span><span>
+</span><span id="line-210"></span><span>  </span><span id="local-6989586621679082924"><span class="annot"><span class="annottext">genSeedLength :: Tagged SystemRandom Int
+</span><a href="#local-6989586621679082924"><span class="hs-identifier hs-var hs-var hs-var hs-var">genSeedLength</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Tagged SystemRandom Int
+forall k (s :: k) b. b -&gt; Tagged s b
+</span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">Int
+forall a. Bounded a =&gt; a
+</span><span class="hs-identifier hs-var">maxBound</span></span><span>
+</span><span id="line-211"></span><span>  </span><span id="local-6989586621679082921"><span class="annot"><span class="annottext">genBytes :: Int -&gt; SystemRandom -&gt; Either GenError (ByteString, SystemRandom)
+</span><a href="#local-6989586621679082921"><span class="hs-identifier hs-var hs-var hs-var hs-var">genBytes</span></a></span></span><span> </span><span id="local-6989586621679082920"><span class="annot"><span class="annottext">req :: Int
+</span><a href="#local-6989586621679082920"><span class="hs-identifier hs-var">req</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#SysRandom"><span class="hs-identifier hs-type">SysRandom</span></a></span><span> </span><span id="local-6989586621679082919"><span class="annot"><span class="annottext">bs :: ByteString
+</span><a href="#local-6989586621679082919"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-212"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082918"><span class="annot"><span class="annottext">reqI :: Int64
+</span><a href="#local-6989586621679082918"><span class="hs-identifier hs-var hs-var">reqI</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int64
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082920"><span class="hs-identifier hs-var">req</span></a></span><span>
+</span><span id="line-213"></span><span>        </span><span id="local-6989586621679082917"><span class="annot"><span class="annottext">rnd :: ByteString
+</span><a href="#local-6989586621679082917"><span class="hs-identifier hs-var hs-var">rnd</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.take</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679082918"><span class="hs-identifier hs-var">reqI</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082919"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-214"></span><span>        </span><span id="local-6989586621679082915"><span class="annot"><span class="annottext">rest :: ByteString
+</span><a href="#local-6989586621679082915"><span class="hs-identifier hs-var hs-var">rest</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">L.drop</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679082918"><span class="hs-identifier hs-var">reqI</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082919"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-215"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int64
+</span><span class="hs-identifier hs-var">L.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082917"><span class="hs-identifier hs-var">rnd</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679082918"><span class="hs-identifier hs-var">reqI</span></a></span><span>
+</span><span id="line-216"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">(ByteString, SystemRandom)
+-&gt; Either GenError (ByteString, SystemRandom)
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.concat</span></span><span> </span><span class="annot"><span class="annottext">([ByteString] -&gt; ByteString) -&gt; [ByteString] -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+</span><span class="hs-identifier hs-var">L.toChunks</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082917"><span class="hs-identifier hs-var">rnd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; SystemRandom
+</span><a href="Crypto.Random.html#SysRandom"><span class="hs-identifier hs-var">SysRandom</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082915"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-217"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; Either GenError (ByteString, SystemRandom)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">GenError
+</span><a href="Crypto.Random.html#RequestedTooManyBytes"><span class="hs-identifier hs-var">RequestedTooManyBytes</span></a></span><span>
+</span><span id="line-218"></span><span>  </span><span id="local-6989586621679082910"><span class="annot"><span class="annottext">reseed :: ByteString -&gt; SystemRandom -&gt; Either GenError SystemRandom
+</span><a href="#local-6989586621679082910"><span class="hs-identifier hs-var hs-var hs-var hs-var">reseed</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; Either GenError SystemRandom
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">GenError
+</span><a href="Crypto.Random.html#NeedsInfiniteSeed"><span class="hs-identifier hs-var">NeedsInfiniteSeed</span></a></span><span>
+</span><span id="line-219"></span><span>  </span><span id="local-6989586621679082909"><span class="annot"><span class="annottext">newGenIO :: IO SystemRandom
+</span><a href="#local-6989586621679082909"><span class="hs-identifier hs-var hs-var hs-var hs-var">newGenIO</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO SystemRandom
+</span><a href="Crypto.Random.html#getSystemGen"><span class="hs-identifier hs-var">getSystemGen</span></a></span><span>
+</span><span id="line-220"></span><span>  </span><span id="local-6989586621679082908"><span class="annot"><span class="annottext">reseedInfo :: SystemRandom -&gt; ReseedInfo
+</span><a href="#local-6989586621679082908"><span class="hs-identifier hs-var hs-var hs-var hs-var">reseedInfo</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReseedInfo
+</span><a href="Crypto.Random.html#Never"><span class="hs-identifier hs-var">Never</span></a></span><span>
+</span><span id="line-221"></span><span>  </span><span id="local-6989586621679082907"><span class="annot"><span class="annottext">reseedPeriod :: SystemRandom -&gt; ReseedInfo
+</span><a href="#local-6989586621679082907"><span class="hs-identifier hs-var hs-var hs-var hs-var">reseedPeriod</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReseedInfo
+</span><a href="Crypto.Random.html#Never"><span class="hs-identifier hs-var">Never</span></a></span><span>
+</span><span id="line-222"></span><span>
+</span><span id="line-223"></span><span class="hs-comment">-- | While the safety and wisdom of a splitting function depends on the</span><span>
+</span><span id="line-224"></span><span class="hs-comment">-- properties of the generator being split, several arguments from</span><span>
+</span><span id="line-225"></span><span class="hs-comment">-- informed people indicate such a function is safe for NIST SP 800-90</span><span>
+</span><span id="line-226"></span><span class="hs-comment">-- generators.  (see libraries\@haskell.org discussion around Sept, Oct</span><span>
+</span><span id="line-227"></span><span class="hs-comment">-- 2010).  You can find implementations of such generators in the 'DRBG'</span><span>
+</span><span id="line-228"></span><span class="hs-comment">-- package.</span><span>
+</span><span id="line-229"></span><span id="local-6989586621679082906"><span class="annot"><a href="Crypto.Random.html#splitGen"><span class="hs-identifier hs-type">splitGen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082906"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082906"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">GenError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679082906"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679082906"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-230"></span><span id="splitGen"><span class="annot"><span class="annottext">splitGen :: g -&gt; Either GenError (g, g)
+</span><a href="Crypto.Random.html#splitGen"><span class="hs-identifier hs-var hs-var">splitGen</span></a></span></span><span> </span><span id="local-6989586621679082905"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679082905"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-231"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082904"><span class="annot"><span class="annottext">e :: Either GenError (ByteString, g)
+</span><a href="#local-6989586621679082904"><span class="hs-identifier hs-var hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; g -&gt; Either GenError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+Int -&gt; g -&gt; Either GenError (ByteString, g)
+</span><a href="Crypto.Random.html#genBytes"><span class="hs-identifier hs-var">genBytes</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Tagged g Int
+forall g. CryptoRandomGen g =&gt; Tagged g Int
+</span><a href="Crypto.Random.html#genSeedLength"><span class="hs-identifier hs-var">genSeedLength</span></a></span><span> </span><span class="annot"><span class="annottext">Tagged g Int -&gt; g -&gt; Int
+forall a b. Tagged a b -&gt; a -&gt; b
+</span><a href="Crypto.Util.html#for"><span class="hs-operator hs-var">`for`</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679082905"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679082905"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-232"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either GenError (ByteString, g)
+</span><a href="#local-6989586621679082904"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-233"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679082902"><span class="annot"><span class="annottext">e :: GenError
+</span><a href="#local-6989586621679082902"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; Either GenError (g, g)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">GenError
+</span><a href="#local-6989586621679082902"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-234"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082901"><span class="annot"><span class="annottext">ent :: ByteString
+</span><a href="#local-6989586621679082901"><span class="hs-identifier hs-var">ent</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679082900"><span class="annot"><span class="annottext">g' :: g
+</span><a href="#local-6989586621679082900"><span class="hs-identifier hs-var">g'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span>
+</span><span id="line-235"></span><span>       </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either GenError g
+forall g. CryptoRandomGen g =&gt; ByteString -&gt; Either GenError g
+</span><a href="Crypto.Random.html#newGen"><span class="hs-identifier hs-var">newGen</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082901"><span class="hs-identifier hs-var">ent</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-236"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679082899"><span class="annot"><span class="annottext">new :: g
+</span><a href="#local-6989586621679082899"><span class="hs-identifier hs-var">new</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(g, g) -&gt; Either GenError (g, g)
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679082900"><span class="hs-identifier hs-var">g'</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679082899"><span class="hs-identifier hs-var">new</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-237"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679082898"><span class="annot"><span class="annottext">e :: GenError
+</span><a href="#local-6989586621679082898"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GenError -&gt; Either GenError (g, g)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">GenError
+</span><a href="#local-6989586621679082898"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-238"></span></pre></body></html>

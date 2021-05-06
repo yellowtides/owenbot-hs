@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_p7mKfha1MGHAQXmngDJZG"></span><span class="hs-comment">-- |The module mirrors &quot;Crypto.Classes&quot; except that errors are thrown as</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- exceptions instead of having returning types of @Either error result@</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- or @Maybe result@.</span><span>
+</span><span id="line-4"></span><span class="hs-comment">--</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- NB This module is experimental and might go away or be re-arranged.</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Crypto.Classes.Exceptions</span><span> </span><span>
+</span><span id="line-8"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- * Classes</span></span><span>
+</span><span id="line-9"></span><span>      </span><span class="annot"><a href="Crypto.Classes.html#Hash"><span class="hs-identifier">C.Hash</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#AsymCipher"><span class="hs-identifier">C.AsymCipher</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier">R.CryptoRandomGen</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier">C.BlockCipher</span></a></span><span>
+</span><span id="line-10"></span><span>      </span><span class="annot"><span class="hs-comment">-- * Hashing Operations</span></span><span>
+</span><span id="line-11"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#hashFunc%27"><span class="hs-identifier">C.hashFunc'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#hashFunc"><span class="hs-identifier">C.hashFunc</span></a></span><span>
+</span><span id="line-12"></span><span>      </span><span class="annot"><span class="hs-comment">-- * Symmetric Cryptographic Operations</span></span><span>
+</span><span id="line-13"></span><span>      </span><span class="annot"><span class="hs-comment">-- ** Helpers</span></span><span>
+</span><span id="line-14"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#blockSize"><span class="hs-identifier">C.blockSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#blockSizeBytes"><span class="hs-identifier">C.blockSizeBytes</span></a></span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#keyLength"><span class="hs-identifier">C.keyLength</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#keyLengthBytes"><span class="hs-identifier">C.keyLengthBytes</span></a></span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#incIV"><span class="hs-identifier">C.incIV</span></a></span><span>
+</span><span id="line-17"></span><span>      </span><span class="annot"><span class="hs-comment">-- ** Primitives</span></span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#encryptBlock"><span class="hs-identifier">C.encryptBlock</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#decryptBlock"><span class="hs-identifier">C.decryptBlock</span></a></span><span>
+</span><span id="line-19"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Key and IV construction</span></span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#buildKey"><span class="hs-identifier">buildKey</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#buildKeyIO"><span class="hs-identifier">C.buildKeyIO</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#buildKeyGen"><span class="hs-identifier">buildKeyGen</span></a></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#getIV"><span class="hs-identifier">getIV</span></a></span><span> </span><span class="hs-special">,</span><span class="annot"><a href="Crypto.Classes.html#getIVIO"><span class="hs-identifier">C.getIVIO</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#zeroIV"><span class="hs-identifier">C.zeroIV</span></a></span><span>
+</span><span id="line-22"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Block Cipher Modes of Operation</span></span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#ecb"><span class="hs-identifier">C.ecb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unEcb"><span class="hs-identifier">C.unEcb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#cbc"><span class="hs-identifier">C.cbc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unCbc"><span class="hs-identifier">C.unCbc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#ctr"><span class="hs-identifier">C.ctr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unCtr"><span class="hs-identifier">C.unCtr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#ctrLazy"><span class="hs-identifier">C.ctrLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unCtrLazy"><span class="hs-identifier">C.unCtrLazy</span></a></span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#cfb"><span class="hs-identifier">C.cfb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unCfb"><span class="hs-identifier">C.unCfb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#ofb"><span class="hs-identifier">C.ofb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unOfb"><span class="hs-identifier">C.unOfb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#cbcLazy"><span class="hs-identifier">C.cbcLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unCbcLazy"><span class="hs-identifier">C.unCbcLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#sivLazy"><span class="hs-identifier">C.sivLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unSivLazy"><span class="hs-identifier">C.unSivLazy</span></a></span><span>
+</span><span id="line-25"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#siv"><span class="hs-identifier">C.siv</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unSiv"><span class="hs-identifier">C.unSiv</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#ecbLazy"><span class="hs-identifier">C.ecbLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unEcbLazy"><span class="hs-identifier">C.unEcbLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#cfbLazy"><span class="hs-identifier">C.cfbLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unCfbLazy"><span class="hs-identifier">C.unCfbLazy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#ofbLazy"><span class="hs-identifier">C.ofbLazy</span></a></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#unOfbLazy"><span class="hs-identifier">C.unOfbLazy</span></a></span><span>
+</span><span id="line-27"></span><span>    </span><span class="annot"><span class="hs-comment">-- * RNG Operations</span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#newGen"><span class="hs-identifier">newGen</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#genBytes"><span class="hs-identifier">genBytes</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#genBytesWithEntropy"><span class="hs-identifier">genBytesWithEntropy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#reseed"><span class="hs-identifier">reseed</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#splitGen"><span class="hs-identifier">splitGen</span></a></span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#genSeedLength"><span class="hs-identifier">R.genSeedLength</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#reseedInfo"><span class="hs-identifier">R.reseedInfo</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#reseedPeriod"><span class="hs-identifier">R.reseedPeriod</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#newGenIO"><span class="hs-identifier">R.newGenIO</span></a></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-comment">--  * Info Types</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier">R.GenError</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#ReseedInfo"><span class="hs-identifier">R.ReseedInfo</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#CipherError"><span class="hs-identifier">CipherError</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Asymmetric cryptographic operations</span></span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#buildKeyPair"><span class="hs-identifier">buildKeyPair</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#encryptAsym"><span class="hs-identifier">encryptAsym</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#decryptAsym"><span class="hs-identifier">decryptAsym</span></a></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#Signing"><span class="hs-identifier">C.Signing</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#signingKeyLength"><span class="hs-identifier">C.signingKeyLength</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#verifyingKeyLength"><span class="hs-identifier">C.verifyingKeyLength</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#verify"><span class="hs-identifier">C.verify</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#publicKeyLength"><span class="hs-identifier">C.publicKeyLength</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#privateKeyLength"><span class="hs-identifier">C.privateKeyLength</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#buildKeyPairIO"><span class="hs-identifier">C.buildKeyPairIO</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Crypto.Random.html"><span class="hs-identifier">Crypto.Random</span></a></span><span>     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">R</span></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Crypto.Random.html"><span class="hs-identifier">Crypto.Random</span></a></span><span>     </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier">CryptoRandomGen</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Crypto.Types.html"><span class="hs-identifier">Crypto.Types</span></a></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Crypto.Classes.html"><span class="hs-identifier">Crypto.Classes</span></a></span><span>    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">C</span></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">X</span></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span>   </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Data</span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Typeable</span></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">data</span><span> </span><span id="CipherError"><span class="annot"><a href="Crypto.Classes.Exceptions.html#CipherError"><span class="hs-identifier hs-var">CipherError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="GenError"><span class="annot"><a href="Crypto.Classes.Exceptions.html#GenError"><span class="hs-identifier hs-var">GenError</span></a></span></span><span> </span><span class="annot"><a href="Crypto.Random.html#GenError"><span class="hs-identifier hs-type">R.GenError</span></a></span><span>
+</span><span id="line-48"></span><span>                 </span><span class="hs-glyph">|</span><span> </span><span id="KeyGenFailure"><span class="annot"><a href="Crypto.Classes.Exceptions.html#KeyGenFailure"><span class="hs-identifier hs-var">KeyGenFailure</span></a></span></span><span>
+</span><span id="line-49"></span><span>        </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679084693"><span id="local-6989586621679084695"><span id="local-6989586621679084697"><span class="annot"><span class="annottext">Int -&gt; CipherError -&gt; ShowS
+[CipherError] -&gt; ShowS
+CipherError -&gt; String
+(Int -&gt; CipherError -&gt; ShowS)
+-&gt; (CipherError -&gt; String)
+-&gt; ([CipherError] -&gt; ShowS)
+-&gt; Show CipherError
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [CipherError] -&gt; ShowS
+$cshowList :: [CipherError] -&gt; ShowS
+show :: CipherError -&gt; String
+$cshow :: CipherError -&gt; String
+showsPrec :: Int -&gt; CipherError -&gt; ShowS
+$cshowsPrec :: Int -&gt; CipherError -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084684"><span id="local-6989586621679084686"><span id="local-6989586621679084688"><span id="local-6989586621679084690"><span class="annot"><span class="annottext">ReadPrec [CipherError]
+ReadPrec CipherError
+Int -&gt; ReadS CipherError
+ReadS [CipherError]
+(Int -&gt; ReadS CipherError)
+-&gt; ReadS [CipherError]
+-&gt; ReadPrec CipherError
+-&gt; ReadPrec [CipherError]
+-&gt; Read CipherError
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [CipherError]
+$creadListPrec :: ReadPrec [CipherError]
+readPrec :: ReadPrec CipherError
+$creadPrec :: ReadPrec CipherError
+readList :: ReadS [CipherError]
+$creadList :: ReadS [CipherError]
+readsPrec :: Int -&gt; ReadS CipherError
+$creadsPrec :: Int -&gt; ReadS CipherError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084679"><span id="local-6989586621679084681"><span class="annot"><span class="annottext">CipherError -&gt; CipherError -&gt; Bool
+(CipherError -&gt; CipherError -&gt; Bool)
+-&gt; (CipherError -&gt; CipherError -&gt; Bool) -&gt; Eq CipherError
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: CipherError -&gt; CipherError -&gt; Bool
+$c/= :: CipherError -&gt; CipherError -&gt; Bool
+== :: CipherError -&gt; CipherError -&gt; Bool
+$c== :: CipherError -&gt; CipherError -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679084663"><span id="local-6989586621679084665"><span id="local-6989586621679084667"><span id="local-6989586621679084669"><span id="local-6989586621679084671"><span id="local-6989586621679084673"><span id="local-6989586621679084675"><span class="annot"><span class="annottext">Eq CipherError
+Eq CipherError =&gt;
+(CipherError -&gt; CipherError -&gt; Ordering)
+-&gt; (CipherError -&gt; CipherError -&gt; Bool)
+-&gt; (CipherError -&gt; CipherError -&gt; Bool)
+-&gt; (CipherError -&gt; CipherError -&gt; Bool)
+-&gt; (CipherError -&gt; CipherError -&gt; Bool)
+-&gt; (CipherError -&gt; CipherError -&gt; CipherError)
+-&gt; (CipherError -&gt; CipherError -&gt; CipherError)
+-&gt; Ord CipherError
+CipherError -&gt; CipherError -&gt; Bool
+CipherError -&gt; CipherError -&gt; Ordering
+CipherError -&gt; CipherError -&gt; CipherError
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: CipherError -&gt; CipherError -&gt; CipherError
+$cmin :: CipherError -&gt; CipherError -&gt; CipherError
+max :: CipherError -&gt; CipherError -&gt; CipherError
+$cmax :: CipherError -&gt; CipherError -&gt; CipherError
+&gt;= :: CipherError -&gt; CipherError -&gt; Bool
+$c&gt;= :: CipherError -&gt; CipherError -&gt; Bool
+&gt; :: CipherError -&gt; CipherError -&gt; Bool
+$c&gt; :: CipherError -&gt; CipherError -&gt; Bool
+&lt;= :: CipherError -&gt; CipherError -&gt; Bool
+$c&lt;= :: CipherError -&gt; CipherError -&gt; Bool
+&lt; :: CipherError -&gt; CipherError -&gt; Bool
+$c&lt; :: CipherError -&gt; CipherError -&gt; Bool
+compare :: CipherError -&gt; CipherError -&gt; Ordering
+$ccompare :: CipherError -&gt; CipherError -&gt; Ordering
+$cp1Ord :: Eq CipherError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="%24cKeyGenFailure"><span id="%24cGenError"><span id="%24tCipherError"><span id="local-6989586621679084633"><span id="local-6989586621679084635"><span id="local-6989586621679084637"><span id="local-6989586621679084639"><span id="local-6989586621679084641"><span id="local-6989586621679084643"><span id="local-6989586621679084645"><span id="local-6989586621679084647"><span id="local-6989586621679084649"><span id="local-6989586621679084651"><span id="local-6989586621679084653"><span id="local-6989586621679084655"><span id="local-6989586621679084657"><span id="local-6989586621679084659"><span class="annot"><span class="annottext">Typeable CipherError
+DataType
+Constr
+Typeable CipherError =&gt;
+(forall (c :: * -&gt; *).
+ (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+ -&gt; (forall g. g -&gt; c g) -&gt; CipherError -&gt; c CipherError)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c CipherError)
+-&gt; (CipherError -&gt; Constr)
+-&gt; (CipherError -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c CipherError))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e))
+    -&gt; Maybe (c CipherError))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; CipherError -&gt; CipherError)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; [u])
+-&gt; (forall u.
+    Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError)
+-&gt; Data CipherError
+CipherError -&gt; DataType
+CipherError -&gt; Constr
+(forall b. Data b =&gt; b -&gt; b) -&gt; CipherError -&gt; CipherError
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; CipherError -&gt; c CipherError
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c CipherError
+forall a.
+Typeable a =&gt;
+(forall (c :: * -&gt; *).
+ (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+ -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
+-&gt; (a -&gt; Constr)
+-&gt; (a -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c a))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c a))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; a -&gt; a)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; Data a
+forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; u
+forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; [u]
+forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r
+forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c CipherError
+forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; CipherError -&gt; c CipherError
+forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c CipherError)
+forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e))
+-&gt; Maybe (c CipherError)
+$cKeyGenFailure :: Constr
+$cGenError :: Constr
+$tCipherError :: DataType
+gmapMo :: (forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+$cgmapMo :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+gmapMp :: (forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+$cgmapMp :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+gmapM :: (forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+$cgmapM :: forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; CipherError -&gt; m CipherError
+gmapQi :: Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; u
+$cgmapQi :: forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; u
+gmapQ :: (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; [u]
+$cgmapQ :: forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; CipherError -&gt; [u]
+gmapQr :: (r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r
+$cgmapQr :: forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r
+gmapQl :: (r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r
+$cgmapQl :: forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; CipherError -&gt; r
+gmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; CipherError -&gt; CipherError
+$cgmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; CipherError -&gt; CipherError
+dataCast2 :: (forall d e. (Data d, Data e) =&gt; c (t d e))
+-&gt; Maybe (c CipherError)
+$cdataCast2 :: forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e))
+-&gt; Maybe (c CipherError)
+dataCast1 :: (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c CipherError)
+$cdataCast1 :: forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c CipherError)
+dataTypeOf :: CipherError -&gt; DataType
+$cdataTypeOf :: CipherError -&gt; DataType
+toConstr :: CipherError -&gt; Constr
+$ctoConstr :: CipherError -&gt; Constr
+gunfold :: (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c CipherError
+$cgunfold :: forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c CipherError
+gfoldl :: (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; CipherError -&gt; c CipherError
+$cgfoldl :: forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; CipherError -&gt; c CipherError
+$cp1Data :: Typeable CipherError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679084621"><span id="local-6989586621679084623"><span id="local-6989586621679084625"><span class="annot"><span class="hs-identifier hs-type">X.Exception</span></span><span> </span><span class="annot"><a href="Crypto.Classes.Exceptions.html#CipherError"><span class="hs-identifier hs-type">CipherError</span></a></span></span></span></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679084800"><span id="local-6989586621679084801"><span class="annot"><a href="Crypto.Classes.Exceptions.html#mExcept"><span class="hs-identifier hs-type">mExcept</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">X.Exception</span></span><span> </span><span class="annot"><a href="#local-6989586621679084801"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084801"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679084800"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084800"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-54"></span><span id="mExcept"><span class="annot"><span class="annottext">mExcept :: e -&gt; Maybe a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#mExcept"><span class="hs-identifier hs-var hs-var">mExcept</span></a></span></span><span> </span><span id="local-6989586621679084618"><span class="annot"><span class="annottext">e :: e
+</span><a href="#local-6989586621679084618"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; (a -&gt; a) -&gt; Maybe a -&gt; a
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">e -&gt; a
+forall a e. Exception e =&gt; e -&gt; a
+</span><span class="hs-identifier hs-var">X.throw</span></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679084618"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span id="local-6989586621679084789"><span id="local-6989586621679084790"><span class="annot"><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-type">eExcept</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">X.Exception</span></span><span> </span><span class="annot"><a href="#local-6989586621679084790"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679084790"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084789"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084789"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-57"></span><span id="eExcept"><span class="annot"><span class="annottext">eExcept :: Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var hs-var">eExcept</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(e -&gt; a) -&gt; (a -&gt; a) -&gt; Either e a -&gt; a
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">e -&gt; a
+forall a e. Exception e =&gt; e -&gt; a
+</span><span class="hs-identifier hs-var">X.throw</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- |Key construction from raw material (typically including key expansion)</span><span>
+</span><span id="line-60"></span><span class="hs-comment">--</span><span>
+</span><span id="line-61"></span><span class="hs-comment">-- This is a wrapper that can throw a 'CipherError' on exception.</span><span>
+</span><span id="line-62"></span><span id="local-6989586621679084612"><span class="annot"><a href="Crypto.Classes.Exceptions.html#buildKey"><span class="hs-identifier hs-type">buildKey</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">C.BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084612"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084612"><span class="hs-identifier hs-type">k</span></a></span></span><span>
+</span><span id="line-63"></span><span id="buildKey"><span class="annot"><span class="annottext">buildKey :: ByteString -&gt; k
+</span><a href="Crypto.Classes.Exceptions.html#buildKey"><span class="hs-identifier hs-var hs-var">buildKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CipherError -&gt; Maybe k -&gt; k
+forall e a. Exception e =&gt; e -&gt; Maybe a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#mExcept"><span class="hs-identifier hs-var">mExcept</span></a></span><span> </span><span class="annot"><span class="annottext">CipherError
+</span><a href="Crypto.Classes.Exceptions.html#KeyGenFailure"><span class="hs-identifier hs-var">KeyGenFailure</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe k -&gt; k) -&gt; (ByteString -&gt; Maybe k) -&gt; ByteString -&gt; k
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe k
+forall k. BlockCipher k =&gt; ByteString -&gt; Maybe k
+</span><a href="Crypto.Classes.html#buildKey"><span class="hs-identifier hs-var">C.buildKey</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- |Random 'IV' generation</span><span>
+</span><span id="line-66"></span><span class="hs-comment">--</span><span>
+</span><span id="line-67"></span><span class="hs-comment">-- This is a wrapper that can throw a 'GenError' on exception.</span><span>
+</span><span id="line-68"></span><span id="local-6989586621679084608"><span id="local-6989586621679084609"><span class="annot"><a href="Crypto.Classes.Exceptions.html#getIV"><span class="hs-identifier hs-type">getIV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">C.BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084609"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084608"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084608"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-type">IV</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084609"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084608"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-69"></span><span id="getIV"><span class="annot"><span class="annottext">getIV :: g -&gt; (IV k, g)
+</span><a href="Crypto.Classes.Exceptions.html#getIV"><span class="hs-identifier hs-var hs-var">getIV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (IV k, g) -&gt; (IV k, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (IV k, g) -&gt; (IV k, g))
+-&gt; (g -&gt; Either GenError (IV k, g)) -&gt; g -&gt; (IV k, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g -&gt; Either GenError (IV k, g)
+forall k g.
+(BlockCipher k, CryptoRandomGen g) =&gt;
+g -&gt; Either GenError (IV k, g)
+</span><a href="Crypto.Classes.html#getIV"><span class="hs-identifier hs-var">C.getIV</span></a></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="hs-comment">-- |Symmetric key generation</span><span>
+</span><span id="line-72"></span><span class="hs-comment">--</span><span>
+</span><span id="line-73"></span><span class="hs-comment">-- This is a wrapper that can throw a 'GenError' on exception.</span><span>
+</span><span id="line-74"></span><span id="local-6989586621679084605"><span id="local-6989586621679084606"><span class="annot"><a href="Crypto.Classes.Exceptions.html#buildKeyGen"><span class="hs-identifier hs-type">buildKeyGen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084606"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#BlockCipher"><span class="hs-identifier hs-type">C.BlockCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084605"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084606"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679084605"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084606"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-75"></span><span id="buildKeyGen"><span class="annot"><span class="annottext">buildKeyGen :: g -&gt; (k, g)
+</span><a href="Crypto.Classes.Exceptions.html#buildKeyGen"><span class="hs-identifier hs-var hs-var">buildKeyGen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (k, g) -&gt; (k, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (k, g) -&gt; (k, g))
+-&gt; (g -&gt; Either GenError (k, g)) -&gt; g -&gt; (k, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g -&gt; Either GenError (k, g)
+forall k g.
+(BlockCipher k, CryptoRandomGen g) =&gt;
+g -&gt; Either GenError (k, g)
+</span><a href="Crypto.Classes.html#buildKeyGen"><span class="hs-identifier hs-var">C.buildKeyGen</span></a></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="hs-comment">-- |Asymetric key generation</span><span>
+</span><span id="line-78"></span><span class="hs-comment">--</span><span>
+</span><span id="line-79"></span><span class="hs-comment">-- This is a wrapper that can throw a 'GenError' on exception.</span><span>
+</span><span id="line-80"></span><span id="local-6989586621679084601"><span id="local-6989586621679084602"><span id="local-6989586621679084603"><span class="annot"><a href="Crypto.Classes.Exceptions.html#buildKeyPair"><span class="hs-identifier hs-type">buildKeyPair</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084603"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#AsymCipher"><span class="hs-identifier hs-type">C.AsymCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084602"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084601"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084603"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.html#BitLength"><span class="hs-identifier hs-type">BitLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679084602"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679084601"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084603"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-81"></span><span id="buildKeyPair"><span class="annot"><span class="annottext">buildKeyPair :: g -&gt; Int -&gt; ((p, v), g)
+</span><a href="Crypto.Classes.Exceptions.html#buildKeyPair"><span class="hs-identifier hs-var hs-var">buildKeyPair</span></a></span></span><span> </span><span id="local-6989586621679084599"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679084599"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError ((p, v), g) -&gt; ((p, v), g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError ((p, v), g) -&gt; ((p, v), g))
+-&gt; (Int -&gt; Either GenError ((p, v), g)) -&gt; Int -&gt; ((p, v), g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g -&gt; Int -&gt; Either GenError ((p, v), g)
+forall p v g.
+(AsymCipher p v, CryptoRandomGen g) =&gt;
+g -&gt; Int -&gt; Either GenError ((p, v), g)
+</span><a href="Crypto.Classes.html#buildKeyPair"><span class="hs-identifier hs-var">C.buildKeyPair</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679084599"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-comment">-- |Asymmetric encryption</span><span>
+</span><span id="line-84"></span><span class="hs-comment">--</span><span>
+</span><span id="line-85"></span><span class="hs-comment">-- This is a wrapper that can throw a 'GenError' on exception.</span><span>
+</span><span id="line-86"></span><span id="local-6989586621679084595"><span id="local-6989586621679084596"><span id="local-6989586621679084597"><span class="annot"><a href="Crypto.Classes.Exceptions.html#encryptAsym"><span class="hs-identifier hs-type">encryptAsym</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084597"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#AsymCipher"><span class="hs-identifier hs-type">C.AsymCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084596"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084595"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084597"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084596"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084597"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-87"></span><span id="encryptAsym"><span class="annot"><span class="annottext">encryptAsym :: g -&gt; p -&gt; ByteString -&gt; (ByteString, g)
+</span><a href="Crypto.Classes.Exceptions.html#encryptAsym"><span class="hs-identifier hs-var hs-var">encryptAsym</span></a></span></span><span> </span><span id="local-6989586621679084594"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679084594"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679084593"><span class="annot"><span class="annottext">p :: p
+</span><a href="#local-6989586621679084593"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (ByteString, g) -&gt; (ByteString, g))
+-&gt; (ByteString -&gt; Either GenError (ByteString, g))
+-&gt; ByteString
+-&gt; (ByteString, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g -&gt; p -&gt; ByteString -&gt; Either GenError (ByteString, g)
+forall p v g.
+(AsymCipher p v, CryptoRandomGen g) =&gt;
+g -&gt; p -&gt; ByteString -&gt; Either GenError (ByteString, g)
+</span><a href="Crypto.Classes.html#encryptAsym"><span class="hs-identifier hs-var">C.encryptAsym</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679084594"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">p
+</span><a href="#local-6989586621679084593"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="hs-comment">-- |Asymmetric decryption</span><span>
+</span><span id="line-90"></span><span class="hs-comment">--</span><span>
+</span><span id="line-91"></span><span class="hs-comment">-- This is a wrapper that can throw a GenError on exception.</span><span>
+</span><span id="line-92"></span><span id="local-6989586621679084589"><span id="local-6989586621679084590"><span id="local-6989586621679084591"><span class="annot"><a href="Crypto.Classes.Exceptions.html#decryptAsym"><span class="hs-identifier hs-type">decryptAsym</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084591"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Crypto.Classes.html#AsymCipher"><span class="hs-identifier hs-type">C.AsymCipher</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084590"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084589"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084591"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084589"><span class="hs-identifier hs-type">v</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084591"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-93"></span><span id="decryptAsym"><span class="annot"><span class="annottext">decryptAsym :: g -&gt; v -&gt; ByteString -&gt; (ByteString, g)
+</span><a href="Crypto.Classes.Exceptions.html#decryptAsym"><span class="hs-identifier hs-var hs-var">decryptAsym</span></a></span></span><span> </span><span id="local-6989586621679084588"><span class="annot"><span class="annottext">g :: g
+</span><a href="#local-6989586621679084588"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679084587"><span class="annot"><span class="annottext">v :: v
+</span><a href="#local-6989586621679084587"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (ByteString, g) -&gt; (ByteString, g))
+-&gt; (ByteString -&gt; Either GenError (ByteString, g))
+-&gt; ByteString
+-&gt; (ByteString, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g -&gt; v -&gt; ByteString -&gt; Either GenError (ByteString, g)
+forall p v g.
+(AsymCipher p v, CryptoRandomGen g) =&gt;
+g -&gt; v -&gt; ByteString -&gt; Either GenError (ByteString, g)
+</span><a href="Crypto.Classes.html#decryptAsym"><span class="hs-identifier hs-var">C.decryptAsym</span></a></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679084588"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">v
+</span><a href="#local-6989586621679084587"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-comment">-- |Instantiate a new random bit generator.  The provided</span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- bytestring should be of length &gt;= genSeedLength.  If the</span><span>
+</span><span id="line-97"></span><span class="hs-comment">-- bytestring is shorter then the call may fail (suggested</span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- error: `NotEnoughEntropy`).  If the bytestring is of</span><span>
+</span><span id="line-99"></span><span class="hs-comment">-- sufficent length the call should always succeed.</span><span>
+</span><span id="line-100"></span><span class="hs-comment">--</span><span>
+</span><span id="line-101"></span><span class="hs-comment">-- This is a wrapper that can throw 'GenError' types as exceptions.</span><span>
+</span><span id="line-102"></span><span id="local-6989586621679084585"><span class="annot"><a href="Crypto.Classes.Exceptions.html#newGen"><span class="hs-identifier hs-type">newGen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084585"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084585"><span class="hs-identifier hs-type">g</span></a></span></span><span>
+</span><span id="line-103"></span><span id="newGen"><span class="annot"><span class="annottext">newGen :: ByteString -&gt; g
+</span><a href="Crypto.Classes.Exceptions.html#newGen"><span class="hs-identifier hs-var hs-var">newGen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError g -&gt; g
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError g -&gt; g)
+-&gt; (ByteString -&gt; Either GenError g) -&gt; ByteString -&gt; g
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either GenError g
+forall g. CryptoRandomGen g =&gt; ByteString -&gt; Either GenError g
+</span><a href="Crypto.Random.html#newGen"><span class="hs-identifier hs-var">R.newGen</span></a></span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span class="hs-comment">-- | @genBytes len g@ generates a random ByteString of length</span><span>
+</span><span id="line-106"></span><span class="hs-comment">-- @len@ and new generator.  The 'MonadCryptoRandom' package</span><span>
+</span><span id="line-107"></span><span class="hs-comment">-- has routines useful for converting the ByteString to</span><span>
+</span><span id="line-108"></span><span class="hs-comment">-- commonly needed values (but 'cereal' or other</span><span>
+</span><span id="line-109"></span><span class="hs-comment">-- deserialization libraries would also work).</span><span>
+</span><span id="line-110"></span><span class="hs-comment">--</span><span>
+</span><span id="line-111"></span><span class="hs-comment">-- This is a wrapper that can throw 'GenError' types as exceptions.</span><span>
+</span><span id="line-112"></span><span id="local-6989586621679084583"><span class="annot"><a href="Crypto.Classes.Exceptions.html#genBytes"><span class="hs-identifier hs-type">genBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084583"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084583"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084583"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-113"></span><span id="genBytes"><span class="annot"><span class="annottext">genBytes :: Int -&gt; g -&gt; (ByteString, g)
+</span><a href="Crypto.Classes.Exceptions.html#genBytes"><span class="hs-identifier hs-var hs-var">genBytes</span></a></span></span><span> </span><span id="local-6989586621679084581"><span class="annot"><span class="annottext">l :: Int
+</span><a href="#local-6989586621679084581"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (ByteString, g) -&gt; (ByteString, g))
+-&gt; (g -&gt; Either GenError (ByteString, g)) -&gt; g -&gt; (ByteString, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; g -&gt; Either GenError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+Int -&gt; g -&gt; Either GenError (ByteString, g)
+</span><a href="Crypto.Random.html#genBytes"><span class="hs-identifier hs-var">R.genBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679084581"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="hs-comment">-- |@genBytesWithEntropy g i entropy@ generates @i@ random bytes and use</span><span>
+</span><span id="line-116"></span><span class="hs-comment">-- the additional input @entropy@ in the generation of the requested data</span><span>
+</span><span id="line-117"></span><span class="hs-comment">-- to increase the confidence our generated data is a secure random stream.</span><span>
+</span><span id="line-118"></span><span class="hs-comment">--</span><span>
+</span><span id="line-119"></span><span class="hs-comment">-- This is a wrapper that can throw 'GenError' types as exceptions.</span><span>
+</span><span id="line-120"></span><span id="local-6989586621679084579"><span class="annot"><a href="Crypto.Classes.Exceptions.html#genBytesWithEntropy"><span class="hs-identifier hs-type">genBytesWithEntropy</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084579"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.html#ByteLength"><span class="hs-identifier hs-type">ByteLength</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084579"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679084579"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-121"></span><span id="genBytesWithEntropy"><span class="annot"><span class="annottext">genBytesWithEntropy :: Int -&gt; ByteString -&gt; g -&gt; (ByteString, g)
+</span><a href="Crypto.Classes.Exceptions.html#genBytesWithEntropy"><span class="hs-identifier hs-var hs-var">genBytesWithEntropy</span></a></span></span><span> </span><span id="local-6989586621679084578"><span class="annot"><span class="annottext">l :: Int
+</span><a href="#local-6989586621679084578"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679084577"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679084577"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (ByteString, g) -&gt; (ByteString, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (ByteString, g) -&gt; (ByteString, g))
+-&gt; (g -&gt; Either GenError (ByteString, g)) -&gt; g -&gt; (ByteString, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; g -&gt; Either GenError (ByteString, g)
+forall g.
+CryptoRandomGen g =&gt;
+Int -&gt; ByteString -&gt; g -&gt; Either GenError (ByteString, g)
+</span><a href="Crypto.Random.html#genBytesWithEntropy"><span class="hs-identifier hs-var">R.genBytesWithEntropy</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679084578"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084577"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-comment">-- |If the generator has produced too many random bytes on its existing</span><span>
+</span><span id="line-124"></span><span class="hs-comment">-- seed it will throw a `NeedReseed` exception.  In that case, reseed the</span><span>
+</span><span id="line-125"></span><span class="hs-comment">-- generator using this function and a new high-entropy seed of length &gt;=</span><span>
+</span><span id="line-126"></span><span class="hs-comment">-- `genSeedLength`.  Using bytestrings that are too short can result in an</span><span>
+</span><span id="line-127"></span><span class="hs-comment">-- exception (`NotEnoughEntropy`).</span><span>
+</span><span id="line-128"></span><span id="local-6989586621679084575"><span class="annot"><a href="Crypto.Classes.Exceptions.html#reseed"><span class="hs-identifier hs-type">reseed</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084575"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084575"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084575"><span class="hs-identifier hs-type">g</span></a></span></span><span>
+</span><span id="line-129"></span><span id="reseed"><span class="annot"><span class="annottext">reseed :: ByteString -&gt; g -&gt; g
+</span><a href="Crypto.Classes.Exceptions.html#reseed"><span class="hs-identifier hs-var hs-var">reseed</span></a></span></span><span> </span><span id="local-6989586621679084574"><span class="annot"><span class="annottext">l :: ByteString
+</span><a href="#local-6989586621679084574"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError g -&gt; g
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError g -&gt; g) -&gt; (g -&gt; Either GenError g) -&gt; g -&gt; g
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; g -&gt; Either GenError g
+forall g. CryptoRandomGen g =&gt; ByteString -&gt; g -&gt; Either GenError g
+</span><a href="Crypto.Random.html#reseed"><span class="hs-identifier hs-var">R.reseed</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679084574"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="hs-comment">-- | While the safety and wisdom of a splitting function depends on the</span><span>
+</span><span id="line-132"></span><span class="hs-comment">-- properties of the generator being split, several arguments from</span><span>
+</span><span id="line-133"></span><span class="hs-comment">-- informed people indicate such a function is safe for NIST SP 800-90</span><span>
+</span><span id="line-134"></span><span class="hs-comment">-- generators.  (see libraries\@haskell.org discussion around Sept, Oct</span><span>
+</span><span id="line-135"></span><span class="hs-comment">-- 2010).  You can find implementations of such generators in the 'DRBG'</span><span>
+</span><span id="line-136"></span><span class="hs-comment">-- package.</span><span>
+</span><span id="line-137"></span><span class="hs-comment">--</span><span>
+</span><span id="line-138"></span><span class="hs-comment">-- This is a wrapper for 'Crypto.Random.splitGen' which throws errors as</span><span>
+</span><span id="line-139"></span><span class="hs-comment">-- exceptions.</span><span>
+</span><span id="line-140"></span><span id="local-6989586621679084572"><span class="annot"><a href="Crypto.Classes.Exceptions.html#splitGen"><span class="hs-identifier hs-type">splitGen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Random.html#CryptoRandomGen"><span class="hs-identifier hs-type">CryptoRandomGen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679084572"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679084572"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679084572"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679084572"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-141"></span><span id="splitGen"><span class="annot"><span class="annottext">splitGen :: g -&gt; (g, g)
+</span><a href="Crypto.Classes.Exceptions.html#splitGen"><span class="hs-identifier hs-var hs-var">splitGen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either GenError (g, g) -&gt; (g, g)
+forall e a. Exception e =&gt; Either e a -&gt; a
+</span><a href="Crypto.Classes.Exceptions.html#eExcept"><span class="hs-identifier hs-var">eExcept</span></a></span><span> </span><span class="annot"><span class="annottext">(Either GenError (g, g) -&gt; (g, g))
+-&gt; (g -&gt; Either GenError (g, g)) -&gt; g -&gt; (g, g)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g -&gt; Either GenError (g, g)
+forall g. CryptoRandomGen g =&gt; g -&gt; Either GenError (g, g)
+</span><a href="Crypto.Random.html#splitGen"><span class="hs-identifier hs-var">R.splitGen</span></a></span><span>
+</span><span id="line-142"></span></pre></body></html>

@@ -1,0 +1,1414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- |</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- Module      : Network.TLS.IO</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- License     : BSD-style</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Maintainer  : Vincent Hanquez &lt;vincent@snarc.org&gt;</span><span>
+</span><span id="line-7"></span><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Portability : unknown</span><span>
+</span><span id="line-9"></span><span class="hs-comment">--</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Network.TLS.IO</span><span>
+</span><span id="line-11"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#sendPacket"><span class="hs-identifier">sendPacket</span></a></span><span>
+</span><span id="line-12"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#sendPacket13"><span class="hs-identifier">sendPacket13</span></a></span><span>
+</span><span id="line-13"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#recvPacket"><span class="hs-identifier">recvPacket</span></a></span><span>
+</span><span id="line-14"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#recvPacket13"><span class="hs-identifier">recvPacket13</span></a></span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-comment">--</span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#isRecvComplete"><span class="hs-identifier">isRecvComplete</span></a></span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#checkValid"><span class="hs-identifier">checkValid</span></a></span><span>
+</span><span id="line-18"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Grouping multiple packets in the same flight</span></span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier">PacketFlightM</span></a></span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#runPacketFlight"><span class="hs-identifier">runPacketFlight</span></a></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#loadPacket13"><span class="hs-identifier">loadPacket13</span></a></span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">finally</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">throwIO</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Reader</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.State.Strict</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.IORef</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.IO.Error</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mkIOError</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">eofErrorType</span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html"><span class="hs-identifier">Network.TLS.Context.Internal</span></a></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.ErrT.html"><span class="hs-identifier">Network.TLS.ErrT</span></a></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Hooks.html"><span class="hs-identifier">Network.TLS.Hooks</span></a></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Imports.html"><span class="hs-identifier">Network.TLS.Imports</span></a></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Packet.html"><span class="hs-identifier">Network.TLS.Packet</span></a></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Receiving.html"><span class="hs-identifier">Network.TLS.Receiving</span></a></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Receiving13.html"><span class="hs-identifier">Network.TLS.Receiving13</span></a></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Record.html"><span class="hs-identifier">Network.TLS.Record</span></a></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Sending.html"><span class="hs-identifier">Network.TLS.Sending</span></a></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Sending13.html"><span class="hs-identifier">Network.TLS.Sending13</span></a></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.State.html"><span class="hs-identifier">Network.TLS.State</span></a></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html"><span class="hs-identifier">Network.TLS.Struct</span></a></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Network.TLS.Struct13.html"><span class="hs-identifier">Network.TLS.Struct13</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="hs-comment">-- | Send one packet to the context</span><span>
+</span><span id="line-48"></span><span id="local-6989586621679220644"><span class="annot"><a href="Network.TLS.IO.html#sendPacket"><span class="hs-identifier hs-type">sendPacket</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220644"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#Packet"><span class="hs-identifier hs-type">Packet</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220644"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-49"></span><span id="sendPacket"><span class="annot"><span class="annottext">sendPacket :: Context -&gt; Packet -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendPacket"><span class="hs-identifier hs-var hs-var">sendPacket</span></a></span></span><span> </span><span id="local-6989586621679220643"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220643"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220642"><span class="annot"><span class="annottext">pkt :: Packet
+</span><a href="#local-6989586621679220642"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-comment">-- in ver &lt;= TLS1.0, block ciphers using CBC are using CBC residue as IV, which can be guessed</span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-comment">-- by an attacker. Hence, an empty packet is sent before a normal data packet, to</span><span>
+</span><span id="line-52"></span><span>    </span><span class="hs-comment">-- prevent guessability.</span><span>
+</span><span id="line-53"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; m () -&gt; m ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Packet -&gt; Bool
+</span><a href="#local-6989586621679220640"><span class="hs-identifier hs-var">isNonNullAppData</span></a></span><span> </span><span class="annot"><span class="annottext">Packet
+</span><a href="#local-6989586621679220642"><span class="hs-identifier hs-var">pkt</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(m () -&gt; m ()) -&gt; m () -&gt; m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-54"></span><span>        </span><span id="local-6989586621679220639"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220639"><span class="hs-identifier hs-var">withEmptyPacket</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Bool -&gt; m Bool
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Bool -&gt; m Bool) -&gt; IO Bool -&gt; m Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IORef Bool -&gt; IO Bool
+forall a. IORef a -&gt; IO a
+</span><span class="hs-identifier hs-var">readIORef</span></span><span> </span><span class="annot"><span class="annottext">(IORef Bool -&gt; IO Bool) -&gt; IORef Bool -&gt; IO Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; IORef Bool
+</span><a href="Network.TLS.Context.Internal.html#ctxNeedEmptyPacket"><span class="hs-identifier hs-var hs-var">ctxNeedEmptyPacket</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220643"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-55"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; m () -&gt; m ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220639"><span class="hs-identifier hs-var">withEmptyPacket</span></a></span><span> </span><span class="annot"><span class="annottext">(m () -&gt; m ()) -&gt; m () -&gt; m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-56"></span><span>            </span><span class="annot"><span class="annottext">Context -&gt; Packet -&gt; m ByteString
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; Packet -&gt; m ByteString
+</span><a href="Network.TLS.IO.html#writePacketBytes"><span class="hs-identifier hs-var">writePacketBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220643"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Packet
+</span><a href="Network.TLS.Struct.html#AppData"><span class="hs-identifier hs-var">AppData</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier hs-var">B.empty</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; (ByteString -&gt; m ()) -&gt; m ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; ByteString -&gt; m ()
+forall (m :: * -&gt; *). MonadIO m =&gt; Context -&gt; ByteString -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendBytes"><span class="hs-identifier hs-var">sendBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220643"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">Context -&gt; Packet -&gt; m ByteString
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; Packet -&gt; m ByteString
+</span><a href="Network.TLS.IO.html#writePacketBytes"><span class="hs-identifier hs-var">writePacketBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220643"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Packet
+</span><a href="#local-6989586621679220642"><span class="hs-identifier hs-var">pkt</span></a></span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; (ByteString -&gt; m ()) -&gt; m ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; ByteString -&gt; m ()
+forall (m :: * -&gt; *). MonadIO m =&gt; Context -&gt; ByteString -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendBytes"><span class="hs-identifier hs-var">sendBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220643"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679220640"><span class="annot"><span class="annottext">isNonNullAppData :: Packet -&gt; Bool
+</span><a href="#local-6989586621679220640"><span class="hs-identifier hs-var hs-var">isNonNullAppData</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#AppData"><span class="hs-identifier hs-type">AppData</span></a></span><span> </span><span id="local-6989586621679220631"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679220631"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; Bool -&gt; Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Bool
+</span><span class="hs-identifier hs-var">B.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220631"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-60"></span><span>        </span><span class="annot"><a href="#local-6989586621679220640"><span class="hs-identifier hs-var">isNonNullAppData</span></a></span><span> </span><span class="hs-identifier">_</span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span id="local-6989586621679220797"><span class="annot"><a href="Network.TLS.IO.html#writePacketBytes"><span class="hs-identifier hs-type">writePacketBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220797"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#Packet"><span class="hs-identifier hs-type">Packet</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220797"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span></span><span>
+</span><span id="line-63"></span><span id="writePacketBytes"><span class="annot"><span class="annottext">writePacketBytes :: Context -&gt; Packet -&gt; m ByteString
+</span><a href="Network.TLS.IO.html#writePacketBytes"><span class="hs-identifier hs-var hs-var">writePacketBytes</span></a></span></span><span> </span><span id="local-6989586621679220628"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220628"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220627"><span class="annot"><span class="annottext">pkt :: Packet
+</span><a href="#local-6989586621679220627"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-64"></span><span>    </span><span id="local-6989586621679220626"><span class="annot"><span class="annottext">Either TLSError ByteString
+</span><a href="#local-6989586621679220626"><span class="hs-identifier hs-var">edataToSend</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString) -&gt; m (Either TLSError ByteString)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either TLSError ByteString) -&gt; m (Either TLSError ByteString))
+-&gt; IO (Either TLSError ByteString)
+-&gt; m (Either TLSError ByteString)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-65"></span><span>                        </span><span class="annot"><span class="annottext">Context -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#withLog"><span class="hs-identifier hs-var">withLog</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220628"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Logging -&gt; IO ()) -&gt; IO ()) -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220624"><span class="annot"><span class="annottext">logging :: Logging
+</span><a href="#local-6989586621679220624"><span class="hs-identifier hs-var">logging</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Logging -&gt; String -&gt; IO ()
+</span><a href="Network.TLS.Hooks.html#loggingPacketSent"><span class="hs-identifier hs-var hs-var">loggingPacketSent</span></a></span><span> </span><span class="annot"><span class="annottext">Logging
+</span><a href="#local-6989586621679220624"><span class="hs-identifier hs-var">logging</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Packet -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Packet
+</span><a href="#local-6989586621679220627"><span class="hs-identifier hs-var">pkt</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>                        </span><span class="annot"><span class="annottext">Context -&gt; Packet -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.Sending.html#encodePacket"><span class="hs-identifier hs-var">encodePacket</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220628"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Packet
+</span><a href="#local-6989586621679220627"><span class="hs-identifier hs-var">pkt</span></a></span><span>
+</span><span id="line-67"></span><span>    </span><span class="annot"><span class="annottext">(TLSError -&gt; m ByteString)
+-&gt; (ByteString -&gt; m ByteString)
+-&gt; Either TLSError ByteString
+-&gt; m ByteString
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; m ByteString
+forall (m :: * -&gt; *) e a. (MonadIO m, Exception e) =&gt; e -&gt; m a
+</span><a href="Network.TLS.Context.Internal.html#throwCore"><span class="hs-identifier hs-var">throwCore</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; m ByteString
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Either TLSError ByteString
+</span><a href="#local-6989586621679220626"><span class="hs-identifier hs-var">edataToSend</span></a></span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span id="local-6989586621679220618"><span class="annot"><a href="Network.TLS.IO.html#sendPacket13"><span class="hs-identifier hs-type">sendPacket13</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220618"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Struct13.html#Packet13"><span class="hs-identifier hs-type">Packet13</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220618"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-72"></span><span id="sendPacket13"><span class="annot"><span class="annottext">sendPacket13 :: Context -&gt; Packet13 -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendPacket13"><span class="hs-identifier hs-var hs-var">sendPacket13</span></a></span></span><span> </span><span id="local-6989586621679220617"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220617"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220616"><span class="annot"><span class="annottext">pkt :: Packet13
+</span><a href="#local-6989586621679220616"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Packet13 -&gt; m ByteString
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; Packet13 -&gt; m ByteString
+</span><a href="Network.TLS.IO.html#writePacketBytes13"><span class="hs-identifier hs-var">writePacketBytes13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220617"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Packet13
+</span><a href="#local-6989586621679220616"><span class="hs-identifier hs-var">pkt</span></a></span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; (ByteString -&gt; m ()) -&gt; m ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; ByteString -&gt; m ()
+forall (m :: * -&gt; *). MonadIO m =&gt; Context -&gt; ByteString -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendBytes"><span class="hs-identifier hs-var">sendBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220617"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span id="local-6989586621679220777"><span class="annot"><a href="Network.TLS.IO.html#writePacketBytes13"><span class="hs-identifier hs-type">writePacketBytes13</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220777"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Struct13.html#Packet13"><span class="hs-identifier hs-type">Packet13</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220777"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span></span><span>
+</span><span id="line-75"></span><span id="writePacketBytes13"><span class="annot"><span class="annottext">writePacketBytes13 :: Context -&gt; Packet13 -&gt; m ByteString
+</span><a href="Network.TLS.IO.html#writePacketBytes13"><span class="hs-identifier hs-var hs-var">writePacketBytes13</span></a></span></span><span> </span><span id="local-6989586621679220614"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220614"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220613"><span class="annot"><span class="annottext">pkt :: Packet13
+</span><a href="#local-6989586621679220613"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-76"></span><span>    </span><span id="local-6989586621679220612"><span class="annot"><span class="annottext">Either TLSError ByteString
+</span><a href="#local-6989586621679220612"><span class="hs-identifier hs-var">edataToSend</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString) -&gt; m (Either TLSError ByteString)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either TLSError ByteString) -&gt; m (Either TLSError ByteString))
+-&gt; IO (Either TLSError ByteString)
+-&gt; m (Either TLSError ByteString)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-77"></span><span>                        </span><span class="annot"><span class="annottext">Context -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#withLog"><span class="hs-identifier hs-var">withLog</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220614"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Logging -&gt; IO ()) -&gt; IO ()) -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220611"><span class="annot"><span class="annottext">logging :: Logging
+</span><a href="#local-6989586621679220611"><span class="hs-identifier hs-var">logging</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Logging -&gt; String -&gt; IO ()
+</span><a href="Network.TLS.Hooks.html#loggingPacketSent"><span class="hs-identifier hs-var hs-var">loggingPacketSent</span></a></span><span> </span><span class="annot"><span class="annottext">Logging
+</span><a href="#local-6989586621679220611"><span class="hs-identifier hs-var">logging</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Packet13 -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Packet13
+</span><a href="#local-6989586621679220613"><span class="hs-identifier hs-var">pkt</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>                        </span><span class="annot"><span class="annottext">Context -&gt; Packet13 -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.Sending13.html#encodePacket13"><span class="hs-identifier hs-var">encodePacket13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220614"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Packet13
+</span><a href="#local-6989586621679220613"><span class="hs-identifier hs-var">pkt</span></a></span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><span class="annottext">(TLSError -&gt; m ByteString)
+-&gt; (ByteString -&gt; m ByteString)
+-&gt; Either TLSError ByteString
+-&gt; m ByteString
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; m ByteString
+forall (m :: * -&gt; *) e a. (MonadIO m, Exception e) =&gt; e -&gt; m a
+</span><a href="Network.TLS.Context.Internal.html#throwCore"><span class="hs-identifier hs-var">throwCore</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; m ByteString
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Either TLSError ByteString
+</span><a href="#local-6989586621679220612"><span class="hs-identifier hs-var">edataToSend</span></a></span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span id="local-6989586621679220793"><span class="annot"><a href="Network.TLS.IO.html#sendBytes"><span class="hs-identifier hs-type">sendBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220793"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220793"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-82"></span><span id="sendBytes"><span class="annot"><span class="annottext">sendBytes :: Context -&gt; ByteString -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendBytes"><span class="hs-identifier hs-var hs-var">sendBytes</span></a></span></span><span> </span><span id="local-6989586621679220609"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220609"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220608"><span class="annot"><span class="annottext">dataToSend :: ByteString
+</span><a href="#local-6989586621679220608"><span class="hs-identifier hs-var">dataToSend</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; m ()
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; m ()) -&gt; IO () -&gt; m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-83"></span><span>    </span><span class="annot"><span class="annottext">Context -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#withLog"><span class="hs-identifier hs-var">withLog</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220609"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Logging -&gt; IO ()) -&gt; IO ()) -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220607"><span class="annot"><span class="annottext">logging :: Logging
+</span><a href="#local-6989586621679220607"><span class="hs-identifier hs-var">logging</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Logging -&gt; ByteString -&gt; IO ()
+</span><a href="Network.TLS.Hooks.html#loggingIOSent"><span class="hs-identifier hs-var hs-var">loggingIOSent</span></a></span><span> </span><span class="annot"><span class="annottext">Logging
+</span><a href="#local-6989586621679220607"><span class="hs-identifier hs-var">logging</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220608"><span class="hs-identifier hs-var">dataToSend</span></a></span><span>
+</span><span id="line-84"></span><span>    </span><span class="annot"><span class="annottext">Context -&gt; ByteString -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#contextSend"><span class="hs-identifier hs-var">contextSend</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220609"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220608"><span class="hs-identifier hs-var">dataToSend</span></a></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span class="annot"><a href="Network.TLS.IO.html#getRecord"><span class="hs-identifier hs-type">getRecord</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#Header"><span class="hs-identifier hs-type">Header</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Record.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Record.Types.html#Plaintext"><span class="hs-identifier hs-type">Plaintext</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span id="getRecord"><span class="annot"><span class="annottext">getRecord :: Context
+-&gt; Int
+-&gt; Header
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#getRecord"><span class="hs-identifier hs-var hs-var">getRecord</span></a></span></span><span> </span><span id="local-6989586621679220603"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220603"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220602"><span class="annot"><span class="annottext">appDataOverhead :: Int
+</span><a href="#local-6989586621679220602"><span class="hs-identifier hs-var">appDataOverhead</span></a></span></span><span> </span><span id="local-6989586621679220601"><span class="annot"><span class="annottext">header :: Header
+</span><a href="#local-6989586621679220601"><span class="hs-identifier hs-var">header</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#Header"><span class="hs-identifier hs-type">Header</span></a></span><span> </span><span id="local-6989586621679220599"><span class="annot"><span class="annottext">pt :: ProtocolType
+</span><a href="#local-6989586621679220599"><span class="hs-identifier hs-var">pt</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679220598"><span class="annot"><span class="annottext">content :: ByteString
+</span><a href="#local-6989586621679220598"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-90"></span><span>    </span><span class="annot"><span class="annottext">Context -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#withLog"><span class="hs-identifier hs-var">withLog</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220603"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Logging -&gt; IO ()) -&gt; IO ()) -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220597"><span class="annot"><span class="annottext">logging :: Logging
+</span><a href="#local-6989586621679220597"><span class="hs-identifier hs-var">logging</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Logging -&gt; Header -&gt; ByteString -&gt; IO ()
+</span><a href="Network.TLS.Hooks.html#loggingIORecv"><span class="hs-identifier hs-var hs-var">loggingIORecv</span></a></span><span> </span><span class="annot"><span class="annottext">Logging
+</span><a href="#local-6989586621679220597"><span class="hs-identifier hs-var">logging</span></a></span><span> </span><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679220601"><span class="hs-identifier hs-var">header</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220598"><span class="hs-identifier hs-var">content</span></a></span><span>
+</span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">Context
+-&gt; RecordM (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a. Context -&gt; RecordM a -&gt; IO (Either TLSError a)
+</span><a href="Network.TLS.Context.Internal.html#runRxState"><span class="hs-identifier hs-var">runRxState</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220603"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">(RecordM (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; RecordM (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-92"></span><span>        </span><span id="local-6989586621679220594"><span class="annot"><span class="annottext">Record Plaintext
+</span><a href="#local-6989586621679220594"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Header -&gt; ByteString -&gt; RecordM (Record Plaintext)
+</span><a href="Network.TLS.Receiving.html#decodeRecordM"><span class="hs-identifier hs-var">decodeRecordM</span></a></span><span> </span><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679220601"><span class="hs-identifier hs-var">header</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220598"><span class="hs-identifier hs-var">content</span></a></span><span>
+</span><span id="line-93"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="Network.TLS.Record.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679220591"><span class="annot"><span class="annottext">fragment :: Fragment Plaintext
+</span><a href="#local-6989586621679220591"><span class="hs-identifier hs-var">fragment</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Record Plaintext
+</span><a href="#local-6989586621679220594"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-94"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; RecordM () -&gt; RecordM ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Fragment Plaintext -&gt; ByteString
+forall a. Fragment a -&gt; ByteString
+</span><a href="Network.TLS.Record.Types.html#fragmentGetBytes"><span class="hs-identifier hs-var hs-var">fragmentGetBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Fragment Plaintext
+</span><a href="#local-6989586621679220591"><span class="hs-identifier hs-var">fragment</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">16384</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220586"><span class="hs-identifier hs-var">overhead</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(RecordM () -&gt; RecordM ()) -&gt; RecordM () -&gt; RecordM ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-95"></span><span>            </span><span class="annot"><span class="annottext">TLSError -&gt; RecordM ()
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; m a
+</span><span class="hs-identifier hs-var">throwError</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="Network.TLS.IO.html#contentSizeExceeded"><span class="hs-identifier hs-var">contentSizeExceeded</span></a></span><span>
+</span><span id="line-96"></span><span>        </span><span class="annot"><span class="annottext">Record Plaintext -&gt; RecordM (Record Plaintext)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Record Plaintext
+</span><a href="#local-6989586621679220594"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679220586"><span class="annot"><span class="annottext">overhead :: Int
+</span><a href="#local-6989586621679220586"><span class="hs-identifier hs-var hs-var">overhead</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ProtocolType
+</span><a href="#local-6989586621679220599"><span class="hs-identifier hs-var">pt</span></a></span><span> </span><span class="annot"><span class="annottext">ProtocolType -&gt; ProtocolType -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ProtocolType
+</span><a href="Network.TLS.Struct.html#ProtocolType_AppData"><span class="hs-identifier hs-var">ProtocolType_AppData</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220602"><span class="hs-identifier hs-var">appDataOverhead</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span class="annot"><a href="Network.TLS.IO.html#contentSizeExceeded"><span class="hs-identifier hs-type">contentSizeExceeded</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span>
+</span><span id="line-101"></span><span id="contentSizeExceeded"><span class="annot"><span class="annottext">contentSizeExceeded :: TLSError
+</span><a href="Network.TLS.IO.html#contentSizeExceeded"><span class="hs-identifier hs-var hs-var">contentSizeExceeded</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String, Bool, AlertDescription) -&gt; TLSError
+</span><a href="Network.TLS.Struct.html#Error_Protocol"><span class="hs-identifier hs-var">Error_Protocol</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;record content exceeding maximum size&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">AlertDescription
+</span><a href="Network.TLS.Struct.html#RecordOverflow"><span class="hs-identifier hs-var">RecordOverflow</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-104"></span><span class="hs-comment">-- | receive one packet from the context that contains 1 or</span><span>
+</span><span id="line-105"></span><span class="hs-comment">-- many messages (many only in case of handshake). if will returns a</span><span>
+</span><span id="line-106"></span><span class="hs-comment">-- TLSError if the packet is unexpected or malformed</span><span>
+</span><span id="line-107"></span><span id="local-6989586621679220752"><span class="annot"><a href="Network.TLS.IO.html#recvPacket"><span class="hs-identifier hs-type">recvPacket</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220752"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220752"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#Packet"><span class="hs-identifier hs-type">Packet</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-108"></span><span id="recvPacket"><span class="annot"><span class="annottext">recvPacket :: Context -&gt; m (Either TLSError Packet)
+</span><a href="Network.TLS.IO.html#recvPacket"><span class="hs-identifier hs-var hs-var">recvPacket</span></a></span></span><span> </span><span id="local-6989586621679220580"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError Packet) -&gt; m (Either TLSError Packet)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either TLSError Packet) -&gt; m (Either TLSError Packet))
+-&gt; IO (Either TLSError Packet) -&gt; m (Either TLSError Packet)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-109"></span><span>    </span><span id="local-6989586621679220579"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220579"><span class="hs-identifier hs-var">compatSSLv2</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; IO Bool
+</span><a href="Network.TLS.Context.Internal.html#ctxHasSSLv2ClientHello"><span class="hs-identifier hs-var">ctxHasSSLv2ClientHello</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-110"></span><span>    </span><span id="local-6989586621679220577"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220577"><span class="hs-identifier hs-var">hrr</span></a></span></span><span>         </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; TLSSt Bool -&gt; IO Bool
+forall a. Context -&gt; TLSSt a -&gt; IO a
+</span><a href="Network.TLS.Context.Internal.html#usingState_"><span class="hs-identifier hs-var">usingState_</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">TLSSt Bool
+</span><a href="Network.TLS.State.html#getTLS13HRR"><span class="hs-identifier hs-var">getTLS13HRR</span></a></span><span>
+</span><span id="line-111"></span><span>    </span><span class="hs-comment">-- When a client sends 0-RTT data to a server which rejects and sends a HRR,</span><span>
+</span><span id="line-112"></span><span>    </span><span class="hs-comment">-- the server will not decrypt AppData segments.  The server needs to accept</span><span>
+</span><span id="line-113"></span><span>    </span><span class="hs-comment">-- AppData with maximum size 2^14 + 256.  In all other scenarios and record</span><span>
+</span><span id="line-114"></span><span>    </span><span class="hs-comment">-- types the maximum size is 2^14.</span><span>
+</span><span id="line-115"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679220574"><span class="annot"><span class="annottext">appDataOverhead :: Int
+</span><a href="#local-6989586621679220574"><span class="hs-identifier hs-var hs-var">appDataOverhead</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220577"><span class="hs-identifier hs-var">hrr</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="hs-number">256</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-116"></span><span>    </span><span id="local-6989586621679220573"><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+</span><a href="#local-6989586621679220573"><span class="hs-identifier hs-var">erecord</span></a></span></span><span>     </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Int -&gt; Context -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#recvRecord"><span class="hs-identifier hs-var">recvRecord</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220579"><span class="hs-identifier hs-var">compatSSLv2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220574"><span class="hs-identifier hs-var">appDataOverhead</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+</span><a href="#local-6989586621679220573"><span class="hs-identifier hs-var">erecord</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-118"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679220571"><span class="annot"><span class="annottext">err :: TLSError
+</span><a href="#local-6989586621679220571"><span class="hs-identifier hs-var">err</span></a></span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet -&gt; IO (Either TLSError Packet)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Packet -&gt; IO (Either TLSError Packet))
+-&gt; Either TLSError Packet -&gt; IO (Either TLSError Packet)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError Packet
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="#local-6989586621679220571"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-119"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679220570"><span class="annot"><span class="annottext">record :: Record Plaintext
+</span><a href="#local-6989586621679220570"><span class="hs-identifier hs-var">record</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-120"></span><span>            </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220577"><span class="hs-identifier hs-var">hrr</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Record Plaintext -&gt; Bool
+forall a. Record a -&gt; Bool
+</span><a href="Network.TLS.IO.html#isCCS"><span class="hs-identifier hs-var">isCCS</span></a></span><span> </span><span class="annot"><span class="annottext">Record Plaintext
+</span><a href="#local-6989586621679220570"><span class="hs-identifier hs-var">record</span></a></span><span> </span><span class="hs-keyword">then</span><span>
+</span><span id="line-121"></span><span>                </span><span class="annot"><span class="annottext">Context -&gt; IO (Either TLSError Packet)
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; m (Either TLSError Packet)
+</span><a href="Network.TLS.IO.html#recvPacket"><span class="hs-identifier hs-var">recvPacket</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-122"></span><span>              </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-123"></span><span>                </span><span id="local-6989586621679220567"><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220567"><span class="hs-identifier hs-var">pktRecv</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Record Plaintext -&gt; IO (Either TLSError Packet)
+</span><a href="Network.TLS.Receiving.html#processPacket"><span class="hs-identifier hs-var">processPacket</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Record Plaintext
+</span><a href="#local-6989586621679220570"><span class="hs-identifier hs-var">record</span></a></span><span>
+</span><span id="line-124"></span><span>                </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet -&gt; Bool
+</span><a href="Network.TLS.IO.html#isEmptyHandshake"><span class="hs-identifier hs-var">isEmptyHandshake</span></a></span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220567"><span class="hs-identifier hs-var">pktRecv</span></a></span><span> </span><span class="hs-keyword">then</span><span>
+</span><span id="line-125"></span><span>                    </span><span class="hs-comment">-- When a handshake record is fragmented we continue</span><span>
+</span><span id="line-126"></span><span>                    </span><span class="hs-comment">-- receiving in order to feed stHandshakeRecordCont</span><span>
+</span><span id="line-127"></span><span>                    </span><span class="annot"><span class="annottext">Context -&gt; IO (Either TLSError Packet)
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; m (Either TLSError Packet)
+</span><a href="Network.TLS.IO.html#recvPacket"><span class="hs-identifier hs-var">recvPacket</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-128"></span><span>                  </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-129"></span><span>                    </span><span id="local-6989586621679220564"><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220564"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220567"><span class="hs-identifier hs-var">pktRecv</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-130"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#Handshake"><span class="hs-identifier hs-type">Handshake</span></a></span><span> </span><span id="local-6989586621679220562"><span class="annot"><span class="annottext">hss :: [Handshake]
+</span><a href="#local-6989586621679220562"><span class="hs-identifier hs-var">hss</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-131"></span><span>                                </span><span class="annot"><span class="annottext">Context
+-&gt; (Hooks -&gt; IO (Either TLSError Packet))
+-&gt; IO (Either TLSError Packet)
+forall a. Context -&gt; (Hooks -&gt; IO a) -&gt; IO a
+</span><a href="Network.TLS.Context.Internal.html#ctxWithHooks"><span class="hs-identifier hs-var">ctxWithHooks</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Hooks -&gt; IO (Either TLSError Packet))
+ -&gt; IO (Either TLSError Packet))
+-&gt; (Hooks -&gt; IO (Either TLSError Packet))
+-&gt; IO (Either TLSError Packet)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220560"><span class="annot"><span class="annottext">hooks :: Hooks
+</span><a href="#local-6989586621679220560"><span class="hs-identifier hs-var">hooks</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-132"></span><span>                                    </span><span class="annot"><span class="annottext">Packet -&gt; Either TLSError Packet
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Packet -&gt; Either TLSError Packet)
+-&gt; ([Handshake] -&gt; Packet) -&gt; [Handshake] -&gt; Either TLSError Packet
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Handshake] -&gt; Packet
+</span><a href="Network.TLS.Struct.html#Handshake"><span class="hs-identifier hs-var">Handshake</span></a></span><span> </span><span class="annot"><span class="annottext">([Handshake] -&gt; Either TLSError Packet)
+-&gt; IO [Handshake] -&gt; IO (Either TLSError Packet)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Handshake -&gt; IO Handshake) -&gt; [Handshake] -&gt; IO [Handshake]
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m (t b)
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Hooks -&gt; Handshake -&gt; IO Handshake
+</span><a href="Network.TLS.Hooks.html#hookRecvHandshake"><span class="hs-identifier hs-var hs-var">hookRecvHandshake</span></a></span><span> </span><span class="annot"><span class="annottext">Hooks
+</span><a href="#local-6989586621679220560"><span class="hs-identifier hs-var">hooks</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Handshake]
+</span><a href="#local-6989586621679220562"><span class="hs-identifier hs-var">hss</span></a></span><span>
+</span><span id="line-133"></span><span>                            </span><span class="hs-identifier">_</span><span>                     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet -&gt; IO (Either TLSError Packet)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220567"><span class="hs-identifier hs-var">pktRecv</span></a></span><span>
+</span><span id="line-134"></span><span>                    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220564"><span class="hs-identifier hs-var">pkt</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-135"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679220555"><span class="annot"><span class="annottext">p :: Packet
+</span><a href="#local-6989586621679220555"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#withLog"><span class="hs-identifier hs-var">withLog</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Logging -&gt; IO ()) -&gt; IO ()) -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220554"><span class="annot"><span class="annottext">logging :: Logging
+</span><a href="#local-6989586621679220554"><span class="hs-identifier hs-var">logging</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Logging -&gt; String -&gt; IO ()
+</span><a href="Network.TLS.Hooks.html#loggingPacketRecv"><span class="hs-identifier hs-var hs-var">loggingPacketRecv</span></a></span><span> </span><span class="annot"><span class="annottext">Logging
+</span><a href="#local-6989586621679220554"><span class="hs-identifier hs-var">logging</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Packet -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Packet
+</span><a href="#local-6989586621679220555"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-136"></span><span>                        </span><span class="hs-identifier">_</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-137"></span><span>                    </span><span class="annot"><span class="annottext">Bool -&gt; IO () -&gt; IO ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220579"><span class="hs-identifier hs-var">compatSSLv2</span></a></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#ctxDisableSSLv2ClientHello"><span class="hs-identifier hs-var">ctxDisableSSLv2ClientHello</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220580"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-138"></span><span>                    </span><span class="annot"><span class="annottext">Either TLSError Packet -&gt; IO (Either TLSError Packet)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet
+</span><a href="#local-6989586621679220564"><span class="hs-identifier hs-var">pkt</span></a></span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span class="hs-comment">-- | recvRecord receive a full TLS record (header + data), from the other side.</span><span>
+</span><span id="line-141"></span><span class="hs-comment">--</span><span>
+</span><span id="line-142"></span><span class="hs-comment">-- The record is disengaged from the record layer</span><span>
+</span><span id="line-143"></span><span class="annot"><a href="Network.TLS.IO.html#recvRecord"><span class="hs-identifier hs-type">recvRecord</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>    </span><span class="hs-comment">-- ^ flag to enable SSLv2 compat ClientHello reception</span><span>
+</span><span id="line-144"></span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>     </span><span class="hs-comment">-- ^ number of AppData bytes to accept above normal maximum size</span><span>
+</span><span id="line-145"></span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-comment">-- ^ TLS context</span><span>
+</span><span id="line-146"></span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Record.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Record.Types.html#Plaintext"><span class="hs-identifier hs-type">Plaintext</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-147"></span><span id="recvRecord"><span class="annot"><span class="annottext">recvRecord :: Bool -&gt; Int -&gt; Context -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#recvRecord"><span class="hs-identifier hs-var hs-var">recvRecord</span></a></span></span><span> </span><span id="local-6989586621679220551"><span class="annot"><span class="annottext">compatSSLv2 :: Bool
+</span><a href="#local-6989586621679220551"><span class="hs-identifier hs-var">compatSSLv2</span></a></span></span><span> </span><span id="local-6989586621679220550"><span class="annot"><span class="annottext">appDataOverhead :: Int
+</span><a href="#local-6989586621679220550"><span class="hs-identifier hs-var">appDataOverhead</span></a></span></span><span> </span><span id="local-6989586621679220549"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span></span><span class="hs-cpp">
+#ifdef SSLV2_COMPATIBLE
+</span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220551"><span class="hs-identifier hs-var">compatSSLv2</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString)
+-&gt; (Either TLSError ByteString
+    -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220547"><span class="hs-identifier hs-var">sslv2Header</span></a></span><span class="hs-cpp">
+#endif
+</span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="hs-number">5</span></span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString)
+-&gt; (Either TLSError ByteString
+    -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220546"><span class="hs-identifier hs-var">recvLengthE</span></a></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; Either TLSError Header)
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either TLSError Header
+</span><a href="Network.TLS.Packet.html#decodeHeader"><span class="hs-identifier hs-var">decodeHeader</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-152"></span><span>
+</span><span id="line-153"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679220546"><span class="annot"><span class="annottext">recvLengthE :: Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220546"><span class="hs-identifier hs-var hs-var">recvLengthE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (Header -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError Header
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220544"><span class="hs-identifier hs-var">recvLength</span></a></span><span>
+</span><span id="line-154"></span><span>
+</span><span id="line-155"></span><span>              </span><span id="local-6989586621679220544"><span class="annot"><span class="annottext">recvLength :: Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220544"><span class="hs-identifier hs-var hs-var">recvLength</span></a></span></span><span> </span><span id="local-6989586621679220543"><span class="annot"><span class="annottext">header :: Header
+</span><a href="#local-6989586621679220543"><span class="hs-identifier hs-var">header</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#Header"><span class="hs-identifier hs-type">Header</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679220542"><span class="annot"><span class="annottext">readlen :: Word16
+</span><a href="#local-6989586621679220542"><span class="hs-identifier hs-var">readlen</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-156"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220542"><span class="hs-identifier hs-var">readlen</span></a></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">16384</span></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Word16
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">2048</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="Network.TLS.IO.html#maximumSizeExceeded"><span class="hs-identifier hs-var">maximumSizeExceeded</span></a></span><span>
+</span><span id="line-157"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>              </span><span class="hs-glyph">=</span><span>
+</span><span id="line-158"></span><span>                    </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word16 -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220542"><span class="hs-identifier hs-var">readlen</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString)
+-&gt; (Either TLSError ByteString
+    -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span>
+</span><span id="line-159"></span><span>                        </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Context
+-&gt; Int
+-&gt; Header
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#getRecord"><span class="hs-identifier hs-var">getRecord</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220550"><span class="hs-identifier hs-var">appDataOverhead</span></a></span><span> </span><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679220543"><span class="hs-identifier hs-var">header</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+#ifdef SSLV2_COMPATIBLE
+</span><span>              </span><span id="local-6989586621679220547"><span class="annot"><span class="annottext">sslv2Header :: ByteString -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220547"><span class="hs-identifier hs-var hs-var">sslv2Header</span></a></span></span><span> </span><span id="local-6989586621679220540"><span class="annot"><span class="annottext">header :: ByteString
+</span><a href="#local-6989586621679220540"><span class="hs-identifier hs-var">header</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-162"></span><span>                </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Word8
+</span><span class="hs-identifier hs-var">B.head</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220540"><span class="hs-identifier hs-var">header</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="hs-number">0x80</span></span><span>
+</span><span id="line-163"></span><span>                    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (Word16 -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError Word16
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220538"><span class="hs-identifier hs-var">recvDeprecatedLength</span></a></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Word16 -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError Word16
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either TLSError Word16
+</span><a href="Network.TLS.Packet.html#decodeDeprecatedHeaderLength"><span class="hs-identifier hs-var">decodeDeprecatedHeaderLength</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220540"><span class="hs-identifier hs-var">header</span></a></span><span>
+</span><span id="line-164"></span><span>                    </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString)
+-&gt; (Either TLSError ByteString
+    -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span>
+</span><span id="line-165"></span><span>                            </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220546"><span class="hs-identifier hs-var">recvLengthE</span></a></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; Either TLSError Header)
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either TLSError Header
+</span><a href="Network.TLS.Packet.html#decodeHeader"><span class="hs-identifier hs-var">decodeHeader</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Either TLSError Header)
+-&gt; (ByteString -&gt; ByteString)
+-&gt; ByteString
+-&gt; Either TLSError Header
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.append</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220540"><span class="hs-identifier hs-var">header</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-166"></span><span>
+</span><span id="line-167"></span><span>              </span><span id="local-6989586621679220538"><span class="annot"><span class="annottext">recvDeprecatedLength :: Word16 -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220538"><span class="hs-identifier hs-var hs-var">recvDeprecatedLength</span></a></span></span><span> </span><span id="local-6989586621679220535"><span class="annot"><span class="annottext">readlen :: Word16
+</span><a href="#local-6989586621679220535"><span class="hs-identifier hs-var">readlen</span></a></span></span><span>
+</span><span id="line-168"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220535"><span class="hs-identifier hs-var">readlen</span></a></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">1024</span></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Word16
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">4</span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="Network.TLS.IO.html#maximumSizeExceeded"><span class="hs-identifier hs-var">maximumSizeExceeded</span></a></span><span>
+</span><span id="line-169"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-170"></span><span>                    </span><span id="local-6989586621679220533"><span class="annot"><span class="annottext">Either TLSError ByteString
+</span><a href="#local-6989586621679220533"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word16 -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220535"><span class="hs-identifier hs-var">readlen</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-171"></span><span>                    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError ByteString
+</span><a href="#local-6989586621679220533"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-172"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679220532"><span class="annot"><span class="annottext">e :: TLSError
+</span><a href="#local-6989586621679220532"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="#local-6989586621679220532"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-173"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679220531"><span class="annot"><span class="annottext">content :: ByteString
+</span><a href="#local-6989586621679220531"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-174"></span><span>                        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679220530"><span class="annot"><span class="annottext">hdr :: Either TLSError Header
+</span><a href="#local-6989586621679220530"><span class="hs-identifier hs-var hs-var">hdr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; ByteString -&gt; Either TLSError Header
+</span><a href="Network.TLS.Packet.html#decodeDeprecatedHeader"><span class="hs-identifier hs-var">decodeDeprecatedHeader</span></a></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220535"><span class="hs-identifier hs-var">readlen</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.take</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220531"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-175"></span><span>                         </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (Header -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError Header
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679220527"><span class="annot"><span class="annottext">h :: Header
+</span><a href="#local-6989586621679220527"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context
+-&gt; Int
+-&gt; Header
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#getRecord"><span class="hs-identifier hs-var">getRecord</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220549"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220550"><span class="hs-identifier hs-var">appDataOverhead</span></a></span><span> </span><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679220527"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220531"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either TLSError Header
+</span><a href="#local-6989586621679220530"><span class="hs-identifier hs-var">hdr</span></a></span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-178"></span><span id="local-6989586621679220753"><span class="annot"><a href="Network.TLS.IO.html#isCCS"><span class="hs-identifier hs-type">isCCS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Record.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679220753"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
+</span><span id="line-179"></span><span id="isCCS"><span class="annot"><span class="annottext">isCCS :: Record a -&gt; Bool
+</span><a href="Network.TLS.IO.html#isCCS"><span class="hs-identifier hs-var hs-var">isCCS</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Record.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#ProtocolType_ChangeCipherSpec"><span class="hs-identifier hs-type">ProtocolType_ChangeCipherSpec</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-180"></span><span class="annot"><a href="Network.TLS.IO.html#isCCS"><span class="hs-identifier hs-var">isCCS</span></a></span><span> </span><span class="hs-identifier">_</span><span>                                          </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-181"></span><span>
+</span><span id="line-182"></span><span class="annot"><a href="Network.TLS.IO.html#isEmptyHandshake"><span class="hs-identifier hs-type">isEmptyHandshake</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#Packet"><span class="hs-identifier hs-type">Packet</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-183"></span><span id="isEmptyHandshake"><span class="annot"><span class="annottext">isEmptyHandshake :: Either TLSError Packet -&gt; Bool
+</span><a href="Network.TLS.IO.html#isEmptyHandshake"><span class="hs-identifier hs-var hs-var">isEmptyHandshake</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#Handshake"><span class="hs-identifier hs-type">Handshake</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-184"></span><span class="annot"><a href="Network.TLS.IO.html#isEmptyHandshake"><span class="hs-identifier hs-var">isEmptyHandshake</span></a></span><span> </span><span class="hs-identifier">_</span><span>                      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-185"></span><span>
+</span><span id="line-186"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-187"></span><span>
+</span><span id="line-188"></span><span id="local-6989586621679220733"><span class="annot"><a href="Network.TLS.IO.html#recvPacket13"><span class="hs-identifier hs-type">recvPacket13</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220733"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679220733"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Struct13.html#Packet13"><span class="hs-identifier hs-type">Packet13</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-189"></span><span id="recvPacket13"><span class="annot"><span class="annottext">recvPacket13 :: Context -&gt; m (Either TLSError Packet13)
+</span><a href="Network.TLS.IO.html#recvPacket13"><span class="hs-identifier hs-var hs-var">recvPacket13</span></a></span></span><span> </span><span id="local-6989586621679220525"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError Packet13) -&gt; m (Either TLSError Packet13)
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either TLSError Packet13) -&gt; m (Either TLSError Packet13))
+-&gt; IO (Either TLSError Packet13) -&gt; m (Either TLSError Packet13)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-190"></span><span>    </span><span id="local-6989586621679220524"><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+</span><a href="#local-6989586621679220524"><span class="hs-identifier hs-var">erecord</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#recvRecord13"><span class="hs-identifier hs-var">recvRecord13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-191"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+</span><a href="#local-6989586621679220524"><span class="hs-identifier hs-var">erecord</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-192"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679220522"><span class="annot"><span class="annottext">err :: TLSError
+</span><a href="#local-6989586621679220522"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#Error_Protocol"><span class="hs-identifier hs-type">Error_Protocol</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#BadRecordMac"><span class="hs-identifier hs-type">BadRecordMac</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-193"></span><span>            </span><span class="hs-comment">-- If the server decides to reject RTT0 data but accepts RTT1</span><span>
+</span><span id="line-194"></span><span>            </span><span class="hs-comment">-- data, the server should skip all records for RTT0 data.</span><span>
+</span><span id="line-195"></span><span>            </span><span id="local-6989586621679220520"><span class="annot"><span class="annottext">Established
+</span><a href="#local-6989586621679220520"><span class="hs-identifier hs-var">established</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; IO Established
+</span><a href="Network.TLS.Context.Internal.html#ctxEstablished"><span class="hs-identifier hs-var">ctxEstablished</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-196"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Established
+</span><a href="#local-6989586621679220520"><span class="hs-identifier hs-var">established</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-197"></span><span>                </span><span class="annot"><a href="Network.TLS.Context.Internal.html#EarlyDataNotAllowed"><span class="hs-identifier hs-type">EarlyDataNotAllowed</span></a></span><span> </span><span id="local-6989586621679220517"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679220517"><span class="hs-identifier hs-var">n</span></a></span></span><span>
+</span><span id="line-198"></span><span>                    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220517"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Established -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#setEstablished"><span class="hs-identifier hs-var">setEstablished</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">(Established -&gt; IO ()) -&gt; Established -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Established
+</span><a href="Network.TLS.Context.Internal.html#EarlyDataNotAllowed"><span class="hs-identifier hs-var">EarlyDataNotAllowed</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220517"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-199"></span><span>                                  </span><span class="annot"><span class="annottext">Context -&gt; IO (Either TLSError Packet13)
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; m (Either TLSError Packet13)
+</span><a href="Network.TLS.IO.html#recvPacket13"><span class="hs-identifier hs-var">recvPacket13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-200"></span><span>                </span><span class="hs-identifier">_</span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13 -&gt; IO (Either TLSError Packet13)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Packet13 -&gt; IO (Either TLSError Packet13))
+-&gt; Either TLSError Packet13 -&gt; IO (Either TLSError Packet13)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError Packet13
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="#local-6989586621679220522"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-201"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679220515"><span class="annot"><span class="annottext">err :: TLSError
+</span><a href="#local-6989586621679220515"><span class="hs-identifier hs-var">err</span></a></span></span><span>      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13 -&gt; IO (Either TLSError Packet13)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Packet13 -&gt; IO (Either TLSError Packet13))
+-&gt; Either TLSError Packet13 -&gt; IO (Either TLSError Packet13)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError Packet13
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="#local-6989586621679220515"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-202"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679220514"><span class="annot"><span class="annottext">record :: Record Plaintext
+</span><a href="#local-6989586621679220514"><span class="hs-identifier hs-var">record</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-203"></span><span>            </span><span id="local-6989586621679220513"><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220513"><span class="hs-identifier hs-var">pktRecv</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Record Plaintext -&gt; IO (Either TLSError Packet13)
+</span><a href="Network.TLS.Receiving13.html#processPacket13"><span class="hs-identifier hs-var">processPacket13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Record Plaintext
+</span><a href="#local-6989586621679220514"><span class="hs-identifier hs-var">record</span></a></span><span>
+</span><span id="line-204"></span><span>            </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13 -&gt; Bool
+</span><a href="Network.TLS.IO.html#isEmptyHandshake13"><span class="hs-identifier hs-var">isEmptyHandshake13</span></a></span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220513"><span class="hs-identifier hs-var">pktRecv</span></a></span><span> </span><span class="hs-keyword">then</span><span>
+</span><span id="line-205"></span><span>                </span><span class="hs-comment">-- When a handshake record is fragmented we continue receiving</span><span>
+</span><span id="line-206"></span><span>                </span><span class="hs-comment">-- in order to feed stHandshakeRecordCont13</span><span>
+</span><span id="line-207"></span><span>                </span><span class="annot"><span class="annottext">Context -&gt; IO (Either TLSError Packet13)
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; m (Either TLSError Packet13)
+</span><a href="Network.TLS.IO.html#recvPacket13"><span class="hs-identifier hs-var">recvPacket13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-208"></span><span>              </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-209"></span><span>                </span><span id="local-6989586621679220510"><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220510"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220513"><span class="hs-identifier hs-var">pktRecv</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-210"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct13.html#Handshake13"><span class="hs-identifier hs-type">Handshake13</span></a></span><span> </span><span id="local-6989586621679220508"><span class="annot"><span class="annottext">hss :: [Handshake13]
+</span><a href="#local-6989586621679220508"><span class="hs-identifier hs-var">hss</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-211"></span><span>                            </span><span class="annot"><span class="annottext">Context
+-&gt; (Hooks -&gt; IO (Either TLSError Packet13))
+-&gt; IO (Either TLSError Packet13)
+forall a. Context -&gt; (Hooks -&gt; IO a) -&gt; IO a
+</span><a href="Network.TLS.Context.Internal.html#ctxWithHooks"><span class="hs-identifier hs-var">ctxWithHooks</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Hooks -&gt; IO (Either TLSError Packet13))
+ -&gt; IO (Either TLSError Packet13))
+-&gt; (Hooks -&gt; IO (Either TLSError Packet13))
+-&gt; IO (Either TLSError Packet13)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220507"><span class="annot"><span class="annottext">hooks :: Hooks
+</span><a href="#local-6989586621679220507"><span class="hs-identifier hs-var">hooks</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-212"></span><span>                                </span><span class="annot"><span class="annottext">Packet13 -&gt; Either TLSError Packet13
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Packet13 -&gt; Either TLSError Packet13)
+-&gt; ([Handshake13] -&gt; Packet13)
+-&gt; [Handshake13]
+-&gt; Either TLSError Packet13
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Handshake13] -&gt; Packet13
+</span><a href="Network.TLS.Struct13.html#Handshake13"><span class="hs-identifier hs-var">Handshake13</span></a></span><span> </span><span class="annot"><span class="annottext">([Handshake13] -&gt; Either TLSError Packet13)
+-&gt; IO [Handshake13] -&gt; IO (Either TLSError Packet13)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Handshake13 -&gt; IO Handshake13)
+-&gt; [Handshake13] -&gt; IO [Handshake13]
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m (t b)
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Hooks -&gt; Handshake13 -&gt; IO Handshake13
+</span><a href="Network.TLS.Hooks.html#hookRecvHandshake13"><span class="hs-identifier hs-var hs-var">hookRecvHandshake13</span></a></span><span> </span><span class="annot"><span class="annottext">Hooks
+</span><a href="#local-6989586621679220507"><span class="hs-identifier hs-var">hooks</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Handshake13]
+</span><a href="#local-6989586621679220508"><span class="hs-identifier hs-var">hss</span></a></span><span>
+</span><span id="line-213"></span><span>                        </span><span class="hs-identifier">_</span><span>                       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13 -&gt; IO (Either TLSError Packet13)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220513"><span class="hs-identifier hs-var">pktRecv</span></a></span><span>
+</span><span id="line-214"></span><span>                </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220510"><span class="hs-identifier hs-var">pkt</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-215"></span><span>                    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679220505"><span class="annot"><span class="annottext">p :: Packet13
+</span><a href="#local-6989586621679220505"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#withLog"><span class="hs-identifier hs-var">withLog</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220525"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">((Logging -&gt; IO ()) -&gt; IO ()) -&gt; (Logging -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679220504"><span class="annot"><span class="annottext">logging :: Logging
+</span><a href="#local-6989586621679220504"><span class="hs-identifier hs-var">logging</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Logging -&gt; String -&gt; IO ()
+</span><a href="Network.TLS.Hooks.html#loggingPacketRecv"><span class="hs-identifier hs-var hs-var">loggingPacketRecv</span></a></span><span> </span><span class="annot"><span class="annottext">Logging
+</span><a href="#local-6989586621679220504"><span class="hs-identifier hs-var">logging</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Packet13 -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Packet13
+</span><a href="#local-6989586621679220505"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-216"></span><span>                    </span><span class="hs-identifier">_</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-217"></span><span>                </span><span class="annot"><span class="annottext">Either TLSError Packet13 -&gt; IO (Either TLSError Packet13)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Either TLSError Packet13
+</span><a href="#local-6989586621679220510"><span class="hs-identifier hs-var">pkt</span></a></span><span>
+</span><span id="line-218"></span><span>
+</span><span id="line-219"></span><span class="annot"><a href="Network.TLS.IO.html#recvRecord13"><span class="hs-identifier hs-type">recvRecord13</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span>
+</span><span id="line-220"></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Record.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Record.Types.html#Plaintext"><span class="hs-identifier hs-type">Plaintext</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-221"></span><span id="recvRecord13"><span class="annot"><span class="annottext">recvRecord13 :: Context -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#recvRecord13"><span class="hs-identifier hs-var hs-var">recvRecord13</span></a></span></span><span> </span><span id="local-6989586621679220503"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220503"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220503"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="hs-number">5</span></span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString)
+-&gt; (Either TLSError ByteString
+    -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220502"><span class="hs-identifier hs-var">recvLengthE</span></a></span><span> </span><span class="annot"><span class="annottext">(Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; Either TLSError Header)
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either TLSError Header
+</span><a href="Network.TLS.Packet.html#decodeHeader"><span class="hs-identifier hs-var">decodeHeader</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-222"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679220502"><span class="annot"><span class="annottext">recvLengthE :: Either TLSError Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220502"><span class="hs-identifier hs-var hs-var">recvLengthE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (Header -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError Header
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220501"><span class="hs-identifier hs-var">recvLength</span></a></span><span>
+</span><span id="line-223"></span><span>        </span><span id="local-6989586621679220501"><span class="annot"><span class="annottext">recvLength :: Header -&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="#local-6989586621679220501"><span class="hs-identifier hs-var hs-var">recvLength</span></a></span></span><span> </span><span id="local-6989586621679220500"><span class="annot"><span class="annottext">header :: Header
+</span><a href="#local-6989586621679220500"><span class="hs-identifier hs-var">header</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct.html#Header"><span class="hs-identifier hs-type">Header</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679220499"><span class="annot"><span class="annottext">readlen :: Word16
+</span><a href="#local-6989586621679220499"><span class="hs-identifier hs-var">readlen</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-224"></span><span>          </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220499"><span class="hs-identifier hs-var">readlen</span></a></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">16384</span></span><span> </span><span class="annot"><span class="annottext">Word16 -&gt; Word16 -&gt; Word16
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">256</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="Network.TLS.IO.html#maximumSizeExceeded"><span class="hs-identifier hs-var">maximumSizeExceeded</span></a></span><span>
+</span><span id="line-225"></span><span>          </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>              </span><span class="hs-glyph">=</span><span>
+</span><span id="line-226"></span><span>              </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var">readExactBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220503"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word16 -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word16
+</span><a href="#local-6989586621679220499"><span class="hs-identifier hs-var">readlen</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IO (Either TLSError ByteString)
+-&gt; (Either TLSError ByteString
+    -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span>
+</span><span id="line-227"></span><span>                 </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (ByteString -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; Either TLSError ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either TLSError (Record Plaintext)
+-&gt; IO (Either TLSError (Record Plaintext))
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError (Record Plaintext)
+ -&gt; IO (Either TLSError (Record Plaintext)))
+-&gt; (TLSError -&gt; Either TLSError (Record Plaintext))
+-&gt; TLSError
+-&gt; IO (Either TLSError (Record Plaintext))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError (Record Plaintext)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Context
+-&gt; Int
+-&gt; Header
+-&gt; ByteString
+-&gt; IO (Either TLSError (Record Plaintext))
+</span><a href="Network.TLS.IO.html#getRecord"><span class="hs-identifier hs-var">getRecord</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220503"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679220500"><span class="hs-identifier hs-var">header</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-228"></span><span>
+</span><span id="line-229"></span><span class="annot"><a href="Network.TLS.IO.html#isEmptyHandshake13"><span class="hs-identifier hs-type">isEmptyHandshake13</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="annot"><a href="Network.TLS.Struct13.html#Packet13"><span class="hs-identifier hs-type">Packet13</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-230"></span><span id="isEmptyHandshake13"><span class="annot"><span class="annottext">isEmptyHandshake13 :: Either TLSError Packet13 -&gt; Bool
+</span><a href="Network.TLS.IO.html#isEmptyHandshake13"><span class="hs-identifier hs-var hs-var">isEmptyHandshake13</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.Struct13.html#Handshake13"><span class="hs-identifier hs-type">Handshake13</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-231"></span><span class="annot"><a href="Network.TLS.IO.html#isEmptyHandshake13"><span class="hs-identifier hs-var">isEmptyHandshake13</span></a></span><span> </span><span class="hs-identifier">_</span><span>                        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-232"></span><span>
+</span><span id="line-233"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-234"></span><span class="hs-comment">-- Common for receiving</span><span>
+</span><span id="line-235"></span><span>
+</span><span id="line-236"></span><span class="annot"><a href="Network.TLS.IO.html#maximumSizeExceeded"><span class="hs-identifier hs-type">maximumSizeExceeded</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span>
+</span><span id="line-237"></span><span id="maximumSizeExceeded"><span class="annot"><span class="annottext">maximumSizeExceeded :: TLSError
+</span><a href="Network.TLS.IO.html#maximumSizeExceeded"><span class="hs-identifier hs-var hs-var">maximumSizeExceeded</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String, Bool, AlertDescription) -&gt; TLSError
+</span><a href="Network.TLS.Struct.html#Error_Protocol"><span class="hs-identifier hs-var">Error_Protocol</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;record exceeding maximum size&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">AlertDescription
+</span><a href="Network.TLS.Struct.html#RecordOverflow"><span class="hs-identifier hs-var">RecordOverflow</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-238"></span><span>
+</span><span id="line-239"></span><span class="annot"><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-type">readExactBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.TLS.Struct.html#TLSError"><span class="hs-identifier hs-type">TLSError</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span>
+</span><span id="line-240"></span><span id="readExactBytes"><span class="annot"><span class="annottext">readExactBytes :: Context -&gt; Int -&gt; IO (Either TLSError ByteString)
+</span><a href="Network.TLS.IO.html#readExactBytes"><span class="hs-identifier hs-var hs-var">readExactBytes</span></a></span></span><span> </span><span id="local-6989586621679220498"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220498"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220497"><span class="annot"><span class="annottext">sz :: Int
+</span><a href="#local-6989586621679220497"><span class="hs-identifier hs-var">sz</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-241"></span><span>    </span><span id="local-6989586621679220496"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220496"><span class="hs-identifier hs-var">hdrbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Int -&gt; IO ByteString
+</span><a href="Network.TLS.Context.Internal.html#contextRecv"><span class="hs-identifier hs-var">contextRecv</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220498"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220497"><span class="hs-identifier hs-var">sz</span></a></span><span>
+</span><span id="line-242"></span><span>    </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220496"><span class="hs-identifier hs-var">hdrbs</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220497"><span class="hs-identifier hs-var">sz</span></a></span><span>
+</span><span id="line-243"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Either TLSError ByteString -&gt; IO (Either TLSError ByteString)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError ByteString -&gt; IO (Either TLSError ByteString))
+-&gt; Either TLSError ByteString -&gt; IO (Either TLSError ByteString)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either TLSError ByteString
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220496"><span class="hs-identifier hs-var">hdrbs</span></a></span><span>
+</span><span id="line-244"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-245"></span><span>            </span><span class="annot"><span class="annottext">Context -&gt; IO ()
+</span><a href="Network.TLS.Context.Internal.html#setEOF"><span class="hs-identifier hs-var">setEOF</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220498"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-246"></span><span>            </span><span class="annot"><span class="annottext">Either TLSError ByteString -&gt; IO (Either TLSError ByteString)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either TLSError ByteString -&gt; IO (Either TLSError ByteString))
+-&gt; (TLSError -&gt; Either TLSError ByteString)
+-&gt; TLSError
+-&gt; IO (Either TLSError ByteString)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TLSError -&gt; Either TLSError ByteString
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(TLSError -&gt; IO (Either TLSError ByteString))
+-&gt; TLSError -&gt; IO (Either TLSError ByteString)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-247"></span><span>                </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Bool
+</span><span class="hs-identifier hs-var">B.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220496"><span class="hs-identifier hs-var">hdrbs</span></a></span><span>
+</span><span id="line-248"></span><span>                    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">TLSError
+</span><a href="Network.TLS.Struct.html#Error_EOF"><span class="hs-identifier hs-var">Error_EOF</span></a></span><span>
+</span><span id="line-249"></span><span>                    </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">String -&gt; TLSError
+</span><a href="Network.TLS.Struct.html#Error_Packet"><span class="hs-identifier hs-var">Error_Packet</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;partial packet: expecting &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679220497"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot; bytes, got: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220496"><span class="hs-identifier hs-var">hdrbs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-250"></span><span>
+</span><span id="line-251"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-252"></span><span>
+</span><span id="line-253"></span><span class="annot"><a href="Network.TLS.IO.html#isRecvComplete"><span class="hs-identifier hs-type">isRecvComplete</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-254"></span><span id="isRecvComplete"><span class="annot"><span class="annottext">isRecvComplete :: Context -&gt; IO Bool
+</span><a href="Network.TLS.IO.html#isRecvComplete"><span class="hs-identifier hs-var hs-var">isRecvComplete</span></a></span></span><span> </span><span id="local-6989586621679220491"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220491"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; TLSSt Bool -&gt; IO Bool
+forall a. Context -&gt; TLSSt a -&gt; IO a
+</span><a href="Network.TLS.Context.Internal.html#usingState_"><span class="hs-identifier hs-var">usingState_</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220491"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">(TLSSt Bool -&gt; IO Bool) -&gt; TLSSt Bool -&gt; IO Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-255"></span><span>    </span><span id="local-6989586621679220490"><span class="annot"><span class="annottext">Maybe (GetContinuation (HandshakeType, ByteString))
+</span><a href="#local-6989586621679220490"><span class="hs-identifier hs-var">cont</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(TLSState -&gt; Maybe (GetContinuation (HandshakeType, ByteString)))
+-&gt; TLSSt (Maybe (GetContinuation (HandshakeType, ByteString)))
+forall s (m :: * -&gt; *) a. MonadState s m =&gt; (s -&gt; a) -&gt; m a
+</span><span class="hs-identifier hs-var">gets</span></span><span> </span><span class="annot"><span class="annottext">TLSState -&gt; Maybe (GetContinuation (HandshakeType, ByteString))
+</span><a href="Network.TLS.State.html#stHandshakeRecordCont"><span class="hs-identifier hs-var hs-var">stHandshakeRecordCont</span></a></span><span>
+</span><span id="line-256"></span><span>    </span><span id="local-6989586621679220487"><span class="annot"><span class="annottext">Maybe (GetContinuation (HandshakeType13, ByteString))
+</span><a href="#local-6989586621679220487"><span class="hs-identifier hs-var">cont13</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(TLSState -&gt; Maybe (GetContinuation (HandshakeType13, ByteString)))
+-&gt; TLSSt (Maybe (GetContinuation (HandshakeType13, ByteString)))
+forall s (m :: * -&gt; *) a. MonadState s m =&gt; (s -&gt; a) -&gt; m a
+</span><span class="hs-identifier hs-var">gets</span></span><span> </span><span class="annot"><span class="annottext">TLSState -&gt; Maybe (GetContinuation (HandshakeType13, ByteString))
+</span><a href="Network.TLS.State.html#stHandshakeRecordCont13"><span class="hs-identifier hs-var hs-var">stHandshakeRecordCont13</span></a></span><span>
+</span><span id="line-257"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; TLSSt Bool
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; TLSSt Bool) -&gt; Bool -&gt; TLSSt Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Maybe (GetContinuation (HandshakeType, ByteString)) -&gt; Bool
+forall a. Maybe a -&gt; Bool
+</span><span class="hs-identifier hs-var">isNothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe (GetContinuation (HandshakeType, ByteString))
+</span><a href="#local-6989586621679220490"><span class="hs-identifier hs-var">cont</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Maybe (GetContinuation (HandshakeType13, ByteString)) -&gt; Bool
+forall a. Maybe a -&gt; Bool
+</span><span class="hs-identifier hs-var">isNothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe (GetContinuation (HandshakeType13, ByteString))
+</span><a href="#local-6989586621679220487"><span class="hs-identifier hs-var">cont13</span></a></span><span>
+</span><span id="line-258"></span><span>
+</span><span id="line-259"></span><span class="annot"><a href="Network.TLS.IO.html#checkValid"><span class="hs-identifier hs-type">checkValid</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-260"></span><span id="checkValid"><span class="annot"><span class="annottext">checkValid :: Context -&gt; IO ()
+</span><a href="Network.TLS.IO.html#checkValid"><span class="hs-identifier hs-var hs-var">checkValid</span></a></span></span><span> </span><span id="local-6989586621679220483"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220483"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-261"></span><span>    </span><span id="local-6989586621679220482"><span class="annot"><span class="annottext">Established
+</span><a href="#local-6989586621679220482"><span class="hs-identifier hs-var">established</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; IO Established
+</span><a href="Network.TLS.Context.Internal.html#ctxEstablished"><span class="hs-identifier hs-var">ctxEstablished</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220483"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-262"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; IO () -&gt; IO ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Established
+</span><a href="#local-6989586621679220482"><span class="hs-identifier hs-var">established</span></a></span><span> </span><span class="annot"><span class="annottext">Established -&gt; Established -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Established
+</span><a href="Network.TLS.Context.Internal.html#NotEstablished"><span class="hs-identifier hs-var">NotEstablished</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TLSException -&gt; IO ()
+forall e a. Exception e =&gt; e -&gt; IO a
+</span><span class="hs-identifier hs-var">throwIO</span></span><span> </span><span class="annot"><span class="annottext">TLSException
+</span><a href="Network.TLS.Struct.html#ConnectionNotEstablished"><span class="hs-identifier hs-var">ConnectionNotEstablished</span></a></span><span>
+</span><span id="line-263"></span><span>    </span><span id="local-6989586621679220479"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220479"><span class="hs-identifier hs-var">eofed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; IO Bool
+</span><a href="Network.TLS.Context.Internal.html#ctxEOF"><span class="hs-identifier hs-var">ctxEOF</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220483"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-264"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; IO () -&gt; IO ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679220479"><span class="hs-identifier hs-var">eofed</span></a></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IOError -&gt; IO ()
+forall e a. Exception e =&gt; e -&gt; IO a
+</span><span class="hs-identifier hs-var">throwIO</span></span><span> </span><span class="annot"><span class="annottext">(IOError -&gt; IO ()) -&gt; IOError -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IOErrorType -&gt; String -&gt; Maybe Handle -&gt; Maybe String -&gt; IOError
+</span><span class="hs-identifier hs-var">mkIOError</span></span><span> </span><span class="annot"><span class="annottext">IOErrorType
+</span><span class="hs-identifier hs-var">eofErrorType</span></span><span> </span><span class="annot"><span class="hs-string">&quot;data&quot;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Handle
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe String
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-265"></span><span>
+</span><span id="line-266"></span><span class="hs-comment">----------------------------------------------------------------</span><span>
+</span><span id="line-267"></span><span>
+</span><span id="line-268"></span><span class="hs-comment">-- | State monad used to group several packets together and send them on wire as</span><span>
+</span><span id="line-269"></span><span class="hs-comment">-- single flight.  When packets are loaded in the monad, they are logged</span><span>
+</span><span id="line-270"></span><span class="hs-comment">-- immediately, update the context digest and transcript, but actual sending is</span><span>
+</span><span id="line-271"></span><span class="hs-comment">-- deferred.  Packets are sent all at once when the monadic computation ends</span><span>
+</span><span id="line-272"></span><span class="hs-comment">-- (normal termination but also if interrupted by an exception).</span><span>
+</span><span id="line-273"></span><span class="hs-keyword">newtype</span><span> </span><span id="PacketFlightM"><span class="annot"><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier hs-var">PacketFlightM</span></a></span></span><span> </span><span id="local-6989586621679220661"><span class="annot"><a href="#local-6989586621679220661"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PacketFlightM"><span class="annot"><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier hs-var">PacketFlightM</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ReaderT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IORef</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220661"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-274"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679220473"><span id="local-6989586621679220475"><span class="annot"><span class="annottext">a -&gt; PacketFlightM b -&gt; PacketFlightM a
+(a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+(forall a b. (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b)
+-&gt; (forall a b. a -&gt; PacketFlightM b -&gt; PacketFlightM a)
+-&gt; Functor PacketFlightM
+forall a b. a -&gt; PacketFlightM b -&gt; PacketFlightM a
+forall a b. (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+&lt;$ :: a -&gt; PacketFlightM b -&gt; PacketFlightM a
+$c&lt;$ :: forall a b. a -&gt; PacketFlightM b -&gt; PacketFlightM a
+fmap :: (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+$cfmap :: forall a b. (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679220461"><span id="local-6989586621679220463"><span id="local-6989586621679220465"><span id="local-6989586621679220467"><span id="local-6989586621679220469"><span class="annot"><span class="annottext">Functor PacketFlightM
+a -&gt; PacketFlightM a
+Functor PacketFlightM =&gt;
+(forall a. a -&gt; PacketFlightM a)
+-&gt; (forall a b.
+    PacketFlightM (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b)
+-&gt; (forall a b c.
+    (a -&gt; b -&gt; c)
+    -&gt; PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM c)
+-&gt; (forall a b.
+    PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b)
+-&gt; (forall a b.
+    PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM a)
+-&gt; Applicative PacketFlightM
+PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM a
+PacketFlightM (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+(a -&gt; b -&gt; c)
+-&gt; PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM c
+forall a. a -&gt; PacketFlightM a
+forall a b. PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM a
+forall a b. PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+forall a b.
+PacketFlightM (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+forall a b c.
+(a -&gt; b -&gt; c)
+-&gt; PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM c
+forall (f :: * -&gt; *).
+Functor f =&gt;
+(forall a. a -&gt; f a)
+-&gt; (forall a b. f (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c)
+-&gt; (forall a b. f a -&gt; f b -&gt; f b)
+-&gt; (forall a b. f a -&gt; f b -&gt; f a)
+-&gt; Applicative f
+&lt;* :: PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM a
+$c&lt;* :: forall a b. PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM a
+*&gt; :: PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+$c*&gt; :: forall a b. PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+liftA2 :: (a -&gt; b -&gt; c)
+-&gt; PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM c
+$cliftA2 :: forall a b c.
+(a -&gt; b -&gt; c)
+-&gt; PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM c
+&lt;*&gt; :: PacketFlightM (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+$c&lt;*&gt; :: forall a b.
+PacketFlightM (a -&gt; b) -&gt; PacketFlightM a -&gt; PacketFlightM b
+pure :: a -&gt; PacketFlightM a
+$cpure :: forall a. a -&gt; PacketFlightM a
+$cp1Applicative :: Functor PacketFlightM
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679220453"><span id="local-6989586621679220455"><span id="local-6989586621679220457"><span class="annot"><span class="annottext">Applicative PacketFlightM
+a -&gt; PacketFlightM a
+Applicative PacketFlightM =&gt;
+(forall a b.
+ PacketFlightM a -&gt; (a -&gt; PacketFlightM b) -&gt; PacketFlightM b)
+-&gt; (forall a b.
+    PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b)
+-&gt; (forall a. a -&gt; PacketFlightM a)
+-&gt; Monad PacketFlightM
+PacketFlightM a -&gt; (a -&gt; PacketFlightM b) -&gt; PacketFlightM b
+PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+forall a. a -&gt; PacketFlightM a
+forall a b. PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+forall a b.
+PacketFlightM a -&gt; (a -&gt; PacketFlightM b) -&gt; PacketFlightM b
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(forall a b. m a -&gt; (a -&gt; m b) -&gt; m b)
+-&gt; (forall a b. m a -&gt; m b -&gt; m b)
+-&gt; (forall a. a -&gt; m a)
+-&gt; Monad m
+return :: a -&gt; PacketFlightM a
+$creturn :: forall a. a -&gt; PacketFlightM a
+&gt;&gt; :: PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+$c&gt;&gt; :: forall a b. PacketFlightM a -&gt; PacketFlightM b -&gt; PacketFlightM b
+&gt;&gt;= :: PacketFlightM a -&gt; (a -&gt; PacketFlightM b) -&gt; PacketFlightM b
+$c&gt;&gt;= :: forall a b.
+PacketFlightM a -&gt; (a -&gt; PacketFlightM b) -&gt; PacketFlightM b
+$cp1Monad :: Applicative PacketFlightM
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679220449"><span class="annot"><span class="annottext">Monad PacketFlightM
+Monad PacketFlightM =&gt;
+(forall a. String -&gt; PacketFlightM a) -&gt; MonadFail PacketFlightM
+String -&gt; PacketFlightM a
+forall a. String -&gt; PacketFlightM a
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall a. String -&gt; m a) -&gt; MonadFail m
+fail :: String -&gt; PacketFlightM a
+$cfail :: forall a. String -&gt; PacketFlightM a
+$cp1MonadFail :: Monad PacketFlightM
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">MonadFail</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679220445"><span class="annot"><span class="annottext">Monad PacketFlightM
+Monad PacketFlightM =&gt;
+(forall a. IO a -&gt; PacketFlightM a) -&gt; MonadIO PacketFlightM
+IO a -&gt; PacketFlightM a
+forall a. IO a -&gt; PacketFlightM a
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall a. IO a -&gt; m a) -&gt; MonadIO m
+liftIO :: IO a -&gt; PacketFlightM a
+$cliftIO :: forall a. IO a -&gt; PacketFlightM a
+$cp1MonadIO :: Monad PacketFlightM
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">MonadIO</span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-275"></span><span>
+</span><span id="line-276"></span><span id="local-6989586621679220443"><span class="annot"><a href="Network.TLS.IO.html#runPacketFlight"><span class="hs-identifier hs-type">runPacketFlight</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier hs-type">PacketFlightM</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679220443"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679220443"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-277"></span><span id="runPacketFlight"><span class="annot"><span class="annottext">runPacketFlight :: Context -&gt; PacketFlightM a -&gt; IO a
+</span><a href="Network.TLS.IO.html#runPacketFlight"><span class="hs-identifier hs-var hs-var">runPacketFlight</span></a></span></span><span> </span><span id="local-6989586621679220442"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220442"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier hs-type">PacketFlightM</span></a></span><span> </span><span id="local-6989586621679220441"><span class="annot"><span class="annottext">f :: ReaderT (IORef [ByteString]) IO a
+</span><a href="#local-6989586621679220441"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-278"></span><span>    </span><span id="local-6989586621679220440"><span class="annot"><span class="annottext">IORef [ByteString]
+</span><a href="#local-6989586621679220440"><span class="hs-identifier hs-var">ref</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; IO (IORef [ByteString])
+forall a. a -&gt; IO (IORef a)
+</span><span class="hs-identifier hs-var">newIORef</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-279"></span><span>    </span><span class="annot"><span class="annottext">IO a -&gt; IO () -&gt; IO a
+forall a b. IO a -&gt; IO b -&gt; IO a
+</span><span class="hs-identifier hs-var">finally</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ReaderT (IORef [ByteString]) IO a -&gt; IORef [ByteString] -&gt; IO a
+forall r (m :: * -&gt; *) a. ReaderT r m a -&gt; r -&gt; m a
+</span><span class="hs-identifier hs-var hs-var">runReaderT</span></span><span> </span><span class="annot"><span class="annottext">ReaderT (IORef [ByteString]) IO a
+</span><a href="#local-6989586621679220441"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">IORef [ByteString]
+</span><a href="#local-6989586621679220440"><span class="hs-identifier hs-var">ref</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO a) -&gt; IO () -&gt; IO a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-280"></span><span>        </span><span id="local-6989586621679220437"><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679220437"><span class="hs-identifier hs-var">st</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IORef [ByteString] -&gt; IO [ByteString]
+forall a. IORef a -&gt; IO a
+</span><span class="hs-identifier hs-var">readIORef</span></span><span> </span><span class="annot"><span class="annottext">IORef [ByteString]
+</span><a href="#local-6989586621679220440"><span class="hs-identifier hs-var">ref</span></a></span><span>
+</span><span id="line-281"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; IO () -&gt; IO ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[ByteString] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679220437"><span class="hs-identifier hs-var">st</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; ByteString -&gt; IO ()
+forall (m :: * -&gt; *). MonadIO m =&gt; Context -&gt; ByteString -&gt; m ()
+</span><a href="Network.TLS.IO.html#sendBytes"><span class="hs-identifier hs-var">sendBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220442"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; IO ()) -&gt; ByteString -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
+</span><span class="hs-identifier hs-var">B.concat</span></span><span> </span><span class="annot"><span class="annottext">([ByteString] -&gt; ByteString) -&gt; [ByteString] -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[ByteString] -&gt; [ByteString]
+forall a. [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">reverse</span></span><span> </span><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621679220437"><span class="hs-identifier hs-var">st</span></a></span><span>
+</span><span id="line-282"></span><span>
+</span><span id="line-283"></span><span class="annot"><a href="Network.TLS.IO.html#loadPacket13"><span class="hs-identifier hs-type">loadPacket13</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.TLS.Context.Internal.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.Struct13.html#Packet13"><span class="hs-identifier hs-type">Packet13</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier hs-type">PacketFlightM</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-284"></span><span id="loadPacket13"><span class="annot"><span class="annottext">loadPacket13 :: Context -&gt; Packet13 -&gt; PacketFlightM ()
+</span><a href="Network.TLS.IO.html#loadPacket13"><span class="hs-identifier hs-var hs-var">loadPacket13</span></a></span></span><span> </span><span id="local-6989586621679220432"><span class="annot"><span class="annottext">ctx :: Context
+</span><a href="#local-6989586621679220432"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span id="local-6989586621679220431"><span class="annot"><span class="annottext">pkt :: Packet13
+</span><a href="#local-6989586621679220431"><span class="hs-identifier hs-var">pkt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReaderT (IORef [ByteString]) IO () -&gt; PacketFlightM ()
+forall a. ReaderT (IORef [ByteString]) IO a -&gt; PacketFlightM a
+</span><a href="Network.TLS.IO.html#PacketFlightM"><span class="hs-identifier hs-var">PacketFlightM</span></a></span><span> </span><span class="annot"><span class="annottext">(ReaderT (IORef [ByteString]) IO () -&gt; PacketFlightM ())
+-&gt; ReaderT (IORef [ByteString]) IO () -&gt; PacketFlightM ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-285"></span><span>    </span><span id="local-6989586621679220430"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220430"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; Packet13 -&gt; ReaderT (IORef [ByteString]) IO ByteString
+forall (m :: * -&gt; *).
+MonadIO m =&gt;
+Context -&gt; Packet13 -&gt; m ByteString
+</span><a href="Network.TLS.IO.html#writePacketBytes13"><span class="hs-identifier hs-var">writePacketBytes13</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679220432"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">Packet13
+</span><a href="#local-6989586621679220431"><span class="hs-identifier hs-var">pkt</span></a></span><span>
+</span><span id="line-286"></span><span>    </span><span id="local-6989586621679220429"><span class="annot"><span class="annottext">IORef [ByteString]
+</span><a href="#local-6989586621679220429"><span class="hs-identifier hs-var">ref</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT (IORef [ByteString]) IO (IORef [ByteString])
+forall r (m :: * -&gt; *). MonadReader r m =&gt; m r
+</span><span class="hs-identifier hs-var">ask</span></span><span>
+</span><span id="line-287"></span><span>    </span><span class="annot"><span class="annottext">IO () -&gt; ReaderT (IORef [ByteString]) IO ()
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; ReaderT (IORef [ByteString]) IO ())
+-&gt; IO () -&gt; ReaderT (IORef [ByteString]) IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IORef [ByteString] -&gt; ([ByteString] -&gt; [ByteString]) -&gt; IO ()
+forall a. IORef a -&gt; (a -&gt; a) -&gt; IO ()
+</span><span class="hs-identifier hs-var">modifyIORef</span></span><span> </span><span class="annot"><span class="annottext">IORef [ByteString]
+</span><a href="#local-6989586621679220429"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679220430"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; [ByteString]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="hs-special">)</span><span>
+</span><span id="line-288"></span></pre></body></html>
