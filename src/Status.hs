@@ -63,6 +63,6 @@ editStatusFile newStatus newType newName =
 readStatusFile :: IO [T.Text]
 readStatusFile = do
     contents <- readCSV "status.csv"
-    if null contents
-        then pure []
-        else pure $ head contents
+    pure $ if null contents
+        then []
+        else head contents
