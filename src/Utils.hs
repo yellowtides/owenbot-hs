@@ -58,9 +58,7 @@ import           System.Process as Process
 import           System.Exit            ( ExitCode  ( ExitSuccess
                                                     , ExitFailure )
                                         )
-import           System.Posix.Process   ( getProcessID )
-
-import           UnliftIO               ( liftIO, retrySTM )
+import           UnliftIO               ( liftIO )
 
 import           Text.Regex.TDFA        ( (=~) )
 
@@ -101,7 +99,7 @@ pingRole r = "<@&" <> T.pack (show r) <> ">"
 pingAuthorOf :: Message -> T.Text
 pingAuthorOf = pingUser . messageAuthor
 
--- | `pingWithUsername` constructs a minimal `Text` pinging the the user with the given 
+-- | `pingWithUsername` constructs a minimal `Text` pinging the the user with the given
 -- username from the given guild. On failure, returns an empty Text. On multiple such
 -- users, returns an empty Text.
 pingWithUsername :: T.Text -> GuildId -> DiscordHandler T.Text
@@ -155,7 +153,7 @@ isEmojiValid emojiT gid = do
 converge :: Eq a => (a -> a) -> a -> a
 converge = (>>= (==)) >>= until
 
--- | `stripAllPings` removes all pings from a given `Text` message. 
+-- | `stripAllPings` removes all pings from a given `Text` message.
 stripAllPings :: T.Text -> T.Text
 stripAllPings = T.pack . converge stripOnePing . T.unpack
     where
