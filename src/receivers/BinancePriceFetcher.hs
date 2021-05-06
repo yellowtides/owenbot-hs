@@ -107,9 +107,9 @@ fetchTicker base quote = do
         Left err       -> Left err
         Right details -> do
             let percentChangeD = read (priceChangePercent details) :: Double
-            let curPriceD      = read (lastPrice          details) :: Double
-            let lowPriceD      = read (lowPrice           details) :: Double
-            let highPriceD     = read (highPrice          details) :: Double
+                curPriceD      = read (lastPrice          details) :: Double
+                lowPriceD      = read (lowPrice           details) :: Double
+                highPriceD     = read (highPrice          details) :: Double
             Right $ tickerAnnounce base quote percentChangeD curPriceD lowPriceD highPriceD
 
 tickerAnnounce :: String -> String -> Double -> Double -> Double -> Double -> String
@@ -131,7 +131,7 @@ handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
     announcementM <- liftIO $ fetchTicker base quote
     case announcementM of
          Left err -> do
-            liftIO (putStrLn $ "Cannot get ticker from binance: " ++ err)
+            liftIO (putStrLn $ "Cannot get ticker from Binance: " ++ err)
             sendMessageChan (messageChannel m)
                 $ owoify "Couldn't get the data! Sorry"
          Right announcement ->
