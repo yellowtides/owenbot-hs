@@ -36,10 +36,10 @@ nameRE = "(.{1," <> T.pack (show maxNameLen) <> "})"
 -- | `quoteTable` maps quotes to their text.
 quoteTable :: IO (HM.HashMap T.Text T.Text)
 quoteTable = do
-    quote2DArray <- liftIO $ readCSV quotePath
+    quote2DArray <- readCSV quotePath
     let compatibleLines = filter (\line -> length line == 2) quote2DArray
     let listMap = map (\[key, value] -> (key, value)) compatibleLines
-    pure $ HM.fromList listMap
+    return $ HM.fromList listMap
 
 storeQuote :: T.Text -> T.Text -> IO ()
 storeQuote name content = addToCSV quotePath [[name, content]]
