@@ -21,10 +21,6 @@ jobs:
       with:
         path: ~/.stack
         key: ubuntu-stack-cache-ghc-9.0.1
-
-    - name: Run all tests
-      run: |
-        stack test
     
     - name: Build Haddock documentation
       run: |
