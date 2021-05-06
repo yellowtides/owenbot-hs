@@ -34,6 +34,8 @@ module Utils ( emojiToUsableText
              , update
              , snowflakeToInt
              , moveChannel
+             , isEmojiValid
+             , isRoleInGuild
              ) where
 
 import qualified Discord.Requests as R
@@ -119,6 +121,35 @@ pingWithUsername uname gid = do
         []  -> ""
         [u] -> pingUser u
         _   -> ""
+
+-- | `isUnicodeEmoji` determines whether a provided character is a unicode emoji.
+-- https://en.wikipedia.org/wiki/Emoticons_(Unicode_block)
+isUnicodeEmoji :: Char -> Bool
+isUnicodeEmoji c = c >= '\x1F600' && c <= '\x1F64F'
+
+-- | `isRoleInGuild` determines whether a role containing the given text exists
+-- in the guild. If it does, then it returns the role's ID. Otherwise, `Nothing` is
+-- returned.
+isRoleInGuild :: T.Text -> GuildId -> DiscordHandler (Maybe RoleId)
+isRoleInGuild roleFragment gid = do
+    Right roles <- restCall $ R.GetGuildRoles gid
+    let matchingRoles = filter (\role -> roleFragment `T.isInfixOf` roleName role) roles
+    pure $ case matchingRoles of
+        []      -> Nothing
+        role:rs -> Just $ roleId role
+
+-- | `isEmojiValid` determines whether an emoji with the given text exists in the guild
+-- (or is a default emoji). Case insensitive.
+isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
+isEmojiValid emojiT gid = do
+    Right guild <- restCall $ R.GetGuild gid
+    let emojis = guildEmojis guild
+    let matchingEmojis = filter (\emoji -> emojiT == T.toUpper (emojiName emoji)) emojis
+    let isInvalid = case (emojiT, matchingEmojis) of
+            ("", _) -> True
+            (_, []) -> not $ isUnicodeEmoji (head $ T.unpack emojiT)
+            _       -> False
+    pure . not $ isInvalid
 
 -- | `converge` applies a function to a variable until the result converges.
 converge :: Eq a => (a -> a) -> a -> a
