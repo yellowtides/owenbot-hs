@@ -57,6 +57,7 @@ import           Utils                  ( sendMessageDM
 import           CSV                    ( readCSV
                                         , readSingleColCSV
                                         , addToCSV
+                                        , writeCSV
                                         )
 
 import          TemplateRE              ( accoladedArgRE
@@ -151,7 +152,11 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
             forM_ emojiList (addReaction (messageChannel newMessage) assignStationID)
 
             -- Hence, the map is fine. Write the mapping to the idAssign file :)
-            _ <- liftIO $ addToCSV assignFilePath [[T.pack $ show assignStationID, T.pack $ show assignStationID <> ".selfAssign"]]
+            let newFileName = show assignStationID <> ".selfAssign"
+            -- Add the new assign file to the CSV
+            _ <- liftIO $ addToCSV assignFilePath [[T.pack $ show assignStationID, T.pack newFileName]]
+            -- Write the mapping to the newly added CSV
+            _ <- liftIO . writeCSV newFileName $ (\(key, value) -> [key, T.pack $ show value]) <$> emojiRoleIDMap
             pure ()
 
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
