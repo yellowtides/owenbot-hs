@@ -117,7 +117,7 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
                                                           <> accoladedArgRE) $ \captures -> do
     -- Captures are [arg1, arg2, json]
     let [prependT, appendT, emojiRoleJson] = captures
-    let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe [(String, String)]
+    let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
     case emojiRoleMapM of
         Nothing           -> do
             -- LOGGING
@@ -125,7 +125,7 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
             sendMessageChan (messageChannel m) $
                 "Invalid JSON. " <> createAssignStationSyntax
         Just emojiRoleMap' -> do
-            let emojiRoleMap = bimap T.pack T.pack <$> emojiRoleMap'
+            let emojiRoleMap = bimap T.pack T.pack <$> toList emojiRoleMap'
             -- LOGGING
             _ <- liftIO $ print emojiRoleMap
             doEmojisExist <- and <$> sequence ((\(emoji, _) -> isEmojiValid emoji serverID) <$> emojiRoleMap)
