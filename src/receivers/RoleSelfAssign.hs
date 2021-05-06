@@ -14,6 +14,7 @@ import           Discord.Types          ( Emoji ( emojiName )
                                         , Message
                                         , messageId
                                         , RoleId
+                                        , Role ( roleName, roleId )
                                         , GuildId
                                         , messageChannel
                                         )
@@ -93,9 +94,13 @@ createAssignStationSyntax :: T.Text
 createAssignStationSyntax = "Syntax: `:createSelfAssign \"<prependText>\" \"<appendText>\" " <>
                             "{\"emoji1\": \"roleText1\", \"emoji2\": \"roleText2\", ...}`"
 
+roleIdToRole :: RoleId -> [Role] -> T.Text
+roleIdToRole rid roles = roleName . head $ filter (\r -> roleId r == rid) roles
+
 formatAssignStation :: T.Text -> T.Text -> [(T.Text, RoleId)] -> DiscordHandler T.Text
 formatAssignStation prependT appendT options = do
     Right roles <- restCall $ GetGuildRoles serverID
+    let roleTextOptions = (\(emojiT, roleID) -> (emojiT, roleIdToRole roleID roles)) <$> options
     let optionsT = (\(emoji, roleID) ->
                         "[" <> emoji <> "] for " <> "`[" <> T.pack (show roleID) <> "]`")
                     <$> options
