@@ -56,6 +56,7 @@ import           Utils                  ( sendMessageDM
                                         )
 import           CSV                    ( readCSV
                                         , readSingleColCSV
+                                        , addToCSV
                                         )
 
 import          TemplateRE              ( accoladedArgRE
@@ -77,6 +78,9 @@ receivers :: [Message -> DiscordHandler ()]
 receivers =
     [ createAssignStation
     ]
+
+assignFilePath :: FilePath
+assignFilePath = "idAssign.csv"
 
 serverID :: GuildId
 serverID = 768810076201811989
@@ -124,6 +128,7 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
                 "One of the emojis provided is invalid. Perhaps you used one from another server?")
             guard doEmojisExist
             -- Emojis are fine!
+
             emojiRoleIDMMap <- sequence $ (\(emoji, roleFragment) ->
                                 (emoji, ) <$> isRoleInGuild roleFragment serverID) <$> emojiRoleMap
             let doRolesExist = not $ any (\(_, roleIDM) -> isNothing roleIDM) emojiRoleIDMMap
@@ -132,12 +137,22 @@ createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spac
                 "One of the roles provided is invalid. Please make sure you use the roles' names!")
             guard doRolesExist
             -- Roles are fine!
-            -- Hence, the map is fine. Write the mapping to a file :)
+
+            -- The map below is sanitised and perfectly safe to use.
             let emojiRoleIDMap = (\(emoji, Just roleID) -> (emoji, roleID)) <$> emojiRoleIDMMap
-            let emojiList = fst <$> emojiRoleIDMap
+
+            -- Post the assignment station text.
             assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
             Right newMessage <- restCall $ CreateMessage (messageChannel m) assignStationT
-            forM_ emojiList (addReaction (messageChannel newMessage) (messageId newMessage))
+            let assignStationID = messageId newMessage
+
+            -- Make Owen react to the self-assignment station.
+            let emojiList = fst <$> emojiRoleIDMap
+            forM_ emojiList (addReaction (messageChannel newMessage) assignStationID)
+
+            -- Hence, the map is fine. Write the mapping to the idAssign file :)
+            _ <- liftIO $ addToCSV assignFilePath [[T.pack $ show assignStationID, T.pack $ show assignStationID <> ".selfAssign"]]
+            pure ()
 
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do
@@ -198,8 +213,7 @@ getRoleMap dir = do
     contents <- readCSV $ T.unpack dir
     pure $ do
         line <- contents
-        let pair = (head line, (head . tail) line)
-        pure $ fmap (read . T.unpack . T.tail) pair
+        pure (head line, (read . T.unpack . head . tail) line)
 
 -- | Given a reaction @r@, `getRoleListIndex` parses the file "src/config/idAssign".
 -- Note: this is a special file that represents a dictionary. Again, one mapping per line,
@@ -208,16 +222,16 @@ getRoleMap dir = do
 -- a config file for the message that is attached to the given reaction.
 getRoleListIndex :: ReactionInfo -> IO (Maybe T.Text)
 getRoleListIndex r = do
-    contents <- readCSV "idAssign.csv"
+    contents <- readCSV assignFilePath
     pure . lookup (reactionMessageId r) $ do
         line <- contents
         let pair = (head line, (head . tail) line)
-        pure . fmap T.tail $ first (read . T.unpack) pair
+        pure $ first (read . T.unpack) pair
 
 -- | `getAssignMessageIds` returns a list of all message Snowflakes for all messages which
 -- represent a self assignment station. All such messages are present in "src/config/idAssign",
 -- which is also the only file name that mustn't be edited.
 getAssignMessageIds :: IO [MessageId]
 getAssignMessageIds = do
-    lines <- readSingleColCSV "idAssign.csv"
-    pure $ map (read . takeWhile isDigit . T.unpack) lines
+    lines <- readCSV assignFilePath
+    pure $ map (read . takeWhile isDigit . T.unpack . head) lines
