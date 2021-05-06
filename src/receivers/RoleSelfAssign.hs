@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers ) where
 
 import           Discord                ( restCall
@@ -10,30 +11,56 @@ import           Discord.Types          ( Emoji ( emojiName )
                                                        , reactionMessageId
                                                        )
                                         , MessageId
+                                        , Message
                                         , RoleId
                                         , GuildId
+                                        , messageChannel
                                         )
 import           Discord.Requests       ( GuildRequest ( RemoveGuildMemberRole
                                                        , AddGuildMemberRole
+                                                       , GetGuildRoles
                                                        ) )
-import           Control.Monad          ( guard )
+import           Control.Monad          ( guard
+                                        , unless )
 import           UnliftIO               ( liftIO )
-import           Data.Bifunctor         ( first )
+import           Data.Bifunctor         ( first
+                                        , bimap
+                                        )
 import           Data.Char              ( isDigit )
 import           Data.Maybe             ( fromJust
                                         , isJust
+                                        , isNothing
                                         )
 import qualified Data.Text as T         ( toUpper
                                         , unpack
+                                        , pack
                                         , Text
                                         , tail
+                                        , unlines
                                         )
+import          Data.Text.Encoding      ( encodeUtf8 )
+
+import          Data.ByteString.Lazy    ( fromStrict )
 
 import           Owoifier               ( owoify )
-import           Utils                  ( sendMessageDM )
+import           Utils                  ( sendMessageDM
+                                        , newCommand
+                                        , isEmojiValid
+                                        , isRoleInGuild
+                                        , sendMessageChan
+                                        )
 import           CSV                    ( readCSV
                                         , readSingleColCSV
                                         )
+
+import          TemplateRE              ( accoladedArgRE
+                                        , quotedArgRE
+                                        , spaceRE
+                                        )
+
+import          Data.Map                ( Map
+                                        , toList )
+import          Data.Aeson              ( decode )
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = [ attemptRoleAssign ]
@@ -45,6 +72,53 @@ serverID :: GuildId
 serverID = 755798054455738489
 -- the number is the fixed Guild/Server ID.
 -- TODO: put the number in a config file.
+
+createAssignStationSyntax :: T.Text
+createAssignStationSyntax = "Syntax: `:createSelfAssign \"<prependText>\" \"<appendText>\" " <>
+                            "{\"emoji1\": \"roleText1\", \"emoji2\": \"roleText2\", ...}`"
+
+formatAssignStation :: T.Text -> T.Text -> [(T.Text, RoleId)] -> DiscordHandler T.Text
+formatAssignStation prependT appendT options = do
+    Right roles <- restCall $ GetGuildRoles serverID
+    let optionsT = (\(emoji, roleID) ->
+                        "[" <> emoji <> "] for " <> "`[" <> T.pack (show roleID) <> "]`")
+                    <$> options
+    pure $ T.unlines [
+            prependT,
+            "",
+            T.unlines optionsT,
+            "",
+            appendT
+        ]
+
+createAssignStation :: Message -> DiscordHandler ()
+createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spaceRE
+                                                          <> quotedArgRE <> spaceRE
+                                                          <> accoladedArgRE) $ \captures -> do
+    -- Captures are [arg1, arg2, json]
+    let [prependT, appendT, emojiRoleJson] = captures
+    let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
+    case emojiRoleMapM of
+        Nothing           -> sendMessageChan (messageChannel m) $
+                                "Invalid JSON. " <> createAssignStationSyntax
+        Just emojiRoleMap' -> do
+            let emojiRoleMap = bimap T.pack T.pack <$> toList emojiRoleMap'
+            doEmojisExist <- and <$> sequence ((\(emoji, _) -> isEmojiValid emoji serverID) <$> emojiRoleMap)
+            unless doEmojisExist
+                (sendMessageChan (messageChannel m)
+                "One of the emojis provided is invalid. Perhaps you used one from another server?")
+            -- Emojis are fine!
+            emojiRoleIDMMap <- sequence $ (\(emoji, roleFragment) ->
+                                (emoji, ) <$> isRoleInGuild roleFragment serverID) <$> emojiRoleMap
+            let doRolesExist = not $ any (\(_, roleIDM) -> isNothing roleIDM) emojiRoleIDMMap
+            unless doRolesExist
+                (sendMessageChan (messageChannel m)
+                "One of the roles provided is invalid. Please make sure you use the roles' names!")
+            -- Roles are fine!
+            -- Hence, the map is fine. Write the mapping to a file :)
+            let emojiRoleIDMap = (\(emoji, Just roleID) -> (emoji, roleID)) <$> emojiRoleIDMMap
+            assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
+            sendMessageChan (messageChannel m) assignStationT
 
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do

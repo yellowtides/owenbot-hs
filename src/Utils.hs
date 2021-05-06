@@ -128,12 +128,12 @@ isUnicodeEmoji :: Char -> Bool
 isUnicodeEmoji c = c >= '\x1F600' && c <= '\x1F64F'
 
 -- | `isRoleInGuild` determines whether a role containing the given text exists
--- in the guild. If it does, then it returns the role's ID. Otherwise, `Nothing` is
--- returned.
+-- in the guild (case insensitive). If it does, then it returns the role's ID.
+-- Otherwise, `Nothing` is returned.
 isRoleInGuild :: T.Text -> GuildId -> DiscordHandler (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
     Right roles <- restCall $ R.GetGuildRoles gid
-    let matchingRoles = filter (\role -> roleFragment `T.isInfixOf` roleName role) roles
+    let matchingRoles = filter (\role -> T.toUpper roleFragment `T.isInfixOf` T.toUpper (roleName role)) roles
     pure $ case matchingRoles of
         []      -> Nothing
         role:rs -> Just $ roleId role

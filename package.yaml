@@ -36,6 +36,7 @@ dependencies:
 - unix
 - unliftio
 - unordered-containers
+- containers
 - vector
 
 library:
