@@ -1,0 +1,42 @@
+name: haddock
+
+on: workflow_dispatch
+
+jobs:
+  main:
+    name: Generate Haddock documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: haskell/actions/setup@v1
+      name: Setup Stack
+      with:
+        ghc-version: '9.0.1'
+        enable-stack: true
+        stack-version: 'latest'
+        
+    - uses: actions/cache@v2
+      name: Cache ~/.stack
+      with:
+        path: ~/.stack
+        key: ubuntu-stack-cache-ghc-9.0.1
+
+    - name: Run all tests
+      run: |
+        stack test
+    
+    - name: Build Haddock documentation
+      run: |
+        stack haddock . --haddock-hyperlink-source
+
+    - name: Get path to documentation
+      id: docpath
+      run: |
+        stack path | sed -n -r 's/local-doc-root: (.*)/\1/p'
+        
+    - name: Upload to gh-pages branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ${{ steps.docpath.outputs }}
