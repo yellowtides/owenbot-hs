@@ -4,11 +4,9 @@ module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types        ( ChannelId
-                                      , Message   ( messageChannel, messageGuild, messageAuthor )
-                                      , Channel(ChannelGuildCategory
-                                                , ChannelText, channelId)
-                                      , Guild (guildId), GuildId
-                                      , OverwriteId, User (userId)
+                                      , Message   ( messageChannel, messageGuild )
+                                      , Channel ( ChannelText )
+                                      , OverwriteId
                                       )
 import           Discord              ( DiscordHandler
                                       , stopDiscord, restCall
@@ -20,6 +18,7 @@ import Data.Maybe                     ( fromJust )
 import           Control.Monad        ( unless
                                       , void
                                       )
+import           Network.BSD          ( getHostName )
 import           Text.Regex.TDFA      ( (=~) )
 
 import           System.Directory     ( doesPathExist )
@@ -33,7 +32,7 @@ import           Utils                ( newDevCommand
                                       , sendMessageChan
                                       , captureCommandOutput
                                       , devIDs
-                                      , update, sendMessageDM
+                                      , update
                                       )
 import           Status               ( updateStatus
                                       , editStatusFile
@@ -62,13 +61,13 @@ receivers =
 rstrip :: T.Text -> T.Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
-gitLocal, gitRemote, commitsAhead, uName :: IO T.Text
+-- captureCommandOutput appends newlines automatically
+gitLocal, gitRemote, commitsAhead :: IO T.Text
 gitLocal = captureCommandOutput "git rev-parse HEAD"
 gitRemote = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-parse origin/main"
 commitsAhead = captureCommandOutput "git fetch"
   >> captureCommandOutput "git rev-list --count HEAD..origin/main"
-uName = captureCommandOutput "uname -n"
 
 isGitRepo :: IO Bool
 isGitRepo = doesPathExist ".git"
@@ -87,9 +86,9 @@ sendGitInfoChan chan = do
         remote <- liftIO gitRemote
         commits <- liftIO commitsAhead
         sendMessageChan chan ("Git Status Info: \n" <>
-                              "Local at: " <> loc <>  --as all things returned by captureCommandOutput has a newline at the end
+                              "Local at: "  <> loc <>
                               "Remote at: " <> remote <>
-                              "Remote is " <> rstrip commits <> " commits ahead")
+                              "Remote is "  <> rstrip commits <> " commits ahead")
 
 sendInstanceInfo :: Message -> DiscordHandler ()
 sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
@@ -97,11 +96,11 @@ sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
 
 sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
 sendInstanceInfoChan chan = do
-    host <- liftIO uName
-    pid <- liftIO getProcessID
+    host <- liftIO getHostName
+    pid  <- liftIO getProcessID
     sendMessageChan chan ("Instance Info: \n" <>
-                          "Host: " <> host <>
-                          "Process ID: " <> T.pack (show pid))
+                          "Host: "            <> T.pack host <> "\n" <>
+                          "Process ID: "      <> T.pack (show pid))
 
 restartOwen :: Message -> DiscordHandler ()
 restartOwen m = newDevCommand m "restart" $ \_ -> do
@@ -180,8 +179,10 @@ prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
         sendMessageChan (messageChannel m)
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
     else
-        sendMessageChan (messageChannel m)
-            "Syntax: `:status <online|dnd|idle|invisible> <playing|streaming|competing|listening to> <custom text...>`"
+        sendMessageChan (messageChannel m) $
+            "Syntax: `:status <online|dnd|idle|invisible> "
+            <> "<playing|streaming|competing|listening to> "
+            <> "<custom text...>`"
 
 data Lock = Lockdown | Unlock deriving (Show, Eq)
 
@@ -229,16 +230,16 @@ lockdownChan chan guild b = do
 
 --https://discordapi.com/permissions.html#2251673153
 unlockAll :: Message -> DiscordHandler ()
-unlockAll m = newModCommand m "unlockAll" $ \captures -> do
+unlockAll m = newModCommand m "unlockAll" $ \_ -> do
     let opts = ModifyGuildRoleOpts Nothing (Just 2251673153) Nothing Nothing Nothing
-    
+
     let g = fromJust $ messageGuild m
     restCall $ ModifyGuildRole g g opts
     sendMessageChan (messageChannel m) "unlocked"
 
 -- https://discordapi.com/permissions.html#2251671105
 lockAll :: Message -> DiscordHandler ()
-lockAll m = newModCommand m "lockAll" $ \captures -> do
+lockAll m = newModCommand m "lockAll" $ \_ -> do
   let opts = ModifyGuildRoleOpts Nothing (Just 2251671105) Nothing Nothing Nothing
 
   let g = fromJust $ messageGuild m
