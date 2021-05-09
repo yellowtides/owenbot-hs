@@ -29,6 +29,7 @@ import           Discord.Types      ( ChannelId
 import           Text.Read          ( readMaybe )
 import           UnliftIO           ( liftIO )
 
+import           Owoifier           ( owoify )
 import           Utils              ( sendMessageChan
                                     , pingAuthorOf
                                     , messageFromReaction
@@ -123,17 +124,19 @@ createHallOfFameEmbed m = do
     messLinkM <- getMessageLink m
     case messLinkM of
         Right messLink -> do
-            let authorName = ""
-            let authorUrl = ""
-            let authorIcon = Nothing
-            let embedTitle = "👑 best of ouw buwwshit"
-            let embedUrl = ""
-            let embedThumbnail = Nothing
-            let embedDescription = createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
-            let embedFields = []
-            let embedImage = Just (CreateEmbedImageUrl $ getImageFromMessage m)
-            let embedFooterText = getTimestampFromMessage m
-            let embedFooterIcon = Nothing
+            let authorName       = ""
+                authorUrl        = ""
+                authorIcon       = Nothing
+                embedTitle       = "👑 best of ouw buwwshit"
+                embedUrl         = ""
+                embedThumbnail   = Nothing
+                embedDescription = createDescription m
+                        <> "\n\n[Original Message](" <> messLink <> ")"
+                embedFields      = []
+                embedImage       = Just $
+                        CreateEmbedImageUrl $ getImageFromMessage m
+                embedFooterText  = getTimestampFromMessage m
+                embedFooterIcon  = Nothing
             pure $ Right (CreateEmbed authorName
                                       authorUrl
                                       authorIcon
@@ -154,13 +157,13 @@ reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
         Nothing -> do
             i <- liftIO readLimit
             sendMessageChan (messageChannel m)
-                $ "Current limit is at " <> T.pack (show i)
+                $ owoify $ "Current limit is at " <> T.pack (show i)
         Just i -> do
-            liftIO $ editLimit i
-            sendMessageChan (messageChannel m) "New Limit Set"
+            liftIO $ setLimit i
+            sendMessageChan (messageChannel m) $ owoify "New Limit Set"
 
-editLimit :: Int -> IO ()
-editLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]
+setLimit :: Int -> IO ()
+setLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]
 
 readLimit :: IO Int
 readLimit = do

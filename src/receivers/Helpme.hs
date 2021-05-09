@@ -19,6 +19,4 @@ receivers = [ sendHelpDM ]
 sendHelpDM :: Message -> DiscordHandler ()
 sendHelpDM m = newCommand m "helpme" $ \_ ->
     liftIO (TIO.readFile "./src/assets/help.txt")
-        >>= sendMessageDM (userId author) . owoify
-  where
-    author = messageAuthor m
+        >>= sendMessageDM (userId $ messageAuthor m) . owoify

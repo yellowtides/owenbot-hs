@@ -9,7 +9,8 @@ import           Discord                ( sendCommand
                                         )
 import           UnliftIO               ( liftIO )
 import           CSV                    ( readCSV
-                                        , writeCSV )
+                                        , writeCSV
+                                        )
 
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'
@@ -63,6 +64,6 @@ editStatusFile newStatus newType newName =
 readStatusFile :: IO [T.Text]
 readStatusFile = do
     contents <- readCSV "status.csv"
-    if null contents
-        then pure []
-        else pure $ head contents
+    pure $ if null contents
+        then []
+        else head contents

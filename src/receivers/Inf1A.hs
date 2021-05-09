@@ -33,5 +33,5 @@ sendBool     m = sendAsset m "bool(ean)?"    "literally-satan.png"    "cl/Bool.p
 sendTextbook m = sendAsset m inf1atextbookRE "the-holy-bible-2.png"   "textbooks/i1a-textbook.pdf"
 
 sendHDoc :: Message -> DiscordHandler ()
-sendHDoc m = newCommand m "doc ([a-z']+)" $ \captures ->
+sendHDoc m = newCommand m "doc ([a-z']+)" $ \_ ->
     sendMessageChan (messageChannel m) "not yet implemented :^)"

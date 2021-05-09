@@ -8,6 +8,9 @@ module TemplateRE
     , defRE
     , lemRE
     , textbookRE
+    , accoladedArgRE
+    , quotedArgRE
+    , spaceRE
     ) where
 
 import qualified Data.Text as T
@@ -29,3 +32,12 @@ thmRE, defRE, lemRE :: T.Text
 thmRE = "th(eore)?m *"
 defRE = "def(inition)? *"
 lemRE = "lem(ma)? *"
+
+quotedArgRE :: T.Text
+quotedArgRE = "\"(.*)\""
+
+accoladedArgRE :: T.Text
+accoladedArgRE  = "({.*})"
+
+spaceRE :: T.Text
+spaceRE = " +"

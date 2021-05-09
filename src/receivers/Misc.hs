@@ -10,8 +10,8 @@ import qualified Data.Text as T
 import           UnliftIO               ( liftIO )
 import           Text.Regex.TDFA        ( (=~) )
 import qualified System.Process as SP
-import           Control.Monad          ( when )
-import           System.Environment     ( getEnv )
+import           Control.Monad          ( when
+                                        , unless )
 import           System.Random          ( randomR
                                         , getStdRandom
                                         )
@@ -26,8 +26,6 @@ import           Utils                  ( sendMessageChan
                                         , assetDir
                                         )
 import           Owoifier               ( owoify )
-import           BinancePriceFetcher    ( fetchTicker
-                                        , fetchADADetails)
 
 commandReceivers :: [Message -> DiscordHandler ()]
 commandReceivers =
@@ -49,7 +47,7 @@ reactionReceivers =
 
 -- TODO: put these in config so they can be changed at runtime
 owoifyChance, dadJokeChance :: Int
-owoifyChance = 500
+owoifyChance  = 500
 dadJokeChance = 20
 
 owoifiedEmoji :: T.Text
@@ -88,9 +86,7 @@ forceOwoify r = do
             let fulfillCond = \x ->
                     T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
             -- If all goes good, add a checkmark and send an owoification reply
-            if any blockCond reactions || not (any fulfillCond reactions) then
-                pure ()
-            else do
+            unless (any blockCond reactions || not (any fulfillCond reactions)) $ do
                 addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
                 -- Send reply without pinging (this isn't as ping-worthy as random trigger)
                 sendReply mess False $ owoify (messageText mess)
@@ -99,7 +95,7 @@ forceOwoify r = do
 godIsDead :: Message -> DiscordHandler ()
 godIsDead m = do
     let isMatch = messageText m =~= "[gG]od *[iI]s *[dD]ead"
-    when isMatch $ liftIO (TIO.readFile "./src/assets/nietzsche.txt")
+    when isMatch $ liftIO (TIO.readFile $ assetDir <> "nietzsche.txt")
             >>= sendMessageChan (messageChannel m) . owoify
 
 thatcherRE :: T.Text
@@ -113,13 +109,13 @@ thatcherIsDead m = when (messageText m =~= (thatcherRE <> "[Dd]ead"))
 thatcherIsAlive :: Message -> DiscordHandler ()
 thatcherIsAlive m = when (messageText m =~= (thatcherRE <> "[Aa]live"))
         $ sendFileChan (messageChannel m)
-            "god_help_us_all.mp4" "./src/assets/god_help_us_all.mp4"
+            "god_help_us_all.mp4" $ assetDir <> "god_help_us_all.mp4"
 
 dadJokeIfPossible :: Message -> DiscordHandler ()
 dadJokeIfPossible m = do
     let name = attemptParseDadJoke (messageText m)
     when (M.isJust name) $ do
-        let Just n = name
+        let n = M.fromJust name
         r <- liftIO $ roll dadJokeChance
         when (r == 1 && T.length n >= 3)
             $ sendMessageChan (messageChannel m)
@@ -152,15 +148,13 @@ fortuneCowFiles =
     , "moofasa"
     , "three-eyes"
     , "www"
-    ] 
+    ]
 
 fortuneCow :: IO String
 fortuneCow = do
     f <- T.pack <$> fortune
-    i <- getStdRandom $ randomR (0, length fortuneCowFiles)
-    file <-
-        if i == 0 then do
-            home <- getEnv "HOME"
-            pure $ home <> "/owenbot-hs/src/assets/freddy.cow"
-        else pure $ head $ drop (i - 1) fortuneCowFiles
+    roll <- roll $ length fortuneCowFiles
+    let file = if roll == 1
+        then assetDir <> "freddy.cow"
+        else fortuneCowFiles !! max 0 roll
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
