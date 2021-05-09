@@ -53,7 +53,13 @@ fetch :: FilePath -> Text -> IO Text
 store :: FilePath -> Text -> Text -> IO ()
 
 module Owoifier
+
+-- | This takes a text and returns an owofied text e.g. "North
+--   `<tt>`West`</tt>`" -&gt; "Nyowth `<tt>`West`</tt>` owo"
 owoify :: Text -> Text
+
+-- | Maps the function that actually owofies the text over each character
+--   of the string
 weakOwoify :: Text -> Text
 
 module Status
