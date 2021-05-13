@@ -22,7 +22,8 @@ import           Discord.Requests       ( GuildRequest ( RemoveGuildMemberRole
                                                        , AddGuildMemberRole
                                                        , GetGuildRoles
                                                        )
-                                        , ChannelRequest ( CreateMessage )
+                                        , ChannelRequest ( CreateMessage
+                                                         , EditMessage )
                                         )
 import           Control.Monad          ( guard
                                         , unless
@@ -80,6 +81,7 @@ reactionRemReceivers = [ handleRoleRemove ]
 receivers :: [Message -> DiscordHandler ()]
 receivers =
     [ createAssignStation
+    , addRoleToStation
     ]
 
 assignFilePath :: FilePath
@@ -94,6 +96,67 @@ serverID = 755798054455738489
 createAssignStationSyntax :: T.Text
 createAssignStationSyntax = "Syntax: `:createSelfAssign \"<prependText>\" \"<appendText>\" " <>
                             "{\"emoji1\": \"roleText1\", \"emoji2\": \"roleText2\", ...}`"
+
+addRoleToStationSyntax :: T.Text
+addRoleToStationSyntax = "Syntax: `:addRoleToStation \"<prependText>\" \"<appendText>\" " <>
+                            "\"<stationID>\" \"<channelID>\" \"<emoji>\" \"<roleText>\"`"
+
+-- | Warning: Unsafe, as it does not cover cases where the matrix is not two-dimensional.
+twoDimMatrixToMap :: [[a]] -> [(a, a)]
+twoDimMatrixToMap = map (\[x, y] -> (x, y))
+
+mapToMatrix :: [(a, a)] -> [[a]]
+mapToMatrix = map (\(x, y) -> [x, y])
+
+addRoleToStation :: Message -> DiscordHandler ()
+addRoleToStation m = newModCommand m ("addRoleToStation" <> spaceRE             -- command name
+                                          <> quotedArgRE <> spaceRE             -- prepended text
+                                          <> quotedArgRE <> spaceRE             -- appended text
+                                          <> quotedArgRE <> spaceRE             -- station ID
+                                          <> quotedArgRE <> spaceRE             -- channel ID
+                                          <> quotedArgRE <> spaceRE             -- emoji
+                                          <> quotedArgRE) $ \captures -> do     -- role
+    let [prependT, appendT, stationID, channelID, emoji, role] = captures
+    doesEmojiExist <- isEmojiValid emoji serverID
+    unless doesEmojiExist
+        (sendMessageChan (messageChannel m)
+        "The emoji provided is invalid. Perhaps you used one from another server?")
+    guard doesEmojiExist
+    -- Emoji's fine!
+
+    roleIDM <- isRoleInGuild role serverID
+    let doesRoleExist = isJust roleIDM
+    unless doesRoleExist
+        (sendMessageChan (messageChannel m)
+        "The role provided is invalid. Please make sure you use the role's name!")
+    guard doesRoleExist
+    -- Role's fine!
+
+    let (stationIDStr, channelIDStr) = (T.unpack stationID, T.unpack channelID)
+    let (stationIDNum, channelIDNum) = (read stationIDStr, read channelIDStr)
+    let Just roleID = roleIDM
+    let assignFilePath = getAssignFile' stationIDStr
+
+    -- The old emote role mapping, read from the CSV.
+    roleEmoteMatrix <- liftIO $ readCSV assignFilePath
+    -- The new emote role map! Cons the emoji and role at the front.
+    let emojiRoleIDMap = (emoji, roleID) : map (read . T.unpack <$>) (twoDimMatrixToMap roleEmoteMatrix)
+
+    -- Edit said message to the new one.
+    assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
+    _ <- restCall $ EditMessage (channelIDNum, stationIDNum) assignStationT Nothing
+
+    -- Write the new mapping to the old CSV
+    _ <- liftIO . writeCSV assignFilePath . mapToMatrix $ fmap (T.pack . show) <$> emojiRoleIDMap
+
+    -- React!
+    addReaction channelIDNum stationIDNum emoji
+
+getAssignFile :: MessageId -> FilePath
+getAssignFile = getAssignFile' . show
+
+getAssignFile' :: String -> FilePath
+getAssignFile' mid = mid <> ".selfAssign"
 
 roleIdToRole :: RoleId -> [Role] -> T.Text
 roleIdToRole rid roles = roleName . head $ filter (\r -> roleId r == rid) roles
@@ -113,22 +176,19 @@ formatAssignStation prependT appendT options = do
         ]
 
 createAssignStation :: Message -> DiscordHandler ()
-createAssignStation m = newModCommand m ("createSelfAssign " <> quotedArgRE <> spaceRE
-                                                             <> quotedArgRE <> spaceRE
-                                                             <> accoladedArgRE) $ \captures -> do
+createAssignStation m = newModCommand m ("createSelfAssign" <> spaceRE                  -- command name
+                                             <> quotedArgRE <> spaceRE                  -- prepended text
+                                             <> quotedArgRE <> spaceRE                  -- appended text
+                                             <> accoladedArgRE) $ \captures -> do       -- json
     -- Captures are [arg1, arg2, json]
     let [prependT, appendT, emojiRoleJson] = captures
     let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
     case emojiRoleMapM of
         Nothing           -> do
-            -- LOGGING
-            _ <- liftIO $ print emojiRoleJson
             sendMessageChan (messageChannel m) $
                 "Invalid JSON. " <> createAssignStationSyntax
         Just emojiRoleMap' -> do
             let emojiRoleMap = bimap T.pack T.pack <$> toList emojiRoleMap'
-            -- LOGGING
-            _ <- liftIO $ print emojiRoleMap
             doEmojisExist <- and <$> sequence ((\(emoji, _) -> isEmojiValid emoji serverID) <$> emojiRoleMap)
             unless doEmojisExist
                 (sendMessageChan (messageChannel m)
@@ -147,23 +207,27 @@ createAssignStation m = newModCommand m ("createSelfAssign " <> quotedArgRE <> s
 
             -- The map below is sanitised and perfectly safe to use.
             let emojiRoleIDMap = (\(emoji, Just roleID) -> (emoji, roleID)) <$> emojiRoleIDMMap
+            handleRoleMapping prependT appendT m emojiRoleIDMap
 
-            -- Post the assignment station text.
-            assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
-            Right newMessage <- restCall $ CreateMessage (messageChannel m) assignStationT
-            let assignStationID = messageId newMessage
+handleRoleMapping :: T.Text -> T.Text -> Message -> [(T.Text, RoleId)] -> DiscordHandler ()
+handleRoleMapping prependT appendT m emojiRoleIDMap = do
+    -- Post the assignment station text.
+    assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
+    Right newMessage <- restCall $ CreateMessage (messageChannel m) assignStationT
+    let assignStationID = messageId newMessage
 
-            -- Make Owen react to the self-assignment station.
-            let emojiList = fst <$> emojiRoleIDMap
-            forM_ emojiList (addReaction (messageChannel newMessage) assignStationID)
+    -- Hence, the map is fine. Write the mapping to the idAssign file :)
+    let newFileName = getAssignFile assignStationID
+    -- Write the mapping to the newly added CSV
+    _ <- liftIO . writeCSV newFileName $ (\(key, value) -> [key, T.pack $ show value]) <$> emojiRoleIDMap
 
-            -- Hence, the map is fine. Write the mapping to the idAssign file :)
-            let newFileName = show assignStationID <> ".selfAssign"
-            -- Add the new assign file to the CSV
-            _ <- liftIO $ addToCSV assignFilePath [[T.pack $ show assignStationID, T.pack newFileName]]
-            -- Write the mapping to the newly added CSV
-            _ <- liftIO . writeCSV newFileName $ (\(key, value) -> [key, T.pack $ show value]) <$> emojiRoleIDMap
-            pure ()
+    -- Make Owen react to the self-assignment station.
+    let emojiList = fst <$> emojiRoleIDMap
+    forM_ emojiList (addReaction (messageChannel newMessage) assignStationID)
+
+    -- Add the new assign file to the CSV
+    _ <- liftIO $ addToCSV assignFilePath [[T.pack $ show assignStationID, T.pack newFileName]]
+    pure ()
 
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do
