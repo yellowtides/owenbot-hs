@@ -50,6 +50,7 @@ import          Data.ByteString.Lazy    ( fromStrict )
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageDM
                                         , newCommand
+                                        , newModCommand
                                         , isEmojiValid
                                         , isRoleInGuild
                                         , sendMessageChan
@@ -112,9 +113,9 @@ formatAssignStation prependT appendT options = do
         ]
 
 createAssignStation :: Message -> DiscordHandler ()
-createAssignStation m = newCommand m ("createSelfAssign " <> quotedArgRE <> spaceRE
-                                                          <> quotedArgRE <> spaceRE
-                                                          <> accoladedArgRE) $ \captures -> do
+createAssignStation m = newModCommand m ("createSelfAssign " <> quotedArgRE <> spaceRE
+                                                             <> quotedArgRE <> spaceRE
+                                                             <> accoladedArgRE) $ \captures -> do
     -- Captures are [arg1, arg2, json]
     let [prependT, appendT, emojiRoleJson] = captures
     let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
