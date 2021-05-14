@@ -42,7 +42,6 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 extra-deps:
-  - hoogle-5.0.18.1
   - discord-haskell-1.8.6
   # - git: https://github.com/yutotakano/discord-haskell.git
   #   commit: 3c8af40b7c15715a8892395b3a9a6faf1423e604

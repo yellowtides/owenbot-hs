@@ -61,7 +61,6 @@ library
     , directory
     , discord-haskell
     , hashable
-    , hoogle
     , http-conduit
     , network-bsd
     , parsec
@@ -95,7 +94,6 @@ executable owenbot-exe
     , directory
     , discord-haskell
     , hashable
-    , hoogle
     , http-conduit
     , network-bsd
     , owenbot
@@ -134,7 +132,6 @@ test-suite owenbot-test
     , directory
     , discord-haskell
     , hashable
-    , hoogle
     , hspec
     , http-conduit
     , network-bsd
