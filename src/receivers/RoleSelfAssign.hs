@@ -109,11 +109,11 @@ addRoleToStationSyntax = "Syntax: `:addRoleToStation \"<prependText>\" \"<append
                             "\"<stationID>\" \"<channelID>\" \"<emoji>\" \"<roleText>\"`"
 
 -- | Warning: Unsafe, as it does not cover cases where the matrix is not two-dimensional.
-twoDimMatrixToMap :: [[a]] -> [(a, a)]
-twoDimMatrixToMap = map (\[x, y] -> (x, y))
+twoDimMatrixToMap :: Functor f => f [a] -> f (a, a)
+twoDimMatrixToMap = fmap (\[x, y] -> (x, y))
 
-mapToMatrix :: [(a, a)] -> [[a]]
-mapToMatrix = map (\(x, y) -> [x, y])
+mapToMatrix :: Functor f => f (a, a) -> f [a]
+mapToMatrix = fmap (\(x, y) -> [x, y])
 
 addRoleToStation :: Message -> DiscordHandler ()
 addRoleToStation m = newModCommand m ("addRoleToStation" <> spaceRE             -- command name
