@@ -72,6 +72,13 @@ import          Data.Map                ( Map
                                         , toList )
 import          Data.Aeson              ( decode )
 
+type EmojiRoleMap = [(String, RoleId)]
+-- emoji --> snowflake.
+-- Note: Only supports default emojis.
+
+type RoleStation = [(String, EmojiRoleMap, String)]
+-- Prepended text, role mapping, appended text.
+
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = [ attemptRoleAssign ]
 
@@ -102,11 +109,11 @@ addRoleToStationSyntax = "Syntax: `:addRoleToStation \"<prependText>\" \"<append
                             "\"<stationID>\" \"<channelID>\" \"<emoji>\" \"<roleText>\"`"
 
 -- | Warning: Unsafe, as it does not cover cases where the matrix is not two-dimensional.
-twoDimMatrixToMap :: [[a]] -> [(a, a)]
-twoDimMatrixToMap = map (\[x, y] -> (x, y))
+twoDimMatrixToMap :: Functor f => f [a] -> f (a, a)
+twoDimMatrixToMap = fmap (\[x, y] -> (x, y))
 
-mapToMatrix :: [(a, a)] -> [[a]]
-mapToMatrix = map (\(x, y) -> [x, y])
+mapToMatrix :: Functor f => f (a, a) -> f [a]
+mapToMatrix = fmap (\(x, y) -> [x, y])
 
 addRoleToStation :: Message -> DiscordHandler ()
 addRoleToStation m = newModCommand m ("addRoleToStation" <> spaceRE             -- command name
@@ -175,6 +182,9 @@ formatAssignStation prependT appendT options = do
             appendT
         ]
 
+jsonTxtToMap :: T.Text -> Maybe (Map String String)
+jsonTxtToMap = decode . fromStrict . encodeUtf8
+
 createAssignStation :: Message -> DiscordHandler ()
 createAssignStation m = newModCommand m ("createSelfAssign" <> spaceRE                  -- command name
                                              <> quotedArgRE <> spaceRE                  -- prepended text
@@ -182,7 +192,7 @@ createAssignStation m = newModCommand m ("createSelfAssign" <> spaceRE          
                                              <> accoladedArgRE) $ \captures -> do       -- json
     -- Captures are [arg1, arg2, json]
     let [prependT, appendT, emojiRoleJson] = captures
-    let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
+    let emojiRoleMapM = jsonTxtToMap emojiRoleJson
     case emojiRoleMapM of
         Nothing           -> do
             sendMessageChan (messageChannel m) $

@@ -142,7 +142,9 @@ isRoleInGuild roleFragment gid = do
         []      -> Nothing
         role:rs -> Just $ roleId role
 
--- | `discordEmojiTextToId` takes a Discord <::0-9> formatted emoji string and extracts the ID.
+-- | `discordEmojiTextToId` takes a Text ending in a Discord <::0-9> formatted emoji string
+-- and extracts the ID. On unsuccessful extraction, returns 0. Given Text can be trailed by
+-- spaces.
 discordEmojiTextToId :: T.Text -> EmojiId
 discordEmojiTextToId emojiT
     = case T.unpack . T.reverse . T.takeWhile isDigit . T.drop 1
@@ -156,8 +158,8 @@ isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
     Right guild <- restCall $ R.GetGuild gid
     let emojis = guildEmojis guild
-    let emojiTID = discordEmojiTextToId emojiT
-    let matchingEmojis = filter (\emoji -> emojiTID == fromJust (emojiId emoji)) emojis
+    let emojiID = discordEmojiTextToId emojiT
+    let matchingEmojis = filter ((emojiID ==) . fromJust . emojiId) emojis
     -- _ <- liftIO $ print matchingEmojis
     -- _ <- liftIO $ print emojiTID
     let isInvalid = case (emojiT, matchingEmojis) of
