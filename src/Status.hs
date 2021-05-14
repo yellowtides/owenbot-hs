@@ -9,7 +9,8 @@ import           Discord                ( sendCommand
                                         )
 import           UnliftIO               ( liftIO )
 import           CSV                    ( readCSV
-                                        , writeCSV )
+                                        , writeCSV
+                                        )
 
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'

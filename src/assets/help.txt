@@ -15,7 +15,7 @@ here's a lil list of **commands** that ou can use on me:
 # Fun
 
 [0] :fortune                            # How are chu feeling today?
-[1] :ada24h                             # to see philcoin
+[1] :ada                                # to see philcoin
 [2] :minecraft                          # to see minecraft
 [3] :binance {ticker} {ticker}          # to see some non-phil coin stats
 [4] :quote                              # to see a quote
@@ -23,12 +23,14 @@ here's a lil list of **commands** that ou can use on me:
 
 # Admin
 
-[0] :reactLimit   {number}              # you won't be able to use them
+[0] :reactLimit   {number}              # you will not be able to use them
 [1] :instance                           # but these are here because the
-[2] :repo                               # devs constantly forget them
+[2] :repo                               # devs/mods constantly forget them
 [3] :devs         add|remove {id}       #
 [4] :status                             #
 [5] :rmquote "name"                     #
+[6] :createSelfAssign "prependText"     # generates a new role self-assig-
+    "appendText" "emote->role json"     # ning station
 
 by the way, i am now [open-source](https://github.com/yellowtides/owenbot-hs)!1!
 ..maybe you can spot some secret features? :o

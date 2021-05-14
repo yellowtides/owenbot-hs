@@ -38,6 +38,9 @@ dependencies:
 - unix
 - unliftio
 - unordered-containers
+- containers
+- network
+- network-bsd
 - vector
 
 library:

@@ -140,7 +140,7 @@ handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
                                  <> announcement
 
 handleAda24h :: Message -> DiscordHandler ()
-handleAda24h m = newCommand m "ada24h" $ \_ -> do
+handleAda24h m = newCommand m "ada(24h)?" $ \_ -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
         Left err -> do
