@@ -5,6 +5,7 @@
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
 module Utils ( emojiToUsableText
+             , respond
              , sendMessageChan
              , sendReply
              , sendMessageChanEmbed
@@ -212,6 +213,9 @@ emojiToUsableText r = do
     case emojiId r of
         Nothing -> name
         Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
+
+respond :: Message -> T.Text -> DiscordHandler ()
+respond = sendMessageChan . messageChannel
 
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
