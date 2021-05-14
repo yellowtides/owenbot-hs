@@ -12,4 +12,4 @@ src/config/status.conf
 .DS_Store
 .owen
 .vscode
-.stack.yaml.lock
+stack.yaml.lock
