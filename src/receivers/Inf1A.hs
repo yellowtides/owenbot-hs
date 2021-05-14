@@ -16,7 +16,6 @@ receivers :: [Message -> DiscordHandler ()]
 receivers =
     [ sendBool
     , sendSyl
-    , sendHDoc
     , sendTextbook
     ]
 
@@ -31,7 +30,3 @@ sendSyl, sendBool, sendTextbook :: Message -> DiscordHandler ()
 sendSyl      m = sendAsset m "syl(logisms)?" "id-smash-aristotle.png" "cl/syllogisms.png"
 sendBool     m = sendAsset m "bool(ean)?"    "literally-satan.png"    "cl/Bool.png"
 sendTextbook m = sendAsset m inf1atextbookRE "the-holy-bible-2.png"   "textbooks/i1a-textbook.pdf"
-
-sendHDoc :: Message -> DiscordHandler ()
-sendHDoc m = newCommand m "doc ([a-z']+)" $ \_ ->
-    sendMessageChan (messageChannel m) "not yet implemented :^)"

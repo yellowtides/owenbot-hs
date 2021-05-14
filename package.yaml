@@ -22,9 +22,11 @@ dependencies:
 - base >= 4.7 && < 5
 - bytestring
 - cassava
+- containers
 - discord-haskell
 - directory
 - hashable
+- hoogle
 - http-conduit
 - network-bsd
 - parsec
@@ -38,9 +40,7 @@ dependencies:
 - unix
 - unliftio
 - unordered-containers
-- containers
-- network
-- network-bsd
+- uri-encode
 - vector
 
 library:
