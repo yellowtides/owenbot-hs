@@ -26,7 +26,9 @@ dependencies:
 - directory
 - hashable
 - http-conduit
+- network-bsd
 - parsec
+- pointfree
 - process
 - random
 - regex-tdfa

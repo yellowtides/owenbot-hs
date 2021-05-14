@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 95838efa57328f18b506d22591086dcde2a461e4469b7be3451c3243a0f53365
+-- hash: f601ed44e46ee219577a4dbb8c6824a947de1f4013347c15a7d95ddbe409e117
 
 name:           owenbot
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       BinancePriceFetcher
       Calc
       HallOfFame
+      Haskell
       Helpme
       ILA
       Inf1A
@@ -62,7 +63,9 @@ library
     , discord-haskell
     , hashable
     , http-conduit
+    , network-bsd
     , parsec
+    , pointfree
     , process
     , random
     , regex-tdfa
@@ -91,8 +94,10 @@ executable owenbot-exe
     , discord-haskell
     , hashable
     , http-conduit
+    , network-bsd
     , owenbot
     , parsec
+    , pointfree
     , process
     , random
     , regex-tdfa
@@ -126,8 +131,10 @@ test-suite owenbot-test
     , hashable
     , hspec
     , http-conduit
+    , network-bsd
     , owenbot
     , parsec
+    , pointfree
     , process
     , quickcheck-instances
     , random

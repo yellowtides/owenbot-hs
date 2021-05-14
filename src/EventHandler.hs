@@ -21,6 +21,7 @@ import qualified BinancePriceFetcher
 import qualified Misc
 import qualified Calc
 import qualified Helpme
+import qualified Haskell
 import qualified ILA
 import qualified Inf1A
 import qualified HallOfFame
@@ -38,6 +39,7 @@ commandReceivers = concat
      , Misc.commandReceivers
      , Calc.receivers
      , Helpme.receivers
+     , Haskell.receivers
      , ILA.receivers
      , Inf1A.receivers
      , HallOfFame.messageReceivers
