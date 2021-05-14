@@ -26,6 +26,7 @@ import           Utils                   ( respond
 receivers =
     [ pointfree
     , doc
+    , hoogle
     ]
 
 -- | Maximum number of items to return from a Hoogle search
@@ -84,24 +85,34 @@ pointfree m = newCommand m "pf (.*)" $ \(code:_) ->
           -- TODO: Strip double back-ticks to allow nicely formatted input
 
 
--- | Given a function name, this fetches the docs from Hoogle.
-getDocs :: T.Text -> IO HoogleResp
-getDocs name = do
-    resp <- simpleHttp $ hoogleURL 1 <> encode (T.unpack name)
+-- | Given a function name/type sig, this fetches the information from Hoogle.
+getHoogle :: Int -> T.Text -> IO [HoogleResp]
+getHoogle n name = do
+    resp <- simpleHttp $ hoogleURL n <> encode (T.unpack name)
     return $ case eitherDecode resp of
-         Left  e   -> error $ "[WARN] Malformed Hoogle response: " <> e
-         Right [r] -> r
-         Right _   -> error $ T.unpack $ "[WARN] Invalid Hoogle name: " <> name
+         Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e
+         Right r -> r
+
+-- | Pretty-prints the function name and its module
+formatHoogleEntry :: HoogleResp -> T.Text
+formatHoogleEntry r = T.pack $ inlineCode (item r) <> " from module "
+                            <> inlineCode (name $ mdl r)
+
+-- | Searches hoogle for matching entries
+hoogle :: Message -> DiscordHandler ()
+hoogle m = newCommand m "hoogle (.*)" $ \(name:_) -> do
+    hdocs <- liftIO $ getHoogle maxHoogleItems name
+    respond m $ T.intercalate "\n" $ map formatHoogleEntry hdocs
+
 
 -- | Formats a 'HoogleResp' into a nice markdown representation
-formatDocs :: HoogleResp -> T.Text
-formatDocs r = T.pack $ inlineCode (item r) <> " from module "
-                   <> inlineCode (name $ mdl r) <> "\n"
-                   <> codeblock "hs" (docs r)
+formatDoc :: HoogleResp -> T.Text
+formatDoc r = formatHoogleEntry r <> "\n"
+               <> T.pack (codeblock "hs" $ docs r)
 
 -- | Gives the documentation for a given Haskell function (from online Hoogle)
 -- >>> :doc map
 doc :: Message -> DiscordHandler ()
 doc m = newCommand m "doc (.*)" $ \(name:_) -> do
-    hdoc <- liftIO $ getDocs name
-    respond m $ formatDocs hdoc
+    hdoc <- liftIO $ getHoogle 1 name
+    respond m $ formatDoc $ head hdoc
