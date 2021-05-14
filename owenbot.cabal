@@ -3,12 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
-<<<<<<< HEAD
--- hash: f601ed44e46ee219577a4dbb8c6824a947de1f4013347c15a7d95ddbe409e117
-=======
--- hash: 39a6a466d10eeba90d9d4ab858103678b00c4c5bf8cdce38967af45fcad7fa0b
->>>>>>> 9592772ddb9760a16def01d1d19cd9aa45599774
 
 name:           owenbot
 version:        0.1.0.0
@@ -68,10 +62,7 @@ library
     , discord-haskell
     , hashable
     , http-conduit
-<<<<<<< HEAD
-=======
     , network
->>>>>>> 9592772ddb9760a16def01d1d19cd9aa45599774
     , network-bsd
     , parsec
     , pointfree
@@ -104,10 +95,7 @@ executable owenbot-exe
     , discord-haskell
     , hashable
     , http-conduit
-<<<<<<< HEAD
-=======
     , network
->>>>>>> 9592772ddb9760a16def01d1d19cd9aa45599774
     , network-bsd
     , owenbot
     , parsec
@@ -146,10 +134,7 @@ test-suite owenbot-test
     , hashable
     , hspec
     , http-conduit
-<<<<<<< HEAD
-=======
     , network
->>>>>>> 9592772ddb9760a16def01d1d19cd9aa45599774
     , network-bsd
     , owenbot
     , parsec
