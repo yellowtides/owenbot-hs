@@ -182,6 +182,9 @@ formatAssignStation prependT appendT options = do
             appendT
         ]
 
+jsonTxtToMap :: T.Text -> Maybe (Map String String)
+jsonTxtToMap = decode . fromStrict . encodeUtf8
+
 createAssignStation :: Message -> DiscordHandler ()
 createAssignStation m = newModCommand m ("createSelfAssign" <> spaceRE                  -- command name
                                              <> quotedArgRE <> spaceRE                  -- prepended text
@@ -189,7 +192,7 @@ createAssignStation m = newModCommand m ("createSelfAssign" <> spaceRE          
                                              <> accoladedArgRE) $ \captures -> do       -- json
     -- Captures are [arg1, arg2, json]
     let [prependT, appendT, emojiRoleJson] = captures
-    let emojiRoleMapM = decode . fromStrict $ encodeUtf8 emojiRoleJson :: Maybe (Map String String)
+    let emojiRoleMapM = jsonTxtToMap emojiRoleJson
     case emojiRoleMapM of
         Nothing           -> do
             sendMessageChan (messageChannel m) $
