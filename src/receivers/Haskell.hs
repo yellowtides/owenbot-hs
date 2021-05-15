@@ -9,6 +9,7 @@ import           Data.Aeson              ( FromJSON
                                          , parseJSON
                                          , withObject
                                          , (.:) )
+import           Data.ByteString.Lazy    ( toString )
 import           Data.Maybe              ( fromMaybe )
 import qualified Data.Text as T
 import           Discord                 ( DiscordHandler
