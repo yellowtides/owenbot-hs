@@ -90,7 +90,7 @@ getHoogle :: Int -> T.Text -> IO [HoogleResp]
 getHoogle n name = do
     resp <- simpleHttp $ hoogleURL n <> encode (T.unpack name)
     return $ case eitherDecode resp of
-         Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e <> "\n" <> T.unpack (T.pack resp)
+         Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e
          Right r -> r
 
 -- | Pretty-prints the function name and its module
