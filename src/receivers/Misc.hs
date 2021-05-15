@@ -174,38 +174,44 @@ changePronouns = do
     Right u <- restCall GetCurrentUser
     -- get partial guilds, don't contain full information, so getId is defined below
     Right pGuilds <- restCall GetCurrentUserGuilds
-    let guilds = getId <$> pGuilds
+    let guilds = partialGuildId <$> pGuilds
     let pronouns = ["she/her", "he/him", "they/them"]
-    
-   
-    guildPronounMap <- sequence $ do
+
+    _ <- sendMessageChan (825522165868134440) "reached ln 180"
+
+    guildPronounMapUnfiltered <- sequence $ do
         g <- guilds
-        pure $ do 
+        pure $ do
             pronounRoles <- sequence $ (`isRoleInGuild` g) <$> pronouns
             let matchingRoles = M.catMaybes pronounRoles
+            void $ liftIO $ print matchingRoles
             -- make sure that pronoun roles exist on server
-            guard (not $ null matchingRoles)
+            -- guard (not $ null matchingRoles)
             pure (g, matchingRoles)
+
+    let guildPronounMap = filter (not . null . snd) guildPronounMapUnfiltered
+
+    _ <- sendMessageChan (825522165868134440) "reached ln 191"
 
     chosenPronouns <- sequence $ do
         (gid, roles) <- guildPronounMap
-        pure $ do 
-            Just role <- liftIO $ randomChoice roles 
+        pure $ do
+            Just role <- liftIO $ randomChoice roles
             pure (gid, role)
-    
+
+    _ <- sendMessageChan (825522165868134440) "reached ln 199"
+
     void $ liftIO $ print chosenPronouns
     -- 799452686742323230 = they/them
     -- 799452696083038218 = he/him
     -- 799452697371344966 = she/her
 
     forM_ chosenPronouns (\(g, r) -> restCall $ AddGuildMemberRole g (userId u) r)
-    
+
     sendMessageChan (825522165868134440) "reached"
 
 
     where
-        getId (PartialGuild id _ _ _ _) = id
-
         randomChoice :: [a] -> IO (Maybe a)
         randomChoice [] = return Nothing
         randomChoice l = sequence $ Just $ (l !!) <$> randomRIO (0, length l - 1)
