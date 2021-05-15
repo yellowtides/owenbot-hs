@@ -399,7 +399,7 @@ newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
         then fun captures
         else sendPrivError msg
 
-
+-- | Similar to newDev command, however looks up the Moderator role name instead of using ID to determine the message authors role.
 newModCommand :: Message
                 -> T.Text
                 -> ([T.Text ] -> DiscordHandler ())
@@ -413,8 +413,10 @@ newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
 sendPrivError :: Message -> DiscordHandler ()
 sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
 
+-- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer
 snowflakeToInt (Snowflake w) = toInteger w
 
+-- | Moves channel position in guild
 moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
 moveChannel guild chan location = void $ restCall $ R.ModifyGuildChannelPositions guild [(chan, location)]
