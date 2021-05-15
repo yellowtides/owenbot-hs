@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: hoogle-5.0.18@sha256:821c50a23662ceff262387ffd85bd443ef4308a2fcd1f5c51aa9ddc9fdd8c28d,3171
-    pantry-tree:
-      size: 3414
-      sha256: 8f7e3f5ac4b9de12c930bc677f34a1eca0e91d9da3cfd9fce1d8c7ff6bcfdc0e
-  original:
-    hackage: hoogle-5.0.18
-- completed:
     hackage: discord-haskell-1.8.6@sha256:59aa6be20aa7ee107251beb2b98a185c9b656af8afc8da8ba6737808b24f2b45,3562
     pantry-tree:
       size: 2107
@@ -32,6 +25,13 @@ packages:
       sha256: 6a6ba1798090ee6245f5995303b6ccf1afea26c73d4e69b95330c8914056d420
   original:
     hackage: hspec-2.7.4
+- completed:
+    hackage: pointfree-1.1.1.8@sha256:733b5e4148359679e8b313dda794099f31901fc6071dd4b2423c764911eef9ce,2209
+    pantry-tree:
+      size: 772
+      sha256: e0de815e79eadae876f4ef4b3afd296ee1a7eaa68eff8927d4b4604a2f615109
+  original:
+    hackage: pointfree-1.1.1.8
 snapshots:
 - completed:
     size: 532177

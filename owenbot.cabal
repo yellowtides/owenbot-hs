@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 4cf159594555a1541eb8fb3fd19dddf559edda31682c4c063216045f095b9fa5
 
 name:           owenbot
 version:        0.1.0.0
@@ -25,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Commands
       Config
       CSV
       DB
