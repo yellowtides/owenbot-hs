@@ -3,6 +3,7 @@ dist-newstyle/
 dist/
 .token.txt
 .tokenProd.txt
+.tokenTest.txt
 .ghc*
 *~
 test.hs
