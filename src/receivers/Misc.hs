@@ -1,31 +1,40 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Misc ( commandReceivers, miscReceivers, reactionReceivers ) where
+module Misc (commandReceivers, miscReceivers, reactionReceivers, changePronouns) where
 
-import           Discord.Types
-import           Discord
-import qualified Data.Maybe as M
-import qualified Data.Text.IO as TIO
-import qualified Data.Text as T
-import           UnliftIO               ( liftIO )
-import           Text.Regex.TDFA        ( (=~) )
-import qualified System.Process as SP
-import           Control.Monad          ( when
-                                        , unless )
-import           System.Random          ( randomR
-                                        , getStdRandom
-                                        )
+import              Discord.Types
+import              Discord
+import              Discord.Internal.Rest.User
+import              Discord.Internal.Rest.Guild
 
-import           Utils                  ( sendMessageChan
-                                        , sendReply
-                                        , sendFileChan
-                                        , addReaction
-                                        , messageFromReaction
-                                        , newCommand
-                                        , (=~=)
-                                        , assetDir
-                                        )
-import           Owoifier               ( owoify )
+import qualified    Data.Maybe as M
+import qualified    Data.Text.IO as TIO
+import qualified    Data.Text as T
+import qualified    Data.Bifunctor          (second)
+import              UnliftIO                ( liftIO, UnliftIO (unliftIO) )
+import              Text.Regex.TDFA         ( (=~) )
+import qualified    System.Process as SP
+import              Control.Monad           ( when
+                                            , unless
+                                            , void
+                                            , join
+                                            , guard, forM_ )
+import              System.Random           ( randomR
+                                            , getStdRandom
+                                            , randomRIO
+                                            )
+
+
+import              Utils                   ( sendMessageChan
+                                            , sendReply
+                                            , sendFileChan
+                                            , addReaction
+                                            , messageFromReaction
+                                            , newCommand
+                                            , (=~=)
+                                            , assetDir, isRoleInGuild
+                                            )
+import              Owoifier                ( owoify )
 
 commandReceivers :: [Message -> DiscordHandler ()]
 commandReceivers =
@@ -63,7 +72,7 @@ owoifyIfPossible m = do
     when (r == 1 && isOwoifiable)
         $ sendReply m True $ owoify (messageText m)
 
--- | Emote names for which to trigger force owoify on. All caps.
+-- | Emote names for which to trigger force owoify on. Use All Caps.
 forceOwoifyEmotes :: [T.Text]
 forceOwoifyEmotes =
     [ "BEGONEBISH" ]
@@ -158,3 +167,46 @@ fortuneCow = do
         then assetDir <> "freddy.cow"
         else fortuneCowFiles !! max 0 roll
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
+
+-- | "Joke" function to change owen's pronouns randomly in servers on startup, cause owen is our favourite genderfluid icon
+changePronouns :: DiscordHandler ()
+changePronouns = do
+    Right u <- restCall GetCurrentUser
+    -- get partial guilds, don't contain full information, so getId is defined below
+    Right pGuilds <- restCall GetCurrentUserGuilds
+    let guilds = getId <$> pGuilds
+    let pronouns = ["she/her", "he/him", "they/them"]
+    
+   
+    guildPronounMap <- sequence $ do
+        g <- guilds
+        pure $ do 
+            pronounRoles <- sequence $ (`isRoleInGuild` g) <$> pronouns
+            let matchingRoles = M.catMaybes pronounRoles
+            -- make sure that pronoun roles exist on server
+            guard (not $ null matchingRoles)
+            pure (g, matchingRoles)
+
+    chosenPronouns <- sequence $ do
+        (gid, roles) <- guildPronounMap
+        pure $ do 
+            Just role <- liftIO $ randomChoice roles 
+            pure (gid, role)
+    
+    void $ liftIO $ print chosenPronouns
+    -- 799452686742323230 = they/them
+    -- 799452696083038218 = he/him
+    -- 799452697371344966 = she/her
+
+    forM_ chosenPronouns (\(g, r) -> restCall $ AddGuildMemberRole g (userId u) r)
+    
+    sendMessageChan (825522165868134440) "reached"
+
+
+    where
+        getId (PartialGuild id _ _ _ _) = id
+
+        randomChoice :: [a] -> IO (Maybe a)
+        randomChoice [] = return Nothing
+        randomChoice l = sequence $ Just $ (l !!) <$> randomRIO (0, length l - 1)
+
