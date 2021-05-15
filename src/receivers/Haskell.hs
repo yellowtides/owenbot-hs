@@ -9,7 +9,6 @@ import           Data.Aeson              ( FromJSON
                                          , parseJSON
                                          , withObject
                                          , (.:) )
-import           Data.ByteString.Lazy    ( toString )
 import           Data.Maybe              ( fromMaybe )
 import qualified Data.Text as T
 import           Discord                 ( DiscordHandler
@@ -91,7 +90,7 @@ getHoogle :: Int -> T.Text -> IO [HoogleResp]
 getHoogle n name = do
     resp <- simpleHttp $ hoogleURL n <> encode (T.unpack name)
     return $ case eitherDecode resp of
-         Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e <> "\n" <> toString resp
+         Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e <> "\n" <> T.unpack (T.pack resp)
          Right r -> r
 
 -- | Pretty-prints the function name and its module
