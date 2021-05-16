@@ -72,3 +72,4 @@ tests:
     - QuickCheck
     - quickcheck-instances # required for arbitrary Text
     - hspec
+

@@ -13,15 +13,17 @@ import           Discord                ( runDiscord
                                                          , discordOnLog
                                                          ), restCall
                                         )
-import           Discord.Types          ( ChannelId, User (userName) )
+import           Discord.Types          ( ChannelId, User (userName), Event (ChannelCreate) )
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
 import           DB                     ( dbDir )
 import           EventHandler           ( handleEvent )
-import           Admin                  ( sendGitInfoChan )
+import           Admin                  ( sendGitInfoChan
+                                        , sendInstanceInfoChan )
 import           Status                 ( setStatusFromFile )
 import           Utils                  ( sendMessageChan )
+import           Misc                   (changePronouns)
 import UnliftIO
 
 -- | Channel to post startup message into
@@ -44,6 +46,8 @@ startHandler = do
     Right owenId <- restCall GetCurrentUser
     _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     _ <- sendGitInfoChan startupChan
+    _ <- sendInstanceInfoChan startupChan
+    _ <- changePronouns
     void setStatusFromFile
 
 main :: IO ()
