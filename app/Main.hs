@@ -19,7 +19,8 @@ import           System.Directory       ( createDirectoryIfMissing )
 import           CSV                    ( configDir )
 import           DB                     ( dbDir )
 import           EventHandler           ( handleEvent )
-import           Admin                  ( sendGitInfoChan )
+import           Admin                  ( sendGitInfoChan
+                                        , sendInstanceInfoChan )
 import           Status                 ( setStatusFromFile )
 import           Utils                  ( sendMessageChan )
 import           Misc                   (changePronouns)
@@ -41,10 +42,11 @@ owen t = do
 
 startHandler :: DiscordHandler ()
 startHandler = do
-    -- sendMessageChan startupChan (T.pack "Hewwo, I am bawck! UwU")
+    sendMessageChan startupChan (T.pack "Hewwo, I am bawck! UwU")
     Right owenId <- restCall GetCurrentUser
     _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
-    -- _ <- sendGitInfoChan startupChan
+    _ <- sendGitInfoChan startupChan
+    _ <- sendInstanceInfoChan startupChan
     _ <- changePronouns
     void setStatusFromFile
 

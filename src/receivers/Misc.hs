@@ -177,21 +177,19 @@ changePronouns = do
     let guilds = partialGuildId <$> pGuilds
     let pronouns = ["she/her", "he/him", "they/them"]
 
-    _ <- sendMessageChan (825522165868134440) "reached ln 180"
-
     guildPronounMapUnfiltered <- sequence $ do
         g <- guilds
         pure $ do
             pronounRoles <- sequence $ (`isRoleInGuild` g) <$> pronouns
             let matchingRoles = M.catMaybes pronounRoles
-            void $ liftIO $ print matchingRoles
-            -- make sure that pronoun roles exist on server
-            -- guard (not $ null matchingRoles)
             pure (g, matchingRoles)
 
+    -- remove guilds without pronoun roles
     let guildPronounMap = filter (not . null . snd) guildPronounMapUnfiltered
 
-    _ <- sendMessageChan (825522165868134440) "reached ln 191"
+    -- remove current pronoun roles
+    let simplifiedMap = concat $ sequence <$> guildPronounMap
+    forM_ simplifiedMap (\(g, r) -> restCall $ RemoveGuildMemberRole g (userId u) r)
 
     chosenPronouns <- sequence $ do
         (gid, roles) <- guildPronounMap
@@ -199,17 +197,7 @@ changePronouns = do
             Just role <- liftIO $ randomChoice roles
             pure (gid, role)
 
-    _ <- sendMessageChan (825522165868134440) "reached ln 199"
-
-    void $ liftIO $ print chosenPronouns
-    -- 799452686742323230 = they/them
-    -- 799452696083038218 = he/him
-    -- 799452697371344966 = she/her
-
     forM_ chosenPronouns (\(g, r) -> restCall $ AddGuildMemberRole g (userId u) r)
-
-    sendMessageChan (825522165868134440) "reached"
-
 
     where
         randomChoice :: [a] -> IO (Maybe a)
