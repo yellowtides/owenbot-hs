@@ -11,12 +11,13 @@ import           UnliftIO           ( liftIO )
 
 import           Owoifier           ( owoify )
 import           Utils              ( sendMessageDM )
-import           Commands
+import           Einmyria.Commands
 
 receivers :: [Message -> DiscordHandler ()]
 receivers = [ runCommand sendHelpDM ]
 
 -- sendHelpDM :: MonadDiscord m => Einmyria (Message -> m ()) m
-sendHelpDM = command "helpme" $ \m ->
+sendHelpDM = command "helpme" $ \m -> do
+    liftIO $ putStrLn "test"
     liftIO (TIO.readFile "./src/assets/help.txt")
         >>= sendMessageDM (userId $ messageAuthor m) . owoify

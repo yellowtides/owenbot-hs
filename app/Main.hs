@@ -3,7 +3,7 @@ module Main where
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Control.Monad
-import Discord.Requests as R ( UserRequest(GetCurrentUser) )
+import           Discord.Monad
 import           Discord                ( runDiscord
                                         , def
                                         , DiscordHandler
@@ -18,6 +18,7 @@ import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
 import           DB                     ( dbDir )
+import           Einmyria.Commands
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan )
 import           Status                 ( setStatusFromFile )
@@ -38,12 +39,12 @@ owen t = do
                                             putStrLn ("[Info] " ++ T.unpack s)}
     putStrLn (T.unpack userFacingError)
 
-startHandler :: DiscordHandler ()
+startHandler :: (MonadDiscord m) => m ()
 startHandler = do
-    sendMessageChan startupChan (T.pack "Hewwo, I am bawck! UwU")
-    Right owenId <- restCall GetCurrentUser
+    owenId <- getCurrentUser
+    createMessage startupChan $ T.pack $ "Hewwo, I am bawck as " <> show owenId <> "! UwU"
     _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
-    _ <- sendGitInfoChan startupChan
+    -- _ <- sendGitInfoChan startupChan
     void setStatusFromFile
 
 main :: IO ()

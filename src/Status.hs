@@ -11,7 +11,7 @@ import           UnliftIO               ( liftIO )
 import           CSV                    ( readCSV
                                         , writeCSV
                                         )
-import           Commands
+import           Einmyria.Commands
 
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'
@@ -36,7 +36,7 @@ updateStatusCatch newStatus newType newName =
 
 -- | Sets the status from file on bot launch
 -- Should be called only once.
-setStatusFromFile :: DiscordHandler ()
+setStatusFromFile :: (MonadDiscord m) => m ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
     when (length line >= 3) $

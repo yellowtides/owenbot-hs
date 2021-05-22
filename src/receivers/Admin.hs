@@ -3,6 +3,7 @@
 module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
+import           Discord.Monad
 import           Discord.Types          ( ChannelId
                                         , Message   ( messageChannel, messageGuild )
                                         , Channel ( ChannelText )
@@ -25,7 +26,7 @@ import           System.Directory       ( doesPathExist )
 import           System.Posix.Process   ( getProcessID )
 import qualified System.Process as Process
 
-import           Commands
+import           Einmyria.Commands
 import           Owoifier               ( owoify )
 
 import           Utils                  ( newDevCommand

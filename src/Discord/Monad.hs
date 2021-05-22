@@ -1,47 +1,23 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE ScopedTypeVariables #-} -- for runCommand
-{-# LANGUAGE MultiParamTypeClasses #-} -- for EinmyriaHandlerType
--- {-# LANGUAGE KindSignatures #-} -- putting the Bool kind in the class signature
--- {-# LANGUAGE DataKinds #-} -- promoting Bool to a Kind
--- {-# LANGUAGE FlexibleContexts #-} -- putting 'False in a constraint
-{-
-Inspired heavily by the calamity-commands library (MIT).
-Amateur attempt at abstraction.
--}
-module Commands
-    ( command
-    , runCommand
-    , Einmyria
-    , MonadDiscord(..)
+{-# LANGUAGE FlexibleInstances #-} -- allow instance declaration of MonadDiscord
+module Discord.Monad
+    ( MonadDiscord(..)
     ) where
 
-import           Control.Applicative        ( Alternative )
-import           Control.Exception.Safe     ( catch
-                                            , throwM
-                                            , MonadCatch
-                                            , MonadThrow
-                                            , Exception
+import           Control.Exception.Safe     ( MonadThrow
                                             , SomeException
+                                            , throwM
                                             )
 import           Control.Monad.IO.Class     ( MonadIO )
-import           Control.Monad              ( void
-                                            , guard
-                                            , (<=<)
-                                            )
+import           Control.Monad              ( void )
 import qualified Data.ByteString as B
 import qualified Data.Text as T
-import qualified Data.Proxy as P
 import           Discord.Internal.Rest.Prelude
                                             ( Request )
 import qualified Discord.Requests as R
 import           Discord.Types
 import           Discord
-import           Text.Parsec.Text
-import           Text.Parsec hiding         ( GenParser )
-import           Text.Parsec.Combinator
+
+import           Einmyria.Error             ( EinmyriaError(..) )
 
 -- | Monads that can interact with Discord.
 class (Monad m, MonadThrow m, MonadIO m) => MonadDiscord m where
@@ -290,116 +266,4 @@ handleDiscordResult result =
         Left e  -> throwM $ DiscordError e
         Right x -> pure $ x
 
-data EinmyriaError
-    = ArgumentParseError ParseError
-    | RequirementError T.Text
-    | ProcessingError T.Text
-    | DiscordError RestCallErrorCode
-    | HaskellError SomeException
-    deriving Show
-
-instance Exception EinmyriaError
-
-data Einmyria h m = Einmyria
-    { einmyriaName         :: T.Text
-    -- , cmdHandler   :: Message -> h
-    , einmyriaHandler      :: h
-    , einmyriaArgApplier   :: Message -> h -> m ()
-    , einmyriaErrorHandler :: Message -> EinmyriaError -> m ()
-    , einmyriaHelp         :: T.Text
-    , einmyriaRequires     :: [Message -> Either T.Text ()]
-    }
-
-type EinmyriaParser h = ParsecT T.Text h DiscordHandler
-
--- | Create a command.
-command
-    :: (EinmyriaHandlerType h m , MonadDiscord m, MonadThrow m)
-    => T.Text
-    -> h
-    -> Einmyria h m
-command name handler = Einmyria
-    { einmyriaName         = name
-    , einmyriaHandler      = handler
-    , einmyriaArgApplier   = applyArgs  name
-    -- , argApplier   = applyArgs name
-    , einmyriaErrorHandler = \msg reason -> pure ()
-    , einmyriaHelp         = "Help not available."
-    , einmyriaRequires     = []
-    }
-
--- | Build a command.
-runCommand
-    :: forall m h.
-    (MonadDiscord m, Alternative m, MonadCatch m, MonadThrow m)
-    => Einmyria h m
-    -> Message
-    -> m ()
-runCommand einmyria msg = do
-    -- First check that the command name is right.
-    let cmdName = einmyriaName einmyria
-    -- We are guaranteed T.tail will not fail because runCommand will only be
-    -- called after verifying it begins with a prefix (i.e. length > 0)
-    guard $ T.tail (T.take (T.length cmdName + 1) (messageText msg)) == cmdName
-   
-    let cmdArgs = T.drop (T.length cmdName + 1) (messageText msg)
-    ((einmyriaArgApplier einmyria) msg (einmyriaHandler einmyria))
-        `catch` (errorCatcher)
-        -- ^ catch einmyria-errors only
-        `catch` allErrorCatcher
-        -- ^ catch any and all errors, including ones thrown in the first
-        -- error handler. Asynchrnous errors are not caught.
-  where
-    errorCatcher :: EinmyriaError -> m ()
-    errorCatcher = (einmyriaErrorHandler einmyria) msg
-
-    allErrorCatcher :: SomeException -> m ()
-    allErrorCatcher = ((einmyriaErrorHandler einmyria) msg) . HaskellError
-
-
--- infixr 1 @
-
--- (@) 
---     :: (CommandHandlerType h)
---     => T.Text
---     -> (Message -> h)
---     -> Message
---     -> CommandBuilder
--- (@) = command
-
--- Argument parser, in any monad that can throw exceptions.
-class (MonadThrow m) => EinmyriaHandlerType h m where
-    applyArgs :: T.Text -> Message -> h -> m ()
-
--- instance (MonadThrow m, EinmyriaHandlerType b m) => EinmyriaHandlerType (Message -> b) m where
---     applyArgs name handler msg = applyArgs name (handler msg) msg
-
--- instance (MonadThrow m) => EinmyriaHandlerType a m where
-    -- applyArgs name handler msg = handler 
-instance (MonadThrow m) => EinmyriaHandlerType (m ()) m where
-    applyArgs name msg handler = handler
-
-instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => EinmyriaHandlerType (a -> m ()) m where
-    applyArgs name msg handler =
-        case runParser (parserForArg msg) () "" (messageText msg) of
-            Left e       -> throwM $ ArgumentParseError e
-            Right result -> applyArgs name msg (handler result)
-
-instance (MonadThrow m, ParsableArgument a, EinmyriaHandlerType b m) => EinmyriaHandlerType (a -> b) m where
-    applyArgs name msg handler =
-        case runParser (parserForArg msg) () "" (messageText msg) of
-            Left e       -> throwM $ ArgumentParseError e
-            Right result -> applyArgs name msg (handler result)
-
-class ParsableArgument a where
-    parserForArg :: Message -> GenParser st a
-
-instance ParsableArgument Message where
-    parserForArg msg = pure msg
-
-instance ParsableArgument T.Text where
-    parserForArg msg = (T.pack <$>) $ many $ noneOf " "
-
--- instance ParsableArgument [T.Text] where
-    -- parserForArg msg = (T.pack <$>) $ many $ noneOf ""
 

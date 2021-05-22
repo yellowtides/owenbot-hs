@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a70c6a2ce817015902878fd75584c98622adbc0b052e6693513855ff52587b50
+-- hash: 1ec632b314d4b2ee4201182c067013297048f26f7f207f5f2936816616e45012
 
 name:           owenbot
 version:        0.1.0.0
@@ -27,10 +27,12 @@ source-repository head
 
 library
   exposed-modules:
-      Commands
       Config
       CSV
       DB
+      Discord.Monad
+      Einmyria.Commands
+      Einmyria.Error
       EventHandler
       Owoifier
       Status
