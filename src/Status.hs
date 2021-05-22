@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Status(updateStatus, editStatusFile, setStatusFromFile) where
+module Status(updateStatusCatch, editStatusFile, setStatusFromFile) where
 
 import           Control.Monad          ( when )
 import qualified Data.Text as T
@@ -11,14 +11,15 @@ import           UnliftIO               ( liftIO )
 import           CSV                    ( readCSV
                                         , writeCSV
                                         )
+import           Commands
 
 -- | Convert intuitive strings into the respective DataTypes
 -- Passes values onto updateStatus'
 -- Although we revert to defaults if enums don't match, the caller of this function
 -- should always check first on their own and provide approriate error messages.
-updateStatus :: T.Text -> T.Text -> T.Text -> DiscordHandler ()
-updateStatus newStatus newType newName =
-    updateStatus' newStatusParsed newTypeParsed newName
+updateStatusCatch :: (MonadDiscord m) => T.Text -> T.Text -> T.Text -> m ()
+updateStatusCatch newStatus newType newName =
+    updateStatus newStatusParsed newTypeParsed newName
   where
     newStatusParsed = case newStatus of
         "online"    -> UpdateStatusOnline
@@ -33,26 +34,13 @@ updateStatus newStatus newType newName =
         "competing"    -> ActivityTypeCompeting
         _              -> ActivityTypeGame -- revert to playing if not match
 
--- | Sets the Discord status
-updateStatus' :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()
-updateStatus' newStatus newType newName = sendCommand $
-    UpdateStatus $ UpdateStatusOpts { updateStatusOptsSince = Nothing
-                                    , updateStatusOptsGame = Just
-                                        $ Activity { activityName = newName
-                                                   , activityType = newType
-                                                   , activityUrl = Nothing
-                                                   }
-                                    , updateStatusOptsNewStatus = newStatus
-                                    , updateStatusOptsAFK = False
-                                    }
-
 -- | Sets the status from file on bot launch
 -- Should be called only once.
 setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
     when (length line >= 3) $
-        updateStatus
+        updateStatusCatch
             (head line)
             ((head.tail) line)
             (T.unwords $ (tail . tail) line)

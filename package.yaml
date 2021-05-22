@@ -27,12 +27,14 @@ dependencies:
 - directory
 - hashable
 - http-conduit
+- mtl
 - network-bsd
 - parsec
 - pointfree
 - process
 - random
 - regex-tdfa
+- safe-exceptions
 - split
 - time
 - text

@@ -3,43 +3,44 @@
 module Admin ( receivers, sendGitInfoChan ) where
 
 import qualified Data.Text as T
-import           Discord.Types        ( ChannelId
-                                      , Message   ( messageChannel, messageGuild )
-                                      , Channel ( ChannelText )
-                                      , OverwriteId
-                                      )
-import           Discord              ( DiscordHandler
-                                      , stopDiscord, restCall
-                                      )
+import           Discord.Types          ( ChannelId
+                                        , Message   ( messageChannel, messageGuild )
+                                        , Channel ( ChannelText )
+                                        , OverwriteId
+                                        )
+import           Discord                ( DiscordHandler
+                                        , stopDiscord, restCall
+                                        )
 import           Discord.Requests as R
-import           UnliftIO             ( liftIO )
-import           Data.Char            ( isSpace )
-import Data.Maybe                     ( fromJust )
-import           Control.Monad        ( unless
-                                      , void
-                                      )
-import           Network.BSD          ( getHostName )
-import           Text.Regex.TDFA      ( (=~) )
+import           UnliftIO               ( liftIO )
+import           Data.Char              ( isSpace )
+import Data.Maybe                       ( fromJust )
+import           Control.Monad          ( unless
+                                        , void
+                                        )
+import           Network.BSD            ( getHostName )
+import           Text.Regex.TDFA        ( (=~) )
 
-import           System.Directory     ( doesPathExist )
-import           System.Posix.Process ( getProcessID )
-import           System.Process as Process
+import           System.Directory       ( doesPathExist )
+import           System.Posix.Process   ( getProcessID )
+import qualified System.Process as Process
 
-import           Owoifier             ( owoify )
+import           Commands
+import           Owoifier               ( owoify )
 
-import           Utils                ( newDevCommand
-                                      , newModCommand
-                                      , sendMessageChan
-                                      , captureCommandOutput
-                                      , devIDs
-                                      , update
-                                      )
-import           Status               ( updateStatus
-                                      , editStatusFile
-                                      )
-import           CSV                  ( readSingleColCSV
-                                      , writeSingleColCSV
-                                      )
+import           Utils                  ( newDevCommand
+                                        , newModCommand
+                                        , sendMessageChan
+                                        , captureCommandOutput
+                                        , devIDs
+                                        , update
+                                        )
+import           Status                 ( updateStatusCatch
+                                        , editStatusFile
+                                        )
+import           CSV                    ( readSingleColCSV
+                                        , writeSingleColCSV
+                                        )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
@@ -48,7 +49,7 @@ receivers =
     , restartOwen
     , stopOwen
     , updateOwen
-    , prepareStatus
+    , runCommand prepareStatus
     , listDevs
     , addDevs
     , removeDevs
@@ -167,22 +168,19 @@ statusRE = "(online|idle|dnd|invisible) "
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
-prepareStatus :: Message -> DiscordHandler ()
-prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
-    let (_, _, _, components) = (head captures =~ statusRE) :: (T.Text, T.Text, T.Text, [T.Text])
-    let newStatus = head components
-    let newType = (head . tail) components
-    let newName = (head . tail . tail) components
-    if length components == 3 then do
-        updateStatus newStatus newType newName
+prepareStatus :: (MonadDiscord m) => Einmyria (Message -> T.Text -> T.Text -> T.Text -> m ()) m
+prepareStatus =
+    command "status"
+    $ \msg newStatus newType newName -> do
+        updateStatusCatch newStatus newType newName
         liftIO $ editStatusFile newStatus newType newName
-        sendMessageChan (messageChannel m)
+        respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
-    else
-        sendMessageChan (messageChannel m) $
-            "Syntax: `:status <online|dnd|idle|invisible> "
-            <> "<playing|streaming|competing|listening to> "
-            <> "<custom text...>`"
+        -- else
+        --     sendMessageChan (messageChannel m) $
+        --         "Syntax: `:status <online|dnd|idle|invisible> "
+        --         <> "<playing|streaming|competing|listening to> "
+        --         <> "<custom text...>`"
 
 data Lock = Lockdown | Unlock deriving (Show, Eq)
 

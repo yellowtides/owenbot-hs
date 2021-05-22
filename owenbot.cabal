@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4cf159594555a1541eb8fb3fd19dddf559edda31682c4c063216045f095b9fa5
+-- hash: a70c6a2ce817015902878fd75584c98622adbc0b052e6693513855ff52587b50
 
 name:           owenbot
 version:        0.1.0.0
@@ -65,12 +65,14 @@ library
     , discord-haskell
     , hashable
     , http-conduit
+    , mtl
     , network-bsd
     , parsec
     , pointfree
     , process
     , random
     , regex-tdfa
+    , safe-exceptions
     , split
     , text
     , time
@@ -98,6 +100,7 @@ executable owenbot-exe
     , discord-haskell
     , hashable
     , http-conduit
+    , mtl
     , network-bsd
     , owenbot
     , parsec
@@ -105,6 +108,7 @@ executable owenbot-exe
     , process
     , random
     , regex-tdfa
+    , safe-exceptions
     , split
     , text
     , time
@@ -137,6 +141,7 @@ test-suite owenbot-test
     , hashable
     , hspec
     , http-conduit
+    , mtl
     , network-bsd
     , owenbot
     , parsec
@@ -145,6 +150,7 @@ test-suite owenbot-test
     , quickcheck-instances
     , random
     , regex-tdfa
+    , safe-exceptions
     , split
     , text
     , time
