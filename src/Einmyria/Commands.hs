@@ -47,6 +47,7 @@ import           Einmyria.Parser            ( ParsableArgument(..)
                                             , parseEinmyriaName
                                             )
 import           Einmyria.Type
+import           Owoifier                   ( owoify )
 
 
 -- | Create a command from the name and handler.
@@ -114,16 +115,16 @@ defaultErrorHandler
 defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
-            respond m $ T.pack $ showWithoutPos x
+            respond m $ owoify $ T.pack $ showWithoutPos x
         RequirementError x -> do
             chan <- createDM (userId $ messageAuthor m)
             void $ createMessage (channelId chan) x
         ProcessingError x ->
-            respond m x
+            respond m $ owoify x
         DiscordError x ->
             liftIO $ putStrLn $ "Discord responded with a " <> (show x)
         HaskellError x ->
-            respond m (T.pack $ show x)
+            respond m (owoify $ T.pack $ show x)
   where
     -- The default 'Show' instance for ParseError contains the error position,
     -- which only adds clutter in a Discord message.
