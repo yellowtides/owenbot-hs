@@ -4,6 +4,7 @@ module Discord.Monad
     ) where
 
 import           Control.Exception.Safe     ( MonadThrow
+                                            , MonadMask
                                             , SomeException
                                             , throwM
                                             )
@@ -19,8 +20,11 @@ import           Discord
 
 import           Einmyria.Error             ( EinmyriaError(..) )
 
--- | Monads that can interact with Discord.
-class (Monad m, MonadThrow m, MonadIO m) => MonadDiscord m where
+-- | @MonadDiscord@ is a data class of Monads that can interact with Discord.
+-- It requires MonadThrow to throw possible errors like HTTP errors, MonadMask
+-- as a helper for common operations paired with errors (like `finally`), and
+-- MonadIO.
+class (Monad m, MonadThrow m, MonadMask m, MonadIO m) => MonadDiscord m where
     -- Channels
     getChannel :: ChannelId -> m Channel
     modifyChannel :: ChannelId -> R.ModifyChannelOpts -> m Channel

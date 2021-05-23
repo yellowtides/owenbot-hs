@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin ( receivers, sendGitInfoChan ) where
+module Admin ( receivers, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Monad
@@ -38,9 +38,7 @@ import           Utils                  ( newDevCommand
                                         , devIDs
                                         , update
                                         )
-import           Status                 ( updateStatusCatch
-                                        , editStatusFile
-                                        )
+import           Status                 ( editStatusFile )
 import           CSV                    ( readSingleColCSV
                                         , writeSingleColCSV
                                         )
@@ -52,7 +50,7 @@ receivers =
     , restartOwen
     , stopOwen
     , updateOwen
-    , runCommand prepareStatus
+    , runCommand setStatus
     , listDevs
     , addDevs
     , removeDevs
@@ -171,12 +169,12 @@ statusRE = "(online|idle|dnd|invisible) "
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
-prepareStatus :: (MonadDiscord m) => Einmyria (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ()) m
-prepareStatus =
+setStatus :: (MonadDiscord m) => Einmyria (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ()) m
+setStatus =
     command "status"
     $ \msg newStatus newType newName -> do
         updateStatus newStatus newType newName
-        liftIO $ editStatusFile (messageText msg) "" ""
+        liftIO $ editStatusFile newStatus newType newName
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
         -- else

@@ -13,16 +13,18 @@ import           Discord                ( runDiscord
                                                          , discordOnLog
                                                          ), restCall
                                         )
-import           Discord.Types          ( ChannelId, User (userName) )
+import           Discord.Types          ( ChannelId, User (userName), Event (ChannelCreate) )
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
 import           DB                     ( dbDir )
 import           Einmyria.Commands
 import           EventHandler           ( handleEvent )
-import           Admin                  ( sendGitInfoChan )
+import           Admin                  ( sendGitInfoChan
+                                        , sendInstanceInfoChan )
 import           Status                 ( setStatusFromFile )
 import           Utils                  ( sendMessageChan )
+import           Misc                   (changePronouns)
 import UnliftIO
 
 -- | Channel to post startup message into
@@ -39,12 +41,14 @@ owen t = do
                                             putStrLn ("[Info] " ++ T.unpack s)}
     putStrLn (T.unpack userFacingError)
 
-startHandler :: (MonadDiscord m) => m ()
+startHandler :: (MonadDiscord m, MonadFail m) => m ()
 startHandler = do
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack $ "Hewwo, I am bawck as " <> show owenId <> "! UwU"
-    _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     -- _ <- sendGitInfoChan startupChan
+    -- _ <- sendInstanceInfoChan startupChan
+    _ <- changePronouns
+    _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
 main :: IO ()

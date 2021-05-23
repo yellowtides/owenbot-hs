@@ -5,7 +5,6 @@
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
 module Utils ( emojiToUsableText
-             , respond
              , sendMessageChan
              , sendReply
              , sendMessageChanEmbed
@@ -39,6 +38,7 @@ module Utils ( emojiToUsableText
              , isRoleInGuild
              ) where
 
+import           Discord.Monad
 import qualified Discord.Requests as R
 import           Discord.Types
 import           Discord
@@ -134,9 +134,9 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 -- | `isRoleInGuild` determines whether a role containing the given text exists
 -- in the guild (case insensitive). If it does, then it returns the role's ID.
 -- Otherwise, `Nothing` is returned.
-isRoleInGuild :: T.Text -> GuildId -> DiscordHandler (Maybe RoleId)
+isRoleInGuild :: (MonadDiscord m) => T.Text -> GuildId -> m (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
-    Right roles <- restCall $ R.GetGuildRoles gid
+    roles <- getGuildRoles gid
     let matchingRoles = filter (\role -> T.toUpper roleFragment `T.isInfixOf` T.toUpper (roleName role)) roles
     pure $ case matchingRoles of
         []      -> Nothing
@@ -215,9 +215,6 @@ emojiToUsableText r = do
     case emojiId r of
         Nothing -> name
         Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
-
-respond :: Message -> T.Text -> DiscordHandler ()
-respond = sendMessageChan . messageChannel
 
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.

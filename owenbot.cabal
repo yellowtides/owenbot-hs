@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3acab6d5e04a79e96f5f529ab282ce50fd62fababec7a814c3327152392b74d6
+-- hash: fda0e2d9069a80cf75111b73ca4305aaa16b82f89c01305819cef98e84c1fcd1
 
 name:           owenbot
 version:        0.1.0.0
