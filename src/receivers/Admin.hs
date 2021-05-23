@@ -5,9 +5,11 @@ module Admin ( receivers, sendGitInfoChan ) where
 import qualified Data.Text as T
 import           Discord.Monad
 import           Discord.Types          ( ChannelId
-                                        , Message   ( messageChannel, messageGuild )
+                                        , Message (..)
                                         , Channel ( ChannelText )
                                         , OverwriteId
+                                        , ActivityType
+                                        , UpdateStatusType
                                         )
 import           Discord                ( DiscordHandler
                                         , stopDiscord, restCall
@@ -169,12 +171,12 @@ statusRE = "(online|idle|dnd|invisible) "
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
-prepareStatus :: (MonadDiscord m) => Einmyria (Message -> T.Text -> T.Text -> T.Text -> m ()) m
+prepareStatus :: (MonadDiscord m) => Einmyria (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ()) m
 prepareStatus =
     command "status"
     $ \msg newStatus newType newName -> do
-        updateStatusCatch newStatus newType newName
-        liftIO $ editStatusFile newStatus newType newName
+        updateStatus newStatus newType newName
+        liftIO $ editStatusFile (messageText msg) "" ""
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
         -- else

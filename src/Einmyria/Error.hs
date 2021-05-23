@@ -6,10 +6,12 @@ import qualified Data.Text as T
 import           Control.Exception.Safe     ( SomeException
                                             , Exception
                                             )
+import           Text.Parsec.Error          ( ParseError )
+
 import           Discord                    ( RestCallErrorCode )
 
 data EinmyriaError
-    = ArgumentParseError T.Text
+    = ArgumentParseError ParseError
     | RequirementError T.Text
     | ProcessingError T.Text
     | DiscordError RestCallErrorCode

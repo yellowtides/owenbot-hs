@@ -18,6 +18,5 @@ receivers = [ runCommand sendHelpDM ]
 
 -- sendHelpDM :: MonadDiscord m => Einmyria (Message -> m ()) m
 sendHelpDM = command "helpme" $ \m -> do
-    liftIO $ putStrLn "test"
     liftIO (TIO.readFile "./src/assets/help.txt")
         >>= sendMessageDM (userId $ messageAuthor m) . owoify
