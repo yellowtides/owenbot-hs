@@ -67,8 +67,8 @@ instance ParsableArgument Message where
         pure (msg, remaining)
 
 instance ParsableArgument T.Text where
-    parserForArg msg = do
-        label "any text" $
+    parserForArg msg =
+        label "any text" $ do
             -- consume at least one character that is not a space or eof
             parsed <- manyTill1 anyChar (void (lookAhead space) <|> eof)
             -- consume end of input or one or more spaces
