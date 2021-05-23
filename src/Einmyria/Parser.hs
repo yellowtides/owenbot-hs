@@ -68,13 +68,14 @@ instance ParsableArgument Message where
 
 instance ParsableArgument T.Text where
     parserForArg msg = do
-        -- consume at least one character that is not a space or eof
-        parsed <- manyTill1 anyChar (void (lookAhead space) <|> eof)
-        -- consume end of input or one or more spaces
-        (eof <|> void (many1 space))
-        -- return remaining together with consume value
-        remaining <- getInput
-        pure (T.pack parsed, remaining)
+        label "any text" $
+            -- consume at least one character that is not a space or eof
+            parsed <- manyTill1 anyChar (void (lookAhead space) <|> eof)
+            -- consume end of input or one or more spaces
+            (eof <|> void (many1 space))
+            -- return remaining together with consume value
+            remaining <- getInput
+            pure (T.pack parsed, remaining)
 
 instance ParsableArgument [T.Text] where
     parserForArg msg = do
