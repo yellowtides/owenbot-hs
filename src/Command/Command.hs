@@ -17,15 +17,35 @@ Extensions used:
 -}
 module Command.Command
     ( -- * The fundamentals
+    -- | These offer the core functionality for Commands. The most imporatnt
+    -- functions are 'command' and 'runCommand', which create a 'Command' and
+    -- convert the 'Command' to a receiver, respectively.
+    --
+    -- There are several functions that can be composed onto 'command', such as
+    -- 'help' (overwrite the help message), 'onError' (overwrite the error 
+    -- handler), or 'requires' (add a requirement for the command).
     Command
     , command
     , runCommand
     , help
     , onError
+    , defaultErrorHandler
     , requires
-    -- ** Parser-specific types
+    -- * Parsing arguments
+    -- | The 'ParsableArgument' is the core dataclass for command arguments that
+    -- can be parsed. Some special types are added to create functionality
+    -- that is unrepresentable in existing Haskell datatypes.
+    --
+    -- As an OwenDev, if you want to make your own datatype parsable, all you
+    -- have to do is to add an instance declaration for it (and a parser) inside
+    -- @Command/Parser.hs@. Parsec offers very very very useful functions that
+    -- you can simply compose together to create parsers.
+    , ParsableArgument
     , RemainingText(..)
-    -- ** The MonadDiscord type
+    -- * The MonadDiscord type
+    -- | MonadDiscord is the underlying Monad class for all interactions to the
+    -- Discord REST API. The abstraction makes for great polymorphic receivers
+    -- that are easier to test and run from various contexts.
     , module Discord.Monad
     ) where
 
@@ -74,7 +94,7 @@ import           Owoifier                   ( owoify )
 --
 -- @Command m h@ is a command that runs in the monad @m@, which when called
 -- will trigger the polyvariadic handler function @h@. The handler @h@ *must*
--- be in the @m@ monad (this is enforced in 'command' using constraints)
+-- be in the @m@ monad, else your type-checker will complain.
 --
 -- The contents of this abstract datatype are not exported from this module for
 -- encapsulation. Use 'command' to instantiate one.
@@ -160,7 +180,7 @@ command name handler = Command
     , commandRequires     = []
     }
 
--- @onError@ overwrites the default error handler of a command with a custom
+-- | @onError@ overwrites the default error handler of a command with a custom
 -- implementation.
 --
 -- @
@@ -174,14 +194,20 @@ onError errorHandler cmd = cmd
     { commandErrorHandler = errorHandler
     }
 
--- @requires@ adds a requirement to the command. The requirement is a function
+-- | @requires@ adds a requirement to the command. The requirement is a function
 -- that takes a 'Message' and either returns @'Right' ()@ (no problem) or
--- @'Left' "explanation"@. TODO: maybe change this to 'Maybe'?
+-- @'Left' "explanation"@. 
+--
+-- Commands default to having no requirements.
+--
+-- TODO: maybe change this to 'Maybe'?
 requires :: (Message -> Either T.Text ()) -> Command m h -> Command m h
 requires requirement cmd = cmd
     { commandRequires = requirement : commandRequires cmd
     }
 
+-- | @help@ sets the help message for the command. The default is "Help not
+-- available."
 help :: T.Text -> Command m h -> Command m h
 help newHelp cmd = cmd
     { commandHelp = newHelp
@@ -228,7 +254,7 @@ runCommand command msg =
 
 
 -- | @defaultErrorHandler m e@ is the default error handler unless you override
--- it manually.
+-- it manually. This is exported and documented for reference only.
 --
 -- [On argument error] It calls 'respond' with the errors, owoified.
 -- [On requirement error] It sends a DM to the invoking user with the errors.

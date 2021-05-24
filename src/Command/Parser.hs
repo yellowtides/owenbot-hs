@@ -32,9 +32,9 @@ import           Discord.Types
 manyTill1 :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
 manyTill1 p end = do { x <- p; xs <- manyTill p end; return (x:xs) }
 
--- | A @ParsableArgument@ is a dataclass that can be parsed from a message. Any
--- datatype that is an instance of this dataclass can be used as function
--- arguments for a handler.
+-- | A @ParsableArgument@ is a dataclass that represents arguments that can be
+-- parsed from a message. Any datatype that is an instance of this dataclass can
+-- be used as function arguments for a command handler in 'command'.
 class ParsableArgument a where
     -- | @parserForArg msg@ returns a parser that contains the parsed element
     -- and the remaining input.
@@ -108,11 +108,11 @@ instance ParsableArgument RemainingText where
         remaining <- getInput
         pure (Remaining $ T.cons firstChar remaining, "")
 
--- | Integer. TODO
+-- Integer. TODO
 -- instance ParsableArgument Int where
 --     parserForArg msg =
 
--- | Float. TODO don't even know if we need this.
+-- Float. TODO don't even know if we need this.
 -- instance ParsableArgument Float where
 --     parserForArg msg =
 
