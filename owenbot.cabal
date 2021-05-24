@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0c4d5ff214c370c524ec8e99e6db316ea7bad95df60146919cf958b93f03e916
+-- hash: 2f863441e409cfed798828516fd640f502508ab9afd31762e4340a985f7a19b6
 
 name:           owenbot
 version:        0.1.0.0
@@ -31,7 +31,6 @@ library
       Command.Command
       Command.Error
       Command.Parser
-      Command.Type
       Config
       CSV
       DB
