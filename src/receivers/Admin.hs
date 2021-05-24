@@ -96,7 +96,7 @@ sendInstanceInfo :: Message -> DiscordHandler ()
 sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
     sendInstanceInfoChan $ messageChannel m
 
-sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
+sendInstanceInfoChan :: (MonadDiscord m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
     pid  <- liftIO getProcessID
@@ -177,11 +177,6 @@ setStatus =
         liftIO $ editStatusFile newStatus newType newName
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
-        -- else
-        --     sendMessageChan (messageChannel m) $
-        --         "Syntax: `:status <online|dnd|idle|invisible> "
-        --         <> "<playing|streaming|competing|listening to> "
-        --         <> "<custom text...>`"
 
 someComplexThing :: (MonadDiscord m) => Command m (Message -> [T.Text] -> m ())
 someComplexThing =

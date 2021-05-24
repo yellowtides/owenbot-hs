@@ -43,9 +43,9 @@ owen t = do
 startHandler :: (MonadDiscord m, MonadFail m) => m ()
 startHandler = do
     owenId <- getCurrentUser
-    createMessage startupChan $ T.pack $ "Hewwo, I am bawck as " <> show owenId <> "! UwU"
-    -- _ <- sendGitInfoChan startupChan
-    -- _ <- sendInstanceInfoChan startupChan
+    createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
+    _ <- sendGitInfoChan startupChan
+    _ <- sendInstanceInfoChan startupChan
     _ <- changePronouns
     _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
