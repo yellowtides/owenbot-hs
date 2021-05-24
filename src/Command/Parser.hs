@@ -74,17 +74,14 @@ instance ParsableArgument T.Text where
 
 -- | Zero or more texts. Each one could be quoted or not.
 instance ParsableArgument [T.Text] where
-    parserForArg msg = do
-        (word, remaining) <- parserForArg msg :: T.Parser (T.Text, T.Text)
-        if T.length remaining > 0
-            then do
-                (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
-                pure (word:rest, "")
-            else 
-                pure ([word], remaining)
-        -- rest <- (many1 anyChar) `sepBy` space
-        -- remaining <- getInput
-        -- pure (T.pack <$> rest, remaining)
+    parserForArg msg =
+        -- if it's the end, return empty (base case).
+        (eof >> pure ([], "")) <|> do
+            -- do the usual text parsing (which consumes any trailing spaces)
+            (word, remaining) <- parserForArg msg :: T.Parser (T.Text, T.Text)
+            -- recursively do this and append
+            (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
+            pure (word:rest, "")
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where
