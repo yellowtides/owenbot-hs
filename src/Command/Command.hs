@@ -20,6 +20,9 @@ module Command.Command
     Command
     , command
     , runCommand
+    , help
+    , onError
+    , requires
     -- ** Parser-specific types
     , RemainingText(..)
     -- ** The MonadDiscord type
