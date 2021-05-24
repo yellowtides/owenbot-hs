@@ -249,13 +249,13 @@ instance MonadDiscord DiscordHandler where
     -- Custom utilities
     respond m t = void $ createMessage (messageChannel m) t
 
--- | Point-free (composable) function that calls a request and returns it in
--- a monad, throwing DiscordError on error.
+-- | @restCallAndHandle@ calls a request and returns it in the DiscordHandler
+-- monad, throwing @DiscordError@ on errors.
 restCallAndHandle :: (Request (r a), FromJSON a) => r a -> DiscordHandler a
 restCallAndHandle req = restCall req >>= handleDiscordResult
 
--- | Handles the response of discord-haskell's REST calls in a monad @m@, where
--- and throws a @EinmyriaError@ (DiscordError) if the call errored.
+-- | Handles the response of discord-haskell's REST calls in DiscordHandler
+-- and throws a 'EinmyriaError' (@DiscordError@) if the call errored.
 handleDiscordResult :: Either RestCallErrorCode a -> DiscordHandler a
 handleDiscordResult result =
     case result of
