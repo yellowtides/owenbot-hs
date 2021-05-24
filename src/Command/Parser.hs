@@ -46,7 +46,7 @@ instance ParsableArgument Message where
         remaining <- getInput
         pure (msg, remaining)
 
--- | Wrapper for the 'String' ParsableArgument, as no one uses String nowadays.
+-- | Wrapper for the String version, since Text is the trend nowadays.
 instance ParsableArgument T.Text where
     parserForArg msg = do
         (result, remaining) <- parserForArg msg
@@ -57,7 +57,7 @@ instance ParsableArgument T.Text where
 -- parsed as a single string: 
 -- @\"He said, \\\"Lovely\\\".\"@
 --
--- This should _NOT_ be used, use 'T.Text'.
+-- This should __NOT__ be used, use 'T.Text'.
 instance ParsableArgument String where
     parserForArg msg =
         (flip label) "word or a quoted phrase" $ do
@@ -87,7 +87,7 @@ instance ParsableArgument [T.Text] where
         -- if it's the end, return empty (base case).
         (eof >> pure ([], "")) <|> do
             -- do the usual text parsing (which consumes any trailing spaces)
-            (word, remaining) <- parserForArg msg :: T.Parser (T.Text, T.Text)
+            (word, _) <- parserForArg msg :: T.Parser (T.Text, T.Text)
             -- recursively do this and append
             (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
             pure (word:rest, "")
