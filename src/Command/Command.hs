@@ -185,11 +185,16 @@ command name handler = Command
 --
 -- @
 -- example
---     = onError (\msg e -> respond msg (T.pack $ show e)
+--     = onError (\\msg e -> respond msg (T.pack $ show e)
 --     . command "example" $ do
 --         ...
 -- @
-onError :: (Message -> CommandError -> m ()) -> Command m h -> Command m h
+onError
+    :: (Message -> CommandError -> m ())
+    -- ^ Error handler that takes the original message that caused the error,
+    -- and the error itself. It runs in the same monad as the command handlers.
+    -> Command m h
+    -> Command m h
 onError errorHandler cmd = cmd
     { commandErrorHandler = errorHandler
     }
@@ -265,9 +270,7 @@ runCommand command msg =
 defaultErrorHandler
     :: (MonadDiscord m)
     => Message
-    -- ^ The original message that led to this error.
     -> CommandError
-    -- ^ The error thrown by the handler.
     -> m ()
 defaultErrorHandler m e =
     case e of
