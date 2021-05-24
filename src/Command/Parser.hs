@@ -12,8 +12,8 @@ If you want to add your own parser argument type, this is the module.
 
 -}
 module Command.Parser
-    ( parseCommandName
-    , ParsableArgument(..)
+    ( ParsableArgument(..)
+    , manyTill1
     ) where
 
 import           Control.Monad              ( void
@@ -25,29 +25,6 @@ import qualified Text.Parsec.Text as T
 import           Text.Parsec
 
 import           Discord.Types
-
-import           Command.Type
-
--- | @parseCommandName@ creates a parser that tries to consume the prefix,
--- Command name, appropriate amount of spaces, and returns the arguments.
--- If there are no arguments, it will return the empty text, "".
-parseCommandName :: Command h m -> T.Parser T.Text
-parseCommandName cmd = do
-    -- consume prefix
-    char ':'
-    -- consume at least 1 character until a space is encountered
-    -- don't consume the space
-    cmdName <- manyTill1 anyChar (void (lookAhead space) <|> eof)
-    -- check it's the proper command
-    guard (T.pack cmdName == commandName cmd)
-    -- parse either an end of input, or spaces followed by arguments
-    (eof >> pure "") <|> do
-        -- consumes one or more isSpace characters
-        many1 space
-        -- consume everything until end of input
-        args <- manyTill anyChar eof
-        -- return the args
-        pure (T.pack args)
 
 -- | @manyTill1 p end@ is a parser that applies parser @p@ /one/ or more times
 -- until parser @end@ succeeds. This is a variation on @manyTill@ from Parsec.
