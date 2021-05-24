@@ -1,17 +1,18 @@
 {-# LANGUAGE FlexibleInstances #-} -- allow arbitrary nested types in instance declarations
 {-# LANGUAGE OverloadedStrings #-} -- for T.Text overloading
-
 {-|
-Module      :  Einmyria.Parser
-License     :  BSD (see the LICENSE file)
+Module      : Command.Parser
+License     : BSD (see the LICENSE file)
+Description : Parsers for commands.
 
-Parser component for Einmyrias.
-Its usage is mainly internal, to be used from @Einmyria.Commands@.
+Parser component for Commands.
+Its usage is mainly internal, to be used from "Command.Command".
+
+If you want to add your own parser argument type, this is the module.
 
 -}
-
-module Einmyria.Parser
-    ( parseEinmyriaName
+module Command.Parser
+    ( parseCommandName
     , ParsableArgument(..)
     ) where
 
@@ -25,20 +26,20 @@ import           Text.Parsec
 
 import           Discord.Types
 
-import           Einmyria.Type
+import           Command.Type
 
--- | @parseEinmyriaName ein@ is a parser that tries to consume the prefix,
--- einmyria name, appropriate amount of spaces, and returns the arguments.
+-- | @parseCommandName@ creates a parser that tries to consume the prefix,
+-- Command name, appropriate amount of spaces, and returns the arguments.
 -- If there are no arguments, it will return the empty text, "".
-parseEinmyriaName :: Einmyria h m -> T.Parser T.Text
-parseEinmyriaName ein = do
+parseCommandName :: Command h m -> T.Parser T.Text
+parseCommandName cmd = do
     -- consume prefix
     char ':'
     -- consume at least 1 character until a space is encountered
     -- don't consume the space
     cmdName <- manyTill1 anyChar (void (lookAhead space) <|> eof)
     -- check it's the proper command
-    guard (T.pack cmdName == einmyriaName ein)
+    guard (T.pack cmdName == commandName cmd)
     -- parse either an end of input, or spaces followed by arguments
     (eof >> pure "") <|> do
         -- consumes one or more isSpace characters

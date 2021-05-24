@@ -3,7 +3,6 @@
 module Admin ( receivers, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
-import           Discord.Monad
 import           Discord.Types          ( ChannelId
                                         , Message (..)
                                         , Channel ( ChannelText )
@@ -28,7 +27,7 @@ import           System.Directory       ( doesPathExist )
 import           System.Posix.Process   ( getProcessID )
 import qualified System.Process as Process
 
-import           Einmyria.Commands
+import           Command
 import           Owoifier               ( owoify )
 
 import           Utils                  ( newDevCommand
@@ -78,7 +77,7 @@ sendGitInfo :: Message -> DiscordHandler ()
 sendGitInfo m = newDevCommand m "repo" $ \_ ->
     sendGitInfoChan $ messageChannel m
 
-sendGitInfoChan :: ChannelId -> DiscordHandler ()
+sendGitInfoChan :: (MonadDiscord m) => ChannelId -> m ()
 sendGitInfoChan chan = do
     inRepo <- liftIO isGitRepo
     if not inRepo then
@@ -169,7 +168,7 @@ statusRE = "(online|idle|dnd|invisible) "
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
-setStatus :: (MonadDiscord m) => Einmyria (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ()) m
+setStatus :: (MonadDiscord m) => Command (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ()) m
 setStatus =
     command "status"
     $ \msg newStatus newType newName -> do

@@ -38,7 +38,6 @@ module Utils ( emojiToUsableText
              , isRoleInGuild
              ) where
 
-import           Discord.Monad
 import qualified Discord.Requests as R
 import           Discord.Types
 import           Discord
@@ -72,6 +71,7 @@ import           CSV                    ( readSingleColCSV )
 import           Data.Maybe             ( fromJust )
 
 import           Data.Char              ( isDigit )
+import           Command
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
@@ -218,12 +218,12 @@ emojiToUsableText r = do
 
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
-sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
-sendMessageChan c xs = void $ restCall $ R.CreateMessage c xs
+sendMessageChan :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
+sendMessageChan c xs = void $ createMessage c xs
 
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
-sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler ()
+sendMessageChanPingsDisabled :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
 sendMessageChanPingsDisabled cid t = do
     let opts = def { R.messageDetailedContent = t
                    , R.messageDetailedAllowedMentions = Just
@@ -232,13 +232,13 @@ sendMessageChanPingsDisabled cid t = do
                               , R.mentionRoles    = False
                               }
                    }
-    void $ restCall (R.CreateMessageDetailed cid opts)
+    void $ createMessageDetailed cid opts
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
-sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
+sendReply :: (MonadDiscord m) => Message -> Bool -> T.Text -> m ()
 sendReply m mention xs =
-    void $ restCall $ R.CreateMessageDetailed (messageChannel m)
+    void $ createMessageDetailed (messageChannel m)
         $ def { R.messageDetailedContent = xs
               , R.messageDetailedReference = Just
                 $ def { referenceMessageId = Just $ messageId m }
@@ -248,29 +248,27 @@ sendReply m mention xs =
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
-sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
-sendMessageChanEmbed c xs e = void $ restCall $ R.CreateMessageEmbed c xs e
+sendMessageChanEmbed :: (MonadDiscord m) => ChannelId -> T.Text -> CreateEmbed -> m ()
+sendMessageChanEmbed c xs e = void $ createMessageEmbed c xs e
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
-sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
+sendMessageDM :: (MonadDiscord m) => UserId -> T.Text -> m ()
 sendMessageDM u t = do
-    chanM <- restCall $ R.CreateDM u
-    case chanM of
-        Right chan -> sendMessageChan (channelId chan) t
-        Left  err  -> pure ()
+    chan <- createDM u
+    sendMessageChan (channelId chan) t
 
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`. Surpresses any error
 -- message(s), returning `()`.
-sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
+sendFileChan :: (MonadDiscord m) => ChannelId -> T.Text -> FilePath -> m ()
 sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
         Nothing          -> do
               _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
               sendMessageChan c $ owoify "The file cannot be found!"
-        Just fileContent -> void $ restCall $ R.CreateMessageUploadFile c name fileContent
+        Just fileContent -> void $ createMessageUploadFile c name fileContent
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.

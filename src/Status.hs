@@ -15,7 +15,7 @@ import           UnliftIO               ( liftIO )
 import           CSV                    ( readCSV
                                         , writeCSV
                                         )
-import           Einmyria.Commands
+import           Command
 
 deriving instance Read UpdateStatusType
 deriving instance Read ActivityType

@@ -1,20 +1,28 @@
 {-# LANGUAGE OverloadedStrings, FlexibleInstances, ExistentialQuantification, ScopedTypeVariables, MultiParamTypeClasses #-} -- allow arbitrary nested types in instance declarations
-{-
+{-|
+Description: Everything commands :)
+
 Inspired heavily by the calamity-commands library (MIT).
 Amateur attempt at abstraction.
 
 Extensions used:
-- OverloadedStrings: Overloading of T.Text
-- FlexibleInstances: To allow arbitrary nested types in instance declarations
-- ExistentialQuantification: For explitit usage of forall.
-- ScopedTypeVariables: For using the same type variables in `where' statements as function declarations
-- MultiParamTypeClasses: For declaring EinmyriaHandlerType that has 2 params
+
+    * OverloadedStrings: Overloading of T.Text
+    * FlexibleInstances: To allow arbitrary nested types in instance
+    declarations
+    * ExistentialQuantification: For explitit usage of forall.
+    * ScopedTypeVariables: For using the same type variables in `where'
+    statements as function declarations
+    * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params
 -}
-module Einmyria.Commands
-    ( command
+module Command.Command
+    ( -- * The fundamentals
+    command
     , runCommand
-    , Einmyria
-    , MonadDiscord(..)
+    -- ** The MonadDiscord type
+    , module Discord.Monad
+    -- ** The Command type
+    , module Command.Type
     ) where
 
 import           Control.Applicative        ( Alternative )
@@ -42,74 +50,117 @@ import           Discord.Monad
 import           Discord.Types
 import           Discord
 
-import           Einmyria.Error             ( EinmyriaError(..) )
-import           Einmyria.Parser            ( ParsableArgument(..)
-                                            , parseEinmyriaName
+import           Command.Error             ( CommandError(..) )
+import           Command.Parser            ( ParsableArgument(..)
+                                            , parseCommandName
                                             )
-import           Einmyria.Type
+import           Command.Type
 import           Owoifier                   ( owoify )
 
 
--- | Create a command from the name and handler.
+-- | @command name handler@ creates a 'Command' named @name@, which upon
+-- receiving a message will call @handler@. @name@ cannot contain any spaces,
+-- as it breaks the parser. The @handler@ function can take an arbitrary amount
+-- of arguments of arbitrary types (it is polyvariadic), as long as they are
+-- instances of 'ParsableArgument'.
+--
+-- The Command that this function creates is polymorphic in the Monad it is run
+-- in. This means you can call it from 'DiscordHandler' or 'IO', or any mock
+-- monads in tests (as long as they are instances of 'MonadDiscord')
+-- 
+-- @
+-- pong :: (MonadDiscord m) => Command (Message -> m ()) m
+-- pong = command "ping" $ \\msg -> respond msg "pong!"
+-- @
+-- 
+-- @
+-- lePong :: (MonadDiscord m) => Message -> m ()
+-- lePong = runCommand $
+--     command "ping" $ \\msg -> respond msg "pong!"
+-- @
+--
+-- @
+-- weather :: (MonadDiscord m) => Command (Message -> T.Text -> m ()) m
+-- weather = command "weather" $ \\msg location -> do
+--     result <- liftIO $ getWeather location
+--     respond msg $ "Weather at " <> location <> " is " <> result <> "!"
+-- @
+--
+-- @
+-- complex :: (MonadDiscord m) => Command (Message -> Int -> ConfigKey -> m ()) m
+-- complex = command "complexExample" $ \\msg i key -> do
+--     ...
+-- @
+--
+-- The type signature of the return type can become quite long depending on how
+-- many arguments @handler@ takes (as seen above). If it can be inferred (and it
+-- usually can), it is safe to omit it. However, it may be kept for legibility. 
 command
-    :: (EinmyriaHandlerType h m , MonadDiscord m, MonadThrow m)
+    :: (CommandHandlerType h m , MonadDiscord m, MonadThrow m)
     => T.Text
+    -- ^ The name of the command.
     -> h
-    -> Einmyria h m
-command name handler = Einmyria
-    { einmyriaName         = name
-    , einmyriaHandler      = handler
-    , einmyriaArgApplier   = applyArgs name
-    , einmyriaErrorHandler = defaultErrorHandler
-    , einmyriaHelp         = "Help not available."
-    , einmyriaRequires     = []
+    -- ^ The handler for the command, that takes an arbitrary amount of
+    -- 'ParsableArgument's and returns a @m ()@
+    -> Command h m
+command name handler = Command
+    { commandName         = name
+    , commandHandler      = handler
+    , commandArgApplier   = applyArgs name
+    , commandErrorHandler = defaultErrorHandler
+    , commandHelp         = "Help not available."
+    , commandRequires     = []
     }
 
--- | @runCommand einmyria msg@ attempts to run the specified Einmyria with the
--- message. It checks the command name, applies/parses the arguments, and
+-- | @runCommand command msg@ attempts to run the specified 'Command' with the
+-- given message. It checks the command name, applies/parses the arguments, and
 -- catches any errors.
+--
+-- @
+-- runCommand pong :: (Message -> m ())
+-- @
 runCommand
     :: forall m h.
     (MonadDiscord m, Alternative m, MonadCatch m, MonadThrow m, MonadIO m)
-    => Einmyria h m
+    => Command h m
     -- ^ The command to run against.
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand einmyria msg =
+runCommand command msg =
     -- First check that the command name is right.
-    case runParser (parseEinmyriaName einmyria) () "" (messageText msg) of
+    case runParser (parseCommandName command) () "" (messageText msg) of
         Left e -> pure ()
         Right args -> do
             -- Apply the arguments one by one on the appropriate handler
-            ((einmyriaArgApplier einmyria) msg args (einmyriaHandler einmyria))
+            ((commandArgApplier command) msg args (commandHandler command))
                 -- Asynchrnous errors are not caught as the `catch` comes from
                 -- Control.Exception.Safe.
                 `catch` basicErrorCatcher
                 `catch` allErrorCatcher
   where
-    -- | Catch EinmyriaErrors and handle them with the handler
-    basicErrorCatcher :: EinmyriaError -> m ()
-    basicErrorCatcher = (einmyriaErrorHandler einmyria) msg
+    -- | Catch CommandErrors and handle them with the handler
+    basicErrorCatcher :: CommandError -> m ()
+    basicErrorCatcher = (commandErrorHandler command) msg
 
     -- | Catch any and all errors, including ones thrown in basicErrorCatcher.
     allErrorCatcher :: SomeException -> m ()
-    allErrorCatcher = ((einmyriaErrorHandler einmyria) msg) . HaskellError
+    allErrorCatcher = ((commandErrorHandler command) msg) . HaskellError
 
 
 -- | @defaultErrorHandler m e@ is the default error handler unless you override
 -- it manually.
 --
--- On argument error: it responds with the errors.
--- On requirement error: DMs the user with the errors.
--- On a processing error: it responds with the error.
--- On a Discord error: it likely won't be able to respond, so put to console.
--- On Haskell error: this is just a runtime error, so respond with the error.
+-- [On argument error] it responds with the errors.
+-- [On requirement error] DMs the user with the errors.
+-- [On a processing error] it responds with the error.
+-- [On a Discord error] it likely won't be able to respond, so put to console.
+-- [On Haskell error] this is just a runtime error, so respond with the error.
 defaultErrorHandler
     :: (MonadThrow m, MonadDiscord m, MonadIO m)
     => Message
     -- ^ The original message that led to this error.
-    -> EinmyriaError
+    -> CommandError
     -- ^ The error thrown by the handler.
     -> m ()
 defaultErrorHandler m e =
@@ -133,9 +184,9 @@ defaultErrorHandler m e =
         "expecting" "unexpected" "end of input" (errorMessages err)
 
 
--- @EinmyriaHandlerType@ is a dataclass for all types of arguments that a
+-- @CommandHandlerType@ is a dataclass for all types of arguments that a
 -- command handler may have. Its only function is @applyArgs@.
-class (MonadThrow m) => EinmyriaHandlerType h m where
+class (MonadThrow m) => CommandHandlerType h m where
     applyArgs
         :: T.Text
         -- ^ Name of the command, to be used in error dialogues if any
@@ -151,7 +202,7 @@ class (MonadThrow m) => EinmyriaHandlerType h m where
         -- ^ The monad to run the handler in, and to throw parse errors in.
 
 -- | For the case when all arguments have been applied. Base case.
-instance (MonadThrow m) => EinmyriaHandlerType (m ()) m where
+instance (MonadThrow m) => CommandHandlerType (m ()) m where
     applyArgs name msg input handler = 
         case runParser eof () "" input of
             Left e -> throwM $ ArgumentParseError e
@@ -160,17 +211,16 @@ instance (MonadThrow m) => EinmyriaHandlerType (m ()) m where
 -- | For the case where there is only one argument to apply.
 -- Although this looks redundant in place of the (a -> b) instance, its presence
 -- prevents GHC errors related to incoherent choices.
-instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => EinmyriaHandlerType (a -> m ()) m where
+instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType (a -> m ()) m where
     applyArgs name msg input handler =
         case runParser (parserForArg msg) () "" input of
             Left e -> throwM $ ArgumentParseError e
             Right (x, remaining) -> applyArgs name msg remaining (handler x)
 
 -- | For the case where there are multiple arguments to apply. 
-instance (MonadThrow m, ParsableArgument a, EinmyriaHandlerType b m) => EinmyriaHandlerType (a -> b) m where
+instance (MonadThrow m, ParsableArgument a, CommandHandlerType b m) => CommandHandlerType (a -> b) m where
     applyArgs name msg input handler =
         case runParser (parserForArg msg) () "" input of
             Left e -> throwM $ ArgumentParseError e
             Right (x, remaining) -> applyArgs name msg remaining (handler x) 
-
 

@@ -18,7 +18,7 @@ import qualified Discord.Requests as R
 import           Discord.Types
 import           Discord
 
-import           Einmyria.Error             ( EinmyriaError(..) )
+import           Command.Error             ( CommandError(..) )
 
 -- | @MonadDiscord@ is a data class of Monads that can interact with Discord.
 -- It requires MonadThrow to throw possible errors like HTTP errors, MonadMask
@@ -128,7 +128,6 @@ class (Monad m, MonadThrow m, MonadMask m, MonadIO m) => MonadDiscord m where
 
     -- Custom utilities
     respond       :: Message -> T.Text -> m ()
-    reply         :: Message -> Bool -> T.Text -> m ()
 
 -- | Implements every single possible rest call as a wrapper function.
 -- Convenient notation achieved using a point-free restCallAndHandle
@@ -249,13 +248,6 @@ instance MonadDiscord DiscordHandler where
 
     -- Custom utilities
     respond m t = void $ createMessage (messageChannel m) t
-    reply m mention t = void $ createMessageDetailed (messageChannel m) $ def
-        { R.messageDetailedContent = t
-        , R.messageDetailedReference = Just $
-            def { referenceMessageId = Just $ messageId m }
-        , R.messageDetailedAllowedMentions = Just $
-            def { R.mentionRepliedUser = mention }
-        }
 
 -- | Point-free (composable) function that calls a request and returns it in
 -- a monad, throwing DiscordError on error.

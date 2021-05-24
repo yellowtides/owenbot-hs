@@ -3,7 +3,6 @@ module Main where
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Control.Monad
-import           Discord.Monad
 import           Discord                ( runDiscord
                                         , def
                                         , DiscordHandler
@@ -18,7 +17,7 @@ import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
 import           DB                     ( dbDir )
-import           Einmyria.Commands
+import           Command
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan
                                         , sendInstanceInfoChan )
