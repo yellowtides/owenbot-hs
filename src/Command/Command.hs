@@ -251,7 +251,10 @@ instance (MonadThrow m) => CommandHandlerType (m ()) m where
 
 -- | For the case where there is only one argument to apply.
 -- Although this looks redundant in place of the (a -> b) instance, its presence
--- prevents GHC errors related to incoherent choices.
+-- prevents GHC errors on overlapping instances with @m ()@. The reason is that
+-- @m ()@ can be a function (I think), and GHC cannot decide whether to use the
+-- base case or the a -> b case. By providing the more specific a -> m () case,
+-- it can successfully find the correct instance.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType (a -> m ()) m where
     applyArgs name msg input handler =
         case runParser (parserForArg msg) () "" input of
