@@ -13,6 +13,7 @@ If you want to add your own parser argument type, this is the module.
 -}
 module Command.Parser
     ( ParsableArgument(..)
+    , RemainingText(..)
     , manyTill1
     ) where
 
@@ -45,11 +46,19 @@ instance ParsableArgument Message where
         remaining <- getInput
         pure (msg, remaining)
 
--- | Any number of non-space characters. If quoted, spaces are allowed.
--- Quotes in quoted text can be escaped with a backslash. The following is
--- parsed as a single text: 
--- @\"He said, \\\"Lovely\\\".\"@
+-- | Wrapper for the 'String' ParsableArgument, as no one uses String nowadays.
 instance ParsableArgument T.Text where
+    parserForArg msg = do
+        (result, remaining) <- parserForArg msg
+        pure (T.pack result, remaining)
+
+-- | Any number of non-space characters. If quoted, spaces are allowed.
+-- Quotes in quoted phrases can be escaped with a backslash. The following is
+-- parsed as a single string: 
+-- @\"He said, \\\"Lovely\\\".\"@
+--
+-- This should _NOT_ be used, use 'T.Text'.
+instance ParsableArgument String where
     parserForArg msg =
         (flip label) "word or a quoted phrase" $ do
             -- try quoted text first. if it failed, then normal word
@@ -58,16 +67,16 @@ instance ParsableArgument T.Text where
             (eof <|> void (many1 space))
             -- return remaining together with consumed value
             remaining <- getInput
-            pure (T.pack parsed, remaining)
+            pure (parsed, remaining)
       where
         quotedText = do
             -- consume quotes
             char '"'
             -- consume everything but quotes, unless it is escaped
-            content <- many $ noneOf "\"" <|> try (string "\\\"" >> return '"')
+            content <- many $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
             -- consume closing quote
             char '"'
-            return content
+            pure content
         word =
             -- consume at least one character that is not a space or eof
             manyTill1 anyChar (void (lookAhead space) <|> eof)
@@ -82,6 +91,31 @@ instance ParsableArgument [T.Text] where
             -- recursively do this and append
             (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
             pure (word:rest, "")
+
+data RemainingText = Remaining { getEm :: T.Text }
+
+-- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
+-- with @Text@. At least one character is required.
+instance ParsableArgument RemainingText where
+    parserForArg msg = do
+        -- Make sure at least one character is present
+        -- This is not a space, because previous parsers consume trailing spaces.
+        firstChar <- anyChar
+        -- Get the rest of the input.
+        -- This is more convenient than calling [T.Text]'s parser and concatting
+        -- it, as it preserves spaces. For speed, both T.concat and T.cons are
+        -- O(n) so it does not matter.
+        remaining <- getInput
+        pure (Remaining $ T.cons firstChar remaining, "")
+
+-- | Integer. TODO
+-- instance ParsableArgument Int where
+--     parserForArg msg =
+
+-- | Float. TODO don't even know if we need this.
+-- instance ParsableArgument Float where
+--     parserForArg msg =
+
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where

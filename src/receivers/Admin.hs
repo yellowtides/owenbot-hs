@@ -50,6 +50,7 @@ receivers =
     , stopOwen
     , updateOwen
     , runCommand setStatus
+    , runCommand someComplexThing
     , listDevs
     , addDevs
     , removeDevs
@@ -168,10 +169,10 @@ statusRE = "(online|idle|dnd|invisible) "
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
-setStatus :: (MonadDiscord m) => Command m (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ())
+setStatus :: (MonadDiscord m) => Command m (Message -> UpdateStatusType -> ActivityType -> RemainingText -> m ())
 setStatus =
     command "status"
-    $ \msg newStatus newType newName -> do
+    $ \msg newStatus newType (Remaining newName) -> do
         updateStatus newStatus newType newName
         liftIO $ editStatusFile newStatus newType newName
         respond msg
@@ -181,6 +182,15 @@ setStatus =
         --         "Syntax: `:status <online|dnd|idle|invisible> "
         --         <> "<playing|streaming|competing|listening to> "
         --         <> "<custom text...>`"
+
+someComplexThing :: (MonadDiscord m) => Command m (Message -> [T.Text] -> m ())
+someComplexThing =
+    command "complex"
+    $ \msg words -> do
+        respond msg $
+            "Length: " <> (T.pack . show . length) words <> "\n" <>
+                "Caught items: \n" <> T.intercalate "\n" words
+
 
 data Lock = Lockdown | Unlock deriving (Show, Eq)
 

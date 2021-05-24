@@ -22,6 +22,8 @@ module Command.Command
     , runCommand
     -- ** Templates
     , defaultErrorHandler
+    -- ** Parser-specific types
+    , RemainingText(..)
     -- ** The MonadDiscord type
     , module Discord.Monad
     ) where
@@ -39,7 +41,6 @@ import           Control.Monad              ( void
                                             , guard
                                             )
 import qualified Data.Text as T
-import           Data.List                  ( intercalate )
 import           Text.Parsec.Error          ( errorMessages
                                             , showErrorMessages
                                             )
@@ -61,6 +62,7 @@ import           Discord
 
 import           Command.Error              ( CommandError(..) )
 import           Command.Parser             ( ParsableArgument(..)
+                                            , RemainingText(..)
                                             , manyTill1
                                             )
 import           Owoifier                   ( owoify )
