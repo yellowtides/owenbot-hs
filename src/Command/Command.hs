@@ -1,9 +1,13 @@
 {-# LANGUAGE OverloadedStrings, FlexibleInstances, ExistentialQuantification, ScopedTypeVariables, MultiParamTypeClasses #-} -- allow arbitrary nested types in instance declarations
 {-|
-Description: Everything commands :)
+Module      : Command.Command
+License     : BSD (see the LICENSE file)
+Description : Everything commands :)
 
-Inspired heavily by the calamity-commands library (MIT).
-Amateur attempt at abstraction.
+Amateur attempt at command abstraction and polyvariadic magic.
+
+Inspired heavily but calamity-commands, which is provided by Ben Simms 2020
+under the MIT license. 
 
 Extensions used:
 
