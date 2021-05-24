@@ -20,8 +20,6 @@ module Command.Command
     Command
     , command
     , runCommand
-    -- ** Templates
-    , defaultErrorHandler
     -- ** Parser-specific types
     , RemainingText(..)
     -- ** The MonadDiscord type
@@ -99,6 +97,7 @@ data Command m h = Command
     -- be processed.
     }
 
+
 -- | @command name handler@ creates a 'Command' named @name@, which upon
 -- receiving a message will call @handler@. @name@ cannot contain any spaces,
 -- as it breaks the parser. The @handler@ function can take an arbitrary amount
@@ -134,8 +133,13 @@ data Command m h = Command
 -- @
 --
 -- The type signature of the return type can become quite long depending on how
--- many arguments @handler@ takes (as seen above). If it can be inferred (and it
--- usually can), it is safe to omit it. However, it may be kept for legibility. 
+-- many arguments @handler@ takes (as seen above). Unfortunately, it usually
+-- cannot be inferred, so it should be kept.
+--
+-- The reason it cannot be inferred is because @(->) r@ is a 'Monad', as defined
+-- in "GHC.Base". This means GHC cannot know if the command handler is in the
+-- desired Discord monad or in the function application monad, unless you
+-- explicitly specify.
 command
     :: (CommandHandlerType h m , MonadDiscord m)
     => T.Text
@@ -151,6 +155,33 @@ command name handler = Command
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
+    }
+
+-- @onError@ overwrites the default error handler of a command with a custom
+-- implementation.
+--
+-- @
+-- example
+--     = onError (\msg e -> respond msg (T.pack $ show e)
+--     . command "example" $ do
+--         ...
+-- @
+onError :: (Message -> CommandError -> m ()) -> Command m h -> Command m h
+onError errorHandler cmd = cmd
+    { commandErrorHandler = errorHandler
+    }
+
+-- @requires@ adds a requirement to the command. The requirement is a function
+-- that takes a 'Message' and either returns @'Right' ()@ (no problem) or
+-- @'Left' "explanation"@. TODO: maybe change this to 'Maybe'?
+requires :: (Message -> Either T.Text ()) -> Command m h -> Command m h
+requires requirement cmd = cmd
+    { commandRequires = requirement : commandRequires cmd
+    }
+
+help :: T.Text -> Command m h -> Command m h
+help newHelp cmd = cmd
+    { commandHelp = newHelp
     }
 
 -- | @runCommand command msg@ attempts to run the specified 'Command' with the
@@ -189,14 +220,19 @@ runCommand command msg =
     allErrorCatcher = ((commandErrorHandler command) msg) . HaskellError
 
 
+
+
+
+
 -- | @defaultErrorHandler m e@ is the default error handler unless you override
 -- it manually.
 --
--- [On argument error] it responds with the errors.
--- [On requirement error] DMs the user with the errors.
--- [On a processing error] it responds with the error.
--- [On a Discord error] it likely won't be able to respond, so put to console.
--- [On Haskell error] this is just a runtime error, so respond with the error.
+-- [On argument error] It calls 'respond' with the errors, owoified.
+-- [On requirement error] It sends a DM to the invoking user with the errors.
+-- [On a processing error] It calls 'respond' with the error.
+-- [On a Discord error] If a Discord request failed, it's likely that the bot
+-- would not be able to respond, so the error is put to stdout.
+-- [On a Runtime/Haskell error] It calls 'respond' with the error, owoified.
 defaultErrorHandler
     :: (MonadDiscord m)
     => Message
@@ -212,17 +248,23 @@ defaultErrorHandler m e =
             chan <- createDM (userId $ messageAuthor m)
             void $ createMessage (channelId chan) x
         ProcessingError x ->
-            respond m $ owoify x
+            respond m x
         DiscordError x ->
             liftIO $ putStrLn $ "Discord responded with a " <> (show x)
         HaskellError x ->
             respond m (owoify $ T.pack $ show x)
   where
     -- The default 'Show' instance for ParseError contains the error position,
-    -- which only adds clutter in a Discord message.
+    -- which only adds clutter in a Discord message. This defines a much
+    -- simpler string representation.
     showWithoutPos :: ParseError -> String
     showWithoutPos err = showErrorMessages "or" "unknown parse error"
         "expecting" "unexpected" "end of input" (errorMessages err)
+
+
+
+
+
 
 
 -- @CommandHandlerType@ is a dataclass for all types of arguments that a
@@ -252,9 +294,9 @@ instance (MonadThrow m) => CommandHandlerType (m ()) m where
 -- | For the case where there is only one argument to apply.
 -- Although this looks redundant in place of the (a -> b) instance, its presence
 -- prevents GHC errors on overlapping instances with @m ()@. The reason is that
--- @m ()@ can be a function (I think), and GHC cannot decide whether to use the
--- base case or the a -> b case. By providing the more specific a -> m () case,
--- it can successfully find the correct instance.
+-- when (Message -> m ()) is matched, GHC does not know whether to choose @m ()@
+-- (since functions are Monads by GHC.Base) or @a -> b@. By providing a more
+-- specific instance, @a -> m ()@, it can successfully find the correct one.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType (a -> m ()) m where
     applyArgs name msg input handler =
         case runParser (parserForArg msg) () "" input of
@@ -268,7 +310,7 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType b m) => CommandHa
             Left e -> throwM $ ArgumentParseError e
             Right (x, remaining) -> applyArgs name msg remaining (handler x) 
 
--- | @parseCommandName@ creates a parser that tries to consume the prefix,
+-- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
 -- If there are no arguments, it will return the empty text, "".
 parseCommandName :: Command m h -> T.Parser T.Text
