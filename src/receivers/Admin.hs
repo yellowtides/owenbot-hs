@@ -168,7 +168,7 @@ statusRE = "(online|idle|dnd|invisible) "
 -- | Checks the input against the correct version of :status
 -- If incorrect, return appropriate messages
 -- If correct, pass onto Status.updateStatus
-setStatus :: (MonadDiscord m) => Command (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ()) m
+setStatus :: (MonadDiscord m) => Command m (Message -> UpdateStatusType -> ActivityType -> T.Text -> m ())
 setStatus =
     command "status"
     $ \msg newStatus newType newName -> do

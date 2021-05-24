@@ -69,13 +69,13 @@ import           Owoifier                   ( owoify )
 -- | A @Command@ is a datatype containing the metadata for a user-registered
 -- command. 
 --
--- @Command h m@ is a command that runs in the monad @m@, which when called
+-- @Command m h@ is a command that runs in the monad @m@, which when called
 -- will trigger the polyvariadic handler function @h@. The handler @h@ *must*
 -- be in the @m@ monad (this is enforced in 'command' using constraints)
 --
 -- The contents of this abstract datatype are not exported from this module for
 -- encapsulation. Use 'command' to instantiate one.
-data Command h m = Command
+data Command m h = Command
     { commandName         :: T.Text
     -- ^ The name of the command.
     , commandHandler      :: h
@@ -108,7 +108,7 @@ data Command h m = Command
 -- monads in tests (as long as they are instances of 'MonadDiscord')
 -- 
 -- @
--- pong :: (MonadDiscord m) => Command (Message -> m ()) m
+-- pong :: (MonadDiscord m) => Command m (Message -> m ())
 -- pong = command "ping" $ \\msg -> respond msg "pong!"
 -- @
 -- 
@@ -119,14 +119,14 @@ data Command h m = Command
 -- @
 --
 -- @
--- weather :: (MonadDiscord m) => Command (Message -> T.Text -> m ()) m
+-- weather :: (MonadDiscord m) => Command m (Message -> T.Text -> m ())
 -- weather = command "weather" $ \\msg location -> do
 --     result <- liftIO $ getWeather location
 --     respond msg $ "Weather at " <> location <> " is " <> result <> "!"
 -- @
 --
 -- @
--- complex :: (MonadDiscord m) => Command (Message -> Int -> ConfigKey -> m ()) m
+-- complex :: (MonadDiscord m) => Command m (Message -> Int -> ConfigKey -> m ())
 -- complex = command "complexExample" $ \\msg i key -> do
 --     ...
 -- @
@@ -141,7 +141,7 @@ command
     -> h
     -- ^ The handler for the command, that takes an arbitrary amount of
     -- 'ParsableArgument's and returns a @m ()@
-    -> Command h m
+    -> Command m h
 command name handler = Command
     { commandName         = name
     , commandHandler      = handler
@@ -161,7 +161,7 @@ command name handler = Command
 runCommand
     :: forall m h.
     (MonadDiscord m, Alternative m)
-    => Command h m
+    => Command m h
     -- ^ The command to run against.
     -> Message
     -- ^ The message to run the command with.
@@ -266,7 +266,7 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType b m) => CommandHa
 -- | @parseCommandName@ creates a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
 -- If there are no arguments, it will return the empty text, "".
-parseCommandName :: Command h m -> T.Parser T.Text
+parseCommandName :: Command m h -> T.Parser T.Text
 parseCommandName cmd = do
     -- consume prefix
     char ':'
