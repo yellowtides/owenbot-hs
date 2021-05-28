@@ -1,4 +1,7 @@
-{-# LANGUAGE OverloadedStrings, FlexibleInstances, ExistentialQuantification, ScopedTypeVariables, MultiParamTypeClasses #-} -- allow arbitrary nested types in instance declarations
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleInstances, FunctionalDependencies,
+   UndecidableInstances, MultiParamTypeClasses #-}
 {-|
 Module      : Command.Command
 License     : BSD (see the LICENSE file)
@@ -9,15 +12,16 @@ Amateur attempt at command abstraction and polyvariadic magic.
 Inspired heavily but calamity-commands, which is provided by Ben Simms 2020
 under the MIT license. 
 
-Extensions used:
+Notable extensions used:
 
-    * OverloadedStrings: Overloading of T.Text
-    * FlexibleInstances: To allow arbitrary nested types in instance
-    declarations
-    * ExistentialQuantification: For explitit usage of forall.
     * ScopedTypeVariables: For using the same type variables in `where'
     statements as function declarations
+    * FlexibleInstances: To allow arbitrary nested types in instance
+    declarations
     * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params
+    * FunctionalDependencies: To write that @m@ can be determined from @h@.
+    * UndecidableInstances: Risky, but I think I logically checked over it.
+    [See more](https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
 -}
 module Command.Command
     ( -- * The fundamentals
@@ -108,8 +112,7 @@ data Command m h = Command
     , commandHandler      :: h
     -- ^ The polyvariadic handler function for the command. All of its argument
     -- types must be of 'ParsableArgument'. Its return type after applying all
-    -- the arguments must be @m ()@. These are enforced by the type-checker if
-    -- you use 'command' instead of manually constructing this datatype.
+    -- the arguments must be @m ()@. These are enforced by the type-checker.
     , commandArgApplier   :: Message -> T.Text -> h -> m ()
     -- ^ The function used to apply the arguments into the @commandHandler@. It
     -- needs to take a 'Message' that triggered the command, the name of the
@@ -160,15 +163,16 @@ data Command m h = Command
 -- @
 --
 -- The type signature of the return type can become quite long depending on how
--- many arguments @handler@ takes (as seen above). Unfortunately, it usually
--- cannot be inferred, so it should be kept.
+-- many arguments @handler@ takes (as seen above). Thanks to the
+-- @FunctionalDependencies@ and @UndecidableInstances@ extensions that are used
+-- in the Commands library (you don't have to worry about them), they can be
+-- inferred most of the time. It may be kept for legibility. As an OwenDev,
+-- there are no extensions you need to enable in the receiver modules.
 --
--- The reason it cannot be inferred is because @(->) r@ is a 'Monad', as defined
--- in "GHC.Base". This means GHC cannot know if the command handler is in the
--- desired Discord monad or in the function application monad, unless you
--- explicitly specify.
+-- (yeah, they're wicked extensions that *could* cause harm, but in this case
+-- (I hope) I've used them appropriately and as intended.)
 command
-    :: (CommandHandlerType h m , MonadDiscord m)
+    :: (CommandHandlerType m h , MonadDiscord m)
     => T.Text
     -- ^ The name of the command.
     -> h
@@ -178,7 +182,7 @@ command
 command name handler = Command
     { commandName         = name
     , commandHandler      = handler
-    , commandArgApplier   = applyArgs name
+    , commandArgApplier   = applyArgs
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -209,7 +213,7 @@ onError errorHandler cmd = cmd
 --
 -- Commands default to having no requirements.
 --
--- TODO: maybe change this to 'Maybe'?
+-- TODO: maybe change from 'Either' to 'Maybe'?
 requires :: (Message -> Either T.Text ()) -> Command m h -> Command m h
 requires requirement cmd = cmd
     { commandRequires = requirement : commandRequires cmd
@@ -305,12 +309,9 @@ defaultErrorHandler m e =
 
 -- @CommandHandlerType@ is a dataclass for all types of arguments that a
 -- command handler may have. Its only function is @applyArgs@.
-class (MonadThrow m) => CommandHandlerType h m where
+class (MonadThrow m) => CommandHandlerType m h | h -> m where
     applyArgs
-        :: T.Text
-        -- ^ Name of the command, to be used in error dialogues if any
-        -- (unused as of now).
-        -> Message
+        :: Message
         -- ^ The relevant message.
         -> T.Text
         -- ^ The arguments of the command, i.e. everything after the command
@@ -321,30 +322,31 @@ class (MonadThrow m) => CommandHandlerType h m where
         -- ^ The monad to run the handler in, and to throw parse errors in.
 
 -- | For the case when all arguments have been applied. Base case.
-instance (MonadThrow m) => CommandHandlerType (m ()) m where
-    applyArgs name msg input handler = 
+instance (MonadThrow m) => CommandHandlerType m (m ()) where
+    applyArgs msg input handler = 
         case runParser eof () "" input of
             Left e -> throwM $ ArgumentParseError e
             Right _ -> handler
 
--- | For the case where there is only one argument to apply.
--- Although this looks redundant in place of the (a -> b) instance, its presence
--- prevents GHC errors on overlapping instances with @m ()@. The reason is that
--- when (Message -> m ()) is matched, GHC does not know whether to choose @m ()@
--- (since functions are Monads by GHC.Base) or @a -> b@. By providing a more
--- specific instance, @a -> m ()@, it can successfully find the correct one.
-instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType (a -> m ()) m where
-    applyArgs name msg input handler =
-        case runParser (parserForArg msg) () "" input of
-            Left e -> throwM $ ArgumentParseError e
-            Right (x, remaining) -> applyArgs name msg remaining (handler x)
-
 -- | For the case where there are multiple arguments to apply. 
-instance (MonadThrow m, ParsableArgument a, CommandHandlerType b m) => CommandHandlerType (a -> b) m where
-    applyArgs name msg input handler =
+instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
+    applyArgs msg input handler =
         case runParser (parserForArg msg) () "" input of
             Left e -> throwM $ ArgumentParseError e
-            Right (x, remaining) -> applyArgs name msg remaining (handler x) 
+            Right (x, remaining) -> applyArgs msg remaining (handler x) 
+
+-- | For the case where there is only one argument to apply.
+-- It overlaps the previous instance (it is more specific). With the OVERLAPPING
+-- pragma, GHC prefers this one when both match.
+--
+-- This instance is necessary because otherwise @Message -> m ()@ will match
+-- both @m ()@ (@(->) r@ is a monad) and @a -> b@ and since neither are more
+-- specific, GHC cannot prefer one over the other, even with any pragmas.
+instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
+    applyArgs msg input handler =
+        case runParser (parserForArg msg) () "" input of
+            Left e -> throwM $ ArgumentParseError e
+            Right (x, remaining) -> applyArgs msg remaining (handler x)
 
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.

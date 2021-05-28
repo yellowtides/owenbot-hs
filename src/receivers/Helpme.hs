@@ -16,7 +16,9 @@ import           Command
 receivers :: [Message -> DiscordHandler ()]
 receivers = [ runCommand sendHelpDM ]
 
-sendHelpDM :: MonadDiscord m => Command m (Message -> m ())
-sendHelpDM = command "helpme" $ \m -> do
-    liftIO (TIO.readFile "./src/assets/help.txt")
-        >>= sendMessageDM (userId $ messageAuthor m) . owoify
+-- sendHelpDM :: (MonadDiscord m) => Command m (Message -> m ())
+sendHelpDM
+    -- = help "Ahahaha"
+    = command "helpme" $ \m -> do
+        liftIO (TIO.readFile "./src/assets/help.txt")
+            >>= sendMessageDM (userId $ messageAuthor m) . owoify
