@@ -46,18 +46,10 @@ instance ParsableArgument Message where
         remaining <- getInput
         pure (msg, remaining)
 
--- | Wrapper for the String version, since Text is the trend nowadays.
-instance ParsableArgument T.Text where
-    parserForArg msg = do
-        (result, remaining) <- parserForArg msg
-        pure (T.pack result, remaining)
-
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
 -- parsed as a single string: 
 -- @\"He said, \\\"Lovely\\\".\"@
---
--- This should __NOT__ be used, use 'T.Text'.
 instance ParsableArgument String where
     parserForArg msg =
         (flip label) "word or a quoted phrase" $ do
@@ -81,6 +73,14 @@ instance ParsableArgument String where
             -- consume at least one character that is not a space or eof
             manyTill1 anyChar (void (lookAhead space) <|> eof)
 
+-- | Wrapper for the String version, since Text is the trend nowadays.
+-- Both are provided so that it can easily be used for arguments in other
+-- functions that only accept one of the types.
+instance ParsableArgument T.Text where
+    parserForArg msg = do
+        (result, remaining) <- parserForArg msg
+        pure (T.pack result, remaining)
+
 -- | Zero or more texts. Each one could be quoted or not.
 instance ParsableArgument [T.Text] where
     parserForArg msg =
@@ -92,6 +92,18 @@ instance ParsableArgument [T.Text] where
             (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
             pure (word:rest, "")
 
+-- | Datatype wrapper for the remaining text in the input. Handy for capturing
+-- everything remaining. The accessor function @getEm@ isn't really meant to be
+-- used since pattern matching can do everything. Open to renaming.
+--
+-- Example usage:
+--
+-- @
+-- setStatus =
+--     command "status"
+--     $ \\msg newStatus newType (Remaining newName) -> do
+--         ...
+-- @
 data RemainingText = Remaining { getEm :: T.Text }
 
 -- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
@@ -115,6 +127,11 @@ instance ParsableArgument RemainingText where
 -- Float. TODO don't even know if we need this.
 -- instance ParsableArgument Float where
 --     parserForArg msg =
+
+
+
+
+
 
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's

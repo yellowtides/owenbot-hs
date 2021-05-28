@@ -15,19 +15,46 @@ under the MIT license.
 Notable extensions used:
 
     * ScopedTypeVariables: For using the same type variables in `where'
-    statements as function declarations
-    * FlexibleInstances: To allow arbitrary nested types in instance
+    statements as function declarations.
+    * FlexibleInstances: To allow complex type variables in instance declarations,
+    like @CommandHandlerType m (a -> m ())@.
     declarations
-    * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params
-    * FunctionalDependencies: To write that @m@ can be determined from @h@.
-    * UndecidableInstances: Risky, but I think I logically checked over it.
-    [See more](https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
+    * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params.
+    * FunctionalDependencies: To write that @m@ can be determined from @h@ in
+    CommandHandlerType. It makes logical sense to tell GHC this because @h@ 
+    must be in the @m@ monad (otherwise, @h@ may be in another monad).
+    * UndecidableInstances: Risky, but I think I logically checked over it. Used
+    in the @m (a -> b)@ instance declaration of 'CommandHandlerType', because
+    @(a -> b)@ doesn't explicitly determine the required functional dependency
+    (@h -> m@). The extension is risky because the type-checker can fail to
+    terminate if the instance declarations recursively reference each other. In
+    this module however, all instances strictly converges to the @m (m ())@
+    instance so I say it is safe. [See more]
+    (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
+
+
+Implementation references:
+
+    * [Varargs - Haskell Wiki]
+    (https://wiki.haskell.org/Varargs)
+    * [Haskell-polyvariadic]
+    (https://github.com/AJFarmar/haskell-polyvariadic)
+    * [How to create a polyvariadic haskell function?]
+    (https://stackoverflow.com/questions/3467279/how-to-create-a-polyvariadic-haskell-function)
+    * [How to write a Haskell function that takes a variadic function as an argument]
+    (https://stackoverflow.com/questions/8353845/how-to-write-a-haskell-function-that-takes-a-variadic-function-as-an-argument] 
+
+Design references:
+
+    * [calamity-commands](https://github.com/simmsb/calamity/tree/master/calamity-commands)
 -}
 module Command.Command
     ( -- * The fundamentals
     -- | These offer the core functionality for Commands. The most imporatnt
-    -- functions are 'command' and 'runCommand', which create a 'Command' and
-    -- convert the 'Command' to a receiver, respectively.
+    -- functions are 'command' and 'runCommand'.
+    -- 
+    --     * 'command' creates a 'Command'
+    --     * 'runCommand' converts the 'Command' to a normal receiver.
     --
     -- There are several functions that can be composed onto 'command', such as
     -- 'help' (overwrite the help message), 'onError' (overwrite the error 
@@ -54,6 +81,14 @@ module Command.Command
     -- | MonadDiscord is the underlying Monad class for all interactions to the
     -- Discord REST API. The abstraction makes for great polymorphic receivers
     -- that are easier to test and run from various contexts.
+    -- 
+    -- This is a common way to design abstraction so you can mock them. Same as
+    -- Java interfaces, C++ virtual functions. If you want to read more:
+    --
+    --     * [Link 1]
+    -- (https://www.reddit.com/r/haskell/comments/5bnr6b/mocking_in_haskell/)
+    --     * [Link 2]
+    -- (https://lexi-lambda.github.io/blog/2017/06/29/unit-testing-effectful-haskell-with-monad-mock/)
     , module Discord.Monad
     ) where
 
@@ -129,7 +164,7 @@ data Command m h = Command
 
 
 -- | @command name handler@ creates a 'Command' named @name@, which upon
--- receiving a message will call @handler@. @name@ cannot contain any spaces,
+-- receiving a message will call @handler@. The @name@ cannot contain any spaces,
 -- as it breaks the parser. The @handler@ function can take an arbitrary amount
 -- of arguments of arbitrary types (it is polyvariadic), as long as they are
 -- instances of 'ParsableArgument'.
@@ -138,27 +173,49 @@ data Command m h = Command
 -- in. This means you can call it from 'DiscordHandler' or 'IO', or any mock
 -- monads in tests (as long as they are instances of 'MonadDiscord')
 -- 
+-- @pong@ below responds to a ping by a pong.
+--
 -- @
 -- pong :: (MonadDiscord m) => Command m (Message -> m ())
 -- pong = command "ping" $ \\msg -> respond msg "pong!"
 -- @
 -- 
--- @
--- lePong :: (MonadDiscord m) => Message -> m ()
--- lePong = runCommand $
---     command "ping" $ \\msg -> respond msg "pong!"
--- @
+-- @pong2@ shows that @help@ and @runCommand@ can be composed to create a normal
+-- receiver.
 --
 -- @
--- weather :: (MonadDiscord m) => Command m (Message -> T.Text -> m ())
+-- pong2 :: (MonadDiscord m) => Message -> m ()
+-- pong2
+--     = runCommand
+--     . help "Custom help message"
+--     . command "ping" $ \\msg -> respond msg "pong!"
+-- @
+--
+-- @weather@ below shows the type signature can be omitted, if it can be
+-- inferred. Here, @location@ is likely inferred to be 'T.Text'.
+--
+-- @
 -- weather = command "weather" $ \\msg location -> do
 --     result <- liftIO $ getWeather location
 --     respond msg $ "Weather at " <> location <> " is " <> result <> "!"
 -- @
 --
+-- @complex@ shows that explicit type signature may help in understanding what
+-- the various arguments are. It also shows that you can parse any type! (as
+-- long as you create an instance declaration of 'ParsableArgument' for it)
+-- You also don't need to have the Message at all if you won't use it.
+--
 -- @
--- complex :: (MonadDiscord m) => Command m (Message -> Int -> ConfigKey -> m ())
--- complex = command "complexExample" $ \\msg i key -> do
+-- instance ParsableArgument Int where
+--     parserForArg msg = do
+--         -- some parsec
+--         parsed \<- read \<$> many digit
+--         (eof <|> void (many1 space))
+--         remaining <- getInput
+--         pure (parsed, remaining)
+--
+-- complex :: (MonadDiscord m) => Command m (Int -> ConfigKey -> m ())
+-- complex = command "complexExample" $ \\i key -> do
 --     ...
 -- @
 --
@@ -193,7 +250,7 @@ command name handler = Command
 --
 -- @
 -- example
---     = onError (\\msg e -> respond msg (T.pack $ show e)
+--     = onError (\\msg e -> respond msg (T.pack $ show e))
 --     . command "example" $ do
 --         ...
 -- @
