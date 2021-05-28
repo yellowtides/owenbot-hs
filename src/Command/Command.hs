@@ -104,6 +104,7 @@ import           Control.Monad.IO.Class     ( MonadIO )
 import           Control.Monad              ( void
                                             , guard
                                             )
+import           Data.Maybe                 ( catMaybes )
 import qualified Data.Text as T
 import           Text.Parsec.Error          ( errorMessages
                                             , showErrorMessages
@@ -157,9 +158,10 @@ data Command m h = Command
     -- of a command.
     , commandHelp         :: T.Text
     -- ^ The help for this command.
-    , commandRequires     :: [Message -> Either T.Text ()]
-    -- ^ A list of requirements that need to pass ('Right') for the command to
-    -- be processed.
+    , commandRequires     :: [Message -> m (Maybe T.Text)]
+    -- ^ A list of requirements that need to pass (Nothing) for the command to
+    -- be processed. If any fails, the reason will be passed to
+    -- commandErrorHandler.
     }
 
 
@@ -265,13 +267,12 @@ onError errorHandler cmd = cmd
     }
 
 -- | @requires@ adds a requirement to the command. The requirement is a function
--- that takes a 'Message' and either returns @'Right' ()@ (no problem) or
--- @'Left' "explanation"@. 
+-- that takes a 'Message' and either returns @'Nothing'@ (no problem) or
+-- @'Just' "explanation"@. The function is in the @m@ monad so it can access
+-- any additional information from Discord as necessary.
 --
 -- Commands default to having no requirements.
---
--- TODO: maybe change from 'Either' to 'Maybe'?
-requires :: (Message -> Either T.Text ()) -> Command m h -> Command m h
+requires :: (Message -> m (Maybe T.Text)) -> Command m h -> Command m h
 requires requirement cmd = cmd
     { commandRequires = requirement : commandRequires cmd
     }
@@ -299,16 +300,26 @@ runCommand
     -- ^ The message to run the command with.
     -> m ()
 runCommand command msg =
-    -- First check that the command name is right.
+    -- First check that the command name is correct.
     case runParser (parseCommandName command) () "" (messageText msg) of
         Left e -> pure ()
         Right args -> do
-            -- Apply the arguments one by one on the appropriate handler
-            ((commandArgApplier command) msg args (commandHandler command))
-                -- Asynchrnous errors are not caught as the `catch` comes from
-                -- Control.Exception.Safe.
-                `catch` basicErrorCatcher
-                `catch` allErrorCatcher
+            -- Then check for requirements. checks is a list of Maybes
+            checks <- sequence $ map ($ msg) (commandRequires command)
+            let failedChecks = catMaybes checks
+            if null failedChecks
+                then do
+                    let handler = commandHandler command
+                    -- Apply the arguments one by one on the appropriate handler
+                    ((commandArgApplier command) msg args handler)
+                        -- Asynchrnous errors are not caught as the `catch`
+                        -- comes from Control.Exception.Safe. This is good.
+                        `catch` basicErrorCatcher
+                        `catch` allErrorCatcher
+                else
+                    basicErrorCatcher (RequirementError $ head failedChecks)
+
+
   where
     -- | Catch CommandErrors and handle them with the handler
     basicErrorCatcher :: CommandError -> m ()
