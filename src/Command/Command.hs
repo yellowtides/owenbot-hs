@@ -150,8 +150,8 @@ data Command m h = Command
     -- the arguments must be @m ()@. These are enforced by the type-checker.
     , commandArgApplier   :: Message -> T.Text -> h -> m ()
     -- ^ The function used to apply the arguments into the @commandHandler@. It
-    -- needs to take a 'Message' that triggered the command, the name of the
-    -- command, the handler, and the return monad.
+    -- needs to take a 'Message' that triggered the command, the input text in
+    -- the message, the handler, and the return monad.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
