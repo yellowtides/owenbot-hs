@@ -265,8 +265,8 @@ sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -
 sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
-        Nothing          -> do
-              _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
+        Nothing -> do
+              liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
               sendMessageChan c $ owoify "The file cannot be found!"
         Just fileContent -> void $ createMessageUploadFile c name fileContent
 
