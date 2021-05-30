@@ -25,7 +25,7 @@ deriving instance Read ActivityType
 -- The values are used to call 'updateStatus'. 
 --
 -- Incorrect formats (read parse errors) are ignored.
-setStatusFromFile :: (MonadDiscord m) => m ()
+setStatusFromFile :: (MonadDiscord m, MonadIO m) => m ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
     when (length line >= 3) $ do

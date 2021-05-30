@@ -13,9 +13,9 @@ import           Utils              ( sendMessageDM )
 import           Command
 
 receivers :: [Message -> DiscordHandler ()]
-receivers = [ sendHelpDM ]
+receivers = [ ]
 
--- sendHelpDM :: (MonadDiscord m) => Command m (Message -> m ())
+sendHelpDM :: (MonadDiscord m, MonadIO m) => Message -> m ()
 sendHelpDM
     = runCommand
     . requires (channelRequirement "801763198792368129")

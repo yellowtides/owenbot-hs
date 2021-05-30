@@ -23,8 +23,9 @@ import           Command.Error             ( CommandError(..) )
 -- | @MonadDiscord@ is a data class of Monads that can interact with Discord.
 -- It requires MonadThrow to throw possible errors like HTTP errors, MonadMask
 -- as a helper for common operations paired with errors (like `finally`), and
--- MonadIO.
-class (Monad m, MonadThrow m, MonadMask m, MonadIO m) => MonadDiscord m where
+-- MonadFail to allow convenient pattern-matching in do-notation (not necessary,
+-- but helps a lot with our code style).
+class (Monad m, MonadThrow m, MonadMask m, MonadFail m) => MonadDiscord m where
     -- Channels
     getChannel :: ChannelId -> m Channel
     modifyChannel :: ChannelId -> R.ModifyChannelOpts -> m Channel

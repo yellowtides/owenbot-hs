@@ -90,9 +90,13 @@ module Command.Command
     --     * [Link 2]
     -- (https://lexi-lambda.github.io/blog/2017/06/29/unit-testing-effectful-haskell-with-monad-mock/)
     , module Discord.Monad
+    -- * MonadIO
+    -- | Exported solely for convenience purposes, since many modules that use
+    -- Commands require the MonadIO constraint, but it can get confusing which
+    -- one to import. 
+    , MonadIO(..)
     ) where
 
-import           Control.Applicative        ( Alternative )
 import           Control.Exception.Safe     ( catch
                                             , throwM
                                             , MonadCatch
@@ -293,7 +297,7 @@ help newHelp cmd = cmd
 -- @
 runCommand
     :: forall m h.
-    (MonadDiscord m, Alternative m)
+    (MonadDiscord m)
     => Command m h
     -- ^ The command to run against.
     -> Message
@@ -358,7 +362,7 @@ defaultErrorHandler m e =
         ProcessingError x ->
             respond m x
         DiscordError x ->
-            liftIO $ putStrLn $ "Discord responded with a " <> (show x)
+            respond m $ T.pack $ "Discord responded with a " <> (show x)
         HaskellError x ->
             respond m (owoify $ T.pack $ show x)
   where

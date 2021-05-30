@@ -261,7 +261,7 @@ sendMessageDM u t = do
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`. Surpresses any error
 -- message(s), returning `()`.
-sendFileChan :: (MonadDiscord m) => ChannelId -> T.Text -> FilePath -> m ()
+sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
 sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of

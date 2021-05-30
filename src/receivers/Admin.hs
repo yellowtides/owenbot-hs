@@ -78,7 +78,7 @@ sendGitInfo :: Message -> DiscordHandler ()
 sendGitInfo m = newDevCommand m "repo" $ \_ ->
     sendGitInfoChan $ messageChannel m
 
-sendGitInfoChan :: (MonadDiscord m) => ChannelId -> m ()
+sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendGitInfoChan chan = do
     inRepo <- liftIO isGitRepo
     if not inRepo then
@@ -96,7 +96,7 @@ sendInstanceInfo :: Message -> DiscordHandler ()
 sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
     sendInstanceInfoChan $ messageChannel m
 
-sendInstanceInfoChan :: (MonadDiscord m) => ChannelId -> m ()
+sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
     pid  <- liftIO getProcessID
@@ -178,7 +178,7 @@ setStatus =
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
 
-someComplexThing :: (MonadDiscord m) => Command m (Message -> [T.Text] -> m ())
+someComplexThing :: (MonadDiscord m, MonadIO m) => Command m (Message -> [T.Text] -> m ())
 someComplexThing =
     command "complex"
     $ \msg words -> do

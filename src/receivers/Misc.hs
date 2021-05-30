@@ -171,7 +171,7 @@ fortuneCow = do
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
 
 -- | "Joke" function to change owen's pronouns randomly in servers on startup, cause owen is our favourite genderfluid icon
-changePronouns :: (MonadDiscord m, MonadIO m, MonadFail m) => m ()
+changePronouns :: (MonadDiscord m, MonadIO m) => m ()
 changePronouns = do
     u <- getCurrentUser
     -- get partial guilds, don't contain full information, so getId is defined below
