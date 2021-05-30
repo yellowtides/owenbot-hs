@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE FlexibleInstances, FunctionalDependencies,
-   UndecidableInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances, FunctionalDependencies, UndecidableInstances #-}
 {-|
 Module      : Command.Command
 License     : BSD (see the LICENSE file)
@@ -12,17 +11,25 @@ Amateur attempt at command abstraction and polyvariadic magic.
 Inspired heavily but calamity-commands, which is provided by Ben Simms 2020
 under the MIT license. 
 
+Ideally, this module wouldn't need to be touched after its initial creation
+(and hence quite the jump in complex GHC extensions compared to other modules),
+however it is documented quite extensively anyway.
+
 Notable extensions used:
 
     * ScopedTypeVariables: For using the same type variables in `where'
     statements as function declarations.
     * FlexibleInstances: To allow complex type variables in instance declarations,
     like @CommandHandlerType m (a -> m ())@.
-    declarations
-    * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params.
+    [See more]
+    (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/instances.html#extension-FlexibleInstances)
     * FunctionalDependencies: To write that @m@ can be determined from @h@ in
     CommandHandlerType. It makes logical sense to tell GHC this because @h@ 
     must be in the @m@ monad (otherwise, @h@ may be in another monad).
+    [See more]
+    (https://en.wikibooks.org/wiki/Haskell/Advanced_type_classes)
+    * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params.
+    This comes with FunctionalDependencies automatically.
     * UndecidableInstances: Risky, but I think I logically checked over it. Used
     in the @m (a -> b)@ instance declaration of 'CommandHandlerType', because
     @(a -> b)@ doesn't explicitly determine the required functional dependency
