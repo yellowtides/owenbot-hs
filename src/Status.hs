@@ -29,6 +29,7 @@ setStatusFromFile :: (MonadDiscord m, MonadIO m) => m ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
     when (length line >= 3) $ do
+        -- Utilising the Maybe Monad whooo!
         let mbStuff = do
                 statusType <- (readMaybe . T.unpack . head) line
                 activityType <- (readMaybe . T.unpack . head . tail) line
