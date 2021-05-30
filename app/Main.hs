@@ -40,7 +40,7 @@ owen t = do
                                             putStrLn ("[Info] " ++ T.unpack s)}
     putStrLn (T.unpack userFacingError)
 
-startHandler :: (MonadDiscord m, MonadFail m) => m ()
+startHandler :: (MonadDiscord m, MonadIO m) => m ()
 startHandler = do
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
