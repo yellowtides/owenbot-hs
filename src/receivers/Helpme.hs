@@ -13,7 +13,7 @@ import           Utils              ( sendMessageDM )
 import           Command
 
 receivers :: [Message -> DiscordHandler ()]
-receivers = [ ]
+receivers = [ sendHelpDM ]
 
 sendHelpDM :: (MonadDiscord m, MonadIO m) => Message -> m ()
 sendHelpDM
