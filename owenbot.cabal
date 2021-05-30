@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e8b8b000a11ec281f0454c815eafcf3851f36bea91f1447a11f8e2776208df19
+-- hash: 425ad7a33ae20a78424d8d7c63db04a47de11fb66b4d98d3dd84fe0b09f6afde
 
 name:           owenbot
 version:        0.1.0.0
@@ -34,7 +34,7 @@ library
       Config
       CSV
       DB
-      Discord.Monad
+      Discord.Internal.Monad
       EventHandler
       Owoifier
       Status
