@@ -191,22 +191,19 @@ linkChannel :: ChannelId  -> T.Text
 linkChannel c = "<#" <> T.pack (show c) <> ">"
 
 -- | `getMessageLink` attempts to construct the Discord URL of the given message, as a `Text`.
-getMessageLink :: Message -> DiscordHandler (Either RestCallErrorCode T.Text)
+getMessageLink :: Message -> DiscordHandler T.Text
 getMessageLink m = do
-    chanM <- restCall $ R.GetChannel (messageChannel m)
-    case chanM of
-        Right chan -> do
-            -- the ID of the server containing the channel, as a `Text`
-            let serverIDT  = T.pack . show $ channelGuild chan
-            -- the ID of the channel the message was sent in, as a `Text`
-            let channelIDT = T.pack . show $ messageChannel m
-            -- the messageID, as a `Text`
-            let messageIDT = T.pack . show $ messageId m
-            pure . Right $ T.concat [ "https://discord.com/channels/",
-                                      serverIDT, "/",
-                                      channelIDT, "/",
-                                      messageIDT ]
-        Left err -> pure $ Left err
+    chan <- getChannel (messageChannel m)
+    -- the ID of the server containing the channel, as a `Text`
+    let serverIDT  = T.pack . show $ channelGuild chan
+    -- the ID of the channel the message was sent in, as a `Text`
+    let channelIDT = T.pack . show $ messageChannel m
+    -- the messageID, as a `Text`
+    let messageIDT = T.pack . show $ messageId m
+    pure $ T.concat [ "https://discord.com/channels/",
+                    serverIDT, "/",
+                    channelIDT, "/",
+                    messageIDT ]
 
 -- | `emojiToUsableText` converts a given emoji to a text which can be used to display it in Discord.
 emojiToUsableText :: Emoji -> T.Text
@@ -279,9 +276,8 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
                 putNothing = const $ pure Nothing
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
-messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
-messageFromReaction r = restCall
-    $ R.GetChannelMessage (reactionChannelId r, reactionMessageId r)
+messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
+messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageId r)
 
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
 -- error message(s), returning `()`.

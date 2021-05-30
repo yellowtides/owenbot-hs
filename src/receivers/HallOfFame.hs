@@ -82,34 +82,24 @@ existsInHOF m = do
 
 isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler Bool
 isEligibleForHallOfFame r = do
-    messM <- messageFromReaction r
-    case messM of
-        Right mess -> do
-            limit <- liftIO readLimit
-            exists <- liftIO $ existsInHOF mess
-            let reactions   = messageReactions mess
-            let fulfillCond = \x ->
-                    T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
-                    && messageReactionCount x >= limit
-                    && not exists
-            pure $ any fulfillCond reactions
-        Left err -> liftIO (print err) >> pure False
+    mess <- messageFromReaction r
+    limit <- liftIO readLimit
+    exists <- liftIO $ existsInHOF mess
+    let reactions   = messageReactions mess
+    let fulfillCond = \x ->
+            T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
+            && messageReactionCount x >= limit
+            && not exists
+    pure $ any fulfillCond reactions
 
 putInHallOfFame :: ReactionInfo -> DiscordHandler ()
 putInHallOfFame r = do
-    messM <- messageFromReaction r --gets contents of message that was reacted to.
-    case messM of
-        Right mess -> do
-            embedM <- createHallOfFameEmbed mess
-            case embedM of
-                Right embed -> do
-                    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-                    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId mess):msgIdList)
-                    --adds the message id to the csv to make sure we dont add it multiple times.
-                    sendMessageChanEmbed hallOfFameChannel "" embed
-                Left err -> liftIO (putStrLn "[Error][HoF] Couldn't get link to message")
-        Left err -> liftIO (putStrLn "[Error][HoF] Couldn't find associated message")
-
+    mess <- messageFromReaction r --gets contents of message that was reacted to.
+    embed <- createHallOfFameEmbed mess
+    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
+    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId mess):msgIdList)
+    --adds the message id to the csv to make sure we dont add it multiple times.
+    sendMessageChanEmbed hallOfFameChannel "" embed
 
 createDescription :: Message -> T.Text
 createDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel (messageChannel m)
@@ -119,36 +109,33 @@ getImageFromMessage m
   | not . null $ messageAttachments m = attachmentUrl (head $ messageAttachments m)
   | otherwise                         = ""
 
-createHallOfFameEmbed :: Message -> DiscordHandler (Either RestCallErrorCode CreateEmbed)
+createHallOfFameEmbed :: Message -> DiscordHandler CreateEmbed
 createHallOfFameEmbed m = do
-    messLinkM <- getMessageLink m
-    case messLinkM of
-        Right messLink -> do
-            let authorName       = ""
-                authorUrl        = ""
-                authorIcon       = Nothing
-                embedTitle       = "👑 best of ouw buwwshit"
-                embedUrl         = ""
-                embedThumbnail   = Nothing
-                embedDescription = createDescription m
-                        <> "\n\n[Original Message](" <> messLink <> ")"
-                embedFields      = []
-                embedImage       = Just $
-                        CreateEmbedImageUrl $ getImageFromMessage m
-                embedFooterText  = getTimestampFromMessage m
-                embedFooterIcon  = Nothing
-            pure $ Right (CreateEmbed authorName
-                                      authorUrl
-                                      authorIcon
-                                      embedTitle
-                                      embedUrl
-                                      embedThumbnail
-                                      embedDescription
-                                      embedFields
-                                      embedImage
-                                      embedFooterText
-                                      embedFooterIcon )
-        Left err -> pure $ Left err
+    messLink <- getMessageLink m
+    let authorName       = ""
+        authorUrl        = ""
+        authorIcon       = Nothing
+        embedTitle       = "👑 best of ouw buwwshit"
+        embedUrl         = ""
+        embedThumbnail   = Nothing
+        embedDescription = createDescription m
+                <> "\n\n[Original Message](" <> messLink <> ")"
+        embedFields      = []
+        embedImage       = Just $
+                CreateEmbedImageUrl $ getImageFromMessage m
+        embedFooterText  = getTimestampFromMessage m
+        embedFooterIcon  = Nothing
+    pure $ (CreateEmbed authorName
+                        authorUrl
+                        authorIcon
+                        embedTitle
+                        embedUrl
+                        embedThumbnail
+                        embedDescription
+                        embedFields
+                        embedImage
+                        embedFooterText
+                        embedFooterIcon )
 
 reactLimit :: Message -> DiscordHandler ()
 reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do

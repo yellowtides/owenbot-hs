@@ -82,26 +82,23 @@ forceOwoifyEmotes =
 -- | Forces the owofication of a message upon a reaction of forceOwoifyEmotes.
 -- Marks it as done with a green check, and checks for its existence to prevent
 -- duplicates.
-forceOwoify :: ReactionInfo -> DiscordHandler ()
+forceOwoify :: (MonadDiscord m) => ReactionInfo -> m ()
 forceOwoify r = do
-    messM <- messageFromReaction r
-    case messM of
-        Right mess -> do
-            -- Get all reactions for the associated message
-            let reactions = messageReactions mess
-            -- Define conditions that stops execution
-            let blockCond = \x ->
-                    messageReactionMeIncluded x
-                    && emojiName (messageReactionEmoji x) == owoifiedEmoji
-            -- Conditions that say go!
-            let fulfillCond = \x ->
-                    T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
-            -- If all goes good, add a checkmark and send an owoification reply
-            unless (any blockCond reactions || not (any fulfillCond reactions)) $ do
-                addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
-                -- Send reply without pinging (this isn't as ping-worthy as random trigger)
-                sendReply mess False $ owoify (messageText mess)
-        Left err -> liftIO (print err) >> pure ()
+    mess <- messageFromReaction r
+    -- Get all reactions for the associated message
+    let reactions = messageReactions mess
+    -- Define conditions that stops execution
+    let blockCond = \x ->
+            messageReactionMeIncluded x
+            && emojiName (messageReactionEmoji x) == owoifiedEmoji
+    -- Conditions that say go!
+    let fulfillCond = \x ->
+            T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
+    -- If all goes good, add a checkmark and send an owoification reply
+    unless (any blockCond reactions || not (any fulfillCond reactions)) $ do
+        addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
+        -- Send reply without pinging (this isn't as ping-worthy as random trigger)
+        sendReply mess False $ owoify (messageText mess)
 
 godIsDead :: Message -> DiscordHandler ()
 godIsDead m = do
