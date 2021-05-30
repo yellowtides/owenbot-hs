@@ -44,10 +44,10 @@ startHandler :: (MonadDiscord m, MonadIO m) => m ()
 startHandler = do
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
-    _ <- sendGitInfoChan startupChan
-    _ <- sendInstanceInfoChan startupChan
-    _ <- changePronouns
-    _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
+    sendGitInfoChan startupChan
+    sendInstanceInfoChan startupChan
+    changePronouns
+    liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
 main :: IO ()
