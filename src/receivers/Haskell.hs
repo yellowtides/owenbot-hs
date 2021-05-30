@@ -11,7 +11,7 @@ import           Data.Aeson              ( FromJSON
                                          , (.:) )
 import           Data.Maybe              ( fromMaybe )
 import qualified Data.Text as T
-import           Discord.Monad
+import           Command
 import           Discord                 ( DiscordHandler
                                          )
 import           Discord.Types           ( Message )

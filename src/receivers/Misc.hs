@@ -2,7 +2,7 @@
 
 module Misc (commandReceivers, miscReceivers, reactionReceivers, changePronouns) where
 
-import              Discord.Monad
+import              Discord.Internal.Monad
 import              Discord.Types
 import              Discord
 import              Discord.Internal.Rest.User
@@ -82,7 +82,7 @@ forceOwoifyEmotes =
 -- | Forces the owofication of a message upon a reaction of forceOwoifyEmotes.
 -- Marks it as done with a green check, and checks for its existence to prevent
 -- duplicates.
-forceOwoify :: (MonadDiscord m) => ReactionInfo -> m ()
+forceOwoify :: ReactionInfo -> DiscordHandler ()
 forceOwoify r = do
     mess <- messageFromReaction r
     -- Get all reactions for the associated message

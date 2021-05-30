@@ -89,7 +89,7 @@ module Command.Command
     -- (https://www.reddit.com/r/haskell/comments/5bnr6b/mocking_in_haskell/)
     --     * [Link 2]
     -- (https://lexi-lambda.github.io/blog/2017/06/29/unit-testing-effectful-haskell-with-monad-mock/)
-    , module Discord.Monad
+    , module Discord.Internal.Monad
     -- * MonadIO
     -- | Exported solely for convenience purposes, since many modules that use
     -- Commands require the MonadIO constraint, but it can get confusing which
@@ -125,7 +125,7 @@ import           Text.Parsec                ( runParser
                                             )
 import           UnliftIO                   ( liftIO )
 
-import           Discord.Monad
+import           Discord.Internal.Monad
 import           Discord.Types
 import           Discord
 

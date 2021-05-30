@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-} -- allow instance declaration of MonadDiscord
-module Discord.Monad
+module Discord.Internal.Monad
     ( MonadDiscord(..)
     ) where
 
