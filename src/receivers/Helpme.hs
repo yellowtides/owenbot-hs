@@ -19,7 +19,7 @@ receivers = [ sendHelpDM ]
 sendHelpDM :: (MonadDiscord m, MonadIO m) => Message -> m ()
 sendHelpDM
     = runCommand
-    . command "helpme" $ \m -> do
+    . command "helpme" $ \m ->
         liftIO (TIO.readFile "./src/assets/help.txt")
             >>= sendMessageDM (userId $ messageAuthor m) . owoify
 
