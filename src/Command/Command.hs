@@ -51,6 +51,9 @@ Notable extensions used:
     (and making the handler a "there exists") simplifying the syntax. I think
     you're confused right now, so [see this change].
     (https://github.com/yellowtides/owenbot-hs/pull/34/commits/9c23b4b4764fc2de0b4f9ab5543f8ebb66ff9788)
+    Essentially, this allows us to define a list of 'Command's, which was not
+    possible before because each 'Command' had the handler function in its type.
+    This change allows us to create 'runHelp' and 'runCommands'.
     [Read more on existential types]
     (https://en.wikibooks.org/wiki/Haskell/Existentially_quantified_types)
     , and [even more here]
@@ -105,6 +108,7 @@ module Command.Command
     , command
     , runCommand
     , runCommands
+    , runHelp
     , customCommand
     -- ** Compsable Functions
     -- | These can be composed onto 'command' to overwrite default functionality.
@@ -232,9 +236,8 @@ import           Owoifier                   ( owoify )
 data Command m = forall h. Command
     { commandName         :: T.Text
     -- ^ The name of the command.
-    , commandPrefix       :: String
-    -- ^ The prefix for the command. Not Text because it is used in a parser,
-    -- plus it's usually so short that there is no benefit to using Text here.
+    , commandPrefix       :: T.Text
+    -- ^ The prefix for the command. 
     , commandHandler      :: h
     -- ^ The polyvariadic handler function for the command. All of its argument
     -- types must be of 'ParsableArgument'. Its return type after applying all
@@ -362,7 +365,7 @@ onError errorHandler cmd = cmd
 --         ...
 -- @
 prefix
-    :: String
+    :: T.Text
     -> Command m
     -> Command m
 prefix newPrefix cmd = cmd
@@ -491,6 +494,24 @@ runCommands
     -> m ()
 runCommands cmds msg = void $ sequence $ map ($ msg) (map runCommand cmds)
 
+-- | @runHelp@ creates a super duper simple help command that just lists
+-- each command's names together with their help text.
+runHelp
+    :: (MonadDiscord m)
+    => T.Text
+    -> [Command m]
+    -> Message
+    -> m ()
+runHelp name cmds
+    = runCommand
+    . command name $ \msg -> do
+        chan <- createDM (userId $ messageAuthor msg)
+        void $ createMessage (channelId chan) $
+            "```" <> (T.intercalate "\n" $ map createCommandHelp cmds) <> "```"
+  where
+    createCommandHelp :: Command m -> T.Text
+    createCommandHelp Command{..} =
+        "# " <> commandPrefix <> commandName <> "\n" <> commandHelp
 
 
 
@@ -604,7 +625,7 @@ applyCustomParser parser msg name handler =
 parseCommandName :: Command m -> T.Parser T.Text
 parseCommandName cmd = do
     -- consume prefix
-    string (commandPrefix cmd)
+    string (T.unpack $ commandPrefix cmd)
     -- consume at least 1 character until a space is encountered
     -- don't consume the space
     cmdName <- manyTill1 anyChar (void (lookAhead space) <|> eof)
