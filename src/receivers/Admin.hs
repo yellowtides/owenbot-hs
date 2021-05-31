@@ -49,8 +49,7 @@ receivers =
     , restartOwen
     , stopOwen
     , updateOwen
-    , runCommand setStatus
-    , runCommand someComplexThing
+    , runCommands [setStatus, someComplexThing]
     , listDevs
     , addDevs
     , removeDevs
@@ -178,7 +177,7 @@ setStatus =
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
 
-someComplexThing :: (MonadDiscord m, MonadIO m) => Command m (Message -> [T.Text] -> m ())
+someComplexThing :: (MonadDiscord m, MonadIO m) => Command m
 someComplexThing =
     command "complex"
     $ \msg words -> do

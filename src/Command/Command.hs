@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleInstances, FunctionalDependencies, UndecidableInstances #-}
+{-# LANGUAGE ExistentialQuantification, RecordWildCards #-}
 {-|
 Module      : Command.Command
 License     : BSD (see the LICENSE file)
@@ -38,8 +39,22 @@ Notable extensions used:
     this module however, all instances strictly converges to the @m (m ())@
     instance so I say it is safe. [See more]
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
-
-
+    * ExistentialQuantification: For declaring 'Command' with only the monad,
+    (and making the handler a "there exists") simplifying the syntax. [See more]
+    (https://en.wikibooks.org/wiki/Haskell/Existentially_quantified_types)
+    , [see more 2]
+    (https://markkarpov.com/post/existential-quantification.html#existential-wrappers)
+    This comes at a price, as now the compiler loses the information about what
+    arguments the command handler takes
+    [(and record selector functions will no longer work)]
+    (https://stackoverflow.com/questions/10192663/why-cant-i-use-record-selectors-with-an-existentially-quantified-type)
+    Thankfully, this is negated by using pattern matching. This is made simpler
+    with RecordWildCards.
+    * RecordWildCards: Enables you to write @Command{..}@ to create accessors
+    instead of doing @(Command one two three four five)@. Helps with
+    ExistentialQuantification because otherwise unpacking the @Command@ ADT will
+    be really really long. Not necessary but helpful.
+    
 Implementation references:
 
     * [Varargs - Haskell Wiki]
@@ -75,6 +90,7 @@ module Command.Command
     Command
     , command
     , runCommand
+    , runCommands
     , help
     , onError
     , defaultErrorHandler
@@ -111,6 +127,8 @@ module Command.Command
     , MonadIO(..)
     ) where
 
+import           Control.Applicative        ( Alternative(..)
+                                            )
 import           Control.Exception.Safe     ( catch
                                             , throwM
                                             , MonadCatch
@@ -135,7 +153,6 @@ import           Text.Parsec                ( runParser
                                             , space
                                             , anyChar
                                             , string
-                                            , (<|>)
                                             )
 import           UnliftIO                   ( liftIO )
 
@@ -154,13 +171,13 @@ import           Owoifier                   ( owoify )
 -- | A @Command@ is a datatype containing the metadata for a user-registered
 -- command. 
 --
--- @Command m h@ is a command that runs in the monad @m@, which when called
+-- @Command m@ is a command that runs in the monad @m@, which when called
 -- will trigger the polyvariadic handler function @h@. The handler @h@ *must*
 -- be in the @m@ monad, else your type-checker will complain.
 --
 -- The contents of this abstract datatype are not exported from this module for
 -- encapsulation. Use 'command' to instantiate one.
-data Command m h = Command
+data Command m = forall h. Command
     { commandName         :: T.Text
     -- ^ The name of the command.
     , commandPrefix       :: String
@@ -203,7 +220,7 @@ data Command m h = Command
 -- @pong@ below responds to a ping by a pong.
 --
 -- @
--- pong :: (MonadDiscord m) => Command m (Message -> m ())
+-- pong :: (MonadDiscord m) => Command m
 -- pong = command "ping" $ \\msg -> respond msg "pong!"
 -- @
 -- 
@@ -218,8 +235,8 @@ data Command m h = Command
 --     . command "ping" $ \\msg -> respond msg "pong!"
 -- @
 --
--- @weather@ below shows the type signature can be omitted, if it can be
--- inferred. Here, @location@ is likely inferred to be 'T.Text'.
+-- @weather@ below shows the type signature can be omitted.
+-- Here, @location@ is likely inferred to be 'T.Text'.
 --
 -- @
 -- weather = command "weather" $ \\msg location -> do
@@ -241,20 +258,11 @@ data Command m h = Command
 --         remaining <- getInput
 --         pure (parsed, remaining)
 --
--- complex :: (MonadDiscord m) => Command m (Int -> ConfigKey -> m ())
+-- complex :: (MonadDiscord m) => Command m
 -- complex = command "complexExample" $ \\i key -> do
 --     ...
 -- @
 --
--- The type signature of the return type can become quite long depending on how
--- many arguments @handler@ takes (as seen above). Thanks to the
--- @FunctionalDependencies@ and @UndecidableInstances@ extensions that are used
--- in the Commands library (you don't have to worry about them), they can be
--- inferred most of the time. It may be kept for legibility. As an OwenDev,
--- there are no extensions you need to enable in the receiver modules.
---
--- (yeah, they're wicked extensions that *could* cause harm, but in this case
--- (I hope) I've used them appropriately and as intended.)
 command
     :: (CommandHandlerType m h , MonadDiscord m)
     => T.Text
@@ -262,7 +270,7 @@ command
     -> h
     -- ^ The handler for the command, that takes an arbitrary amount of
     -- 'ParsableArgument's and returns a @m ()@
-    -> Command m h
+    -> Command m
 command name handler = Command
     { commandName         = name
     , commandPrefix       = ":"
@@ -287,8 +295,8 @@ onError
     :: (Message -> CommandError -> m ())
     -- ^ Error handler that takes the original message that caused the error,
     -- and the error itself. It runs in the same monad as the command handlers.
-    -> Command m h
-    -> Command m h
+    -> Command m
+    -> Command m
 onError errorHandler cmd = cmd
     { commandErrorHandler = errorHandler
     }
@@ -304,8 +312,8 @@ onError errorHandler cmd = cmd
 -- @
 prefix
     :: String
-    -> Command m h
-    -> Command m h
+    -> Command m
+    -> Command m
 prefix newPrefix cmd = cmd
     { commandPrefix = newPrefix
     }
@@ -316,14 +324,14 @@ prefix newPrefix cmd = cmd
 -- any additional information from Discord as necessary.
 --
 -- Commands default to having no requirements.
-requires :: (Message -> m (Maybe T.Text)) -> Command m h -> Command m h
+requires :: (Message -> m (Maybe T.Text)) -> Command m -> Command m
 requires requirement cmd = cmd
     { commandRequires = requirement : commandRequires cmd
     }
 
 -- | @help@ sets the help message for the command. The default is "Help not
 -- available."
-help :: T.Text -> Command m h -> Command m h
+help :: T.Text -> Command m -> Command m
 help newHelp cmd = cmd
     { commandHelp = newHelp
     }
@@ -354,7 +362,7 @@ customCommand
     -- ^ The custom parser for the command. It has to return a 'String'.
     -> (Message -> String -> m ())
     -- ^ The handler for the command.
-    -> Command m (Message -> String -> m ())
+    -> Command m
 customCommand parserFunc handler = Command
     { commandName         = "<custom parser>"
     , commandPrefix       = "?"
@@ -381,16 +389,16 @@ customCommand parserFunc handler = Command
 runCommand
     :: forall m h.
     (MonadDiscord m)
-    => Command m h
+    => Command m
     -- ^ The command to run against.
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand command msg = case commandCustomParser command of
+runCommand cmd@Command{..} msg = case commandCustomParser of
     True -> doChecksAndRunCommand ""
     False -> do
         -- First check that the command name is correct, and extract arguments.
-        case runParser (parseCommandName command) () "" (messageText msg) of
+        case runParser (parseCommandName cmd) () "" (messageText msg) of
             Left e -> pure ()
             Right args -> doChecksAndRunCommand args
 
@@ -398,14 +406,13 @@ runCommand command msg = case commandCustomParser command of
     doChecksAndRunCommand :: T.Text -> m ()
     doChecksAndRunCommand args = do
         -- Check for requirements. checks will be a list of Maybes
-        checks <- sequence $ map ($ msg) (commandRequires command)
+        checks <- sequence $ map ($ msg) commandRequires
         -- only get the Justs
         let failedChecks = catMaybes checks
         if null failedChecks
             then do
-                let handler = commandHandler command
                 -- Apply the arguments one by one on the appropriate handler
-                ((commandArgApplier command) msg args handler)
+                (commandArgApplier msg args commandHandler)
                     -- Asynchrnous errors are not caught as the `catch`
                     -- comes from Control.Exception.Safe. This is good.
                     `catch` basicErrorCatcher
@@ -416,13 +423,20 @@ runCommand command msg = case commandCustomParser command of
 
     -- | Catch CommandErrors and handle them with the handler
     basicErrorCatcher :: CommandError -> m ()
-    basicErrorCatcher = (commandErrorHandler command) msg
+    basicErrorCatcher = commandErrorHandler msg
 
     -- | Catch any and all errors, including ones thrown in basicErrorCatcher.
     allErrorCatcher :: SomeException -> m ()
-    allErrorCatcher = ((commandErrorHandler command) msg) . HaskellError
+    allErrorCatcher = (commandErrorHandler msg) . HaskellError
 
-
+-- | @runCommands@ calls runCommand for all the Commands, and folds them with
+-- the Monadic bind ('>>').
+runCommands
+    :: (MonadDiscord m, Alternative m)
+    => [Command m]
+    -> Message
+    -> m ()
+runCommands cmds msg = void $ sequence $ map ($ msg) (map runCommand cmds)
 
 
 
@@ -535,7 +549,7 @@ applyCustomParser parser msg name handler =
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
 -- If there are no arguments, it will return the empty text, "".
-parseCommandName :: Command m h -> T.Parser T.Text
+parseCommandName :: Command m -> T.Parser T.Text
 parseCommandName cmd = do
     -- consume prefix
     string (commandPrefix cmd)
