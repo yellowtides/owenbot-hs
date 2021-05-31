@@ -117,6 +117,7 @@ thatcherParser verb = do
     many1 space
     (char (head verb) <|> char ((toUpper . head) verb))
     string (tail verb)
+    eof
     pure ""
 
 thatcherIsDead :: Message -> DiscordHandler ()
