@@ -1,7 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+-- for CommandHandlerType
 {-# LANGUAGE FlexibleInstances, FunctionalDependencies, UndecidableInstances #-}
+-- for Command
 {-# LANGUAGE ExistentialQuantification, RecordWildCards #-}
+-- for runCommand
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 {-|
 Module      : Command.Command
 License     : BSD (see the LICENSE file)
@@ -16,44 +20,50 @@ Ideally, this module wouldn't need to be touched after its initial creation
 (and hence quite the jump in complex GHC extensions compared to other modules),
 however it is documented quite extensively anyway.
 
+__As an OwenDev, you do not need to enable any GHC extensions, as the__
+__extensions are used internally within this module only__.
+
 Notable extensions used:
 
-    * ScopedTypeVariables: For using the same type variables in `where'
+    * ScopedTypeVariables: For using the same type variables in @where@
     statements as function declarations.
     * FlexibleInstances: To allow complex type variables in instance declarations,
     like @CommandHandlerType m (a -> m ())@.
-    [See more]
+    [Read more]
     (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/instances.html#extension-FlexibleInstances)
     * FunctionalDependencies: To write that @m@ can be determined from @h@ in
-    CommandHandlerType. It makes logical sense to tell GHC this because @h@ 
+    @CommandHandlerType@. It makes logical sense to tell GHC this because @h@ 
     must be in the @m@ monad (otherwise, @h@ may be in another monad).
-    [See more]
+    [Read more]
     (https://en.wikibooks.org/wiki/Haskell/Advanced_type_classes)
     * MultiParamTypeClasses: For declaring CommandHandlerType that has 2 params.
-    This comes with FunctionalDependencies automatically.
+    This comes with FunctionalDependencies automatically, and is not explicitly
+    used.
     * UndecidableInstances: Risky, but I think I logically checked over it. Used
     in the @m (a -> b)@ instance declaration of 'CommandHandlerType', because
     @(a -> b)@ doesn't explicitly determine the required functional dependency
     (@h -> m@). The extension is risky because the type-checker can fail to
     terminate if the instance declarations recursively reference each other. In
     this module however, all instances strictly converges to the @m (m ())@
-    instance so I say it is safe. [See more]
+    instance so I say it is safe. [Read more]
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
     * ExistentialQuantification: For declaring 'Command' with only the monad,
-    (and making the handler a "there exists") simplifying the syntax. [See more]
+    (and making the handler a "there exists") simplifying the syntax. I think
+    you're confused right now, so [see this change].
+    (https://github.com/yellowtides/owenbot-hs/pull/34/commits/9c23b4b4764fc2de0b4f9ab5543f8ebb66ff9788)
+    [Read more on existential types]
     (https://en.wikibooks.org/wiki/Haskell/Existentially_quantified_types)
-    , [see more 2]
-    (https://markkarpov.com/post/existential-quantification.html#existential-wrappers)
+    , and [even more here]
+    (https://markkarpov.com/post/existential-quantification.html#existential-wrappers).
     This comes at a price, as now the compiler loses the information about what
     arguments the command handler takes
     [(and record selector functions will no longer work)]
     (https://stackoverflow.com/questions/10192663/why-cant-i-use-record-selectors-with-an-existentially-quantified-type)
-    Thankfully, this is negated by using pattern matching. This is made simpler
-    with RecordWildCards.
-    * RecordWildCards: Enables you to write @Command{..}@ to create accessors
-    instead of doing @(Command one two three four five)@. Helps with
-    ExistentialQuantification because otherwise unpacking the @Command@ ADT will
-    be really really long. Not necessary but helpful.
+    Thankfully, this is negated by using pattern matching. 
+    * RecordWildCards: Enables you to write @Command{..}@ in pattern matches to
+    create accessors instead of doing @(Command one two three four five)@. Helps
+    with ExistentialQuantification because otherwise unpacking the @Command@ ADT
+    will be really really long. Not necessary but helpful.
     
 Implementation references:
 
@@ -64,14 +74,18 @@ Implementation references:
     * [How to create a polyvariadic haskell function?]
     (https://stackoverflow.com/questions/3467279/how-to-create-a-polyvariadic-haskell-function)
     * [How to write a Haskell function that takes a variadic function as an argument]
-    (https://stackoverflow.com/questions/8353845/how-to-write-a-haskell-function-that-takes-a-variadic-function-as-an-argument] 
+    (https://stackoverflow.com/questions/8353845/how-to-write-a-haskell-function-that-takes-a-variadic-function-as-an-argument)
 
 Design references:
 
     * [calamity-commands](https://github.com/simmsb/calamity/tree/master/calamity-commands)
 -}
 module Command.Command
-    ( -- * The fundamentals
+    (
+    -- * Troubleshooting
+    -- | See the [Common Errors](#commonerrors) section.
+
+    -- * The fundamentals
     -- | These offer the core functionality for Commands. The most imporatnt
     -- functions are 'command' and 'runCommand'.
     -- 
@@ -91,12 +105,14 @@ module Command.Command
     , command
     , runCommand
     , runCommands
+    , customCommand
+    -- ** Compsable Functions
+    -- | These can be composed onto 'command' to overwrite default functionality.
     , help
     , onError
     , defaultErrorHandler
     , requires
-    , customCommand
-    -- * Parsing arguments
+    -- ** Parsing arguments
     -- | The 'ParsableArgument' is the core dataclass for command arguments that
     -- can be parsed. Some special types are added to create functionality
     -- that is unrepresentable in existing Haskell datatypes.
@@ -107,37 +123,10 @@ module Command.Command
     -- you can simply compose together to create parsers.
     , ParsableArgument
     , RemainingText(..)
-    -- * Common Errors
-    -- | Here are some common errors that can occur when defining commands.
-    -- They may appear cryptic, but they are most of the time dealable.
-    --
-    -- @
-    -- Could not deduce (ParsableArgument p0) arising from the use of 'command'.
-    -- The type variable 'p0' is ambiguous.
-    -- @
-    --      * The type for one of the arguments to your handler function cannot
-    --      be inferred. Make sure you use the argument, otherwise, just remove it.
-    --
-    --  @
-    --  Could not deduce (ParsableArgument SomeType) arising from the use of
-    --  'command'.
-    --  @
-    --
-    --      * The type could be inferred as SomeType, but it's not an instance
-    --      of ParsableArgument. Contribute your own parser in @Command/Parser.hs@.
-    --
-    --  @
-    --  Could not deduce (MonadIO m) arising from the use of 'liftIO'.
-    --  @
-    --
-    --      * Your handler requires IO actions, but you haven't given the
-    --      appropriate constraint. Add @MonadIO m@ together with @MonadDiscord@.
-    --      This happens because some handlers are pure and don't need IO -
-    --      it's better to explicitly signify which actions you're going to use
-    --      in the constraints than to add a catch-all constraint into the
-    --      definition of @MonadDiscord@.
-    --
-    -- * The MonadDiscord class
+    -- * Exported classes
+    -- | Here are the monad dataclasses exported from this module.
+
+    -- ** The MonadDiscord class
     -- | MonadDiscord is the underlying Monad class for all interactions to the
     -- Discord REST API. The abstraction makes for great polymorphic receivers
     -- that are easier to test and run from various contexts.
@@ -150,12 +139,44 @@ module Command.Command
     --     * [Link 2]
     -- (https://lexi-lambda.github.io/blog/2017/06/29/unit-testing-effectful-haskell-with-monad-mock/)
     , module Discord.Internal.Monad
-    -- * MonadIO
+    -- ** MonadIO
     -- | Exported solely for convenience purposes, since many modules that use
     -- Commands require the MonadIO constraint, but it can get confusing where
     -- to import it from (UnliftIO or Control.Monad.IO.Class). The one exported
     -- from this module is from "Control.Monad.IO.Class" which is in @base@.
     , MonadIO(..)
+    -- * Common Errors #commonerrors#
+    -- | Here are some common errors that can occur when defining commands.
+    -- They may appear cryptic, but they are most of the time dealable.
+    --
+    -- @
+    -- Could not deduce (ParsableArgument p0) arising from the use of \'command'.
+    -- The type variable 'p0' is ambiguous.
+    -- @
+    --      * The type for one of the arguments to your handler function cannot
+    --      be inferred. Make sure you use the argument, otherwise, just remove it.
+    --
+    --  @
+    --  Could not deduce (ParsableArgument SomeType) arising from the use of
+    --  \'command'.
+    --  @
+    --
+    --      * The type could be inferred as SomeType, but it's not an instance
+    --      of ParsableArgument. Contribute your own parser in @Command/Parser.hs@.
+    --
+    --  @
+    --  Could not deduce (MonadIO m) arising from the use of \'liftIO'.
+    --  @
+    --
+    --      * Your handler requires IO actions, but you haven't given the
+    --      appropriate constraint. Add @(MonadIO m)@.
+    --      * Rationale: This happens because some handlers are pure and don't need IO -
+    --      it's better to explicitly signify which actions you're going to use
+    --      in the constraints than to add a catch-all constraint into the
+    --      definition of @MonadDiscord@.
+    -- 
+    -- If an error is super duper cryptic, it may be a bug in the Commands 
+    -- module itself, in which case we may need a rewrite.
     ) where
 
 import           Control.Applicative        ( Alternative(..)
@@ -198,16 +219,16 @@ import           Command.Parser             ( ParsableArgument(..)
                                             )
 import           Owoifier                   ( owoify )
 
-
 -- | A @Command@ is a datatype containing the metadata for a user-registered
 -- command. 
 --
 -- @Command m@ is a command that runs in the monad @m@, which when called
--- will trigger the polyvariadic handler function @h@. The handler @h@ *must*
--- be in the @m@ monad, else your type-checker will complain.
+-- will trigger a polyvariadic handler function. The handler *must* be in the
+-- @m@ monad, which is enforced by the type-checker (to see the details, look in
+-- @CommandHandlerType@, and read on FunctionalDependencies).
 --
 -- The contents of this abstract datatype are not exported from this module for
--- encapsulation. Use 'command' to instantiate one.
+-- encapsulation. Use 'command' or 'customCommand' to instantiate one.
 data Command m = forall h. Command
     { commandName         :: T.Text
     -- ^ The name of the command.
@@ -245,8 +266,8 @@ data Command m = forall h. Command
 -- instances of 'ParsableArgument'.
 --
 -- The Command that this function creates is polymorphic in the Monad it is run
--- in. This means you can call it from 'DiscordHandler' or 'IO', or any mock
--- monads in tests (as long as they are instances of 'MonadDiscord')
+-- in. This means you can call it from 'DiscordHandler' or 'IO', or any other
+-- Monad that satisfies the constraints of 'MonadDiscord'.
 -- 
 -- @pong@ below responds to a ping by a pong.
 --
@@ -266,8 +287,8 @@ data Command m = forall h. Command
 --     . command "ping" $ \\msg -> respond msg "pong!"
 -- @
 --
--- @weather@ below shows the type signature can be omitted.
--- Here, @location@ is likely inferred to be 'T.Text'.
+-- @weather@ below shows having arbitrary arguments in action. @location@ is
+-- likely inferred to be 'T.Text'.
 --
 -- @
 -- weather = command "weather" $ \\msg location -> do
@@ -275,17 +296,16 @@ data Command m = forall h. Command
 --     respond msg $ "Weather at " <> location <> " is " <> result <> "!"
 -- @
 --
--- @complex@ shows that explicit type signature may help in understanding what
--- the various arguments are. It also shows that you can parse any type! (as
--- long as you create an instance declaration of 'ParsableArgument' for it)
--- You also don't need to have the Message at all if you won't use it.
+-- @complex@ shows that you can parse any type! (as long as you create an
+-- instance declaration of 'ParsableArgument' for it). Ideally this should be
+-- placed in @Command/Parser.hs@ among all the other parsers.
 --
 -- @
 -- instance ParsableArgument Int where
 --     parserForArg msg = do
 --         -- some parsec
 --         parsed \<- read \<$> many digit
---         (eof <|> void (many1 space))
+--         (eof \<|> void (many1 space))
 --         remaining <- getInput
 --         pure (parsed, remaining)
 --
@@ -297,7 +317,7 @@ data Command m = forall h. Command
 command
     :: (CommandHandlerType m h , MonadDiscord m)
     => T.Text
-    -- ^ The name of the command. This is ignored if 'customParser' is used.
+    -- ^ The name of the command.
     -> h
     -- ^ The handler for the command, that takes an arbitrary amount of
     -- 'ParsableArgument's and returns a @m ()@
@@ -314,7 +334,7 @@ command name handler = Command
     }
 
 -- | @onError@ overwrites the default error handler of a command with a custom
--- implementation.
+-- implementation. Usually the default 'defaultErrorHandler' suffices.
 --
 -- @
 -- example
@@ -405,14 +425,16 @@ customCommand parserFunc handler = Command
     , commandRequires     = []
     }
 
--- | @runCommand command msg@ attempts to run the specified 'Command' with the
--- given message. It checks for any requirement failures, then calls the
--- @cmmandArgApplier@ function in the 'Command' ADT. Any errors inside the
+-- | @runCommand command msg@ runs the specified 'Command' with the given
+-- message. It checks for any requirement failures, then calls the
+-- @commandArgApplier@ function in the 'Command' ADT. Any errors inside the
 -- handler is caught and appropriately handled.
 --
--- If a custom parser is defined, the requirements are checked and parser is called.
--- If a custom parser is not defined, the command name is first matched and
--- confirmed, before doing the requirement check and parser calls.
+--     * If a custom parser is defined, the requirements are checked and the
+--     parser is called.
+--     * If a custom parser is not defined, the command name is first matched and
+--     confirmed, before doing the requirement check and parser calls. If the
+--     name does not match, it does nothing (@pure ()@).
 --
 -- @
 -- runCommand pong :: Message -> m ()
@@ -478,8 +500,7 @@ runCommands cmds msg = void $ sequence $ map ($ msg) (map runCommand cmds)
 -- [On argument error] It calls 'respond' with the errors, owoified.
 -- [On requirement error] It sends a DM to the invoking user with the errors.
 -- [On a processing error] It calls 'respond' with the error.
--- [On a Discord error] If a Discord request failed, it's likely that the bot
--- would not be able to respond, so the error is put to stdout.
+-- [On a Discord request failure] It calls 'respond' with the error.
 -- [On a Runtime/Haskell error] It calls 'respond' with the error, owoified.
 defaultErrorHandler
     :: (MonadDiscord m)
@@ -496,7 +517,7 @@ defaultErrorHandler m e =
         ProcessingError x ->
             respond m x
         DiscordError x ->
-            respond m $ T.pack $ "Discord responded with a " <> (show x)
+            respond m $ T.pack $ "Discord request failed with a " <> (show x)
         HaskellError x ->
             respond m (owoify $ T.pack $ show x)
   where
