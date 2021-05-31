@@ -107,7 +107,37 @@ module Command.Command
     -- you can simply compose together to create parsers.
     , ParsableArgument
     , RemainingText(..)
-    -- * The MonadDiscord type
+    -- * Common Errors
+    -- | Here are some common errors that can occur when defining commands.
+    -- They may appear cryptic, but they are most of the time dealable.
+    --
+    -- @
+    -- Could not deduce (ParsableArgument p0) arising from the use of 'command'.
+    -- The type variable 'p0' is ambiguous.
+    -- @
+    --      * The type for one of the arguments to your handler function cannot
+    --      be inferred. Make sure you use the argument, otherwise, just remove it.
+    --
+    --  @
+    --  Could not deduce (ParsableArgument SomeType) arising from the use of
+    --  'command'.
+    --  @
+    --
+    --      * The type could be inferred as SomeType, but it's not an instance
+    --      of ParsableArgument. Contribute your own parser in @Command/Parser.hs@.
+    --
+    --  @
+    --  Could not deduce (MonadIO m) arising from the use of 'liftIO'.
+    --  @
+    --
+    --      * Your handler requires IO actions, but you haven't given the
+    --      appropriate constraint. Add @MonadIO m@ together with @MonadDiscord@.
+    --      This happens because some handlers are pure and don't need IO -
+    --      it's better to explicitly signify which actions you're going to use
+    --      in the constraints than to add a catch-all constraint into the
+    --      definition of @MonadDiscord@.
+    --
+    -- * The MonadDiscord class
     -- | MonadDiscord is the underlying Monad class for all interactions to the
     -- Discord REST API. The abstraction makes for great polymorphic receivers
     -- that are easier to test and run from various contexts.
@@ -122,8 +152,9 @@ module Command.Command
     , module Discord.Internal.Monad
     -- * MonadIO
     -- | Exported solely for convenience purposes, since many modules that use
-    -- Commands require the MonadIO constraint, but it can get confusing which
-    -- one to import. 
+    -- Commands require the MonadIO constraint, but it can get confusing where
+    -- to import it from (UnliftIO or Control.Monad.IO.Class). The one exported
+    -- from this module is from "Control.Monad.IO.Class" which is in @base@.
     , MonadIO(..)
     ) where
 
