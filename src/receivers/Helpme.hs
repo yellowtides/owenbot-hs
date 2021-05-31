@@ -7,6 +7,7 @@ import           Discord            ( DiscordHandler )
 import qualified Data.Text.IO as TIO
 import qualified Data.Text as T
 import           UnliftIO           ( liftIO )
+import           Text.Parsec
 
 import           Owoifier           ( owoify )
 import           Utils              ( sendMessageDM )
@@ -18,7 +19,6 @@ receivers = [ sendHelpDM ]
 sendHelpDM :: (MonadDiscord m, MonadIO m) => Message -> m ()
 sendHelpDM
     = runCommand
-    . requires (channelRequirement "801763198792368129")
     . command "helpme" $ \m -> do
         liftIO (TIO.readFile "./src/assets/help.txt")
             >>= sendMessageDM (userId $ messageAuthor m) . owoify

@@ -17,6 +17,8 @@ import           CSV                    ( readCSV
                                         )
 import           Command
 
+-- | These datatypes in discord-haskell do not derive Read, but it's kinda
+-- necessary to do @readMaybe@, so here we go:
 deriving instance Read UpdateStatusType
 deriving instance Read ActivityType
 

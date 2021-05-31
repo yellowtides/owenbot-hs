@@ -66,6 +66,12 @@ module Command.Command
     -- There are several functions that can be composed onto 'command', such as
     -- 'help' (overwrite the help message), 'onError' (overwrite the error 
     -- handler), or 'requires' (add a requirement for the command).
+    --
+    -- If your command demands a special syntax that is impossible with the
+    -- existing 'command' function, use 'customCommand', where you can provide
+    -- your own parser. It is less powerful however, and is intended to be used
+    -- only for special special special occasions like "::quotes", dad jokes,
+    -- or owoification.
     Command
     , command
     , runCommand
@@ -73,6 +79,7 @@ module Command.Command
     , onError
     , defaultErrorHandler
     , requires
+    , customCommand
     -- * Parsing arguments
     -- | The 'ParsableArgument' is the core dataclass for command arguments that
     -- can be parsed. Some special types are added to create functionality
@@ -127,7 +134,7 @@ import           Text.Parsec                ( runParser
                                             , ParseError
                                             , space
                                             , anyChar
-                                            , char
+                                            , string
                                             , (<|>)
                                             )
 import           UnliftIO                   ( liftIO )
@@ -156,6 +163,9 @@ import           Owoifier                   ( owoify )
 data Command m h = Command
     { commandName         :: T.Text
     -- ^ The name of the command.
+    , commandPrefix       :: String
+    -- ^ The prefix for the command. Not Text because it is used in a parser,
+    -- plus it's usually so short that there is no benefit to using Text here.
     , commandHandler      :: h
     -- ^ The polyvariadic handler function for the command. All of its argument
     -- types must be of 'ParsableArgument'. Its return type after applying all
@@ -164,6 +174,10 @@ data Command m h = Command
     -- ^ The function used to apply the arguments into the @commandHandler@. It
     -- needs to take a 'Message' that triggered the command, the input text in
     -- the message, the handler, and the return monad.
+    , commandCustomParser :: Bool
+    -- ^ Whether to use a custom parser. If true, then parseCommandName will not
+    -- be used, and the custom arg applier will be called. If false, the command
+    -- name will be verified before applyArgs is called.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
@@ -244,15 +258,17 @@ data Command m h = Command
 command
     :: (CommandHandlerType m h , MonadDiscord m)
     => T.Text
-    -- ^ The name of the command.
+    -- ^ The name of the command. This is ignored if 'customParser' is used.
     -> h
     -- ^ The handler for the command, that takes an arbitrary amount of
     -- 'ParsableArgument's and returns a @m ()@
     -> Command m h
 command name handler = Command
     { commandName         = name
+    , commandPrefix       = ":"
     , commandHandler      = handler
     , commandArgApplier   = applyArgs
+    , commandCustomParser = False
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -277,6 +293,23 @@ onError errorHandler cmd = cmd
     { commandErrorHandler = errorHandler
     }
 
+-- | @prefix@ overwrites the default command prefix ":" of a command with a
+-- custom one. This is ignored if 'customParser' is used.
+--
+-- @
+-- example
+--     = prefix "->"
+--     . command "idk" $ do
+--         ...
+-- @
+prefix
+    :: String
+    -> Command m h
+    -> Command m h
+prefix newPrefix cmd = cmd
+    { commandPrefix = newPrefix
+    }
+
 -- | @requires@ adds a requirement to the command. The requirement is a function
 -- that takes a 'Message' and either returns @'Nothing'@ (no problem) or
 -- @'Just' "explanation"@. The function is in the @m@ monad so it can access
@@ -295,12 +328,55 @@ help newHelp cmd = cmd
     { commandHelp = newHelp
     }
 
--- | @runCommand command msg@ attempts to run the specified 'Command' with the
--- given message. It checks the command name, applies/parses the arguments, and
--- catches any errors.
+-- | @customCommand@ defines a command that has no name, and has a custom
+-- parser. It exists to make things like dad jokes and owoification easier, as
+-- they aren't "commands" but can benefit from having a error handling and
+-- parsers. It can also help things like "::quotes" because they have special
+-- syntax that demands a special parser.
+--
+-- 'prefix', if used together, is ignored. Other compoasble functions like
+-- 'help', 'requires', and 'onError' are still valid.
+--
+-- The handler __must__ take a 'Message' and a 'String' as argument (nothing
+-- more, nothing less), where the latter is the result of the parser.
 --
 -- @
--- runCommand pong :: (Message -> m ())
+-- example
+--     = requires moderatorPrivs
+--     . customCommand (string '::' >> many1 anyChar) $ \msg quoteName -> do
+--         ...
+--         -- this is triggered on "::<one or more chars>" where quoteName
+--         -- contains the section enclosed in <>
+-- @
+customCommand
+    :: (MonadDiscord m)
+    => T.Parser String
+    -- ^ The custom parser for the command. It has to return a 'String'.
+    -> (Message -> String -> m ())
+    -- ^ The handler for the command.
+    -> Command m (Message -> String -> m ())
+customCommand parserFunc handler = Command
+    { commandName         = "<custom parser>"
+    , commandPrefix       = "?"
+    , commandHandler      = handler
+    , commandArgApplier   = applyCustomParser parserFunc
+    , commandCustomParser = True
+    , commandErrorHandler = defaultErrorHandler
+    , commandHelp         = "Help not available."
+    , commandRequires     = []
+    }
+
+-- | @runCommand command msg@ attempts to run the specified 'Command' with the
+-- given message. It checks for any requirement failures, then calls the
+-- @cmmandArgApplier@ function in the 'Command' ADT. Any errors inside the
+-- handler is caught and appropriately handled.
+--
+-- If a custom parser is defined, the requirements are checked and parser is called.
+-- If a custom parser is not defined, the command name is first matched and
+-- confirmed, before doing the requirement check and parser calls.
+--
+-- @
+-- runCommand pong :: Message -> m ()
 -- @
 runCommand
     :: forall m h.
@@ -310,28 +386,34 @@ runCommand
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand command msg =
-    -- First check that the command name is correct.
-    case runParser (parseCommandName command) () "" (messageText msg) of
-        Left e -> pure ()
-        Right args -> do
-            -- Then check for requirements. checks is a list of Maybes
-            checks <- sequence $ map ($ msg) (commandRequires command)
-            let failedChecks = catMaybes checks
-            if null failedChecks
-                then do
-                    let handler = commandHandler command
-                    -- Apply the arguments one by one on the appropriate handler
-                    ((commandArgApplier command) msg args handler)
-                        -- Asynchrnous errors are not caught as the `catch`
-                        -- comes from Control.Exception.Safe. This is good.
-                        `catch` basicErrorCatcher
-                        `catch` allErrorCatcher
-                else
-                    basicErrorCatcher (RequirementError $ head failedChecks)
-
+runCommand command msg = case commandCustomParser command of
+    True -> doChecksAndRunCommand ""
+    False -> do
+        -- First check that the command name is correct, and extract arguments.
+        case runParser (parseCommandName command) () "" (messageText msg) of
+            Left e -> pure ()
+            Right args -> doChecksAndRunCommand args
 
   where
+    doChecksAndRunCommand :: T.Text -> m ()
+    doChecksAndRunCommand args = do
+        -- Check for requirements. checks will be a list of Maybes
+        checks <- sequence $ map ($ msg) (commandRequires command)
+        -- only get the Justs
+        let failedChecks = catMaybes checks
+        if null failedChecks
+            then do
+                let handler = commandHandler command
+                -- Apply the arguments one by one on the appropriate handler
+                ((commandArgApplier command) msg args handler)
+                    -- Asynchrnous errors are not caught as the `catch`
+                    -- comes from Control.Exception.Safe. This is good.
+                    `catch` basicErrorCatcher
+                    `catch` allErrorCatcher
+            else
+                -- give the first requirement error to the error handler
+                basicErrorCatcher (RequirementError $ head failedChecks)
+
     -- | Catch CommandErrors and handle them with the handler
     basicErrorCatcher :: CommandError -> m ()
     basicErrorCatcher = (commandErrorHandler command) msg
@@ -386,6 +468,7 @@ defaultErrorHandler m e =
 
 
 
+
 -- @CommandHandlerType@ is a dataclass for all types of arguments that a
 -- command handler may have. Its only function is @applyArgs@.
 class (MonadThrow m) => CommandHandlerType m h | h -> m where
@@ -427,13 +510,35 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
             Left e -> throwM $ ArgumentParseError e
             Right (x, remaining) -> applyArgs msg remaining (handler x)
 
+
+-- | @applyCustomParser@ is in a similar fashion to @applyArgs@. In fact, if
+-- you apply the first Parser argument, it is completely identical. In fact x2,
+-- some arguments are not even used, just to make it completely isomorphic.
+--
+-- This is used when there is a custom parser that's defined. It only has one
+-- possible instance (@Message -> String -> m ()@), so no special class is
+-- defined like with CommandHandlerType (that is polyvariadic).
+applyCustomParser
+    :: (Monad m)
+    => T.Parser String 
+    -> Message
+    -> T.Text
+    -> (Message -> String -> m ())
+    -> m ()
+applyCustomParser parser msg name handler =
+    case runParser parser () "" (messageText msg) of
+        Left e -> pure ()
+        Right result -> handler msg result
+
+
+
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
 -- If there are no arguments, it will return the empty text, "".
 parseCommandName :: Command m h -> T.Parser T.Text
 parseCommandName cmd = do
     -- consume prefix
-    char ':'
+    string (commandPrefix cmd)
     -- consume at least 1 character until a space is encountered
     -- don't consume the space
     cmdName <- manyTill1 anyChar (void (lookAhead space) <|> eof)

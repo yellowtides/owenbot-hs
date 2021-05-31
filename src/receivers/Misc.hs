@@ -8,6 +8,7 @@ import              Discord
 import              Discord.Internal.Rest.User
 import              Discord.Internal.Rest.Guild
 
+import              Data.Char               ( toUpper )
 import qualified    Data.Maybe as M
 import qualified    Data.Text.IO as TIO
 import qualified    Data.Text as T
@@ -26,7 +27,9 @@ import              System.Random           ( randomR
                                             , randomRIO
                                             )
 
-
+import qualified    Text.Parsec.Text as T
+import              Text.Parsec
+import              Command
 import              Utils                   ( sendMessageChan
                                             , sendReply
                                             , sendFileChan
@@ -106,17 +109,28 @@ godIsDead m = do
     when isMatch $ liftIO (TIO.readFile $ assetDir <> "nietzsche.txt")
             >>= sendMessageChan (messageChannel m) . owoify
 
-thatcherRE :: T.Text
-thatcherRE = "thatcher('s *| *[Ii]s) *"
+-- | A custom Parsec parser :)
+thatcherParser :: String -> T.Parser String
+thatcherParser verb = do
+    string "thatcher"
+    (string "'s" <|> (many1 space >> (string "is" <|> string "Is")))
+    many1 space
+    (char (head verb) <|> char ((toUpper . head) verb))
+    string (tail verb)
+    pure ""
 
 thatcherIsDead :: Message -> DiscordHandler ()
-thatcherIsDead m = when (messageText m =~= (thatcherRE <> "[Dd]ead"))
-        $ sendMessageChan (messageChannel m)
+thatcherIsDead
+    = runCommand
+    . customCommand (thatcherParser "dead") $ \m _ ->
+        sendMessageChan (messageChannel m)
             "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
 thatcherIsAlive :: Message -> DiscordHandler ()
-thatcherIsAlive m = when (messageText m =~= (thatcherRE <> "[Aa]live"))
-        $ sendFileChan (messageChannel m)
+thatcherIsAlive
+    = runCommand
+    . customCommand (thatcherParser "alive") $ \m _ ->
+        sendFileChan (messageChannel m)
             "god_help_us_all.mp4" $ assetDir <> "god_help_us_all.mp4"
 
 dadJokeIfPossible :: Message -> DiscordHandler ()
