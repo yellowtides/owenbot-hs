@@ -33,6 +33,7 @@ dependencies:
 - pointfree
 - process
 - random
+- req
 - regex-tdfa
 - safe-exceptions
 - split

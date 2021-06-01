@@ -1,19 +1,52 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-} -- allow instance declaration of MonadDiscord
+{-
+Module      : Discord.Internal.Monad
+License     : BSD (see the LICENSE file)
+Description : The DiscordMonad class and its instances.
+
+This module contains the 'MonadDiscord' data class, which abstracts away all
+the possible REST interactions with Discord. It also defines the 'DiscordHandler'
+instance for it.
+
+-}
 module Discord.Internal.Monad
     ( MonadDiscord(..)
     ) where
 
+import           Control.Concurrent         ( threadDelay )
 import           Control.Exception.Safe     ( MonadThrow
                                             , MonadMask
                                             , SomeException
                                             , throwM
+                                            , try
                                             )
-import           Control.Monad.IO.Class     ( MonadIO )
+import           Control.Monad.IO.Class     ( MonadIO
+                                            , liftIO
+                                            )
 import           Control.Monad              ( void )
+import           Control.Monad.Reader       ( ReaderT
+                                            , ask
+                                            )
+import           Data.Aeson                 ( FromJSON
+                                            , eitherDecode
+                                            )
+import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString as B
+import           Data.Ix                    ( inRange )
+import qualified Data.Text.Encoding as TE
 import qualified Data.Text as T
+import           Data.Time.Clock.POSIX      ( POSIXTime
+                                            , getPOSIXTime
+                                            )
+import qualified Network.HTTP.Req as Req
+import           Text.Read                  ( readMaybe )
+
 import           Discord.Internal.Rest.Prelude
-                                            ( Request )
+import           Discord.Internal.Rest.HTTP ( RestCallInternalException(..)
+                                            , Request(..)
+                                            , JsonRequest(..)
+                                            )
 import qualified Discord.Requests as R
 import           Discord.Types
 import           Discord
@@ -124,9 +157,6 @@ class (Monad m, MonadThrow m, MonadMask m, MonadFail m) => MonadDiscord m where
     deleteWebhookWithToken :: WebhookId -> T.Text -> m ()
     executeWebhookWithToken :: WebhookId -> T.Text -> R.ExecuteWebhookWithTokenOpts -> m ()
 
-    -- Gateway
-    updateStatus :: UpdateStatusType -> ActivityType -> T.Text -> m ()
-
     -- Custom utilities
     respond       :: Message -> T.Text -> m ()
 
@@ -234,19 +264,6 @@ instance MonadDiscord DiscordHandler where
     deleteWebhookWithToken = (restCallAndHandle .) . R.DeleteWebhookWithToken
     executeWebhookWithToken = ((restCallAndHandle .) .) . R.ExecuteWebhookWithToken
 
-    -- Gateway
-    updateStatus newStatus newType newName = sendCommand $
-        UpdateStatus $ UpdateStatusOpts
-            { updateStatusOptsSince = Nothing
-            , updateStatusOptsGame = Just $ Activity
-                { activityName = newName
-                , activityType = newType
-                , activityUrl = Nothing
-                }
-            , updateStatusOptsNewStatus = newStatus
-            , updateStatusOptsAFK = False
-            }
-
     -- Custom utilities
     respond m t = void $ createMessage (messageChannel m) t
 
@@ -256,11 +273,196 @@ restCallAndHandle :: (Request (r a), FromJSON a) => r a -> DiscordHandler a
 restCallAndHandle req = restCall req >>= handleDiscordResult
 
 -- | Handles the response of discord-haskell's REST calls in DiscordHandler
--- and throws a 'EinmyriaError' (@DiscordError@) if the call errored.
+-- and throws a 'DiscordError' if the call errored.
 handleDiscordResult :: Either RestCallErrorCode a -> DiscordHandler a
 handleDiscordResult result =
     case result of
         Left e  -> throwM $ DiscordError e
         Right x -> pure $ x
 
+-- | Unfortunately, IO cannot be an instance of MonadDiscord because it needs
+-- access to the Auth tokens, but that can't be put in the type signature.
+-- So it needs to be implicitly passed through a ReaderT.
+--
+-- [Usage:]
+-- @
+-- import Control.Monad.Reader ( runReaderT )
+-- someFunc :: IO ()
+-- someFunc = runReaderT (createMessage 1234 "text" >> pure ()) (Auth "tokenhere")
+-- @
+instance MonadDiscord (ReaderT Auth IO) where
+    getChannel = callRestIO . R.GetChannel
+    modifyChannel = (callRestIO .) . R.ModifyChannel
+    deleteChannel = callRestIO . R.DeleteChannel
+    getChannelMessages = (callRestIO .) . R.GetChannelMessages
+    getChannelMessage = callRestIO . R.GetChannelMessage
+    createMessage = (callRestIO .) . R.CreateMessage
+    createMessageEmbed = ((callRestIO .) .) . R.CreateMessageEmbed
+    createMessageUploadFile = ((callRestIO .) .) . R.CreateMessageUploadFile
+    createMessageDetailed = (callRestIO .) . R.CreateMessageDetailed
+    createReaction = (callRestIO .) . R.CreateReaction
+    deleteOwnReaction = (callRestIO .) . R.DeleteOwnReaction
+    deleteUserReaction = ((callRestIO .) .) . R.DeleteUserReaction
+    deleteSingleReaction = (callRestIO .) . R.DeleteSingleReaction
+    getReactions = ((callRestIO .) .) . R.GetReactions
+    -- getReactions = callRestIO <=< R.GetReactions
+    deleteAllReactions = callRestIO . R.DeleteAllReactions
+    editMessage = ((callRestIO .) .) . R.EditMessage
+    deleteMessage = callRestIO . R.DeleteMessage
+    bulkDeleteMessage = callRestIO . R.BulkDeleteMessage
+    editChannelPermissions = ((callRestIO .) .) . R.EditChannelPermissions
+    getChannelInvites = callRestIO . R.GetChannelInvites
+    createChannelInvite = (callRestIO .) . R.CreateChannelInvite
+    deleteChannelPermission = (callRestIO .) . R.DeleteChannelPermission
+    triggerTypingIndicator = callRestIO . R.TriggerTypingIndicator
+    getPinnedMessages = callRestIO . R.GetPinnedMessages
+    addPinnedMessage = callRestIO . R.AddPinnedMessage
+    deletePinnedMessage = callRestIO . R.DeletePinnedMessage
+    groupDMAddRecipient = (callRestIO .) . R.GroupDMAddRecipient
+    groupDMRemoveRecipient = (callRestIO .) . R.GroupDMRemoveRecipient
+    -- Emojis
+    listGuildEmojis = callRestIO . R.ListGuildEmojis
+    getGuildEmoji = (callRestIO .) . R.GetGuildEmoji
+    createGuildEmoji g t b =
+        case R.parseEmojiImage b of
+            Left x  -> throwM $ ProcessingError x
+            Right x -> callRestIO $ R.CreateGuildEmoji g t x
+    modifyGuildEmoji = ((callRestIO .) .) . R.ModifyGuildEmoji
+    deleteGuildEmoji = (callRestIO .) . R.DeleteGuildEmoji
+    -- Guilds
+    createGuild = callRestIO . R.CreateGuild
+    getGuild = callRestIO . R.GetGuild
+    modifyGuild = (callRestIO .) . R.ModifyGuild
+    deleteGuild = callRestIO . R.DeleteGuild
+    getGuildChannels = callRestIO . R.GetGuildChannels
+    createGuildChannel = (((callRestIO .) .) .) . R.CreateGuildChannel
+    modifyGuildChannelPositions = (callRestIO .) . R.ModifyGuildChannelPositions
+    getGuildMember = (callRestIO .) . R.GetGuildMember
+    listGuildMembers = (callRestIO .) . R.ListGuildMembers
+    addGuildMember = ((callRestIO .) .) . R.AddGuildMember
+    modifyGuildMember = ((callRestIO .) .) . R.ModifyGuildMember
+    modifyCurrentUserNick = (callRestIO .) . R.ModifyCurrentUserNick
+    addGuildMemberRole = ((callRestIO .) .) . R.AddGuildMemberRole
+    removeGuildMemberRole = ((callRestIO .) .) . R.RemoveGuildMemberRole
+    removeGuildMember = (callRestIO .) . R.RemoveGuildMember
+    getGuildBans = callRestIO . R.GetGuildBans
+    getGuildBan = (callRestIO .) . R.GetGuildBan
+    createGuildBan = ((callRestIO .) .) . R.CreateGuildBan
+    removeGuildBan = (callRestIO .) . R.RemoveGuildBan
+    getGuildRoles = callRestIO . R.GetGuildRoles
+    createGuildRole = (callRestIO .) . R.CreateGuildRole
+    modifyGuildRolePositions = (callRestIO .) . R.ModifyGuildRolePositions
+    modifyGuildRole = ((callRestIO .) .) . R.ModifyGuildRole
+    deleteGuildRole = (callRestIO .) . R.DeleteGuildRole
+    getGuildPruneCount = (callRestIO .) . R.GetGuildPruneCount
+    beginGuildPrune = (callRestIO .) . R.BeginGuildPrune
+    getGuildVoiceRegions = callRestIO . R.GetGuildVoiceRegions
+    getGuildInvites = callRestIO . R.GetGuildInvites
+    getGuildIntegrations = callRestIO . R.GetGuildIntegrations
+    createGuildIntegration = ((callRestIO .) .) . R.CreateGuildIntegration
+    modifyGuildIntegration = ((callRestIO .) .) . R.ModifyGuildIntegration
+    deleteGuildIntegration = (callRestIO .) . R.DeleteGuildIntegration
+    syncGuildIntegration = (callRestIO .) . R.SyncGuildIntegration
+    getGuildEmbed = callRestIO . R.GetGuildEmbed
+    modifyGuildEmbed = (callRestIO .) . R.ModifyGuildEmbed
+    getGuildVanityURL = callRestIO . R.GetGuildVanityURL
+    -- Invites
+    getInvite = callRestIO . R.GetInvite
+    deleteInvite = callRestIO . R.DeleteInvite
+    -- Users
+    getCurrentUser = callRestIO R.GetCurrentUser
+    getUser = callRestIO . R.GetUser
+    modifyCurrentUser = (callRestIO .) . R.ModifyCurrentUser
+    getCurrentUserGuilds = callRestIO R.GetCurrentUserGuilds
+    leaveGuild = callRestIO . R.LeaveGuild
+    getUserDMs = callRestIO R.GetUserDMs
+    createDM = callRestIO . R.CreateDM
+    getUserConnections = callRestIO R.GetUserConnections
+    -- Voice
+    listVoiceRegions = callRestIO R.ListVoiceRegions
+    -- Webhooks
+    createWebhook = (callRestIO .) . R.CreateWebhook
+    getChannelWebhooks = callRestIO . R.GetChannelWebhooks
+    getGuildWebhooks = callRestIO . R.GetGuildWebhooks
+    getWebhook = callRestIO . R.GetWebhook
+    getWebhookWithToken = (callRestIO .) . R.GetWebhookWithToken
+    modifyWebhook = (callRestIO .) . R.ModifyWebhook
+    modifyWebhookWithToken = ((callRestIO .) .) . R.ModifyWebhookWithToken
+    deleteWebhook = callRestIO . R.DeleteWebhook
+    deleteWebhookWithToken = (callRestIO .) . R.DeleteWebhookWithToken
+    executeWebhookWithToken = ((callRestIO .) .) . R.ExecuteWebhookWithToken
+
+    -- Custom utilities
+    respond m t = void $ createMessage (messageChannel m) t
+
+data RequestResponse
+    = ResponseTryAgain
+    | ResponseByteString BL.ByteString
+    | ResponseErrorCode Int B.ByteString B.ByteString
+    deriving (Show)
+
+-- the following is a GIGANTIC mess basically cut and pasted from discord-haskell
+-- 's internals, because it's not exported.
+
+callRestIO
+    :: (Request (r a), FromJSON a)
+    => r a
+    -> ReaderT Auth IO a
+callRestIO req = do
+    -- get the token
+    auth <- ask
+    let action = compileRequest auth (jsonRequest req)
+    resp <- liftIO $ restIOtoIO action
+    let response = getResponse resp
+    case eitherDecode <$> response of
+        Right (Right o) -> pure o
+        Right (Left er) -> do
+            let formaterr = T.pack $ "Response could not be parsed " <> er
+            throwM $ DiscordError $ RestCallErrorCode 400 "whoops" formaterr
+        Left (RestCallInternalErrorCode c e1 e2) ->
+            throwM $ DiscordError $ RestCallErrorCode c (TE.decodeUtf8 e1) (TE.decodeUtf8 e2)
+        Left (RestCallInternalHttpException _) -> do
+            liftIO $ threadDelay (10 * 10^(6 :: Int))
+            callRestIO req
+
+  where
+    getResponse :: Req.LbsResponse -> Either RestCallInternalException BL.ByteString
+    getResponse resp =
+      let
+        body   = Req.responseBody resp
+        code   = Req.responseStatusCode resp
+        status = Req.responseStatusMessage resp
+      in
+        case () of
+            _ | code == 429 -> Left $ RestCallInternalHttpException $
+                Req.JsonHttpException "try again"
+            _ | code `elem` [500, 502] -> Left $ RestCallInternalHttpException $
+                Req.JsonHttpException "try again (system error)"
+            _ | code >= 200 && code <= 299 ->
+                case body of
+                    "" -> Right "[]"
+                    bs -> Right bs
+            _ | otherwise -> Left $ RestCallInternalErrorCode
+                code status (BL.toStrict body)
+
+-- | From a JsonRequest, create a RestIO thingy with the appropriately auth
+-- headers. Idk why this is necessary but it doesn't work without it.
+compileRequest :: Auth -> JsonRequest -> RestIO Req.LbsResponse
+compileRequest auth request = 
+    case request of
+        (Delete url opts) ->
+            Req.req Req.DELETE url Req.NoReqBody Req.lbsResponse (authopt <> opts)
+        (Get url opts) ->
+            Req.req Req.GET url Req.NoReqBody Req.lbsResponse (authopt <> opts)
+        (Put url body opts) ->
+            Req.req Req.PUT url body Req.lbsResponse (authopt <> opts)
+        (Patch url body opts) -> do
+            b <- body
+            Req.req Req.PATCH url b Req.lbsResponse (authopt <> opts)
+        (Post url body opts) -> do
+            b <- body
+            Req.req Req.POST url b Req.lbsResponse (authopt <> opts)
+
+  where
+    authopt = authHeader auth <> Req.header "X-RateLimit-Precision" "millisecond"
 

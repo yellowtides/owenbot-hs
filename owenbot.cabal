@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 425ad7a33ae20a78424d8d7c63db04a47de11fb66b4d98d3dd84fe0b09f6afde
+-- hash: 1fb5fd453c31ac1d7f64fdd1dbf032f693d39802f371b98b80bc48e720e664b9
 
 name:           owenbot
 version:        0.1.0.0
@@ -76,6 +76,7 @@ library
     , process
     , random
     , regex-tdfa
+    , req
     , safe-exceptions
     , split
     , text
@@ -112,6 +113,7 @@ executable owenbot-exe
     , process
     , random
     , regex-tdfa
+    , req
     , safe-exceptions
     , split
     , text
@@ -155,6 +157,7 @@ test-suite owenbot-test
     , quickcheck-instances
     , random
     , regex-tdfa
+    , req
     , safe-exceptions
     , split
     , text

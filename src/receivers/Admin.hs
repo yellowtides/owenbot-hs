@@ -37,7 +37,9 @@ import           Utils                  ( newDevCommand
                                         , devIDs
                                         , update
                                         )
-import           Status                 ( editStatusFile )
+import           Status                 ( editStatusFile
+                                        , updateStatus
+                                        )
 import           CSV                    ( readSingleColCSV
                                         , writeSingleColCSV
                                         )
@@ -165,10 +167,6 @@ statusRE = "(online|idle|dnd|invisible) "
            <> "(playing|streaming|competing|listening to) "
            <> "(.*)"
 
--- | Checks the input against the correct version of :status
--- If incorrect, return appropriate messages
--- If correct, pass onto Status.updateStatus
--- setStatus :: (MonadDiscord m) => Command m (Message -> UpdateStatusType -> ActivityType -> RemainingText -> m ())
 setStatus =
     command "status"
     $ \msg newStatus newType (Remaining newName) -> do

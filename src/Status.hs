@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE StandaloneDeriving #-}
-module Status(editStatusFile, setStatusFromFile) where
+module Status(editStatusFile, setStatusFromFile, updateStatus) where
 
 import           Control.Monad          ( when )
 import           Control.Exception.Safe ( onException )
@@ -22,12 +22,27 @@ import           Command
 deriving instance Read UpdateStatusType
 deriving instance Read ActivityType
 
+-- | 'updateStatus' updates the status through the Discord gateway.
+-- Therefore, it requires DiscordHandler and is not polymorphic.
+updateStatus :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()
+updateStatus newStatus newType newName = sendCommand $
+    UpdateStatus $ UpdateStatusOpts
+        { updateStatusOptsSince = Nothing
+        , updateStatusOptsGame = Just $ Activity
+            { activityName = newName
+            , activityType = newType
+            , activityUrl = Nothing
+            }
+        , updateStatusOptsNewStatus = newStatus
+        , updateStatusOptsAFK = False
+        }
+
 -- | @setStatusFromFile@ reads "status.csv" from the Config directory, and
 -- reads in the 3 columns as 'UpdateStatusType', 'ActivityType', and 'T.Text'.
 -- The values are used to call 'updateStatus'. 
 --
 -- Incorrect formats (read parse errors) are ignored.
-setStatusFromFile :: (MonadDiscord m, MonadIO m) => m ()
+setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
     when (length line >= 3) $ do

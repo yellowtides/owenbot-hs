@@ -12,7 +12,7 @@ import           Discord                ( runDiscord
                                                          , discordOnLog
                                                          ), restCall
                                         )
-import           Discord.Types          ( ChannelId, User (userName), Event (ChannelCreate) )
+import           Discord.Types
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
@@ -40,13 +40,13 @@ owen t = do
                                             putStrLn ("[Info] " ++ T.unpack s)}
     putStrLn (T.unpack userFacingError)
 
-startHandler :: (MonadDiscord m, MonadIO m) => m ()
+startHandler :: DiscordHandler ()
 startHandler = do
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
-    sendGitInfoChan startupChan
-    sendInstanceInfoChan startupChan
-    changePronouns
+    -- sendGitInfoChan startupChan
+    -- sendInstanceInfoChan startupChan
+    -- changePronouns
     liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
