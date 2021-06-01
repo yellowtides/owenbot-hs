@@ -6,8 +6,8 @@ License     : BSD (see the LICENSE file)
 Description : The DiscordMonad class and its instances.
 
 This module contains the 'MonadDiscord' data class, which abstracts away all
-the possible REST interactions with Discord. It also defines the 'DiscordHandler'
-instance for it.
+the possible REST interactions with Discord. It also defines instances for
+'DiscordHandler' and 'ReaderT Auth IO'.
 
 -}
 module Discord.Internal.Monad
@@ -177,7 +177,6 @@ instance MonadDiscord DiscordHandler where
     deleteUserReaction = ((restCallAndHandle .) .) . R.DeleteUserReaction
     deleteSingleReaction = (restCallAndHandle .) . R.DeleteSingleReaction
     getReactions = ((restCallAndHandle .) .) . R.GetReactions
-    -- getReactions = restCallAndHandle <=< R.GetReactions
     deleteAllReactions = restCallAndHandle . R.DeleteAllReactions
     editMessage = ((restCallAndHandle .) .) . R.EditMessage
     deleteMessage = restCallAndHandle . R.DeleteMessage
@@ -282,7 +281,7 @@ handleDiscordResult result =
 
 -- | Unfortunately, IO cannot be an instance of MonadDiscord because it needs
 -- access to the Auth tokens, but that can't be put in the type signature.
--- So it needs to be implicitly passed through a ReaderT.
+-- So instead, it is implicitly passed through a ReaderT.
 --
 -- [Usage:]
 -- @
@@ -305,7 +304,6 @@ instance MonadDiscord (ReaderT Auth IO) where
     deleteUserReaction = ((callRestIO .) .) . R.DeleteUserReaction
     deleteSingleReaction = (callRestIO .) . R.DeleteSingleReaction
     getReactions = ((callRestIO .) .) . R.GetReactions
-    -- getReactions = callRestIO <=< R.GetReactions
     deleteAllReactions = callRestIO . R.DeleteAllReactions
     editMessage = ((callRestIO .) .) . R.EditMessage
     deleteMessage = callRestIO . R.DeleteMessage
@@ -395,15 +393,20 @@ instance MonadDiscord (ReaderT Auth IO) where
     -- Custom utilities
     respond m t = void $ createMessage (messageChannel m) t
 
+
+-- the following is a GIGANTIC mess basically cut and pasted from discord-haskell's
+-- internals and simplified, because it's alas, not exported.
+
 data RequestResponse
     = ResponseTryAgain
     | ResponseByteString BL.ByteString
     | ResponseErrorCode Int B.ByteString B.ByteString
     deriving (Show)
 
--- the following is a GIGANTIC mess basically cut and pasted from discord-haskell
--- 's internals, because it's not exported.
-
+-- | Do an IO call to get the result of the request, and throw errors
+-- whenever some error occurs. A simplified version of the logic within
+-- discord-haskell's Discord.Internal.Rest.HTTP module, as it doesn't need to
+-- store the error information, it can just throw it.
 callRestIO
     :: (Request (r a), FromJSON a)
     => r a
@@ -411,44 +414,35 @@ callRestIO
 callRestIO req = do
     -- get the token
     auth <- ask
+    -- create a request with the auth in the header
     let action = compileRequest auth (jsonRequest req)
+    -- send off the request, get the response
     resp <- liftIO $ restIOtoIO action
-    let response = getResponse resp
-    case eitherDecode <$> response of
-        Right (Right o) -> pure o
-        Right (Left er) -> do
-            let formaterr = T.pack $ "Response could not be parsed " <> er
-            throwM $ DiscordError $ RestCallErrorCode 400 "whoops" formaterr
-        Left (RestCallInternalErrorCode c e1 e2) ->
-            throwM $ DiscordError $ RestCallErrorCode c (TE.decodeUtf8 e1) (TE.decodeUtf8 e2)
-        Left (RestCallInternalHttpException _) -> do
+    let body = Req.responseBody resp
+        code = Req.responseStatusCode resp
+        status = TE.decodeUtf8 $ Req.responseStatusMessage resp
+    case () of
+        _ | code `elem` [429, 500, 502] -> do
+            -- wait a bit before retrying.
             liftIO $ threadDelay (10 * 10^(6 :: Int))
             callRestIO req
-
-  where
-    getResponse :: Req.LbsResponse -> Either RestCallInternalException BL.ByteString
-    getResponse resp =
-      let
-        body   = Req.responseBody resp
-        code   = Req.responseStatusCode resp
-        status = Req.responseStatusMessage resp
-      in
-        case () of
-            _ | code == 429 -> Left $ RestCallInternalHttpException $
-                Req.JsonHttpException "try again"
-            _ | code `elem` [500, 502] -> Left $ RestCallInternalHttpException $
-                Req.JsonHttpException "try again (system error)"
-            _ | code >= 200 && code <= 299 ->
-                case body of
-                    "" -> Right "[]"
-                    bs -> Right bs
-            _ | otherwise -> Left $ RestCallInternalErrorCode
-                code status (BL.toStrict body)
+        _ | code >= 200 && code <= 299 -> do
+            let parsableBody = if body == "" then "[]" else body
+            case eitherDecode parsableBody of
+                Right o -> pure o
+                Left er -> do
+                    let formaterr = T.pack $ "Response could not be parsed " <> er
+                    throwM $ DiscordError $ RestCallErrorCode code "err" formaterr
+        _ | otherwise -> do
+            throwM $ DiscordError $ RestCallErrorCode code status (TE.decodeUtf8 $ BL.toStrict body)
 
 -- | From a JsonRequest, create a RestIO thingy with the appropriately auth
 -- headers. Idk why this is necessary but it doesn't work without it.
 compileRequest :: Auth -> JsonRequest -> RestIO Req.LbsResponse
 compileRequest auth request = 
+  let
+    authopt = authHeader auth <> Req.header "X-RateLimit-Precision" "millisecond"
+  in
     case request of
         (Delete url opts) ->
             Req.req Req.DELETE url Req.NoReqBody Req.lbsResponse (authopt <> opts)
@@ -462,7 +456,4 @@ compileRequest auth request =
         (Post url body opts) -> do
             b <- body
             Req.req Req.POST url b Req.lbsResponse (authopt <> opts)
-
-  where
-    authopt = authHeader auth <> Req.header "X-RateLimit-Precision" "millisecond"
 
