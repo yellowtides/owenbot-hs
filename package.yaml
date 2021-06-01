@@ -18,32 +18,33 @@ extra-source-files:
 description:         A neat Discord bot written in Haskell.
 
 dependencies:
-- aeson
+- aeson # comes with discord-haskell
+- attoparsec # comes with aeson
 - base >= 4.7 && < 5
-- bytestring
+- bytestring # comes with discord-haskell
 - cassava
-- containers
+- containers # comes with discord-haskell
 - discord-haskell
 - directory
 - hashable
 - http-conduit
-- mtl
+- mtl # comes with discord-haskell
 - network-bsd
 - parsec
 - pointfree
 - process
 - random
-- req
+- req # comes with discord-haskell
 - regex-tdfa
-- safe-exceptions
+- safe-exceptions # comes with discord-haskell
 - split
-- time
+- time # comes with discord-haskell
 - text
 - unix
-- unliftio
-- unordered-containers
+- unliftio # comes with discord-haskell
+- unordered-containers # comes with discord-haskell
 - uri-encode
-- vector
+- vector # comes with discord-haskell
 
 library:
   source-dirs:

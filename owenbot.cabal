@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1fb5fd453c31ac1d7f64fdd1dbf032f693d39802f371b98b80bc48e720e664b9
+-- hash: 8a8c965e905059f6d7f5012c7f56e083f403ab4033e1a1f247d84302789161e0
 
 name:           owenbot
 version:        0.1.0.0
@@ -61,6 +61,7 @@ library
       src/receivers
   build-depends:
       aeson
+    , attoparsec
     , base >=4.7 && <5
     , bytestring
     , cassava
@@ -97,6 +98,7 @@ executable owenbot-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , attoparsec
     , base >=4.7 && <5
     , bytestring
     , cassava
@@ -139,6 +141,7 @@ test-suite owenbot-test
   build-depends:
       QuickCheck
     , aeson
+    , attoparsec
     , base >=4.7 && <5
     , bytestring
     , cassava

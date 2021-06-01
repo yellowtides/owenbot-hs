@@ -180,6 +180,7 @@ module Command.Command
     ) where
 
 import           Control.Applicative        ( Alternative(..)
+                                            , liftA2
                                             )
 import           Control.Exception.Safe     ( catch
                                             , throwM
@@ -193,20 +194,10 @@ import           Control.Monad              ( void
                                             , guard
                                             , unless
                                             )
+import           Data.Attoparsec.Text       
 import           Data.Maybe                 ( catMaybes )
 import qualified Data.Text as T
-import           Text.Parsec.Combinator
-import           Text.Parsec.Error          ( errorMessages
-                                            , showErrorMessages
-                                            )
 import qualified Text.Parsec.Text as T
-import           Text.Parsec                ( runParser
-                                            , eof
-                                            , ParseError
-                                            , space
-                                            , anyChar
-                                            , string
-                                            )
 import           Text.Regex.TDFA            ( (=~) )
 import           UnliftIO                   ( liftIO )
 
@@ -217,7 +208,6 @@ import           Discord
 import           Command.Error              ( CommandError(..) )
 import           Command.Parser             ( ParsableArgument(..)
                                             , RemainingText(..)
-                                            , manyTill1
                                             )
 import           Owoifier                   ( owoify )
 
@@ -405,9 +395,9 @@ help newHelp cmd = cmd
 -- @
 parsecCommand
     :: (MonadDiscord m)
-    => T.Parser String
+    => Parser T.Text
     -- ^ The custom parser for the command. It has to return a 'String'.
-    -> (Message -> String -> m ())
+    -> (Message -> T.Text -> m ())
     -- ^ The handler for the command.
     -> Command m
 parsecCommand parserFunc handler = Command
@@ -478,8 +468,8 @@ runCommand cmd@Command{..} msg =
         (True, applier) -> doChecksAndRunCommand applier ""
         (False, applier) -> do
             -- Check that the command name is correct, and extract arguments.
-            case runParser (parseCommandName cmd) () "" (messageText msg) of
-                Left e -> pure ()
+            case parseOnly (parseCommandName cmd) (messageText msg) of
+                Left er -> pure ()
                 Right args -> doChecksAndRunCommand applier args
 
   where
@@ -554,7 +544,7 @@ defaultErrorHandler
 defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
-            respond m $ owoify $ T.pack $ showWithoutPos x
+            respond m $ owoify $ x
         RequirementError x -> do
             chan <- createDM (userId $ messageAuthor m)
             void $ createMessage (channelId chan) x
@@ -568,9 +558,9 @@ defaultErrorHandler m e =
     -- The default 'Show' instance for ParseError contains the error position,
     -- which only adds clutter in a Discord message. This defines a much
     -- simpler string representation.
-    showWithoutPos :: ParseError -> String
-    showWithoutPos err = showErrorMessages "or" "unknown parse error"
-        "expecting" "unexpected" "end of input" (errorMessages err)
+    -- showWithoutPos :: ParseError -> String
+    -- showWithoutPos err = showErrorMessages "or" "unknown parse error"
+    --     "expecting" "unexpected" "end of input" (errorMessages err)
 
 
 
@@ -596,15 +586,15 @@ class (MonadThrow m) => CommandHandlerType m h | h -> m where
 -- | For the case when all arguments have been applied. Base case.
 instance (MonadThrow m) => CommandHandlerType m (m ()) where
     applyArgs msg input handler = 
-        case runParser eof () "" input of
-            Left e -> throwM $ ArgumentParseError e
+        case parseOnly endOfInput input of
+            Left e -> throwM $ ArgumentParseError $ T.pack e
             Right _ -> handler
 
 -- | For the case where there are multiple arguments to apply. 
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
     applyArgs msg input handler =
-        case runParser (parserForArg msg) () "" input of
-            Left e -> throwM $ ArgumentParseError e
+        case parseOnly (liftA2 (,) (parserForArg msg) takeText) input of
+            Left e -> throwM $ ArgumentParseError $ T.pack e
             Right (x, remaining) -> applyArgs msg remaining (handler x) 
 
 -- | For the case where there is only one argument to apply.
@@ -616,8 +606,8 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHa
 -- specific, GHC cannot prefer one over the other, even with any pragmas.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
     applyArgs msg input handler =
-        case runParser (parserForArg msg) () "" input of
-            Left e -> throwM $ ArgumentParseError e
+        case parseOnly (liftA2 (,) (parserForArg msg) takeText) input of
+            Left e -> throwM $ ArgumentParseError $ T.pack e
             Right (x, remaining) -> applyArgs msg remaining (handler x)
 
 
@@ -629,15 +619,15 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
 -- defined like with CommandHandlerType (which is polyvariadic).
 applyCustomParser
     :: (Monad m)
-    => T.Parser String 
+    => Parser T.Text 
     -- ^ the custom parser
     -> Message
     -> T.Text
-    -> (Message -> String -> m ())
+    -> (Message -> T.Text -> m ())
     -> m ()
 applyCustomParser parser msg _ handler =
-    case runParser parser () "" (messageText msg) of
-        Left e -> pure ()
+    case parseOnly parser (messageText msg) of
+        Left _ -> pure ()
         Right result -> handler msg result
 
 -- | @applyRegex@ is another custom argument applier like 'applyCustomParser',
@@ -664,20 +654,18 @@ applyRegex regex msg _ handler =
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
 -- If there are no arguments, it will return the empty text, "".
-parseCommandName :: Command m -> T.Parser T.Text
+parseCommandName :: Command m -> Parser T.Text
 parseCommandName cmd = do
     -- consume prefix
-    string (T.unpack $ commandPrefix cmd)
+    string $ commandPrefix cmd
     -- consume at least 1 character until a space is encountered
     -- don't consume the space
-    cmdName <- manyTill1 anyChar (void (lookAhead space) <|> eof)
+    cmdName <- takeWhile1 (\c -> not (isEndOfLine c || isHorizontalSpace c))
     -- check it's the proper command
-    guard (T.pack cmdName == commandName cmd)
+    guard (cmdName == commandName cmd)
     -- parse either an end of input, or spaces followed by arguments
-    (eof >> pure "") <|> do
+    (endOfInput >> pure "") <|> do
         -- consumes one or more isSpace characters
-        many1 space
-        -- consume everything until end of input
-        args <- manyTill anyChar eof
-        -- return the args
-        pure (T.pack args)
+        skipMany1 space
+        -- consume everything until end of input and return it
+        takeText
