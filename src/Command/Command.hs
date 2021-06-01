@@ -47,22 +47,23 @@ Notable extensions used:
     this module however, all instances strictly converges to the @m (m ())@
     instance so I say it is safe. [Read more]
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
-    * ExistentialQuantification: For declaring 'Command' with only the monad,
-    (and making the handler a "there exists") simplifying the syntax. I think
-    you're confused right now, so [see this change].
-    (https://github.com/yellowtides/owenbot-hs/pull/34/commits/9c23b4b4764fc2de0b4f9ab5543f8ebb66ff9788)
-    Essentially, this allows us to define a list of 'Command's, which was not
-    possible before because each 'Command' had the handler function in its type.
-    This change allows us to create 'runHelp' and 'runCommands'.
+    * ExistentialQuantification: For declaring 'Command' with only the monad.
+    This is not idiomatic Haskell (usually parametric polymorphism is fine), but
+    in this use case, the type signatures can be drastically improved:
+    [see the examples in this change]
+    (https://github.com/yellowtides/owenbot-hs/pull/34/commits/9c23b4b4764fc2de0b4f9ab5543f8ebb66ff9788).
+    This also allows us to define a list of 'Command's, which was not
+    possible before. This change allows us to create 'runHelp' and 'runCommands'.
     [Read more on existential types]
     (https://en.wikibooks.org/wiki/Haskell/Existentially_quantified_types)
     , and [even more here]
     (https://markkarpov.com/post/existential-quantification.html#existential-wrappers).
-    This comes at a price, as now the compiler loses the information about what
-    arguments the command handler takes
-    [(and record selector functions will no longer work)]
+    [This comes at a price (although the benefits outweigh the prices here)]
+    (https://lukepalmer.wordpress.com/2010/01/24/haskell-antipattern-existential-typeclass/)
+    , as now the compiler loses the information about what arguments the command
+    handler takes. [Record selector functions will no longer work too]
     (https://stackoverflow.com/questions/10192663/why-cant-i-use-record-selectors-with-an-existentially-quantified-type)
-    Thankfully, this is negated by using pattern matching. 
+    , but this is covered by using pattern matching. 
     * RecordWildCards: Enables you to write @Command{..}@ in pattern matches to
     create accessors instead of doing @(Command one two three four five)@. Helps
     with ExistentialQuantification because otherwise unpacking the @Command@ ADT
@@ -195,6 +196,7 @@ import           Control.Exception.Safe     ( catch
 import           Control.Monad.IO.Class     ( MonadIO )
 import           Control.Monad              ( void
                                             , guard
+                                            , unless
                                             )
 import           Data.Maybe                 ( catMaybes )
 import qualified Data.Text as T
@@ -210,6 +212,7 @@ import           Text.Parsec                ( runParser
                                             , anyChar
                                             , string
                                             )
+import           Text.Regex.TDFA            ( (=~) )
 import           UnliftIO                   ( liftIO )
 
 import           Discord.Internal.Monad
@@ -242,14 +245,11 @@ data Command m = forall h. Command
     -- ^ The polyvariadic handler function for the command. All of its argument
     -- types must be of 'ParsableArgument'. Its return type after applying all
     -- the arguments must be @m ()@. These are enforced by the type-checker.
-    , commandArgApplier   :: Message -> T.Text -> h -> m ()
-    -- ^ The function used to apply the arguments into the @commandHandler@. It
-    -- needs to take a 'Message' that triggered the command, the input text in
-    -- the message, the handler, and the return monad.
-    , commandCustomParser :: Bool
-    -- ^ Whether to use a custom parser. If true, then parseCommandName will not
-    -- be used, and the custom arg applier will be called. If false, the command
-    -- name will be verified before applyArgs is called.
+    , commandApplier      :: (Bool, Message -> T.Text -> h -> m ())
+    -- ^ A tuple of (whether to use a custom applier and skip the name parsing,
+    -- the function used to apply the arguments into the @commandHandler@). The
+    -- function needs to take a 'Message' that triggered the command, the input
+    -- text, the handler, and the return monad.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
@@ -329,8 +329,7 @@ command name handler = Command
     { commandName         = name
     , commandPrefix       = ":"
     , commandHandler      = handler
-    , commandArgApplier   = applyArgs
-    , commandCustomParser = False
+    , commandApplier      = (False, applyArgs)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -391,9 +390,7 @@ help newHelp cmd = cmd
     }
 
 -- | @customCommand@ defines a command that has no name, and has a custom
--- parser. It exists to make things like dad jokes and owoification easier, as
--- they aren't "commands" but can benefit from having a error handling and
--- parsers. It can also help things like "::quotes" because they have special
+-- parser. It can help things like "::quotes" because they have special
 -- syntax that demands a special parser.
 --
 -- 'prefix', if used together, is ignored. Other compoasble functions like
@@ -419,10 +416,40 @@ customCommand
     -> Command m
 customCommand parserFunc handler = Command
     { commandName         = "<custom parser>"
-    , commandPrefix       = "?"
+    , commandPrefix       = ""
     , commandHandler      = handler
-    , commandArgApplier   = applyCustomParser parserFunc
-    , commandCustomParser = True
+    , commandApplier      = (True, applyCustomParser parserFunc)
+    , commandErrorHandler = defaultErrorHandler
+    , commandHelp         = "Help not available."
+    , commandRequires     = []
+    }
+
+-- | @regexCommand@ defines a command that has no name, and has a custom
+-- regular expression matcher. Convenient when parsers can get complicated,
+-- although slow.
+--
+-- 'prefix', if used together, is ignored. Other compoasble functions like
+-- 'help', 'requires', and 'onError' are still valid.
+--
+-- The handler __must__ take a 'Message' and a '[T.Text]' as argument, where
+-- the latter are the list of captured values from the Regex (same as the past
+-- @newCommand@).
+--
+-- @
+-- thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ \msg caps -> do
+--     let verb = head caps
+-- ...
+-- @
+regexCommand
+    :: (MonadDiscord m)
+    => T.Text
+    -> (Message -> [T.Text] -> m ())
+    -> Command m
+regexCommand regex handler = Command
+    { commandName         = "<regex>"
+    , commandPrefix       = ""
+    , commandHandler      = handler
+    , commandApplier      = (True, applyRegex regex)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -430,7 +457,7 @@ customCommand parserFunc handler = Command
 
 -- | @runCommand command msg@ runs the specified 'Command' with the given
 -- message. It checks for any requirement failures, then calls the
--- @commandArgApplier@ function in the 'Command' ADT. Any errors inside the
+-- @commandApplier@ function in the 'Command' ADT. Any errors inside the
 -- handler is caught and appropriately handled.
 --
 --     * If a custom parser is defined, the requirements are checked and the
@@ -443,32 +470,32 @@ customCommand parserFunc handler = Command
 -- runCommand pong :: Message -> m ()
 -- @
 runCommand
-    :: forall m h.
+    :: forall m.
     (MonadDiscord m)
     => Command m
     -- ^ The command to run against.
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand cmd@Command{..} msg = case commandCustomParser of
-    True -> doChecksAndRunCommand ""
-    False -> do
-        -- First check that the command name is correct, and extract arguments.
-        case runParser (parseCommandName cmd) () "" (messageText msg) of
-            Left e -> pure ()
-            Right args -> doChecksAndRunCommand args
+runCommand cmd@Command{..} msg =
+    case commandApplier of
+        (True, applier) -> doChecksAndRunCommand applier ""
+        (False, applier) -> do
+            -- First check that the command name is correct, and extract arguments.
+            case runParser (parseCommandName cmd) () "" (messageText msg) of
+                Left e -> pure ()
+                Right args -> doChecksAndRunCommand applier args
 
   where
-    doChecksAndRunCommand :: T.Text -> m ()
-    doChecksAndRunCommand args = do
+    doChecksAndRunCommand applier args = do
         -- Check for requirements. checks will be a list of Maybes
         checks <- sequence $ map ($ msg) commandRequires
         -- only get the Justs
         let failedChecks = catMaybes checks
         if null failedChecks
-            then do
+            then
                 -- Apply the arguments one by one on the appropriate handler
-                (commandArgApplier msg args commandHandler)
+                (applier msg args commandHandler)
                     -- Asynchrnous errors are not caught as the `catch`
                     -- comes from Control.Exception.Safe. This is good.
                     `catch` basicErrorCatcher
@@ -608,15 +635,36 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
 applyCustomParser
     :: (Monad m)
     => T.Parser String 
+    -- ^ the custom parser
     -> Message
     -> T.Text
     -> (Message -> String -> m ())
     -> m ()
-applyCustomParser parser msg name handler =
+applyCustomParser parser msg _ handler =
     case runParser parser () "" (messageText msg) of
         Left e -> pure ()
         Right result -> handler msg result
 
+-- | @applyRegex@ is another custom argument applier like 'applyCustomParser',
+-- but Regex.
+applyRegex
+    :: (Monad m)
+    => T.Text
+    -- ^ the regex
+    -> Message
+    -> T.Text
+    -> (Message -> [T.Text] -> m ())
+    -> m ()
+applyRegex regex msg _ handler =
+    unless (shouldNotBeEmpty == "") $
+        handler msg captures
+  where
+    match :: ( T.Text
+             , T.Text   -- the first match of the regex against the message
+             , T.Text
+             , [T.Text] -- every message portion identified by the regex capture groups
+             )
+    match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ regex
 
 
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
