@@ -109,28 +109,20 @@ godIsDead m = do
     when isMatch $ liftIO (TIO.readFile $ assetDir <> "nietzsche.txt")
             >>= sendMessageChan (messageChannel m) . owoify
 
--- | A custom Parsec parser :)
-thatcherParser :: String -> T.Parser String
-thatcherParser verb = do
-    string "thatcher"
-    (string "'s" <|> (many1 space >> (string "is" <|> string "Is")))
-    many1 space
-    (char (head verb) <|> char ((toUpper . head) verb))
-    string (tail verb)
-    eof
-    pure ""
+thatcherRE :: T.Text
+thatcherRE = "thatcher('s *| *[Ii]s) *"
 
 thatcherIsDead :: Message -> DiscordHandler ()
 thatcherIsDead
     = runCommand
-    . customCommand (thatcherParser "dead") $ \m _ ->
+    . regexCommand (thatcherRE <> "[Dd]ead") $ \m _ ->
         sendMessageChan (messageChannel m)
             "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
 thatcherIsAlive :: Message -> DiscordHandler ()
 thatcherIsAlive
     = runCommand
-    . customCommand (thatcherParser "alive") $ \m _ ->
+    . regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
         sendFileChan (messageChannel m)
             "god_help_us_all.mp4" $ assetDir <> "god_help_us_all.mp4"
 

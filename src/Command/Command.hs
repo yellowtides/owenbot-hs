@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
 {-# LANGUAGE OverloadedStrings #-}
 -- for CommandHandlerType
 {-# LANGUAGE FlexibleInstances, FunctionalDependencies, UndecidableInstances #-}
@@ -5,7 +6,6 @@
 {-# LANGUAGE ExistentialQuantification, RecordWildCards #-}
 -- for runCommand
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# OPTIONS_HADDOCK show-extensions #-}
 {-|
 Module      : Command.Command
 License     : BSD (see the LICENSE file)
@@ -96,21 +96,18 @@ module Command.Command
     --     * 'command' creates a 'Command'
     --     * 'runCommand' converts the 'Command' to a normal receiver.
     --
-    -- There are several functions that can be composed onto 'command', such as
-    -- 'help' (overwrite the help message), 'onError' (overwrite the error 
-    -- handler), or 'requires' (add a requirement for the command).
-    --
     -- If your command demands a special syntax that is impossible with the
-    -- existing 'command' function, use 'customCommand', where you can provide
-    -- your own parser. It is less powerful however, and is intended to be used
-    -- only for special special special occasions like "::quotes", dad jokes,
-    -- or owoification.
+    -- existing 'command' function, use 'parsecCommand' (Parsec) or 'regexCommand'
+    -- (Regex).
     Command
     , command
     , runCommand
     , runCommands
     , runHelp
-    , customCommand
+    -- ** Custom command parsing
+    -- | Parsec and Regex options are available.
+    , parsecCommand
+    , regexCommand
     -- ** Compsable Functions
     -- | These can be composed onto 'command' to overwrite default functionality.
     , help
@@ -119,8 +116,7 @@ module Command.Command
     , requires
     -- ** Parsing arguments
     -- | The 'ParsableArgument' is the core dataclass for command arguments that
-    -- can be parsed. Some special types are added to create functionality
-    -- that is unrepresentable in existing Haskell datatypes.
+    -- can be parsed.
     --
     -- As an OwenDev, if you want to make your own datatype parsable, all you
     -- have to do is to add an instance declaration for it (and a parser) inside
@@ -133,15 +129,14 @@ module Command.Command
 
     -- ** The MonadDiscord class
     -- | MonadDiscord is the underlying Monad class for all interactions to the
-    -- Discord REST API. The abstraction makes for great polymorphic receivers
-    -- that are easier to test and run from various contexts.
+    -- Discord REST API. 
     -- 
     -- This is a common way to design abstraction so you can mock them. Same as
     -- Java interfaces, C++ virtual functions. If you want to read more:
     --
-    --     * [Link 1]
+    --     * [Here is a link]
     -- (https://www.reddit.com/r/haskell/comments/5bnr6b/mocking_in_haskell/)
-    --     * [Link 2]
+    --     * [Another link]
     -- (https://lexi-lambda.github.io/blog/2017/06/29/unit-testing-effectful-haskell-with-monad-mock/)
     , module Discord.Internal.Monad
     -- ** MonadIO
@@ -200,10 +195,10 @@ import           Control.Monad              ( void
                                             )
 import           Data.Maybe                 ( catMaybes )
 import qualified Data.Text as T
+import           Text.Parsec.Combinator
 import           Text.Parsec.Error          ( errorMessages
                                             , showErrorMessages
                                             )
-import           Text.Parsec.Combinator
 import qualified Text.Parsec.Text as T
 import           Text.Parsec                ( runParser
                                             , eof
@@ -235,7 +230,8 @@ import           Owoifier                   ( owoify )
 -- @CommandHandlerType@, and read on FunctionalDependencies).
 --
 -- The contents of this abstract datatype are not exported from this module for
--- encapsulation. Use 'command' or 'customCommand' to instantiate one.
+-- encapsulation. Use 'command', 'parsecCommand', or 'regexCommand' to
+-- instantiate one.
 data Command m = forall h. Command
     { commandName         :: T.Text
     -- ^ The name of the command.
@@ -389,7 +385,7 @@ help newHelp cmd = cmd
     { commandHelp = newHelp
     }
 
--- | @customCommand@ defines a command that has no name, and has a custom
+-- | @parsecCommand@ defines a command that has no name, and has a custom
 -- parser. It can help things like "::quotes" because they have special
 -- syntax that demands a special parser.
 --
@@ -402,19 +398,19 @@ help newHelp cmd = cmd
 -- @
 -- example
 --     = requires moderatorPrivs
---     . customCommand (string '::' >> many1 anyChar) $ \msg quoteName -> do
+--     . parsecCommand (string '::' >> many1 anyChar) $ \msg quoteName -> do
 --         ...
 --         -- this is triggered on "::<one or more chars>" where quoteName
 --         -- contains the section enclosed in <>
 -- @
-customCommand
+parsecCommand
     :: (MonadDiscord m)
     => T.Parser String
     -- ^ The custom parser for the command. It has to return a 'String'.
     -> (Message -> String -> m ())
     -- ^ The handler for the command.
     -> Command m
-customCommand parserFunc handler = Command
+parsecCommand parserFunc handler = Command
     { commandName         = "<custom parser>"
     , commandPrefix       = ""
     , commandHandler      = handler
@@ -481,7 +477,7 @@ runCommand cmd@Command{..} msg =
     case commandApplier of
         (True, applier) -> doChecksAndRunCommand applier ""
         (False, applier) -> do
-            -- First check that the command name is correct, and extract arguments.
+            -- Check that the command name is correct, and extract arguments.
             case runParser (parseCommandName cmd) () "" (messageText msg) of
                 Left e -> pure ()
                 Right args -> doChecksAndRunCommand applier args
@@ -625,13 +621,12 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
             Right (x, remaining) -> applyArgs msg remaining (handler x)
 
 
--- | @applyCustomParser@ is in a similar fashion to @applyArgs@. In fact, if
--- you apply the first Parser argument, it is completely identical. In fact x2,
--- some arguments are not even used, just to make it completely isomorphic.
+-- | @applyCustomParser@ is similar to @applyArgs@. If you apply the first Parser
+-- argument, it is completely identical.
 --
 -- This is used when there is a custom parser that's defined. It only has one
 -- possible instance (@Message -> String -> m ()@), so no special class is
--- defined like with CommandHandlerType (that is polyvariadic).
+-- defined like with CommandHandlerType (which is polyvariadic).
 applyCustomParser
     :: (Monad m)
     => T.Parser String 
@@ -665,7 +660,6 @@ applyRegex regex msg _ handler =
              , [T.Text] -- every message portion identified by the regex capture groups
              )
     match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ regex
-
 
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
