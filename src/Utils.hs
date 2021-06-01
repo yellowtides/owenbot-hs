@@ -25,6 +25,7 @@ module Utils ( emojiToUsableText
              , getMessageLink
              , hasRoleByName
              , hasRoleByID
+             , channelRequirement
              , isMod
              , devIDs
              , assetDir
@@ -325,6 +326,12 @@ checkAllIDs m = do
 -- | `isSenderDeveloper` checks whether the provided message's author is a developer.
 isSenderDeveloper :: Message -> DiscordHandler Bool
 isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
+
+-- | channelRequirement is a requirement for a Command to be in a certain channel.
+channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
+channelRequirement cid msg = if (messageChannel msg) == (read cid)
+    then pure Nothing
+    else pure $ Just "need to be in channel"
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.

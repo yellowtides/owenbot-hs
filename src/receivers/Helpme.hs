@@ -23,8 +23,3 @@ sendHelpDM
         liftIO (TIO.readFile "./src/assets/help.txt")
             >>= sendMessageDM (userId $ messageAuthor m) . owoify
 
-channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
-channelRequirement cid msg = if (messageChannel msg) == (read cid)
-    then pure Nothing
-    else pure $ Just "need to be in channel"
-
