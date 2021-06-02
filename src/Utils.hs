@@ -84,9 +84,9 @@ repoDir :: FilePath
 repoDir = "$HOME/owenbot-hs/"
 
 -- | The `FilePath` representing the location of the assets.
--- TODO: Move to configDir
+-- TODO: Use XDG_DATA_DIR instead of hardcoding ls
 assetDir :: FilePath
-assetDir = repoDir <> "src/assets/"
+assetDir = "$HOME/.local/share/owen/" <> "assets/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
