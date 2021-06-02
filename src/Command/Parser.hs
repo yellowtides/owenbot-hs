@@ -14,67 +14,83 @@ If you want to add your own parser argument type, this is the module.
 module Command.Parser
     ( ParsableArgument(..)
     , RemainingText(..)
+    , manyTill1
     ) where
 
-import           Control.Applicative        ( (<|>) )
 import           Control.Monad              ( void
                                             , guard
                                             )
-import           Data.Attoparsec.Text
 import qualified Data.Text as T
+import           Text.Parsec.Combinator
+import qualified Text.Parsec.Text as T
+import           Text.Parsec
 
 import           Discord.Types
 
 -- | @manyTill1 p end@ is a parser that applies parser @p@ /one/ or more times
 -- until parser @end@ succeeds. This is a variation on 'manyTill' from Parsec.
--- manyTill1 :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
--- manyTill1 p end = do { x <- p; xs <- manyTill p end; return (x:xs) }
+manyTill1 :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+manyTill1 p end = do { x <- p; xs <- manyTill p end; return (x:xs) }
 
 -- | A @ParsableArgument@ is a dataclass that represents arguments that can be
 -- parsed from a message. Any datatype that is an instance of this dataclass can
 -- be used as function arguments for a command handler in 'command'.
 class ParsableArgument a where
-    -- | @parserForArg msg@ returns a parser that contains the parsed element.
-    parserForArg :: Message -> Parser a
+    -- | @parserForArg msg@ returns a parser that contains the parsed element
+    -- and the remaining input.
+    parserForArg :: Message -> T.Parser (a, T.Text)
 
 -- | The message that invoked the command.
 instance ParsableArgument Message where
-    parserForArg msg = pure msg
+    parserForArg msg = do
+        remaining <- getInput
+        pure (msg, remaining)
 
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
 -- parsed as a single string: 
 -- @\"He said, \\\"Lovely\\\".\"@
-instance ParsableArgument T.Text where
-    parserForArg msg = do
-        -- try quoted text first. if it failed, then normal word
-        parsed <- quotedText <|> word
-        -- consume end of input or one or more spaces
-        (endOfInput <|> void (many1 space))
-        pure parsed
+instance ParsableArgument String where
+    parserForArg msg =
+        (flip label) "word or a quoted phrase" $ do
+            -- try quoted text first. if it failed, then normal word
+            parsed <- quotedText <|> word
+            -- consume end of input or one or more spaces
+            (eof <|> void (many1 space))
+            -- return remaining together with consumed value
+            remaining <- getInput
+            pure (parsed, remaining)
       where
         quotedText = do
             -- consume quotes
             char '"'
             -- consume everything but quotes, unless it is escaped
-            content <- many1 $ (string "\\\"" >> pure '"') <|> notChar '\"'
+            content <- many $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
             -- consume closing quote
             char '"'
-            pure $ T.pack content
+            pure content
         word =
             -- consume at least one character that is not a space or eof
-            takeWhile1 (not . isHorizontalSpace)
+            manyTill1 anyChar (void (lookAhead space) <|> eof)
+
+-- | Wrapper for the String version, since Text is the trend nowadays.
+-- Both are provided so that it can easily be used for arguments in other
+-- functions that only accept one of the types.
+instance ParsableArgument T.Text where
+    parserForArg msg = do
+        (result, remaining) <- parserForArg msg
+        pure (T.pack result, remaining)
 
 -- | Zero or more texts. Each one could be quoted or not.
 instance ParsableArgument [T.Text] where
     parserForArg msg =
         -- if it's the end, return empty (base case).
-        (endOfInput >> pure []) <|> do
+        (eof >> pure ([], "")) <|> do
             -- do the usual text parsing (which consumes any trailing spaces)
-            word <- parserForArg msg :: Parser T.Text
+            (word, _) <- parserForArg msg :: T.Parser (T.Text, T.Text)
             -- recursively do this and append
-            rest <- parserForArg msg :: Parser [T.Text]
-            pure $ word:rest
+            (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
+            pure (word:rest, "")
 
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
 -- everything remaining. The accessor function @getEm@ isn't really meant to be
@@ -94,9 +110,15 @@ data RemainingText = Remaining { getEm :: T.Text }
 -- with @Text@. At least one character is required.
 instance ParsableArgument RemainingText where
     parserForArg msg = do
-        -- Get the rest of the input, with at least one character.
-        remaining <- takeWhile1 (const True)
-        pure $ Remaining remaining
+        -- Make sure at least one character is present
+        -- This is not a space, because previous parsers consume trailing spaces.
+        firstChar <- anyChar
+        -- Get the rest of the input.
+        -- This is more convenient than calling [T.Text]'s parser and concatting
+        -- it, as it preserves spaces. For speed, both T.concat and T.cons are
+        -- O(n) so it does not matter.
+        remaining <- getInput
+        pure (Remaining $ T.cons firstChar remaining, "")
 
 -- Integer. TODO
 -- instance ParsableArgument Int where
@@ -123,8 +145,9 @@ instance ParsableArgument UpdateStatusType where
             , string "invisible" >> pure UpdateStatusInvisibleOffline
             ]
         -- consume end of input or at least one space.
-        (endOfInput <|> void (many1 space))
-        pure parsed
+        (eof <|> void (many1 space))
+        remaining <- getInput
+        pure (parsed, remaining)
 
 -- | Parses "playing", "streaming", "listening to" and "competing in" as
 -- 'ActivityType's.
@@ -138,5 +161,7 @@ instance ParsableArgument ActivityType where
             , string "competing in" >> pure ActivityTypeCompeting
             ]
         -- consume end of input or at least one space.
-        (endOfInput <|> void (many1 space))
-        pure parsed
+        (eof <|> void (many1 space))
+        remaining <- getInput
+        pure (parsed, remaining)
+

@@ -19,7 +19,6 @@ description:         A neat Discord bot written in Haskell.
 
 dependencies:
 - aeson # comes with discord-haskell
-- attoparsec # comes with aeson
 - base >= 4.7 && < 5
 - bytestring # comes with discord-haskell
 - cassava

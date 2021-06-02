@@ -23,7 +23,7 @@ import           Discord                    ( RestCallErrorCode )
 -- Some are thrown by the system (such as ArgumentParseError), however you can 
 -- also manually throw them with 'throwM' within any handler.
 data CommandError
-    = ArgumentParseError T.Text
+    = ArgumentParseError ParseError
     -- ^ Indicates the command arguments failed to parse, either because of lack
     -- of arguments, incorrect types, or too many arguments.
     | RequirementError T.Text
