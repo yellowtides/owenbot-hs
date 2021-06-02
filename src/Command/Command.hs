@@ -153,27 +153,27 @@ module Command.Command
     -- Could not deduce (ParsableArgument p0) arising from the use of \'command'.
     -- The type variable 'p0' is ambiguous.
     -- @
-    --      * The type for one of the arguments to your handler function cannot
-    --      be inferred. Make sure you use the argument, otherwise, just remove it.
+    --     * The type for one of the arguments to your handler function cannot
+    --     be inferred. Make sure you use the argument, otherwise, just remove it.
     --
-    --  @
-    --  Could not deduce (ParsableArgument SomeType) arising from the use of
-    --  \'command'.
-    --  @
+    -- @
+    -- Could not deduce (ParsableArgument SomeType) arising from the use of
+    -- \'command'.
+    -- @
     --
-    --      * The type could be inferred as SomeType, but it's not an instance
-    --      of ParsableArgument. Contribute your own parser in @Command/Parser.hs@.
+    --     * The type could be inferred as SomeType, but it's not an instance
+    --     of ParsableArgument. Contribute your own parser in @Command/Parser.hs@.
     --
-    --  @
-    --  Could not deduce (MonadIO m) arising from the use of \'liftIO'.
-    --  @
+    -- @
+    -- Could not deduce (MonadIO m) arising from the use of \'liftIO'.
+    -- @
     --
-    --      * Your handler requires IO actions, but you haven't given the
-    --      appropriate constraint. Add @(MonadIO m)@.
-    --      * Rationale: This happens because some handlers are pure and don't need IO -
-    --      it's better to explicitly signify which actions you're going to use
-    --      in the constraints than to add a catch-all constraint into the
-    --      definition of @MonadDiscord@.
+    --     * Your handler requires IO actions, but you haven't given the
+    --     appropriate constraint. Add @(MonadIO m)@.
+    --     * Rationale: This happens because some handlers are pure and don't need IO -
+    --     it's better to explicitly signify which actions you're going to use
+    --     in the constraints than to add a catch-all constraint into the
+    --     definition of @MonadDiscord@.
     -- 
     -- If an error is super duper cryptic, it may be a bug in the Commands 
     -- module itself, in which case we may need a rewrite.
