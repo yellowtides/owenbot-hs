@@ -41,15 +41,12 @@ endOrSpaces = eof <|> skipMany1 space <?> "at least one space between arguments"
 -- parsed from a message. Any datatype that is an instance of this dataclass can
 -- be used as function arguments for a command handler in 'command'.
 class ParsableArgument a where
-    -- | @parserForArg msg@ returns a parser that contains the parsed element
-    -- and the remaining input.
-    parserForArg :: Message -> T.Parser (a, T.Text)
+    -- | @parserForArg msg@ returns a parser that contains the parsed element.
+    parserForArg :: Message -> T.Parser a
 
 -- | The message that invoked the command.
 instance ParsableArgument Message where
-    parserForArg msg = do
-        remaining <- getInput
-        pure (msg, remaining)
+    parserForArg msg = pure msg
 
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
@@ -60,9 +57,7 @@ instance ParsableArgument String where
         -- try quoted text first. if it failed, then normal word
         parsed <- (quotedText <?> "quoted phrase") <|> (word <?> "word")
         endOrSpaces
-        -- return remaining together with consumed value
-        remaining <- getInput
-        pure (parsed, remaining)
+        pure parsed
       where
         quotedText = try $ do -- backtrack if failed, parse as normal word
             -- consume opening quote
@@ -81,19 +76,19 @@ instance ParsableArgument String where
 -- functions that only accept one of the types.
 instance ParsableArgument T.Text where
     parserForArg msg = do
-        (result, remaining) <- parserForArg msg
-        pure (T.pack result, remaining)
+        result <- parserForArg msg
+        pure $ T.pack result
 
 -- | Zero or more texts. Each one could be quoted or not.
 instance ParsableArgument [T.Text] where
     parserForArg msg =
         -- if it's the end, return empty (base case).
-        (eof >> pure ([], "")) <|> do
+        (eof >> pure []) <|> do
             -- do the usual text parsing (which consumes any trailing spaces)
-            (word, _) <- parserForArg msg :: T.Parser (T.Text, T.Text)
+            word <- parserForArg msg :: T.Parser T.Text
             -- recursively do this and append
-            (rest, _) <- parserForArg msg :: T.Parser ([T.Text], T.Text)
-            pure (word:rest, "")
+            rest <- parserForArg msg :: T.Parser [T.Text]
+            pure $ word:rest
 
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
 -- everything remaining. The accessor function @getEm@ isn't really meant to be
@@ -121,7 +116,7 @@ instance ParsableArgument RemainingText where
         -- This is more convenient than doing "many anyChar" because it doesn't
         -- need to parse anything for the remaining input.
         remaining <- getInput
-        pure (Remaining $ T.cons firstChar remaining, "")
+        pure (Remaining $ T.cons firstChar remaining)
 
 -- Integer. TODO
 -- instance ParsableArgument Int where
@@ -141,28 +136,28 @@ instance ParsableArgument RemainingText where
 instance ParsableArgument UpdateStatusType where
     parserForArg msg = do
         -- consume either of the following:
-        parsed <- choice
+        -- (if fail then backtrack using try)
+        parsed <- choice $ map try $
             [ string "online" >> pure UpdateStatusOnline
             , string "dnd" >> pure UpdateStatusDoNotDisturb
             , string "idle" >> pure UpdateStatusAwayFromKeyboard
             , string "invisible" >> pure UpdateStatusInvisibleOffline
             ]
         endOrSpaces
-        remaining <- getInput
-        pure (parsed, remaining)
+        pure parsed
 
 -- | Parses "playing", "streaming", "listening to" and "competing in" as
 -- 'ActivityType's.
 instance ParsableArgument ActivityType where
     parserForArg msg = do
         -- consume either of the following:
-        parsed <- choice
+        -- (if fail then backtrack using try)
+        parsed <- choice $ map try $
             [ string "playing" >> pure ActivityTypeGame
             , string "streaming" >> pure ActivityTypeStreaming
             , string "listening to" >> pure ActivityTypeListening
             , string "competing in" >> pure ActivityTypeCompeting
             ]
         endOrSpaces
-        remaining <- getInput
-        pure (parsed, remaining)
+        pure parsed
 

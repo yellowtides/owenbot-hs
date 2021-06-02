@@ -23,7 +23,7 @@ however it is documented quite extensively anyway.
 __As an OwenDev, you do not need to enable any GHC extensions, as the__
 __extensions are used internally within this module only__.
 
-=== __Notable extensions used__
+=== __Notable extensions used (if you want to know)__
 
     * ScopedTypeVariables: For using the same type variables in @where@
     statements as function declarations.
@@ -180,6 +180,7 @@ module Command.Command
     ) where
 
 import           Control.Applicative        ( Alternative(..)
+                                            , liftA2
                                             )
 import           Control.Exception.Safe     ( catch
                                             , throwM
@@ -200,12 +201,13 @@ import           Text.Parsec.Error          ( errorMessages
                                             , showErrorMessages
                                             )
 import qualified Text.Parsec.Text as T
-import           Text.Parsec                ( runParser
+import           Text.Parsec                ( parse
                                             , eof
                                             , ParseError
                                             , space
                                             , anyChar
                                             , string
+                                            , getInput
                                             )
 import           Text.Regex.TDFA            ( (=~) )
 import           UnliftIO                   ( liftIO )
@@ -227,7 +229,7 @@ import           Owoifier                   ( owoify )
 -- @Command m@ is a command that runs in the monad @m@, which when called
 -- will trigger a polyvariadic handler function. The handler *must* be in the
 -- @m@ monad, which is enforced by the type-checker (to see the details, look in
--- @CommandHandlerType@, and read on FunctionalDependencies).
+-- @CommandHandlerType@ in the source code).
 --
 -- The contents of this abstract datatype are not exported from this module for
 -- encapsulation. Use 'command', 'parsecCommand', or 'regexCommand' to
@@ -265,9 +267,11 @@ data Command m = forall h. Command
 -- instances of 'ParsableArgument'.
 --
 -- The Command that this function creates is polymorphic in the Monad it is run
--- in. This means you can call it from 'DiscordHandler' or 'IO', or any other
+-- in. This means you can call it from 'DiscordHandler' or any other
 -- Monad that satisfies the constraints of 'MonadDiscord'.
 -- 
+-- == __Examples:__
+--
 -- @pong@ below responds to a ping by a pong.
 --
 -- @
@@ -304,12 +308,12 @@ data Command m = forall h. Command
 --     parserForArg msg = do
 --         -- some parsec
 --         parsed \<- read \<$> many digit
---         (eof \<|> void (many1 space))
+--         endOrSpaces
 --         remaining <- getInput
 --         pure (parsed, remaining)
 --
 -- complex :: (MonadDiscord m) => Command m
--- complex = command "complexExample" $ \\i key -> do
+-- complex = command "setLimit" $ \\i -> do
 --     ...
 -- @
 --
@@ -478,7 +482,7 @@ runCommand cmd@Command{..} msg =
         (True, applier) -> doChecksAndRunCommand applier ""
         (False, applier) -> do
             -- Check that the command name is correct, and extract arguments.
-            case runParser (parseCommandName cmd) () "" (messageText msg) of
+            case parse (parseCommandName cmd) "" (messageText msg) of
                 Left e -> pure ()
                 Right args -> doChecksAndRunCommand applier args
 
@@ -596,14 +600,14 @@ class (MonadThrow m) => CommandHandlerType m h | h -> m where
 -- | For the case when all arguments have been applied. Base case.
 instance (MonadThrow m) => CommandHandlerType m (m ()) where
     applyArgs msg input handler = 
-        case runParser eof () "" input of
+        case parse eof "" input of
             Left e -> throwM $ ArgumentParseError e
             Right _ -> handler
 
 -- | For the case where there are multiple arguments to apply. 
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
     applyArgs msg input handler =
-        case runParser (parserForArg msg) () "" input of
+        case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
             Left e -> throwM $ ArgumentParseError e
             Right (x, remaining) -> applyArgs msg remaining (handler x) 
 
@@ -616,7 +620,7 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHa
 -- specific, GHC cannot prefer one over the other, even with any pragmas.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
     applyArgs msg input handler =
-        case runParser (parserForArg msg) () "" input of
+        case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
             Left e -> throwM $ ArgumentParseError e
             Right (x, remaining) -> applyArgs msg remaining (handler x)
 
@@ -636,7 +640,7 @@ applyCustomParser
     -> (Message -> String -> m ())
     -> m ()
 applyCustomParser parser msg _ handler =
-    case runParser parser () "" (messageText msg) of
+    case parse parser "" (messageText msg) of
         Left e -> pure ()
         Right result -> handler msg result
 
