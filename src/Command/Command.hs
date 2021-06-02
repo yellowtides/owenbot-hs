@@ -545,7 +545,8 @@ runHelp name cmds
 -- | @defaultErrorHandler m e@ is the default error handler unless you override
 -- it manually. This is exported and documented for reference only.
 --
--- [On argument error] It calls 'respond' with the errors, owoified.
+-- [On argument error] It calls 'respond' with the errors. This isn't owoified
+-- for legibility.
 -- [On requirement error] It sends a DM to the invoking user with the errors.
 -- [On a processing error] It calls 'respond' with the error.
 -- [On a Discord request failure] It calls 'respond' with the error.
@@ -558,7 +559,7 @@ defaultErrorHandler
 defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
-            respond m $ owoify x
+            respond m x
         RequirementError x -> do
             chan <- createDM (userId $ messageAuthor m)
             void $ createMessage (channelId chan) x
@@ -625,7 +626,7 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
 -- which only adds clutter in a Discord message. This defines a much
 -- simpler string representation.
 showErrAsText :: ParseError -> T.Text
-showErrAsText err = T.drop 1 $ T.pack $ showErrorMessages "or" "unknown parse error"
+showErrAsText err = T.tail $ T.pack $ showErrorMessages "or" "unknown parse error"
     "Expecting" "Unexpected" "end of message" (errorMessages err)
 
 -- | @applyCustomParser@ is similar to @applyArgs@. If you apply the first Parser
