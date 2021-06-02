@@ -558,7 +558,7 @@ defaultErrorHandler
 defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
-            respond m $ owoify $ T.pack $ showWithoutPos x
+            respond m $ owoify x
         RequirementError x -> do
             chan <- createDM (userId $ messageAuthor m)
             void $ createMessage (channelId chan) x
@@ -568,13 +568,7 @@ defaultErrorHandler m e =
             respond m $ T.pack $ "Discord request failed with a " <> (show x)
         HaskellError x ->
             respond m (owoify $ T.pack $ show x)
-  where
-    -- The default 'Show' instance for ParseError contains the error position,
-    -- which only adds clutter in a Discord message. This defines a much
-    -- simpler string representation.
-    showWithoutPos :: ParseError -> String
-    showWithoutPos err = showErrorMessages "or" "unknown parse error"
-        "expecting" "unexpected" "end of input" (errorMessages err)
+
 
 
 
@@ -601,14 +595,16 @@ class (MonadThrow m) => CommandHandlerType m h | h -> m where
 instance (MonadThrow m) => CommandHandlerType m (m ()) where
     applyArgs msg input handler = 
         case parse eof "" input of
-            Left e -> throwM $ ArgumentParseError e
+            Left e -> throwM $ ArgumentParseError $
+                "Too many arguments! " <> showErrAsText e
             Right _ -> handler
 
 -- | For the case where there are multiple arguments to apply. 
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
     applyArgs msg input handler =
         case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
-            Left e -> throwM $ ArgumentParseError e
+            Left e -> throwM $ ArgumentParseError $
+                "Error while parsing argument. " <> showErrAsText e
             Right (x, remaining) -> applyArgs msg remaining (handler x) 
 
 -- | For the case where there is only one argument to apply.
@@ -621,9 +617,16 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHa
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
     applyArgs msg input handler =
         case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
-            Left e -> throwM $ ArgumentParseError e
+            Left e -> throwM $ ArgumentParseError $
+                "Error while parsing argument. " <> showErrAsText e
             Right (x, remaining) -> applyArgs msg remaining (handler x)
 
+-- The default 'Show' instance for ParseError contains the error position,
+-- which only adds clutter in a Discord message. This defines a much
+-- simpler string representation.
+showErrAsText :: ParseError -> T.Text
+showErrAsText err = T.drop 1 $ T.pack $ showErrorMessages "or" "unknown parse error"
+    "Expecting" "Unexpected" "end of message" (errorMessages err)
 
 -- | @applyCustomParser@ is similar to @applyArgs@. If you apply the first Parser
 -- argument, it is completely identical.
