@@ -104,10 +104,9 @@ forceOwoify r = do
         sendReply mess False $ owoify (messageText mess)
 
 godIsDead :: Message -> DiscordHandler ()
-godIsDead m = do
-    let isMatch = messageText m =~= "[gG]od *[iI]s *[dD]ead"
-    when isMatch $ liftIO (TIO.readFile $ assetDir <> "nietzsche.txt")
-            >>= sendMessageChan (messageChannel m) . owoify
+godIsDead = runCommand . regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ ->
+    liftIO (TIO.readFile $ assetDir <> "nietzsche.txt")
+        >>= sendMessageChan (messageChannel m) . owoify
 
 thatcherRE :: T.Text
 thatcherRE = "thatcher('s *| *[Ii]s) *"
