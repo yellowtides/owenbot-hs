@@ -116,6 +116,10 @@ instance ParsableArgument RemainingText where
         remaining <- getInput
         pure (Remaining $ T.cons firstChar remaining)
 
+-- | An argument that can or cannot exist. 
+instance (ParsableArgument a) => ParsableArgument (Maybe a) where
+    parserForArg msg = try (Just <$> parserForArg msg) <|> pure Nothing
+
 -- Integer. TODO
 -- instance ParsableArgument Int where
 --     parserForArg msg =
