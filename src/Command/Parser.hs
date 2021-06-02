@@ -32,6 +32,11 @@ import           Discord.Types
 manyTill1 :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
 manyTill1 p end = do { x <- p; xs <- manyTill p end; return (x:xs) }
 
+-- | @eofOrSpaces@ is a parser that parses an end of command, or at least one
+-- space and skips the result.
+endOrSpaces :: T.Parser ()
+endOrSpaces = eof <|> skipMany1 space <?> "at least one space between arguments"
+
 -- | A @ParsableArgument@ is a dataclass that represents arguments that can be
 -- parsed from a message. Any datatype that is an instance of this dataclass can
 -- be used as function arguments for a command handler in 'command'.
@@ -51,21 +56,19 @@ instance ParsableArgument Message where
 -- parsed as a single string: 
 -- @\"He said, \\\"Lovely\\\".\"@
 instance ParsableArgument String where
-    parserForArg msg =
-        (flip label) "word or a quoted phrase" $ do
-            -- try quoted text first. if it failed, then normal word
-            parsed <- quotedText <|> word
-            -- consume end of input or one or more spaces
-            (eof <|> void (many1 space))
-            -- return remaining together with consumed value
-            remaining <- getInput
-            pure (parsed, remaining)
+    parserForArg msg = do
+        -- try quoted text first. if it failed, then normal word
+        parsed <- (quotedText <?> "quoted phrase") <|> (word <?> "word")
+        endOrSpaces
+        -- return remaining together with consumed value
+        remaining <- getInput
+        pure (parsed, remaining)
       where
-        quotedText = do
-            -- consume quotes
+        quotedText = try $ do -- backtrack if failed, parse as normal word
+            -- consume opening quote
             char '"'
             -- consume everything but quotes, unless it is escaped
-            content <- many $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
+            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
             -- consume closing quote
             char '"'
             pure content
@@ -111,12 +114,12 @@ data RemainingText = Remaining { getEm :: T.Text }
 instance ParsableArgument RemainingText where
     parserForArg msg = do
         -- Make sure at least one character is present
-        -- This is not a space, because previous parsers consume trailing spaces.
+        -- This is guaranteed to not be a space, because previous parsers
+        -- consume trailing spaces.
         firstChar <- anyChar
         -- Get the rest of the input.
-        -- This is more convenient than calling [T.Text]'s parser and concatting
-        -- it, as it preserves spaces. For speed, both T.concat and T.cons are
-        -- O(n) so it does not matter.
+        -- This is more convenient than doing "many anyChar" because it doesn't
+        -- need to parse anything for the remaining input.
         remaining <- getInput
         pure (Remaining $ T.cons firstChar remaining, "")
 
@@ -144,8 +147,7 @@ instance ParsableArgument UpdateStatusType where
             , string "idle" >> pure UpdateStatusAwayFromKeyboard
             , string "invisible" >> pure UpdateStatusInvisibleOffline
             ]
-        -- consume end of input or at least one space.
-        (eof <|> void (many1 space))
+        endOrSpaces
         remaining <- getInput
         pure (parsed, remaining)
 
@@ -160,8 +162,7 @@ instance ParsableArgument ActivityType where
             , string "listening to" >> pure ActivityTypeListening
             , string "competing in" >> pure ActivityTypeCompeting
             ]
-        -- consume end of input or at least one space.
-        (eof <|> void (many1 space))
+        endOrSpaces
         remaining <- getInput
         pure (parsed, remaining)
 
