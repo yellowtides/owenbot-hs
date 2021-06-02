@@ -44,9 +44,9 @@ startHandler :: DiscordHandler ()
 startHandler = do
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
-    -- sendGitInfoChan startupChan
-    -- sendInstanceInfoChan startupChan
-    -- changePronouns
+    sendGitInfoChan startupChan
+    sendInstanceInfoChan startupChan
+    changePronouns
     liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
