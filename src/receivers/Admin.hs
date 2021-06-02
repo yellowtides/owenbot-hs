@@ -51,7 +51,8 @@ receivers =
     , restartOwen
     , stopOwen
     , updateOwen
-    , runCommands [setStatus, someComplexThing]
+    , runCommand setStatus
+    , runCommand someComplexThing
     , listDevs
     , addDevs
     , removeDevs
@@ -167,8 +168,8 @@ statusRE = "(online|idle|dnd|invisible) "
            <> "(playing|streaming|competing|listening to) "
            <> "(.*)"
 
-setStatus =
-    command "status"
+setStatus
+    = command "status"
     $ \msg newStatus newType (Remaining newName) -> do
         updateStatus newStatus newType newName
         liftIO $ editStatusFile newStatus newType newName
@@ -176,8 +177,8 @@ setStatus =
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
 
 someComplexThing :: (MonadDiscord m, MonadIO m) => Command m
-someComplexThing =
-    command "complex"
+someComplexThing
+    = command "complex"
     $ \msg words -> do
         respond msg $
             "Length: " <> (T.pack . show . length) words <> "\n" <>

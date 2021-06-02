@@ -111,6 +111,7 @@ module Command.Command
     -- ** Compsable Functions
     -- | These can be composed onto 'command' to overwrite default functionality.
     , help
+    , alias
     , onError
     , defaultErrorHandler
     , requires
@@ -239,6 +240,8 @@ data Command m = forall h. Command
     -- ^ The name of the command.
     , commandPrefix       :: T.Text
     -- ^ The prefix for the command. 
+    , commandAliases      :: [T.Text]
+    -- ^ Any alias names for the command.
     , commandHandler      :: h
     -- ^ The polyvariadic handler function for the command. All of its argument
     -- types must be of 'ParsableArgument'. Its return type after applying all
@@ -328,6 +331,7 @@ command
 command name handler = Command
     { commandName         = name
     , commandPrefix       = ":"
+    , commandAliases      = []
     , commandHandler      = handler
     , commandApplier      = (False, applyArgs)
     , commandErrorHandler = defaultErrorHandler
@@ -355,7 +359,8 @@ onError errorHandler cmd = cmd
     }
 
 -- | @prefix@ overwrites the default command prefix ":" of a command with a
--- custom one. This is ignored if 'customParser' is used.
+-- custom one. This is ignored if a custom parser like 'regexCommand' or
+-- 'parsecCommand' is used.
 --
 -- @
 -- example
@@ -389,6 +394,16 @@ help newHelp cmd = cmd
     { commandHelp = newHelp
     }
 
+-- | @alias@ adds an alias for the command's name. This is ignored if a custom
+-- parser like 'regexCommand' or 'parsecCommand' is used.
+--
+-- Functionally, this is equivalent to defining a new command with the same
+-- handler.
+alias :: T.Text -> Command m -> Command m
+alias newAlias cmd = cmd
+    { commandAliases = newAlias : commandAliases cmd
+    }
+
 -- | @parsecCommand@ defines a command that has no name, and has a custom
 -- parser. It can help things like "::quotes" because they have special
 -- syntax that demands a special parser.
@@ -417,6 +432,7 @@ parsecCommand
 parsecCommand parserFunc handler = Command
     { commandName         = "<custom parser>"
     , commandPrefix       = ""
+    , commandAliases      = []
     , commandHandler      = handler
     , commandApplier      = (True, applyCustomParser parserFunc)
     , commandErrorHandler = defaultErrorHandler
@@ -448,6 +464,7 @@ regexCommand
 regexCommand regex handler = Command
     { commandName         = "<regex>"
     , commandPrefix       = ""
+    , commandAliases      = []
     , commandHandler      = handler
     , commandApplier      = (True, applyRegex regex)
     , commandErrorHandler = defaultErrorHandler
@@ -680,7 +697,7 @@ parseCommandName cmd = do
     -- don't consume the space
     cmdName <- manyTill1 anyChar (void (lookAhead space) <|> eof)
     -- check it's the proper command
-    guard (T.pack cmdName == commandName cmd)
+    guard $ T.pack cmdName `elem` (commandName cmd : commandAliases cmd)
     -- parse either an end of input, or spaces followed by arguments
     (eof >> pure "") <|> do
         -- consumes one or more isSpace characters
