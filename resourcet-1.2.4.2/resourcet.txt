@@ -482,16 +482,18 @@ InvalidAccess :: String -> InvalidAccess
 --   u . f</pre></li>
 --   </ul>
 --   
---   The third is a currently nameless law which ensures that the current
---   context is preserved.
+--   Instances of <tt>MonadUnliftIO</tt> must also satisfy the idempotency
+--   law:
 --   
 --   <ul>
---   <li><pre>askUnliftIO &gt;&gt;= (u -&gt; liftIO (unliftIO u m)) =
+--   <li><pre>askUnliftIO &gt;&gt;= \u -&gt; (liftIO . unliftIO u) m =
 --   m</pre></li>
 --   </ul>
 --   
---   If you have a name for this, please submit it in a pull request for
---   great glory.
+--   This law showcases two properties. First, <a>askUnliftIO</a> doesn't
+--   change the monadic context, and second, <tt>liftIO . unliftIO u</tt>
+--   is equivalent to <tt>id</tt> IF called in the same monadic context as
+--   <a>askUnliftIO</a>.
 class MonadIO m => MonadUnliftIO (m :: Type -> Type)
 
 -- | The internal state held by a <tt>ResourceT</tt> transformer.

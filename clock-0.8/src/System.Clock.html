@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LINE 1 &quot;System/Clock.hsc&quot; #-}</span><span>
-</span><span id="line-1"></span><span id="%24maxtag_LQWPkCZGrwMKQ1ncCz0epJ"><span id="%24tag2con_LQWPkCZGrwMKQ1ncCz0epJ"><span id="%24con2tag_LQWPkCZGrwMKQ1ncCz0epJ"></span></span></span><span class="hs-comment">-- | High-resolution, realtime clock and timer functions for Posix</span><span>
+</span><span id="line-1"></span><span id="%24maxtag_6NkWp41ILysHSoMZa4IHRk"><span id="%24tag2con_6NkWp41ILysHSoMZa4IHRk"><span id="%24con2tag_6NkWp41ILysHSoMZa4IHRk"></span></span></span><span class="hs-comment">-- | High-resolution, realtime clock and timer functions for Posix</span><span>
 </span><span id="line-2"></span><span class="hs-comment">--   systems. This module is being developed according to IEEE Std</span><span>
 </span><span id="line-3"></span><span class="hs-comment">--   1003.1-2008: &lt;http://www.opengroup.org/onlinepubs/9699919799/&gt;,</span><span>
 </span><span id="line-4"></span><span class="hs-comment">--   &lt;http://www.opengroup.org/onlinepubs/9699919799/functions/clock_getres.html#&gt;</span><span>
@@ -46,7 +46,7 @@
 </span><span id="line-49"></span><span class="hs-comment">--   or per-process (measuring time that is meaningful only within a process).</span><span>
 </span><span id="line-50"></span><span class="hs-comment">--   All implementations shall support CLOCK_REALTIME. (The only suspend-aware</span><span>
 </span><span id="line-51"></span><span class="hs-comment">--   monotonic is CLOCK_BOOTTIME on Linux.)</span><span>
-</span><span id="line-52"></span><span id="local-6989586621679045848"><span id="local-6989586621679045849"></span></span><span class="hs-keyword">data</span><span> </span><span id="Clock"><span class="annot"><a href="System.Clock.html#Clock"><span class="hs-identifier hs-var">Clock</span></a></span></span><span>
+</span><span id="line-52"></span><span id="local-6989586621679032035"><span id="local-6989586621679032036"></span></span><span class="hs-keyword">data</span><span> </span><span id="Clock"><span class="annot"><a href="System.Clock.html#Clock"><span class="hs-identifier hs-var">Clock</span></a></span></span><span>
 </span><span id="line-53"></span><span>
 </span><span id="line-54"></span><span>    </span><span class="hs-comment">-- | The identifier for the system-wide monotonic clock, which is defined as</span><span>
 </span><span id="line-55"></span><span>    </span><span class="hs-comment">--   a clock measuring real time, whose value cannot be set via</span><span>
@@ -118,14 +118,14 @@
 </span><span id="line-114"></span><span>
 </span><span id="line-115"></span><span class="hs-pragma">{-# LINE 115 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-115"></span><span>
-</span><span id="line-116"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679045836"><span id="local-6989586621679045838"><span class="annot"><span class="annottext">Clock -&gt; Clock -&gt; Bool
+</span><span id="line-116"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679032023"><span id="local-6989586621679032025"><span class="annot"><span class="annottext">Clock -&gt; Clock -&gt; Bool
 (Clock -&gt; Clock -&gt; Bool) -&gt; (Clock -&gt; Clock -&gt; Bool) -&gt; Eq Clock
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 /= :: Clock -&gt; Clock -&gt; Bool
 $c/= :: Clock -&gt; Clock -&gt; Bool
 == :: Clock -&gt; Clock -&gt; Bool
 $c== :: Clock -&gt; Clock -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045819"><span id="local-6989586621679045821"><span id="local-6989586621679045823"><span id="local-6989586621679045825"><span id="local-6989586621679045827"><span id="local-6989586621679045829"><span id="local-6989586621679045831"><span id="local-6989586621679045833"><span class="annot"><span class="annottext">Int -&gt; Clock
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679032006"><span id="local-6989586621679032008"><span id="local-6989586621679032010"><span id="local-6989586621679032012"><span id="local-6989586621679032014"><span id="local-6989586621679032016"><span id="local-6989586621679032018"><span id="local-6989586621679032020"><span class="annot"><span class="annottext">Int -&gt; Clock
 Clock -&gt; Int
 Clock -&gt; [Clock]
 Clock -&gt; Clock
@@ -174,7 +174,7 @@ forall a.
 (forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
 $cto :: forall x. Rep Clock x -&gt; Clock
 $cfrom :: forall x. Clock -&gt; Rep Clock x
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045807"><span id="local-6989586621679045809"><span id="local-6989586621679045811"><span id="local-6989586621679045813"><span class="annot"><span class="annottext">ReadPrec [Clock]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031994"><span id="local-6989586621679031996"><span id="local-6989586621679031998"><span id="local-6989586621679032000"><span class="annot"><span class="annottext">ReadPrec [Clock]
 ReadPrec Clock
 Int -&gt; ReadS Clock
 ReadS [Clock]
@@ -194,7 +194,7 @@ readList :: ReadS [Clock]
 $creadList :: ReadS [Clock]
 readsPrec :: Int -&gt; ReadS Clock
 $creadsPrec :: Int -&gt; ReadS Clock
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045800"><span id="local-6989586621679045802"><span id="local-6989586621679045804"><span class="annot"><span class="annottext">Int -&gt; Clock -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031987"><span id="local-6989586621679031989"><span id="local-6989586621679031991"><span class="annot"><span class="annottext">Int -&gt; Clock -&gt; ShowS
 [Clock] -&gt; ShowS
 Clock -&gt; String
 (Int -&gt; Clock -&gt; ShowS)
@@ -262,22 +262,22 @@ $cshowsPrec :: Int -&gt; Clock -&gt; ShowS
 </span><span id="line-162"></span><span>
 </span><span id="line-163"></span><span class="hs-pragma">{-# LINE 163 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-163"></span><span>
-</span><span id="line-164"></span><span id="local-6989586621679045876"><span class="annot"><a href="System.Clock.html#allocaAndPeek"><span class="hs-identifier hs-type">allocaAndPeek</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Storable</span></span><span> </span><span class="annot"><a href="#local-6989586621679045876"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679045876"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679045876"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-164"></span><span id="local-6989586621679032063"><span class="annot"><a href="System.Clock.html#allocaAndPeek"><span class="hs-identifier hs-type">allocaAndPeek</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Storable</span></span><span> </span><span class="annot"><a href="#local-6989586621679032063"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679032063"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679032063"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-165"></span><span id="allocaAndPeek"><span class="annot"><span class="annottext">allocaAndPeek :: (Ptr a -&gt; IO ()) -&gt; IO a
-</span><a href="System.Clock.html#allocaAndPeek"><span class="hs-identifier hs-var hs-var">allocaAndPeek</span></a></span></span><span> </span><span id="local-6989586621679045794"><span class="annot"><span class="annottext">f :: Ptr a -&gt; IO ()
-</span><a href="#local-6989586621679045794"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Ptr a -&gt; IO a) -&gt; IO a
+</span><a href="System.Clock.html#allocaAndPeek"><span class="hs-identifier hs-var hs-var">allocaAndPeek</span></a></span></span><span> </span><span id="local-6989586621679031981"><span class="annot"><span class="annottext">Ptr a -&gt; IO ()
+</span><a href="#local-6989586621679031981"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Ptr a -&gt; IO a) -&gt; IO a
 forall a b. Storable a =&gt; (Ptr a -&gt; IO b) -&gt; IO b
 </span><span class="hs-identifier hs-var">alloca</span></span><span> </span><span class="annot"><span class="annottext">((Ptr a -&gt; IO a) -&gt; IO a) -&gt; (Ptr a -&gt; IO a) -&gt; IO a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679045792"><span class="annot"><span class="annottext">ptr :: Ptr a
-</span><a href="#local-6989586621679045792"><span class="hs-identifier hs-var">ptr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr a -&gt; IO ()
-</span><a href="#local-6989586621679045794"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr a
-</span><a href="#local-6989586621679045792"><span class="hs-identifier hs-var">ptr</span></a></span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO a -&gt; IO a
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679031979"><span class="annot"><span class="annottext">Ptr a
+</span><a href="#local-6989586621679031979"><span class="hs-identifier hs-var">ptr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr a -&gt; IO ()
+</span><a href="#local-6989586621679031981"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr a
+</span><a href="#local-6989586621679031979"><span class="hs-identifier hs-var">ptr</span></a></span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO a -&gt; IO a
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Ptr a -&gt; IO a
 forall a. Storable a =&gt; Ptr a -&gt; IO a
 </span><span class="hs-identifier hs-var">peek</span></span><span> </span><span class="annot"><span class="annottext">Ptr a
-</span><a href="#local-6989586621679045792"><span class="hs-identifier hs-var">ptr</span></a></span><span>
+</span><a href="#local-6989586621679031979"><span class="hs-identifier hs-var">ptr</span></a></span><span>
 </span><span id="line-166"></span><span>
 </span><span id="line-167"></span><span class="hs-comment">-- | The 'getTime' function shall return the current value for the</span><span>
 </span><span id="line-168"></span><span class="hs-comment">--   specified clock.</span><span>
@@ -291,8 +291,8 @@ forall a. Storable a =&gt; Ptr a -&gt; IO a
 </span><span id="line-176"></span><span>
 </span><span id="line-177"></span><span class="hs-pragma">{-# LINE 184 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-184"></span><span id="getTime"><span class="annot"><span class="annottext">getTime :: Clock -&gt; IO TimeSpec
-</span><a href="System.Clock.html#getTime"><span class="hs-identifier hs-var hs-var">getTime</span></a></span></span><span> </span><span id="local-6989586621679045790"><span class="annot"><span class="annottext">clk :: Clock
-</span><a href="#local-6989586621679045790"><span class="hs-identifier hs-var">clk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec
+</span><a href="System.Clock.html#getTime"><span class="hs-identifier hs-var hs-var">getTime</span></a></span></span><span> </span><span id="local-6989586621679031977"><span class="annot"><span class="annottext">Clock
+</span><a href="#local-6989586621679031977"><span class="hs-identifier hs-var">clk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec
 forall a. Storable a =&gt; (Ptr a -&gt; IO ()) -&gt; IO a
 </span><a href="System.Clock.html#allocaAndPeek"><span class="hs-identifier hs-var">allocaAndPeek</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec)
 -&gt; (Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec
@@ -302,15 +302,15 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Clock -&gt; Int32
 </span><a href="System.Clock.html#clockToConst"><span class="hs-identifier hs-var">clockToConst</span></a></span><span> </span><span class="annot"><span class="annottext">Clock
-</span><a href="#local-6989586621679045790"><span class="hs-identifier hs-var">clk</span></a></span><span>
+</span><a href="#local-6989586621679031977"><span class="hs-identifier hs-var">clk</span></a></span><span>
 </span><span id="line-185"></span><span>
 </span><span id="line-186"></span><span class="hs-pragma">{-# LINE 186 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-186"></span><span>
 </span><span id="line-187"></span><span>
 </span><span id="line-188"></span><span class="hs-pragma">{-# LINE 195 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-195"></span><span id="getRes"><span class="annot"><span class="annottext">getRes :: Clock -&gt; IO TimeSpec
-</span><a href="System.Clock.html#getRes"><span class="hs-identifier hs-var hs-var">getRes</span></a></span></span><span> </span><span id="local-6989586621679045788"><span class="annot"><span class="annottext">clk :: Clock
-</span><a href="#local-6989586621679045788"><span class="hs-identifier hs-var">clk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec
+</span><a href="System.Clock.html#getRes"><span class="hs-identifier hs-var hs-var">getRes</span></a></span></span><span> </span><span id="local-6989586621679031975"><span class="annot"><span class="annottext">Clock
+</span><a href="#local-6989586621679031975"><span class="hs-identifier hs-var">clk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec
 forall a. Storable a =&gt; (Ptr a -&gt; IO ()) -&gt; IO a
 </span><a href="System.Clock.html#allocaAndPeek"><span class="hs-identifier hs-var">allocaAndPeek</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec)
 -&gt; (Ptr TimeSpec -&gt; IO ()) -&gt; IO TimeSpec
@@ -320,12 +320,12 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Clock -&gt; Int32
 </span><a href="System.Clock.html#clockToConst"><span class="hs-identifier hs-var">clockToConst</span></a></span><span> </span><span class="annot"><span class="annottext">Clock
-</span><a href="#local-6989586621679045788"><span class="hs-identifier hs-var">clk</span></a></span><span>
+</span><a href="#local-6989586621679031975"><span class="hs-identifier hs-var">clk</span></a></span><span>
 </span><span id="line-196"></span><span>
 </span><span id="line-197"></span><span class="hs-pragma">{-# LINE 197 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-197"></span><span>
 </span><span id="line-198"></span><span class="hs-comment">-- | TimeSpec structure</span><span>
-</span><span id="line-199"></span><span id="local-6989586621679045786"><span id="local-6989586621679045787"></span></span><span class="hs-keyword">data</span><span> </span><span id="TimeSpec"><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TimeSpec"><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span></span><span>
+</span><span id="line-199"></span><span id="local-6989586621679031973"><span id="local-6989586621679031974"></span></span><span class="hs-keyword">data</span><span> </span><span id="TimeSpec"><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TimeSpec"><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span></span><span>
 </span><span id="line-200"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="sec"><span class="annot"><span class="annottext">TimeSpec -&gt; Int64
 </span><a href="System.Clock.html#sec"><span class="hs-identifier hs-var hs-var">sec</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-pragma">{-# UNPACK</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int64</span></span><span> </span><span class="hs-comment">-- ^ seconds</span><span>
 </span><span id="line-201"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="nsec"><span class="annot"><span class="annottext">TimeSpec -&gt; Int64
@@ -338,7 +338,7 @@ forall a.
 (forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
 $cto :: forall x. Rep TimeSpec x -&gt; TimeSpec
 $cfrom :: forall x. TimeSpec -&gt; Rep TimeSpec x
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045773"><span id="local-6989586621679045775"><span id="local-6989586621679045777"><span id="local-6989586621679045779"><span class="annot"><span class="annottext">ReadPrec [TimeSpec]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031960"><span id="local-6989586621679031962"><span id="local-6989586621679031964"><span id="local-6989586621679031966"><span class="annot"><span class="annottext">ReadPrec [TimeSpec]
 ReadPrec TimeSpec
 Int -&gt; ReadS TimeSpec
 ReadS [TimeSpec]
@@ -358,7 +358,7 @@ readList :: ReadS [TimeSpec]
 $creadList :: ReadS [TimeSpec]
 readsPrec :: Int -&gt; ReadS TimeSpec
 $creadsPrec :: Int -&gt; ReadS TimeSpec
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045767"><span id="local-6989586621679045769"><span id="local-6989586621679045771"><span class="annot"><span class="annottext">Int -&gt; TimeSpec -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031954"><span id="local-6989586621679031956"><span id="local-6989586621679031958"><span class="annot"><span class="annottext">Int -&gt; TimeSpec -&gt; ShowS
 [TimeSpec] -&gt; ShowS
 TimeSpec -&gt; String
 (Int -&gt; TimeSpec -&gt; ShowS)
@@ -375,9 +375,11 @@ $cshowsPrec :: Int -&gt; TimeSpec -&gt; ShowS
 </span><span id="line-203"></span><span>
 </span><span id="line-204"></span><span>
 </span><span id="line-205"></span><span class="hs-pragma">{-# LINE 216 &quot;System/Clock.hsc&quot; #-}</span><span>
-</span><span id="line-216"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679045757"><span id="local-6989586621679045759"><span id="local-6989586621679045761"><span id="local-6989586621679045763"><span class="annot"><span class="hs-identifier hs-type">Storable</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-217"></span><span>  </span><span id="local-6989586621679045753"><span class="annot"><span class="annottext">sizeOf :: TimeSpec -&gt; Int
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">sizeOf</span></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">16</span></span><span class="hs-special">)</span><span>
+</span><span id="line-216"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679031944"><span id="local-6989586621679031946"><span id="local-6989586621679031948"><span id="local-6989586621679031950"><span class="annot"><span class="hs-identifier hs-type">Storable</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-217"></span><span>  </span><span id="local-6989586621679031940"><span class="annot"><span class="annottext">sizeOf :: TimeSpec -&gt; Int
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">sizeOf</span></span></span><span> </span><span class="annot"><span class="annottext">TimeSpec
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">16</span></span><span class="hs-special">)</span><span>
 </span><span id="line-218"></span><span class="hs-pragma">{-# LINE 218 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-218"></span><span>  </span><span class="hs-identifier">alignment</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-number">8</span><span>
 </span><span id="line-219"></span><span class="hs-pragma">{-# LINE 219 &quot;System/Clock.hsc&quot; #-}</span><span>
@@ -399,127 +401,130 @@ $cshowsPrec :: Int -&gt; TimeSpec -&gt; ShowS
 </span><span id="line-228"></span><span>
 </span><span id="line-229"></span><span class="hs-pragma">{-# LINE 229 &quot;System/Clock.hsc&quot; #-}</span><span>
 </span><span id="line-229"></span><span>
-</span><span id="line-230"></span><span id="local-6989586621679045862"><span class="annot"><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-type">s2ns</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679045862"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679045862"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-230"></span><span id="local-6989586621679032049"><span class="annot"><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-type">s2ns</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679032049"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679032049"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-231"></span><span id="s2ns"><span class="annot"><span class="annottext">s2ns :: a
-</span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var hs-var">s2ns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">10</span></span><span class="annot"><span class="annottext">a -&gt; Integer -&gt; a
+</span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var hs-var">s2ns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-number">10</span></span><span class="annot"><span class="annottext">a -&gt; Integer -&gt; a
 forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
-</span><span class="hs-operator hs-var">^</span></span><span class="annot"><span class="hs-number">9</span></span><span>
+</span><span class="hs-operator hs-var">^</span></span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">9</span></span><span>
 </span><span id="line-232"></span><span>
 </span><span id="line-233"></span><span class="annot"><a href="System.Clock.html#normalize"><span class="hs-identifier hs-type">normalize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span>
 </span><span id="line-234"></span><span id="normalize"><span class="annot"><span class="annottext">normalize :: TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var hs-var">normalize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045730"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045730"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045729"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045729"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045729"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var hs-var">normalize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031917"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031917"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031916"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031916"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031916"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045729"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+</span><a href="#local-6989586621679031916"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int64
 forall a. Num a =&gt; a
 </span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var">s2ns</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045730"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679031917"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045725"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045724"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><a href="#local-6989586621679031912"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031911"><span class="hs-identifier hs-var">r</span></a></span><span>
 </span><span id="line-235"></span><span>                           </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>            </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span>  </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045730"><span class="hs-identifier hs-var">xs</span></a></span><span>      </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045729"><span class="hs-identifier hs-var">xn</span></a></span><span>
-</span><span id="line-236"></span><span>                             </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679045725"><span class="annot"><span class="annottext">q :: Int64
-</span><a href="#local-6989586621679045725"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045724"><span class="annot"><span class="annottext">r :: Int64
-</span><a href="#local-6989586621679045724"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045729"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
+</span><a href="#local-6989586621679031917"><span class="hs-identifier hs-var">xs</span></a></span><span>      </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031916"><span class="hs-identifier hs-var">xn</span></a></span><span>
+</span><span id="line-236"></span><span>                             </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679031912"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031912"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031911"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031911"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031916"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
 </span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int64
 forall a. Num a =&gt; a
 </span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var">s2ns</span></a></span><span>
 </span><span id="line-237"></span><span>
 </span><span id="line-238"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-239"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045714"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045714"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045713"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045713"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679045712"><span class="annot"><span class="annottext">+ :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
-</span><a href="#local-6989586621679045712"><span class="hs-operator hs-var hs-var hs-var hs-var">+</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045711"><span class="annot"><span class="annottext">ys :: Int64
-</span><a href="#local-6989586621679045711"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679045710"><span class="annot"><span class="annottext">yn :: Int64
-</span><a href="#local-6989586621679045710"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><span id="line-239"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031901"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031901"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031900"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031900"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679031899"><span class="annot"><span class="annottext">+ :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
+</span><a href="#local-6989586621679031899"><span class="hs-operator hs-var hs-var hs-var hs-var">+</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031898"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031898"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679031897"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031897"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 </span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(TimeSpec -&gt; TimeSpec) -&gt; TimeSpec -&gt; TimeSpec
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045714"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679031901"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045711"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045713"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679031898"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031900"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045710"><span class="hs-identifier hs-var">yn</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-240"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045709"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045709"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045708"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045708"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679045707"><span class="annot"><span class="annottext">- :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
-</span><span class="hs-glyph hs-var hs-var hs-var hs-var">-</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045706"><span class="annot"><span class="annottext">ys :: Int64
-</span><a href="#local-6989586621679045706"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679045705"><span class="annot"><span class="annottext">yn :: Int64
-</span><a href="#local-6989586621679045705"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><a href="#local-6989586621679031897"><span class="hs-identifier hs-var">yn</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-240"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031896"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031896"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031895"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031895"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679031894"><span class="annot"><span class="annottext">- :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
+</span><span class="hs-glyph hs-var hs-var hs-var hs-var">-</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031893"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031893"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679031892"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031892"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 </span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(TimeSpec -&gt; TimeSpec) -&gt; TimeSpec -&gt; TimeSpec
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045709"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679031896"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045706"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045708"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679031893"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031895"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045705"><span class="hs-identifier hs-var">yn</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-241"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045704"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045704"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045703"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045703"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679045702"><span class="annot"><span class="annottext">* :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">*</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045700"><span class="annot"><span class="annottext">ys :: Int64
-</span><a href="#local-6989586621679045700"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679045699"><span class="annot"><span class="annottext">yn :: Int64
-</span><a href="#local-6989586621679045699"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><a href="#local-6989586621679031892"><span class="hs-identifier hs-var">yn</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-241"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031891"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031891"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031890"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031890"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679031889"><span class="annot"><span class="annottext">* :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">*</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031887"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031887"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679031886"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031886"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 </span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(TimeSpec -&gt; TimeSpec) -&gt; TimeSpec -&gt; TimeSpec
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045698"><span class="hs-identifier hs-var">xsi_ysi</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045697"><span class="hs-identifier hs-var">xni_yni</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-242"></span><span>                                         </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679045698"><span class="annot"><span class="annottext">xsi_ysi :: Int64
-</span><a href="#local-6989586621679045698"><span class="hs-identifier hs-var hs-var">xsi_ysi</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int64
+</span><a href="#local-6989586621679031885"><span class="hs-identifier hs-var">xsi_ysi</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031884"><span class="hs-identifier hs-var">xni_yni</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-242"></span><span>                                         </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679031885"><span class="annot"><span class="annottext">xsi_ysi :: Int64
+</span><a href="#local-6989586621679031885"><span class="hs-identifier hs-var hs-var">xsi_ysi</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int64
 forall a. Num a =&gt; Integer -&gt; a
 </span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Int64) -&gt; Integer -&gt; Int64
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span>  </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045696"><span class="hs-identifier hs-var">xsi</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031883"><span class="hs-identifier hs-var">xsi</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045695"><span class="hs-identifier hs-var">ysi</span></a></span><span> </span><span>
-</span><span id="line-243"></span><span>                                               </span><span id="local-6989586621679045697"><span class="annot"><span class="annottext">xni_yni :: Int64
-</span><a href="#local-6989586621679045697"><span class="hs-identifier hs-var hs-var">xni_yni</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int64
+</span><a href="#local-6989586621679031882"><span class="hs-identifier hs-var">ysi</span></a></span><span> </span><span>
+</span><span id="line-243"></span><span>                                               </span><span id="local-6989586621679031884"><span class="annot"><span class="annottext">xni_yni :: Int64
+</span><a href="#local-6989586621679031884"><span class="hs-identifier hs-var hs-var">xni_yni</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int64
 forall a. Num a =&gt; Integer -&gt; a
 </span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Int64) -&gt; Integer -&gt; Int64
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045694"><span class="hs-identifier hs-var">xni</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031881"><span class="hs-identifier hs-var">xni</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045693"><span class="hs-identifier hs-var">yni</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031880"><span class="hs-identifier hs-var">yni</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045694"><span class="hs-identifier hs-var">xni</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031881"><span class="hs-identifier hs-var">xni</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045695"><span class="hs-identifier hs-var">ysi</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031882"><span class="hs-identifier hs-var">ysi</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045696"><span class="hs-identifier hs-var">xsi</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031883"><span class="hs-identifier hs-var">xsi</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045693"><span class="hs-identifier hs-var">yni</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031880"><span class="hs-identifier hs-var">yni</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer
 forall a. Num a =&gt; a
@@ -528,59 +533,61 @@ forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">Integer
 forall a. Num a =&gt; a
 </span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var">s2ns</span></a></span><span>
-</span><span id="line-244"></span><span>                                               </span><span id="local-6989586621679045696"><span class="annot"><span class="annottext">xsi :: Integer
-</span><a href="#local-6989586621679045696"><span class="hs-identifier hs-var hs-var">xsi</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
+</span><span id="line-244"></span><span>                                               </span><span id="local-6989586621679031883"><span class="annot"><span class="annottext">xsi :: Integer
+</span><a href="#local-6989586621679031883"><span class="hs-identifier hs-var hs-var">xsi</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
 </span><span class="hs-identifier hs-var">toInteger</span></span><span>  </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045704"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-245"></span><span>                                               </span><span id="local-6989586621679045695"><span class="annot"><span class="annottext">ysi :: Integer
-</span><a href="#local-6989586621679045695"><span class="hs-identifier hs-var hs-var">ysi</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
+</span><a href="#local-6989586621679031891"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-245"></span><span>                                               </span><span id="local-6989586621679031882"><span class="annot"><span class="annottext">ysi :: Integer
+</span><a href="#local-6989586621679031882"><span class="hs-identifier hs-var hs-var">ysi</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
 </span><span class="hs-identifier hs-var">toInteger</span></span><span>  </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045700"><span class="hs-identifier hs-var">ys</span></a></span><span>
-</span><span id="line-246"></span><span>                                               </span><span id="local-6989586621679045694"><span class="annot"><span class="annottext">xni :: Integer
-</span><a href="#local-6989586621679045694"><span class="hs-identifier hs-var hs-var">xni</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
+</span><a href="#local-6989586621679031887"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-246"></span><span>                                               </span><span id="local-6989586621679031881"><span class="annot"><span class="annottext">xni :: Integer
+</span><a href="#local-6989586621679031881"><span class="hs-identifier hs-var hs-var">xni</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
 </span><span class="hs-identifier hs-var">toInteger</span></span><span>  </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045703"><span class="hs-identifier hs-var">xn</span></a></span><span>
-</span><span id="line-247"></span><span>                                               </span><span id="local-6989586621679045693"><span class="annot"><span class="annottext">yni :: Integer
-</span><a href="#local-6989586621679045693"><span class="hs-identifier hs-var hs-var">yni</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
+</span><a href="#local-6989586621679031890"><span class="hs-identifier hs-var">xn</span></a></span><span>
+</span><span id="line-247"></span><span>                                               </span><span id="local-6989586621679031880"><span class="annot"><span class="annottext">yni :: Integer
+</span><a href="#local-6989586621679031880"><span class="hs-identifier hs-var hs-var">yni</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span>   </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
 </span><span class="hs-identifier hs-var">toInteger</span></span><span>  </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045699"><span class="hs-identifier hs-var">yn</span></a></span><span>
+</span><a href="#local-6989586621679031886"><span class="hs-identifier hs-var">yn</span></a></span><span>
 </span><span id="line-248"></span><span class="hs-comment">--     let xsi = toInteger xs    -- convert to arbitraty Integer type to avoid int overflow</span><span>
 </span><span id="line-249"></span><span class="hs-comment">--         xni = toInteger xn</span><span>
 </span><span id="line-250"></span><span class="hs-comment">--         ysi = toInteger ys</span><span>
 </span><span id="line-251"></span><span class="hs-comment">--           yni = toInteger yn    -- seconds                 -- nanoseconds</span><span>
 </span><span id="line-252"></span><span class="hs-comment">--       in normalize $! TimeSpec (fromInteger $! xsi * ysi) (fromInteger $! (xni * yni + (xni * ysi + xsi * yni) * s2ns) `div` s2ns)</span><span>
 </span><span id="line-253"></span><span>
-</span><span id="line-254"></span><span>  </span><span id="local-6989586621679045691"><span class="annot"><span class="annottext">negate :: TimeSpec -&gt; TimeSpec
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">negate</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045690"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045690"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045689"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045689"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><span id="line-254"></span><span>  </span><span id="local-6989586621679031878"><span class="annot"><span class="annottext">negate :: TimeSpec -&gt; TimeSpec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">negate</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031877"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031877"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031876"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031876"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 </span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(TimeSpec -&gt; TimeSpec) -&gt; TimeSpec -&gt; TimeSpec
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">negate</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045690"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
+</span><a href="#local-6989586621679031877"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">negate</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045689"><span class="hs-identifier hs-var">xn</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-255"></span><span>  </span><span id="local-6989586621679045688"><span class="annot"><span class="annottext">abs :: TimeSpec -&gt; TimeSpec
+</span><a href="#local-6989586621679031876"><span class="hs-identifier hs-var">xn</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-255"></span><span>  </span><span id="local-6989586621679031875"><span class="annot"><span class="annottext">abs :: TimeSpec -&gt; TimeSpec
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">abs</span></span></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045686"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045686"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045685"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045685"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045686"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031873"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031873"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031872"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031872"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031873"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">0</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 </span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(TimeSpec -&gt; TimeSpec) -&gt; TimeSpec -&gt; TimeSpec
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
-</span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045685"><span class="hs-identifier hs-var">xn</span></a></span><span>
+</span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031872"><span class="hs-identifier hs-var">xn</span></a></span><span>
 </span><span id="line-256"></span><span>                                       </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 </span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(TimeSpec -&gt; TimeSpec) -&gt; TimeSpec -&gt; TimeSpec
@@ -589,118 +596,121 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">abs</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045686"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
+</span><a href="#local-6989586621679031873"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">signum</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045686"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679031873"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045685"><span class="hs-identifier hs-var">xn</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-257"></span><span>  </span><span id="local-6989586621679045683"><span class="annot"><span class="annottext">signum :: TimeSpec -&gt; TimeSpec
-</span><a href="#local-6989586621679045683"><span class="hs-identifier hs-var hs-var hs-var hs-var">signum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045682"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045682"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045681"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045681"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045682"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+</span><a href="#local-6989586621679031872"><span class="hs-identifier hs-var">xn</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-257"></span><span>  </span><span id="local-6989586621679031870"><span class="annot"><span class="annottext">signum :: TimeSpec -&gt; TimeSpec
+</span><a href="#local-6989586621679031870"><span class="hs-identifier hs-var hs-var hs-var hs-var">signum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031869"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031869"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031868"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031868"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031869"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">0</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">signum</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045681"><span class="hs-identifier hs-var">xn</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><a href="#local-6989586621679031868"><span class="hs-identifier hs-var">xn</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">0</span></span><span>
 </span><span id="line-258"></span><span>                                       </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">signum</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045682"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
-</span><span id="line-259"></span><span>  </span><span id="local-6989586621679045680"><span class="annot"><span class="annottext">fromInteger :: Integer -&gt; TimeSpec
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromInteger</span></span></span><span> </span><span id="local-6989586621679045679"><span class="annot"><span class="annottext">x :: Integer
-</span><a href="#local-6989586621679045679"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
+</span><a href="#local-6989586621679031869"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-259"></span><span>  </span><span id="local-6989586621679031867"><span class="annot"><span class="annottext">fromInteger :: Integer -&gt; TimeSpec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromInteger</span></span></span><span> </span><span id="local-6989586621679031866"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031866"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Int64
 forall a. Num a =&gt; Integer -&gt; a
 </span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045678"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Int64
+</span><a href="#local-6989586621679031865"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Int64
 forall a. Num a =&gt; Integer -&gt; a
 </span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045677"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679045678"><span class="annot"><span class="annottext">q :: Integer
-</span><a href="#local-6989586621679045678"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045677"><span class="annot"><span class="annottext">r :: Integer
-</span><a href="#local-6989586621679045677"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045679"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; (Integer, Integer)
+</span><a href="#local-6989586621679031864"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679031865"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031865"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031864"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031864"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031866"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; (Integer, Integer)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
 </span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
 forall a. Num a =&gt; a
 </span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var">s2ns</span></a></span><span>
 </span><span id="line-260"></span><span>
-</span><span id="line-261"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679045674"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-261"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679031861"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-262"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045673"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045673"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045672"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045672"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679045671"><span class="annot"><span class="annottext">== :: TimeSpec -&gt; TimeSpec -&gt; Bool
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031860"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031860"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031859"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031859"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679031858"><span class="annot"><span class="annottext">== :: TimeSpec -&gt; TimeSpec -&gt; Bool
 </span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045670"><span class="annot"><span class="annottext">ys :: Int64
-</span><a href="#local-6989586621679045670"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679045669"><span class="annot"><span class="annottext">yn :: Int64
-</span><a href="#local-6989586621679045669"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031857"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031857"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679031856"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031856"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679045668"><span class="hs-identifier hs-var">es</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045672"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+</span><a href="#local-6989586621679031855"><span class="hs-identifier hs-var">es</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031859"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045669"><span class="hs-identifier hs-var">yn</span></a></span><span>
+</span><a href="#local-6989586621679031856"><span class="hs-identifier hs-var">yn</span></a></span><span>
 </span><span id="line-263"></span><span>                                                                 </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679045668"><span class="hs-identifier hs-var">es</span></a></span><span>
-</span><span id="line-264"></span><span>                                                                   </span><span class="hs-keyword">where</span><span>   </span><span id="local-6989586621679045668"><span class="annot"><span class="annottext">es :: Bool
-</span><a href="#local-6989586621679045668"><span class="hs-identifier hs-var hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045673"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
+</span><a href="#local-6989586621679031855"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><span id="line-264"></span><span>                                                                   </span><span class="hs-keyword">where</span><span>   </span><span id="local-6989586621679031855"><span class="annot"><span class="annottext">es :: Bool
+</span><a href="#local-6989586621679031855"><span class="hs-identifier hs-var hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031860"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045670"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><a href="#local-6989586621679031857"><span class="hs-identifier hs-var">ys</span></a></span><span>
 </span><span id="line-265"></span><span>
-</span><span id="line-266"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679045654"><span id="local-6989586621679045656"><span id="local-6989586621679045658"><span id="local-6989586621679045660"><span id="local-6989586621679045662"><span id="local-6989586621679045664"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-267"></span><span>  </span><span id="local-6989586621679045652"><span class="annot"><span class="annottext">compare :: TimeSpec -&gt; TimeSpec -&gt; Ordering
+</span><span id="line-266"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679031841"><span id="local-6989586621679031843"><span id="local-6989586621679031845"><span id="local-6989586621679031847"><span id="local-6989586621679031849"><span id="local-6989586621679031851"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-267"></span><span>  </span><span id="local-6989586621679031839"><span class="annot"><span class="annottext">compare :: TimeSpec -&gt; TimeSpec -&gt; Ordering
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045650"><span class="annot"><span class="annottext">xs :: Int64
-</span><a href="#local-6989586621679045650"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679045649"><span class="annot"><span class="annottext">xn :: Int64
-</span><a href="#local-6989586621679045649"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045648"><span class="annot"><span class="annottext">ys :: Int64
-</span><a href="#local-6989586621679045648"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679045647"><span class="annot"><span class="annottext">yn :: Int64
-</span><a href="#local-6989586621679045647"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031837"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031837"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679031836"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031836"><span class="hs-identifier hs-var">xn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><a href="System.Clock.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031835"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031835"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span id="local-6989586621679031834"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031834"><span class="hs-identifier hs-var">yn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Ordering
 </span><span class="hs-identifier hs-var">EQ</span></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span>  </span><span class="annot"><span class="annottext">Ordering
-</span><a href="#local-6989586621679045646"><span class="hs-identifier hs-var">os</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Ordering
+</span><a href="#local-6989586621679031833"><span class="hs-identifier hs-var">os</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Ordering
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045649"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045647"><span class="hs-identifier hs-var">yn</span></a></span><span>
+</span><a href="#local-6989586621679031836"><span class="hs-identifier hs-var">xn</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031834"><span class="hs-identifier hs-var">yn</span></a></span><span>
 </span><span id="line-268"></span><span>                                                                      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ordering
-</span><a href="#local-6989586621679045646"><span class="hs-identifier hs-var">os</span></a></span><span>
-</span><span id="line-269"></span><span>                                                                        </span><span class="hs-keyword">where</span><span>  </span><span id="local-6989586621679045646"><span class="annot"><span class="annottext">os :: Ordering
-</span><a href="#local-6989586621679045646"><span class="hs-identifier hs-var hs-var">os</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Ordering
+</span><a href="#local-6989586621679031833"><span class="hs-identifier hs-var">os</span></a></span><span>
+</span><span id="line-269"></span><span>                                                                        </span><span class="hs-keyword">where</span><span>  </span><span id="local-6989586621679031833"><span class="annot"><span class="annottext">os :: Ordering
+</span><a href="#local-6989586621679031833"><span class="hs-identifier hs-var hs-var">os</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Ordering
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045650"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045648"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><a href="#local-6989586621679031837"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031835"><span class="hs-identifier hs-var">ys</span></a></span><span>
 </span><span id="line-270"></span><span>
 </span><span id="line-271"></span><span class="hs-comment">-- | TimeSpec from nano seconds.</span><span>
 </span><span id="line-272"></span><span class="annot"><a href="System.Clock.html#fromNanoSecs"><span class="hs-identifier hs-type">fromNanoSecs</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span>
 </span><span id="line-273"></span><span id="fromNanoSecs"><span class="annot"><span class="annottext">fromNanoSecs :: Integer -&gt; TimeSpec
-</span><a href="System.Clock.html#fromNanoSecs"><span class="hs-identifier hs-var hs-var">fromNanoSecs</span></a></span></span><span> </span><span id="local-6989586621679045645"><span class="annot"><span class="annottext">x :: Integer
-</span><a href="#local-6989586621679045645"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
+</span><a href="System.Clock.html#fromNanoSecs"><span class="hs-identifier hs-var hs-var">fromNanoSecs</span></a></span></span><span> </span><span id="local-6989586621679031832"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031832"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; TimeSpec
 </span><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-var">TimeSpec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Int64
 forall a. Num a =&gt; Integer -&gt; a
 </span><span class="hs-identifier hs-var">fromInteger</span></span><span>  </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045644"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Int64
+</span><a href="#local-6989586621679031831"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Int64
 forall a. Num a =&gt; Integer -&gt; a
 </span><span class="hs-identifier hs-var">fromInteger</span></span><span>  </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045643"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679045644"><span class="annot"><span class="annottext">q :: Integer
-</span><a href="#local-6989586621679045644"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679045643"><span class="annot"><span class="annottext">r :: Integer
-</span><a href="#local-6989586621679045643"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045645"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; (Integer, Integer)
+</span><a href="#local-6989586621679031830"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679031831"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031831"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679031830"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031830"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031832"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; (Integer, Integer)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
 </span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Integer
 forall a. Num a =&gt; a
@@ -712,43 +722,43 @@ forall a. Num a =&gt; a
 </span><span id="line-278"></span><span id="toNanoSecs"><span class="annot"><span class="annottext">toNanoSecs :: TimeSpec -&gt; Integer
 </span><a href="System.Clock.html#toNanoSecs"><span class="hs-identifier hs-var hs-var">toNanoSecs</span></a></span></span><span>   </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
-</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679045642"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045642"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679031829"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031829"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
-</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679045641"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045641"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045642"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679031828"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031828"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679031829"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer
 forall a. Num a =&gt; a
 </span><a href="System.Clock.html#s2ns"><span class="hs-identifier hs-var">s2ns</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679045641"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679031828"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-279"></span><span>
 </span><span id="line-280"></span><span class="hs-comment">-- | Compute the absolute difference.</span><span>
 </span><span id="line-281"></span><span class="annot"><a href="System.Clock.html#diffTimeSpec"><span class="hs-identifier hs-type">diffTimeSpec</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span>
 </span><span id="line-282"></span><span id="diffTimeSpec"><span class="annot"><span class="annottext">diffTimeSpec :: TimeSpec -&gt; TimeSpec -&gt; TimeSpec
-</span><a href="System.Clock.html#diffTimeSpec"><span class="hs-identifier hs-var hs-var">diffTimeSpec</span></a></span></span><span> </span><span id="local-6989586621679045640"><span class="annot"><span class="annottext">ts1 :: TimeSpec
-</span><a href="#local-6989586621679045640"><span class="hs-identifier hs-var">ts1</span></a></span></span><span> </span><span id="local-6989586621679045639"><span class="annot"><span class="annottext">ts2 :: TimeSpec
-</span><a href="#local-6989586621679045639"><span class="hs-identifier hs-var">ts2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
+</span><a href="System.Clock.html#diffTimeSpec"><span class="hs-identifier hs-var hs-var">diffTimeSpec</span></a></span></span><span> </span><span id="local-6989586621679031827"><span class="annot"><span class="annottext">TimeSpec
+</span><a href="#local-6989586621679031827"><span class="hs-identifier hs-var">ts1</span></a></span></span><span> </span><span id="local-6989586621679031826"><span class="annot"><span class="annottext">TimeSpec
+</span><a href="#local-6989586621679031826"><span class="hs-identifier hs-var">ts2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">abs</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TimeSpec
-</span><a href="#local-6989586621679045640"><span class="hs-identifier hs-var">ts1</span></a></span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec -&gt; TimeSpec
+</span><a href="#local-6989586621679031827"><span class="hs-identifier hs-var">ts1</span></a></span><span> </span><span class="annot"><span class="annottext">TimeSpec -&gt; TimeSpec -&gt; TimeSpec
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">TimeSpec
-</span><a href="#local-6989586621679045639"><span class="hs-identifier hs-var">ts2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679031826"><span class="hs-identifier hs-var">ts2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-283"></span><span>
 </span><span id="line-284"></span><span class="hs-pragma">{-# DEPRECATED</span><span> </span><span class="hs-pragma">timeSpecAsNanoSecs</span><span> </span><span class="hs-pragma">&quot;Use toNanoSecs instead! Replaced timeSpecAsNanoSecs with the same signature TimeSpec -&gt; Integer&quot;</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-285"></span><span class="hs-comment">-- | TimeSpec as nano seconds.</span><span>
 </span><span id="line-286"></span><span class="annot"><a href="System.Clock.html#timeSpecAsNanoSecs"><span class="hs-identifier hs-type">timeSpecAsNanoSecs</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
 </span><span id="line-287"></span><span id="timeSpecAsNanoSecs"><span class="annot"><span class="annottext">timeSpecAsNanoSecs :: TimeSpec -&gt; Integer
-</span><a href="System.Clock.html#timeSpecAsNanoSecs"><span class="hs-identifier hs-var hs-var">timeSpecAsNanoSecs</span></a></span></span><span>   </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679045638"><span class="annot"><span class="annottext">s :: Int64
-</span><a href="#local-6989586621679045638"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679045637"><span class="annot"><span class="annottext">n :: Int64
-</span><a href="#local-6989586621679045637"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
+</span><a href="System.Clock.html#timeSpecAsNanoSecs"><span class="hs-identifier hs-var hs-var">timeSpecAsNanoSecs</span></a></span></span><span>   </span><span class="hs-special">(</span><span class="annot"><a href="System.Clock.html#TimeSpec"><span class="hs-identifier hs-type">TimeSpec</span></a></span><span> </span><span id="local-6989586621679031825"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031825"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679031824"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679031824"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
 </span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045638"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679031825"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer
 forall a. Num a =&gt; a
@@ -757,5 +767,5 @@ forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Integer
 forall a. Integral a =&gt; a -&gt; Integer
 </span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679045637"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679031824"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-288"></span></pre></body></html>

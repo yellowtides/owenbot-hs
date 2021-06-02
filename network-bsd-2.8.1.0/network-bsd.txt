@@ -496,13 +496,13 @@ endNetworkEntry :: IO ()
 --   
 --   Since 2.7.0.0.
 ifNameToIndex :: String -> IO (Maybe Int)
-instance GHC.Show.Show Network.BSD.NetworkEntry
-instance GHC.Read.Read Network.BSD.NetworkEntry
-instance GHC.Show.Show Network.BSD.HostEntry
-instance GHC.Read.Read Network.BSD.HostEntry
+instance GHC.Show.Show Network.BSD.ServiceEntry
 instance GHC.Show.Show Network.BSD.ProtocolEntry
 instance GHC.Read.Read Network.BSD.ProtocolEntry
-instance GHC.Show.Show Network.BSD.ServiceEntry
+instance GHC.Show.Show Network.BSD.HostEntry
+instance GHC.Read.Read Network.BSD.HostEntry
+instance GHC.Show.Show Network.BSD.NetworkEntry
+instance GHC.Read.Read Network.BSD.NetworkEntry
 instance Control.DeepSeq.NFData Network.BSD.NetworkEntry
 instance Foreign.Storable.Storable Network.BSD.NetworkEntry
 instance Control.DeepSeq.NFData Network.BSD.HostEntry

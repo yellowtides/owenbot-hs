@@ -199,9 +199,9 @@ connectionSetSecure :: ConnectionContext -> Connection -> TLSSettings -> IO ()
 -- | Returns if the connection is establish securely or not.
 connectionIsSecure :: Connection -> IO Bool
 connectionSessionManager :: Manager -> SessionManager
-instance GHC.Show.Show Network.Connection.HostCannotConnect
-instance GHC.Show.Show Network.Connection.HostNotResolved
 instance GHC.Show.Show Network.Connection.LineTooLong
+instance GHC.Show.Show Network.Connection.HostNotResolved
+instance GHC.Show.Show Network.Connection.HostCannotConnect
 instance GHC.Exception.Type.Exception Network.Connection.HostCannotConnect
 instance GHC.Exception.Type.Exception Network.Connection.HostNotResolved
 instance GHC.Exception.Type.Exception Network.Connection.LineTooLong

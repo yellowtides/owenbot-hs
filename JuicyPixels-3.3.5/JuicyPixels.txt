@@ -119,10 +119,10 @@ tagOfWord16 :: Word16 -> ExifTag
 -- | Convert a tag to it's corresponding value.
 word16OfTag :: ExifTag -> Word16
 isInIFD0 :: ExifTag -> Bool
-instance GHC.Show.Show Codec.Picture.Metadata.Exif.ExifData
 instance GHC.Show.Show Codec.Picture.Metadata.Exif.ExifTag
 instance GHC.Classes.Ord Codec.Picture.Metadata.Exif.ExifTag
 instance GHC.Classes.Eq Codec.Picture.Metadata.Exif.ExifTag
+instance GHC.Show.Show Codec.Picture.Metadata.Exif.ExifData
 instance Control.DeepSeq.NFData Codec.Picture.Metadata.Exif.ExifData
 instance Control.DeepSeq.NFData Codec.Picture.Metadata.Exif.ExifTag
 
@@ -276,14 +276,14 @@ dotPerInchToDotsPerMeter :: Word -> Word
 
 -- | Conversion dpcm -&gt; dpi
 dotsPerCentiMeterToDotPerInch :: Word -> Word
-instance Control.DeepSeq.NFData Codec.Picture.Metadata.Metadatas
-instance GHC.Show.Show Codec.Picture.Metadata.Metadatas
-instance GHC.Show.Show Codec.Picture.Metadata.Value
-instance GHC.Classes.Eq Codec.Picture.Metadata.Value
-instance GHC.Show.Show Codec.Picture.Metadata.ColorSpace
-instance GHC.Classes.Eq Codec.Picture.Metadata.ColorSpace
 instance GHC.Show.Show Codec.Picture.Metadata.SourceFormat
 instance GHC.Classes.Eq Codec.Picture.Metadata.SourceFormat
+instance GHC.Show.Show Codec.Picture.Metadata.ColorSpace
+instance GHC.Classes.Eq Codec.Picture.Metadata.ColorSpace
+instance GHC.Show.Show Codec.Picture.Metadata.Value
+instance GHC.Classes.Eq Codec.Picture.Metadata.Value
+instance Control.DeepSeq.NFData Codec.Picture.Metadata.Metadatas
+instance GHC.Show.Show Codec.Picture.Metadata.Metadatas
 instance GHC.Show.Show (Codec.Picture.Metadata.Keys a)
 instance GHC.Classes.Eq (Codec.Picture.Metadata.Keys a)
 instance GHC.Show.Show (Codec.Picture.Metadata.Elem Codec.Picture.Metadata.Keys)
@@ -394,14 +394,14 @@ codeOfExtraSample :: ExtraSample -> Word16
 unPackCompression :: Word32 -> Get TiffCompression
 packCompression :: TiffCompression -> Word16
 predictorOfConstant :: Word32 -> Get Predictor
-instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.ImageFileDirectory
-instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.TiffSampleFormat
-instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.Predictor
-instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.IfdType
-instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.TiffHeader
-instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.TiffHeader
 instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.Endianness
 instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.Endianness
+instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.TiffHeader
+instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.TiffHeader
+instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.IfdType
+instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.Predictor
+instance GHC.Classes.Eq Codec.Picture.Tiff.Internal.Types.TiffSampleFormat
+instance GHC.Show.Show Codec.Picture.Tiff.Internal.Types.ImageFileDirectory
 instance Codec.Picture.Tiff.Internal.Types.BinaryParam (Codec.Picture.Tiff.Internal.Types.Endianness, GHC.Types.Int, Codec.Picture.Tiff.Internal.Types.ImageFileDirectory) Codec.Picture.Metadata.Exif.ExifData
 instance Codec.Picture.Tiff.Internal.Types.BinaryParam Data.ByteString.Internal.ByteString (Codec.Picture.Tiff.Internal.Types.TiffHeader, [[Codec.Picture.Tiff.Internal.Types.ImageFileDirectory]])
 instance Codec.Picture.Tiff.Internal.Types.BinaryParam Codec.Picture.Tiff.Internal.Types.Endianness Codec.Picture.Tiff.Internal.Types.ImageFileDirectory
@@ -1051,40 +1051,40 @@ writePackedPixelAt :: (Pixel px, PackeablePixel px, Storable (PackedRepresentati
 
 -- | Fill a packeable pixel between two bounds.
 unsafeWritePixelBetweenAt :: (PrimMonad m, Pixel px, PackeablePixel px, Storable (PackedRepresentation px)) => MutableImage (PrimState m) px -> px -> Int -> Int -> m ()
-instance GHC.Classes.Eq Codec.Picture.Types.DynamicImage
-instance GHC.Show.Show Codec.Picture.Types.PixelRGBA16
-instance GHC.Classes.Ord Codec.Picture.Types.PixelRGBA16
-instance GHC.Classes.Eq Codec.Picture.Types.PixelRGBA16
-instance GHC.Show.Show Codec.Picture.Types.PixelRGBA8
-instance GHC.Classes.Ord Codec.Picture.Types.PixelRGBA8
-instance GHC.Classes.Eq Codec.Picture.Types.PixelRGBA8
-instance GHC.Show.Show Codec.Picture.Types.PixelCMYK16
-instance GHC.Classes.Ord Codec.Picture.Types.PixelCMYK16
-instance GHC.Classes.Eq Codec.Picture.Types.PixelCMYK16
-instance GHC.Show.Show Codec.Picture.Types.PixelCMYK8
-instance GHC.Classes.Ord Codec.Picture.Types.PixelCMYK8
-instance GHC.Classes.Eq Codec.Picture.Types.PixelCMYK8
-instance GHC.Show.Show Codec.Picture.Types.PixelYCbCr8
-instance GHC.Classes.Ord Codec.Picture.Types.PixelYCbCr8
-instance GHC.Classes.Eq Codec.Picture.Types.PixelYCbCr8
-instance GHC.Show.Show Codec.Picture.Types.PixelRGBF
-instance GHC.Classes.Ord Codec.Picture.Types.PixelRGBF
-instance GHC.Classes.Eq Codec.Picture.Types.PixelRGBF
-instance GHC.Show.Show Codec.Picture.Types.PixelRGB16
-instance GHC.Classes.Ord Codec.Picture.Types.PixelRGB16
-instance GHC.Classes.Eq Codec.Picture.Types.PixelRGB16
-instance GHC.Show.Show Codec.Picture.Types.PixelYCbCrK8
-instance GHC.Classes.Ord Codec.Picture.Types.PixelYCbCrK8
-instance GHC.Classes.Eq Codec.Picture.Types.PixelYCbCrK8
-instance GHC.Show.Show Codec.Picture.Types.PixelRGB8
-instance GHC.Classes.Ord Codec.Picture.Types.PixelRGB8
-instance GHC.Classes.Eq Codec.Picture.Types.PixelRGB8
-instance GHC.Show.Show Codec.Picture.Types.PixelYA16
-instance GHC.Classes.Ord Codec.Picture.Types.PixelYA16
-instance GHC.Classes.Eq Codec.Picture.Types.PixelYA16
 instance GHC.Show.Show Codec.Picture.Types.PixelYA8
 instance GHC.Classes.Ord Codec.Picture.Types.PixelYA8
 instance GHC.Classes.Eq Codec.Picture.Types.PixelYA8
+instance GHC.Show.Show Codec.Picture.Types.PixelYA16
+instance GHC.Classes.Ord Codec.Picture.Types.PixelYA16
+instance GHC.Classes.Eq Codec.Picture.Types.PixelYA16
+instance GHC.Show.Show Codec.Picture.Types.PixelRGB8
+instance GHC.Classes.Ord Codec.Picture.Types.PixelRGB8
+instance GHC.Classes.Eq Codec.Picture.Types.PixelRGB8
+instance GHC.Show.Show Codec.Picture.Types.PixelYCbCrK8
+instance GHC.Classes.Ord Codec.Picture.Types.PixelYCbCrK8
+instance GHC.Classes.Eq Codec.Picture.Types.PixelYCbCrK8
+instance GHC.Show.Show Codec.Picture.Types.PixelRGB16
+instance GHC.Classes.Ord Codec.Picture.Types.PixelRGB16
+instance GHC.Classes.Eq Codec.Picture.Types.PixelRGB16
+instance GHC.Show.Show Codec.Picture.Types.PixelRGBF
+instance GHC.Classes.Ord Codec.Picture.Types.PixelRGBF
+instance GHC.Classes.Eq Codec.Picture.Types.PixelRGBF
+instance GHC.Show.Show Codec.Picture.Types.PixelYCbCr8
+instance GHC.Classes.Ord Codec.Picture.Types.PixelYCbCr8
+instance GHC.Classes.Eq Codec.Picture.Types.PixelYCbCr8
+instance GHC.Show.Show Codec.Picture.Types.PixelCMYK8
+instance GHC.Classes.Ord Codec.Picture.Types.PixelCMYK8
+instance GHC.Classes.Eq Codec.Picture.Types.PixelCMYK8
+instance GHC.Show.Show Codec.Picture.Types.PixelCMYK16
+instance GHC.Classes.Ord Codec.Picture.Types.PixelCMYK16
+instance GHC.Classes.Eq Codec.Picture.Types.PixelCMYK16
+instance GHC.Show.Show Codec.Picture.Types.PixelRGBA8
+instance GHC.Classes.Ord Codec.Picture.Types.PixelRGBA8
+instance GHC.Classes.Eq Codec.Picture.Types.PixelRGBA8
+instance GHC.Show.Show Codec.Picture.Types.PixelRGBA16
+instance GHC.Classes.Ord Codec.Picture.Types.PixelRGBA16
+instance GHC.Classes.Eq Codec.Picture.Types.PixelRGBA16
+instance GHC.Classes.Eq Codec.Picture.Types.DynamicImage
 instance Codec.Picture.Types.PackeablePixel Codec.Picture.Types.Pixel8
 instance Codec.Picture.Types.PackeablePixel Codec.Picture.Types.Pixel16
 instance Codec.Picture.Types.PackeablePixel Codec.Picture.Types.Pixel32
@@ -1384,16 +1384,16 @@ PngLowLevel :: Image a -> [PngChunk] -> PngLowLevel a
 [pngChunks] :: PngLowLevel a -> [PngChunk]
 chunksWithSig :: PngRawImage -> ChunkSignature -> [ByteString]
 mkRawChunk :: ChunkSignature -> ByteString -> PngRawChunk
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngIHdr
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngInterlaceMethod
-instance GHC.Enum.Enum Codec.Picture.Png.Internal.Type.PngInterlaceMethod
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngAnimationControl
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngFrameDisposal
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngBlendOp
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngFrameControl
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngImageType
 instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngFilter
 instance GHC.Enum.Enum Codec.Picture.Png.Internal.Type.PngFilter
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngImageType
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngFrameControl
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngBlendOp
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngFrameDisposal
-instance GHC.Show.Show Codec.Picture.Png.Internal.Type.APngAnimationControl
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngInterlaceMethod
+instance GHC.Enum.Enum Codec.Picture.Png.Internal.Type.PngInterlaceMethod
+instance GHC.Show.Show Codec.Picture.Png.Internal.Type.PngIHdr
 instance Data.Binary.Class.Binary Codec.Picture.Png.Internal.Type.PngRawImage
 instance Data.Binary.Class.Binary Codec.Picture.Png.Internal.Type.PngIHdr
 instance Data.Binary.Class.Binary Codec.Picture.Png.Internal.Type.PngInterlaceMethod
@@ -1407,8 +1407,8 @@ instance Data.Binary.Class.Binary Codec.Picture.Png.Internal.Type.PngUnit
 module Codec.Picture.Png.Internal.Metadata
 extractMetadatas :: PngRawImage -> Metadatas
 encodeMetadatas :: Metadatas -> [PngRawChunk]
-instance GHC.Show.Show Codec.Picture.Png.Internal.Metadata.PngZText
 instance GHC.Show.Show Codec.Picture.Png.Internal.Metadata.PngText
+instance GHC.Show.Show Codec.Picture.Png.Internal.Metadata.PngZText
 instance Data.Binary.Class.Binary Codec.Picture.Png.Internal.Metadata.PngZText
 instance Data.Binary.Class.Binary Codec.Picture.Png.Internal.Metadata.PngText
 
@@ -1754,20 +1754,20 @@ writeDynamicBitmap :: FilePath -> DynamicImage -> IO (Either String Bool)
 -- | All the instance of this class can be written as a bitmap file using
 --   this library.
 class BmpEncodable pixel
-instance GHC.Show.Show Codec.Picture.Bitmap.IndexedBmpFormat
-instance GHC.Show.Show Codec.Picture.Bitmap.RGBBmpFormat
-instance GHC.Classes.Eq Codec.Picture.Bitmap.RGBBmpFormat
-instance GHC.Show.Show Codec.Picture.Bitmap.RGBABmpFormat
-instance GHC.Classes.Eq Codec.Picture.Bitmap.RGBABmpFormat
-instance GHC.Show.Show t => GHC.Show.Show (Codec.Picture.Bitmap.Bitfields3 t)
-instance GHC.Classes.Eq t => GHC.Classes.Eq (Codec.Picture.Bitmap.Bitfields3 t)
-instance GHC.Show.Show t => GHC.Show.Show (Codec.Picture.Bitmap.Bitfields4 t)
-instance GHC.Classes.Eq t => GHC.Classes.Eq (Codec.Picture.Bitmap.Bitfields4 t)
-instance GHC.Show.Show t => GHC.Show.Show (Codec.Picture.Bitmap.Bitfield t)
-instance GHC.Classes.Eq t => GHC.Classes.Eq (Codec.Picture.Bitmap.Bitfield t)
-instance GHC.Show.Show Codec.Picture.Bitmap.BmpV5Header
 instance GHC.Show.Show Codec.Picture.Bitmap.ColorSpaceType
 instance GHC.Classes.Eq Codec.Picture.Bitmap.ColorSpaceType
+instance GHC.Show.Show Codec.Picture.Bitmap.BmpV5Header
+instance GHC.Show.Show t => GHC.Show.Show (Codec.Picture.Bitmap.Bitfield t)
+instance GHC.Classes.Eq t => GHC.Classes.Eq (Codec.Picture.Bitmap.Bitfield t)
+instance GHC.Show.Show t => GHC.Show.Show (Codec.Picture.Bitmap.Bitfields4 t)
+instance GHC.Classes.Eq t => GHC.Classes.Eq (Codec.Picture.Bitmap.Bitfields4 t)
+instance GHC.Show.Show t => GHC.Show.Show (Codec.Picture.Bitmap.Bitfields3 t)
+instance GHC.Classes.Eq t => GHC.Classes.Eq (Codec.Picture.Bitmap.Bitfields3 t)
+instance GHC.Show.Show Codec.Picture.Bitmap.RGBABmpFormat
+instance GHC.Classes.Eq Codec.Picture.Bitmap.RGBABmpFormat
+instance GHC.Show.Show Codec.Picture.Bitmap.RGBBmpFormat
+instance GHC.Classes.Eq Codec.Picture.Bitmap.RGBBmpFormat
+instance GHC.Show.Show Codec.Picture.Bitmap.IndexedBmpFormat
 instance Codec.Picture.Bitmap.BmpEncodable Codec.Picture.Types.Pixel8
 instance Codec.Picture.Bitmap.BmpEncodable Codec.Picture.Types.PixelRGBA8
 instance Codec.Picture.Bitmap.BmpEncodable Codec.Picture.Types.PixelRGB8
@@ -1832,10 +1832,10 @@ defaultDcLumaHuffmanTree :: HuffmanTree
 
 -- | From the Table K.3 of ITU-81 (p153)
 defaultDcLumaHuffmanTable :: HuffmanTable
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.DefaultTable.DctComponent
-instance GHC.Classes.Eq Codec.Picture.Jpg.Internal.DefaultTable.DctComponent
 instance GHC.Show.Show Codec.Picture.Jpg.Internal.DefaultTable.HuffmanTree
 instance GHC.Classes.Eq Codec.Picture.Jpg.Internal.DefaultTable.HuffmanTree
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.DefaultTable.DctComponent
+instance GHC.Classes.Eq Codec.Picture.Jpg.Internal.DefaultTable.DctComponent
 
 module Codec.Picture.Jpg.Internal.Types
 
@@ -1995,21 +1995,21 @@ JFifPixelsPerInch :: JFifUnit
 JFifPixelsPerCentimeter :: JFifUnit
 calculateSize :: SizeCalculable a => a -> Int
 dctBlockSize :: Num a => a
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgImage
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgFrame
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgHuffmanTableSpec
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgQuantTableSpec
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgScanHeader
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgScanSpecification
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgFrameHeader
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgComponent
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgJFIFApp0
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JFifUnit
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgAdobeApp14
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.AdobeTransform
-instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgColorSpace
 instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgFrameKind
 instance GHC.Classes.Eq Codec.Picture.Jpg.Internal.Types.JpgFrameKind
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgColorSpace
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.AdobeTransform
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgAdobeApp14
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JFifUnit
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgJFIFApp0
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgComponent
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgFrameHeader
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgScanSpecification
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgScanHeader
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgQuantTableSpec
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgHuffmanTableSpec
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgFrame
+instance GHC.Show.Show Codec.Picture.Jpg.Internal.Types.JpgImage
 instance Data.Binary.Class.Binary Codec.Picture.Jpg.Internal.Types.RestartInterval
 instance Data.Binary.Class.Binary Codec.Picture.Jpg.Internal.Types.JpgImage
 instance Codec.Picture.Jpg.Internal.Types.SizeCalculable Codec.Picture.Jpg.Internal.Types.JpgHuffmanTableSpec

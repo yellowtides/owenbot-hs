@@ -25,26 +25,29 @@
 </span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">fix</span></span><span class="hs-special">)</span><span>
 </span><span id="line-26"></span><span>
 </span><span id="line-27"></span><span class="hs-comment">-- | Gzip compression with default parameters.</span><span>
-</span><span id="line-28"></span><span id="local-6989586621679129285"><span class="annot"><a href="Data.Conduit.Zlib.html#gzip"><span class="hs-identifier hs-type">gzip</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129285"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129285"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679129285"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-28"></span><span id="local-6989586621679082217"><span class="annot"><a href="Data.Conduit.Zlib.html#gzip"><span class="hs-identifier hs-type">gzip</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082217"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082217"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679082217"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
 </span><span id="line-29"></span><span id="gzip"><span class="annot"><span class="annottext">gzip :: ConduitT ByteString ByteString m ()
 </span><a href="Data.Conduit.Zlib.html#gzip"><span class="hs-identifier hs-var hs-var">gzip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; WindowBits -&gt; ConduitT ByteString ByteString m ()
 forall (m :: * -&gt; *).
 (PrimMonad m, MonadThrow m) =&gt;
 Int -&gt; WindowBits -&gt; ConduitT ByteString ByteString m ()
-</span><a href="Data.Conduit.Zlib.html#compress"><span class="hs-identifier hs-var">compress</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; WindowBits
-</span><span class="hs-identifier hs-var">WindowBits</span></span><span> </span><span class="annot"><span class="hs-number">31</span></span><span class="hs-special">)</span><span>
+</span><a href="Data.Conduit.Zlib.html#compress"><span class="hs-identifier hs-var">compress</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; WindowBits
+</span><span class="hs-identifier hs-var">WindowBits</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">31</span></span><span class="hs-special">)</span><span>
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="hs-comment">-- | Gzip decompression with default parameters.</span><span>
-</span><span id="line-32"></span><span id="local-6989586621679129283"><span class="annot"><a href="Data.Conduit.Zlib.html#ungzip"><span class="hs-identifier hs-type">ungzip</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129283"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129283"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679129283"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-32"></span><span id="local-6989586621679082215"><span class="annot"><a href="Data.Conduit.Zlib.html#ungzip"><span class="hs-identifier hs-type">ungzip</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082215"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082215"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679082215"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
 </span><span id="line-33"></span><span id="ungzip"><span class="annot"><span class="annottext">ungzip :: ConduitT ByteString ByteString m ()
 </span><a href="Data.Conduit.Zlib.html#ungzip"><span class="hs-identifier hs-var hs-var">ungzip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">WindowBits -&gt; ConduitT ByteString ByteString m ()
 forall (m :: * -&gt; *).
 (PrimMonad m, MonadThrow m) =&gt;
 WindowBits -&gt; ConduitT ByteString ByteString m ()
 </span><a href="Data.Conduit.Zlib.html#decompress"><span class="hs-identifier hs-var">decompress</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; WindowBits
-</span><span class="hs-identifier hs-var">WindowBits</span></span><span> </span><span class="annot"><span class="hs-number">31</span></span><span class="hs-special">)</span><span>
+</span><span class="hs-identifier hs-var">WindowBits</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">31</span></span><span class="hs-special">)</span><span>
 </span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span id="local-6989586621679129327"><span id="local-6989586621679129328"><span class="annot"><a href="Data.Conduit.Zlib.html#unsafeLiftIO"><span class="hs-identifier hs-type">unsafeLiftIO</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129328"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129328"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679129327"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129328"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129327"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-35"></span><span id="local-6989586621679082259"><span id="local-6989586621679082260"><span class="annot"><a href="Data.Conduit.Zlib.html#unsafeLiftIO"><span class="hs-identifier hs-type">unsafeLiftIO</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082260"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082260"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679082259"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082260"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082259"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-36"></span><span id="unsafeLiftIO"><span class="annot"><span class="annottext">unsafeLiftIO :: IO a -&gt; m a
 </span><a href="Data.Conduit.Zlib.html#unsafeLiftIO"><span class="hs-identifier hs-var hs-var">unsafeLiftIO</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO a -&gt; m a
 forall (m1 :: * -&gt; *) (m2 :: * -&gt; *) a.
@@ -57,10 +60,10 @@ m1 a -&gt; m2 a
 </span><span id="line-40"></span><span class="hs-comment">--</span><span>
 </span><span id="line-41"></span><span class="hs-comment">-- &gt;    sourceFile &quot;test.z&quot; $= decompress defaultWindowBits $$ sinkFile &quot;test&quot;</span><span>
 </span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span id="local-6989586621679129374"><span class="annot"><a href="Data.Conduit.Zlib.html#decompress"><span class="hs-identifier hs-type">decompress</span></a></span><span>
-</span><span id="line-44"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129374"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129374"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span id="local-6989586621679082306"><span class="annot"><a href="Data.Conduit.Zlib.html#decompress"><span class="hs-identifier hs-type">decompress</span></a></span><span>
+</span><span id="line-44"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082306"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082306"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-45"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">WindowBits</span></span><span> </span><span class="hs-comment">-- ^ Zlib parameter (see the zlib-bindings package as well as the zlib C library)</span><span>
-</span><span id="line-46"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679129374"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679082306"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
 </span><span id="line-47"></span><span id="decompress"><span class="annot"><span class="annottext">decompress :: WindowBits -&gt; ConduitT ByteString ByteString m ()
 </span><a href="Data.Conduit.Zlib.html#decompress"><span class="hs-identifier hs-var hs-var">decompress</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-48"></span><span>    </span><span class="annot"><span class="annottext">ConduitT ByteString ByteString m (Maybe (Flush ByteString))
@@ -88,25 +91,26 @@ forall a. a -&gt; Flush a
 forall (m :: * -&gt; *) i. Monad m =&gt; Consumer i m (Maybe i)
 </span><span class="hs-identifier hs-var">await</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; ConduitT ByteString ByteString m ()
 forall (m :: * -&gt; *) o i. Monad m =&gt; Flush o -&gt; ConduitT i o m ()
-</span><a href="#local-6989586621679129278"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ConduitT ByteString ByteString m ()
+</span><a href="#local-6989586621679082210"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ConduitT ByteString ByteString m ()
 forall i o (m :: * -&gt; *). i -&gt; ConduitT i o m ()
 </span><span class="hs-identifier hs-var">leftover</span></span><span>
 </span><span id="line-49"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-50"></span><span>    </span><span id="local-6989586621679129278"><span class="annot"><span class="annottext">yield' :: Flush o -&gt; ConduitT i o m ()
-</span><a href="#local-6989586621679129278"><span class="hs-identifier hs-var hs-var">yield'</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; ConduitT i o m ()
+</span><span id="line-50"></span><span>    </span><span id="local-6989586621679082210"><span class="annot"><span class="annottext">yield' :: Flush o -&gt; ConduitT i o m ()
+</span><a href="#local-6989586621679082210"><span class="hs-identifier hs-var hs-var">yield'</span></a></span></span><span> </span><span class="annot"><span class="annottext">Flush o
+</span><span class="hs-identifier hs-var">Flush</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; ConduitT i o m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-51"></span><span>    </span><span class="annot"><a href="#local-6989586621679129278"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679129275"><span class="annot"><span class="annottext">bs :: o
-</span><a href="#local-6989586621679129275"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">o -&gt; ConduitT i o m ()
+</span><span id="line-51"></span><span>    </span><span class="annot"><a href="#local-6989586621679082210"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679082207"><span class="annot"><span class="annottext">o
+</span><a href="#local-6989586621679082207"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">o -&gt; ConduitT i o m ()
 forall (m :: * -&gt; *) o i. Monad m =&gt; o -&gt; ConduitT i o m ()
 </span><span class="hs-identifier hs-var">yield</span></span><span> </span><span class="annot"><span class="annottext">o
-</span><a href="#local-6989586621679129275"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621679082207"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-52"></span><span>
 </span><span id="line-53"></span><span class="hs-comment">-- | Same as 'decompress', but allows you to explicitly flush the stream.</span><span>
-</span><span id="line-54"></span><span id="local-6989586621679129273"><span class="annot"><a href="Data.Conduit.Zlib.html#decompressFlush"><span class="hs-identifier hs-type">decompressFlush</span></a></span><span>
-</span><span id="line-55"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129273"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129273"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span id="local-6989586621679082205"><span class="annot"><a href="Data.Conduit.Zlib.html#decompressFlush"><span class="hs-identifier hs-type">decompressFlush</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082205"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082205"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">WindowBits</span></span><span> </span><span class="hs-comment">-- ^ Zlib parameter (see the zlib-bindings package as well as the zlib C library)</span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679129273"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-57"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679082205"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
 </span><span id="line-58"></span><span id="decompressFlush"><span class="annot"><span class="annottext">decompressFlush :: WindowBits -&gt; ConduitT (Flush ByteString) (Flush ByteString) m ()
 </span><a href="Data.Conduit.Zlib.html#decompressFlush"><span class="hs-identifier hs-var hs-var">decompressFlush</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ConduitT
   (Flush ByteString) (Flush ByteString) m (Maybe (Flush ByteString))
@@ -142,26 +146,26 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. a -&gt; Flush a
 </span><span class="hs-identifier hs-var">Chunk</span></span><span class="hs-special">)</span><span>
 </span><span id="line-59"></span><span>
-</span><span id="line-60"></span><span id="local-6989586621679129364"><span id="local-6989586621679129365"><span class="annot"><a href="Data.Conduit.Zlib.html#helperDecompress"><span class="hs-identifier hs-type">helperDecompress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679129365"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadTrans</span></span><span> </span><span class="annot"><a href="#local-6989586621679129365"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-61"></span><span>                 </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129365"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-62"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129365"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-63"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129365"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span id="local-6989586621679082296"><span id="local-6989586621679082297"><span class="annot"><a href="Data.Conduit.Zlib.html#helperDecompress"><span class="hs-identifier hs-type">helperDecompress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679082297"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadTrans</span></span><span> </span><span class="annot"><a href="#local-6989586621679082297"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>                 </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082297"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082297"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082297"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-64"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">WindowBits</span></span><span>
-</span><span id="line-65"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129365"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129364"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-65"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082297"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082296"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-66"></span><span id="helperDecompress"><span class="annot"><span class="annottext">helperDecompress :: t m (Maybe (Flush ByteString))
 -&gt; (Flush ByteString -&gt; t m ())
 -&gt; (ByteString -&gt; t m ())
 -&gt; WindowBits
 -&gt; t m ()
-</span><a href="Data.Conduit.Zlib.html#helperDecompress"><span class="hs-identifier hs-var hs-var">helperDecompress</span></a></span></span><span> </span><span id="local-6989586621679129271"><span class="annot"><span class="annottext">await' :: t m (Maybe (Flush ByteString))
-</span><a href="#local-6989586621679129271"><span class="hs-identifier hs-var">await'</span></a></span></span><span> </span><span id="local-6989586621679129270"><span class="annot"><span class="annottext">yield' :: Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129270"><span class="hs-identifier hs-var">yield'</span></a></span></span><span> </span><span id="local-6989586621679129269"><span class="annot"><span class="annottext">leftover' :: ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129269"><span class="hs-identifier hs-var">leftover'</span></a></span></span><span> </span><span id="local-6989586621679129268"><span class="annot"><span class="annottext">config :: WindowBits
-</span><a href="#local-6989586621679129268"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="Data.Conduit.Zlib.html#helperDecompress"><span class="hs-identifier hs-var hs-var">helperDecompress</span></a></span></span><span> </span><span id="local-6989586621679082203"><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
+</span><a href="#local-6989586621679082203"><span class="hs-identifier hs-var">await'</span></a></span></span><span> </span><span id="local-6989586621679082202"><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082202"><span class="hs-identifier hs-var">yield'</span></a></span></span><span> </span><span id="local-6989586621679082201"><span class="annot"><span class="annottext">ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082201"><span class="hs-identifier hs-var">leftover'</span></a></span></span><span> </span><span id="local-6989586621679082200"><span class="annot"><span class="annottext">WindowBits
+</span><a href="#local-6989586621679082200"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-67"></span><span>    </span><span class="hs-comment">-- Initialize the stateful inflater, which will be used below</span><span>
 </span><span id="line-68"></span><span>    </span><span class="hs-comment">-- This inflater is never exposed outside of this function</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679129267"><span class="annot"><span class="annottext">Inflate
-</span><a href="#local-6989586621679129267"><span class="hs-identifier hs-var">inf</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Inflate -&gt; t m Inflate
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679082199"><span class="annot"><span class="annottext">Inflate
+</span><a href="#local-6989586621679082199"><span class="hs-identifier hs-var">inf</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Inflate -&gt; t m Inflate
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -173,15 +177,15 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">WindowBits -&gt; IO Inflate
 </span><span class="hs-identifier hs-var">initInflate</span></span><span> </span><span class="annot"><span class="annottext">WindowBits
-</span><a href="#local-6989586621679129268"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621679082200"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-70"></span><span>
 </span><span id="line-71"></span><span>    </span><span class="hs-comment">-- Some helper functions used by the main feeder loop below</span><span>
 </span><span id="line-72"></span><span>
 </span><span id="line-73"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-comment">-- Flush any remaining inflated bytes downstream</span><span>
-</span><span id="line-74"></span><span>        </span><span id="local-6989586621679129265"><span class="annot"><span class="annottext">flush :: t m ()
-</span><a href="#local-6989586621679129265"><span class="hs-identifier hs-var hs-var">flush</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-75"></span><span>            </span><span id="local-6989586621679129264"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129264"><span class="hs-identifier hs-var">chunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; t m ByteString
+</span><span id="line-74"></span><span>        </span><span id="local-6989586621679082197"><span class="annot"><span class="annottext">flush :: t m ()
+</span><a href="#local-6989586621679082197"><span class="hs-identifier hs-var hs-var">flush</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-75"></span><span>            </span><span id="local-6989586621679082196"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082196"><span class="hs-identifier hs-var">chunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; t m ByteString
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -193,24 +197,24 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Inflate -&gt; IO ByteString
 </span><span class="hs-identifier hs-var">flushInflate</span></span><span> </span><span class="annot"><span class="annottext">Inflate
-</span><a href="#local-6989586621679129267"><span class="hs-identifier hs-var">inf</span></a></span><span>
+</span><a href="#local-6989586621679082199"><span class="hs-identifier hs-var">inf</span></a></span><span>
 </span><span id="line-76"></span><span>            </span><span class="annot"><span class="annottext">Bool -&gt; t m () -&gt; t m ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Bool
 </span><span class="hs-identifier hs-var">S.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129264"><span class="hs-identifier hs-var">chunk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(t m () -&gt; t m ()) -&gt; t m () -&gt; t m ()
+</span><a href="#local-6989586621679082196"><span class="hs-identifier hs-var">chunk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(t m () -&gt; t m ()) -&gt; t m () -&gt; t m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129270"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">(Flush ByteString -&gt; t m ()) -&gt; Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082202"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">(Flush ByteString -&gt; t m ()) -&gt; Flush ByteString -&gt; t m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
 forall a. a -&gt; Flush a
 </span><span class="hs-identifier hs-var">Chunk</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129264"><span class="hs-identifier hs-var">chunk</span></a></span><span>
+</span><a href="#local-6989586621679082196"><span class="hs-identifier hs-var">chunk</span></a></span><span>
 </span><span id="line-77"></span><span>
 </span><span id="line-78"></span><span>        </span><span class="hs-comment">-- Get any input which is unused by the inflater</span><span>
-</span><span id="line-79"></span><span>        </span><span id="local-6989586621679129261"><span class="annot"><span class="annottext">getUnused :: t m ByteString
-</span><a href="#local-6989586621679129261"><span class="hs-identifier hs-var hs-var">getUnused</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; t m ByteString
+</span><span id="line-79"></span><span>        </span><span id="local-6989586621679082193"><span class="annot"><span class="annottext">getUnused :: t m ByteString
+</span><a href="#local-6989586621679082193"><span class="hs-identifier hs-var hs-var">getUnused</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m ByteString -&gt; t m ByteString
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -222,51 +226,52 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Inflate -&gt; IO ByteString
 </span><span class="hs-identifier hs-var">getUnusedInflate</span></span><span> </span><span class="annot"><span class="annottext">Inflate
-</span><a href="#local-6989586621679129267"><span class="hs-identifier hs-var">inf</span></a></span><span>
+</span><a href="#local-6989586621679082199"><span class="hs-identifier hs-var">inf</span></a></span><span>
 </span><span id="line-80"></span><span>
 </span><span id="line-81"></span><span>        </span><span class="hs-comment">-- If there is any unused data, return it as leftovers to the stream</span><span>
-</span><span id="line-82"></span><span>        </span><span id="local-6989586621679129259"><span class="annot"><span class="annottext">unused :: t m ()
-</span><a href="#local-6989586621679129259"><span class="hs-identifier hs-var hs-var">unused</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-83"></span><span>            </span><span id="local-6989586621679129258"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129258"><span class="hs-identifier hs-var">rem'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m ByteString
-</span><a href="#local-6989586621679129261"><span class="hs-identifier hs-var">getUnused</span></a></span><span>
+</span><span id="line-82"></span><span>        </span><span id="local-6989586621679082191"><span class="annot"><span class="annottext">unused :: t m ()
+</span><a href="#local-6989586621679082191"><span class="hs-identifier hs-var hs-var">unused</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-83"></span><span>            </span><span id="local-6989586621679082190"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082190"><span class="hs-identifier hs-var">rem'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m ByteString
+</span><a href="#local-6989586621679082193"><span class="hs-identifier hs-var">getUnused</span></a></span><span>
 </span><span id="line-84"></span><span>            </span><span class="annot"><span class="annottext">Bool -&gt; t m () -&gt; t m ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Bool
 </span><span class="hs-identifier hs-var">S.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129258"><span class="hs-identifier hs-var">rem'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(t m () -&gt; t m ()) -&gt; t m () -&gt; t m ()
+</span><a href="#local-6989586621679082190"><span class="hs-identifier hs-var">rem'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(t m () -&gt; t m ()) -&gt; t m () -&gt; t m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129269"><span class="hs-identifier hs-var">leftover'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129258"><span class="hs-identifier hs-var">rem'</span></a></span><span>
+</span><a href="#local-6989586621679082201"><span class="hs-identifier hs-var">leftover'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082190"><span class="hs-identifier hs-var">rem'</span></a></span><span>
 </span><span id="line-85"></span><span>
 </span><span id="line-86"></span><span>    </span><span class="hs-comment">-- Main loop: feed data from upstream into the inflater</span><span>
 </span><span id="line-87"></span><span>    </span><span class="annot"><span class="annottext">(t m () -&gt; t m ()) -&gt; t m ()
 forall a. (a -&gt; a) -&gt; a
 </span><span class="hs-identifier hs-var">fix</span></span><span> </span><span class="annot"><span class="annottext">((t m () -&gt; t m ()) -&gt; t m ()) -&gt; (t m () -&gt; t m ()) -&gt; t m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679129257"><span class="annot"><span class="annottext">feeder :: t m ()
-</span><a href="#local-6989586621679129257"><span class="hs-identifier hs-var">feeder</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-88"></span><span>        </span><span id="local-6989586621679129256"><span class="annot"><span class="annottext">Maybe (Flush ByteString)
-</span><a href="#local-6989586621679129256"><span class="hs-identifier hs-var">mnext</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
-</span><a href="#local-6989586621679129271"><span class="hs-identifier hs-var">await'</span></a></span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679082189"><span class="annot"><span class="annottext">t m ()
+</span><a href="#local-6989586621679082189"><span class="hs-identifier hs-var">feeder</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-88"></span><span>        </span><span id="local-6989586621679082188"><span class="annot"><span class="annottext">Maybe (Flush ByteString)
+</span><a href="#local-6989586621679082188"><span class="hs-identifier hs-var">mnext</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
+</span><a href="#local-6989586621679082203"><span class="hs-identifier hs-var">await'</span></a></span><span>
 </span><span id="line-89"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe (Flush ByteString)
-</span><a href="#local-6989586621679129256"><span class="hs-identifier hs-var">mnext</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679082188"><span class="hs-identifier hs-var">mnext</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-90"></span><span>            </span><span class="hs-comment">-- No more data is available from upstream</span><span>
-</span><span id="line-91"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-91"></span><span>            </span><span class="annot"><span class="annottext">Maybe (Flush ByteString)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-92"></span><span>                </span><span class="hs-comment">-- Flush any remaining uncompressed data</span><span>
 </span><span id="line-93"></span><span>                </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129265"><span class="hs-identifier hs-var">flush</span></a></span><span>
+</span><a href="#local-6989586621679082197"><span class="hs-identifier hs-var">flush</span></a></span><span>
 </span><span id="line-94"></span><span>                </span><span class="hs-comment">-- Return the rest of the unconsumed data as leftovers</span><span>
 </span><span id="line-95"></span><span>                </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129259"><span class="hs-identifier hs-var">unused</span></a></span><span>
+</span><a href="#local-6989586621679082191"><span class="hs-identifier hs-var">unused</span></a></span><span>
 </span><span id="line-96"></span><span>            </span><span class="hs-comment">-- Another chunk of compressed data arrived</span><span>
-</span><span id="line-97"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679129255"><span class="annot"><span class="annottext">x :: ByteString
-</span><a href="#local-6989586621679129255"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-97"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679082187"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082187"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-98"></span><span>                </span><span class="hs-comment">-- Feed the compressed data into the inflater, returning a</span><span>
 </span><span id="line-99"></span><span>                </span><span class="hs-comment">-- &quot;popper&quot; which will return chunks of decompressed data</span><span>
-</span><span id="line-100"></span><span>                </span><span id="local-6989586621679129254"><span class="annot"><span class="annottext">Popper
-</span><a href="#local-6989586621679129254"><span class="hs-identifier hs-var">popper</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Popper -&gt; t m Popper
+</span><span id="line-100"></span><span>                </span><span id="local-6989586621679082186"><span class="annot"><span class="annottext">Popper
+</span><a href="#local-6989586621679082186"><span class="hs-identifier hs-var">popper</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Popper -&gt; t m Popper
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -278,8 +283,8 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Inflate -&gt; ByteString -&gt; IO Popper
 </span><span class="hs-identifier hs-var">feedInflate</span></span><span> </span><span class="annot"><span class="annottext">Inflate
-</span><a href="#local-6989586621679129267"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129255"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679082199"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082187"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-101"></span><span>
 </span><span id="line-102"></span><span>                </span><span class="hs-comment">-- Loop over the popper grabbing decompressed chunks and</span><span>
 </span><span id="line-103"></span><span>                </span><span class="hs-comment">-- yielding them downstream</span><span>
@@ -287,10 +292,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. (a -&gt; a) -&gt; a
 </span><span class="hs-identifier hs-var">fix</span></span><span> </span><span class="annot"><span class="annottext">((t m () -&gt; t m ()) -&gt; t m ()) -&gt; (t m () -&gt; t m ()) -&gt; t m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679129252"><span class="annot"><span class="annottext">pop :: t m ()
-</span><a href="#local-6989586621679129252"><span class="hs-identifier hs-var">pop</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-105"></span><span>                    </span><span id="local-6989586621679129251"><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129251"><span class="hs-identifier hs-var">mbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679082184"><span class="annot"><span class="annottext">t m ()
+</span><a href="#local-6989586621679082184"><span class="hs-identifier hs-var">pop</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-105"></span><span>                    </span><span id="local-6989586621679082183"><span class="annot"><span class="annottext">PopperRes
+</span><a href="#local-6989586621679082183"><span class="hs-identifier hs-var">mbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -299,21 +304,22 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Popper -&gt; m PopperRes
 forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 </span><a href="Data.Conduit.Zlib.html#unsafeLiftIO"><span class="hs-identifier hs-var">unsafeLiftIO</span></a></span><span> </span><span class="annot"><span class="annottext">Popper
-</span><a href="#local-6989586621679129254"><span class="hs-identifier hs-var">popper</span></a></span><span>
+</span><a href="#local-6989586621679082186"><span class="hs-identifier hs-var">popper</span></a></span><span>
 </span><span id="line-106"></span><span>                    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129251"><span class="hs-identifier hs-var">mbs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679082183"><span class="hs-identifier hs-var">mbs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-107"></span><span>                        </span><span class="hs-comment">-- No more data from this popper</span><span>
-</span><span id="line-108"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-109"></span><span>                            </span><span id="local-6989586621679129249"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129249"><span class="hs-identifier hs-var">rem'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m ByteString
-</span><a href="#local-6989586621679129261"><span class="hs-identifier hs-var">getUnused</span></a></span><span>
+</span><span id="line-108"></span><span>                        </span><span class="annot"><span class="annottext">PopperRes
+</span><span class="hs-identifier hs-var">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-109"></span><span>                            </span><span id="local-6989586621679082181"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082181"><span class="hs-identifier hs-var">rem'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m ByteString
+</span><a href="#local-6989586621679082193"><span class="hs-identifier hs-var">getUnused</span></a></span><span>
 </span><span id="line-110"></span><span>                            </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Bool
 </span><span class="hs-identifier hs-var">S.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129249"><span class="hs-identifier hs-var">rem'</span></a></span><span>
+</span><a href="#local-6989586621679082181"><span class="hs-identifier hs-var">rem'</span></a></span><span>
 </span><span id="line-111"></span><span>                                </span><span class="hs-comment">-- No data was unused by the inflater, so let's</span><span>
 </span><span id="line-112"></span><span>                                </span><span class="hs-comment">-- fill it up again and get more data out of it</span><span>
 </span><span id="line-113"></span><span>                                </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129257"><span class="hs-identifier hs-var">feeder</span></a></span><span>
+</span><a href="#local-6989586621679082189"><span class="hs-identifier hs-var">feeder</span></a></span><span>
 </span><span id="line-114"></span><span>                                </span><span class="hs-comment">-- In this case, there is some unconsumed data,</span><span>
 </span><span id="line-115"></span><span>                                </span><span class="hs-comment">-- meaning the compressed stream is complete.</span><span>
 </span><span id="line-116"></span><span>                                </span><span class="hs-comment">-- At this point, we need to stop feeding,</span><span>
@@ -322,24 +328,24 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 </span><span id="line-119"></span><span>                                </span><span class="hs-comment">-- nothing)</span><span>
 </span><span id="line-120"></span><span>                                </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-121"></span><span>                                    </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129265"><span class="hs-identifier hs-var">flush</span></a></span><span>
+</span><a href="#local-6989586621679082197"><span class="hs-identifier hs-var">flush</span></a></span><span>
 </span><span id="line-122"></span><span>                                    </span><span class="annot"><span class="annottext">ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129269"><span class="hs-identifier hs-var">leftover'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129249"><span class="hs-identifier hs-var">rem'</span></a></span><span>
+</span><a href="#local-6989586621679082201"><span class="hs-identifier hs-var">leftover'</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082181"><span class="hs-identifier hs-var">rem'</span></a></span><span>
 </span><span id="line-123"></span><span>                        </span><span class="hs-comment">-- Another chunk available, yield it downstream and</span><span>
 </span><span id="line-124"></span><span>                        </span><span class="hs-comment">-- loop again</span><span>
-</span><span id="line-125"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679129247"><span class="annot"><span class="annottext">bs :: ByteString
-</span><a href="#local-6989586621679129247"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-125"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679082179"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082179"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-126"></span><span>                            </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129270"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
+</span><a href="#local-6989586621679082202"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
 forall a. a -&gt; Flush a
 </span><span class="hs-identifier hs-var">Chunk</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129247"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679082179"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-127"></span><span>                            </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129252"><span class="hs-identifier hs-var">pop</span></a></span><span>
+</span><a href="#local-6989586621679082184"><span class="hs-identifier hs-var">pop</span></a></span><span>
 </span><span id="line-128"></span><span>                        </span><span class="hs-comment">-- An error occurred inside zlib, throw it</span><span>
-</span><span id="line-129"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679129245"><span class="annot"><span class="annottext">e :: ZlibException
-</span><a href="#local-6989586621679129245"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
+</span><span id="line-129"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679082177"><span class="annot"><span class="annottext">ZlibException
+</span><a href="#local-6989586621679082177"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -348,30 +354,31 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ZlibException -&gt; m ()
 forall (m :: * -&gt; *) e a. (MonadThrow m, Exception e) =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwM</span></span><span> </span><span class="annot"><span class="annottext">ZlibException
-</span><a href="#local-6989586621679129245"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679082177"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-130"></span><span>            </span><span class="hs-comment">-- We've been asked to flush the stream</span><span>
-</span><span id="line-131"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-131"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
+</span><span class="hs-identifier hs-var">Flush</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-132"></span><span>                </span><span class="hs-comment">-- Get any uncompressed data waiting for us</span><span>
 </span><span id="line-133"></span><span>                </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129265"><span class="hs-identifier hs-var">flush</span></a></span><span>
+</span><a href="#local-6989586621679082197"><span class="hs-identifier hs-var">flush</span></a></span><span>
 </span><span id="line-134"></span><span>                </span><span class="hs-comment">-- Put a Flush in the stream</span><span>
 </span><span id="line-135"></span><span>                </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129270"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
+</span><a href="#local-6989586621679082202"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
 forall a. Flush a
 </span><span class="hs-identifier hs-var">Flush</span></span><span>
 </span><span id="line-136"></span><span>                </span><span class="hs-comment">-- Feed in more data</span><span>
 </span><span id="line-137"></span><span>                </span><span class="annot"><span class="annottext">t m ()
-</span><a href="#local-6989586621679129257"><span class="hs-identifier hs-var">feeder</span></a></span><span>
+</span><a href="#local-6989586621679082189"><span class="hs-identifier hs-var">feeder</span></a></span><span>
 </span><span id="line-138"></span><span>
 </span><span id="line-139"></span><span class="hs-comment">-- |</span><span>
 </span><span id="line-140"></span><span class="hs-comment">-- Compress (deflate) a stream of 'ByteString's. The 'WindowBits' also control</span><span>
 </span><span id="line-141"></span><span class="hs-comment">-- the format (zlib vs. gzip).</span><span>
 </span><span id="line-142"></span><span>
-</span><span id="line-143"></span><span id="local-6989586621679129378"><span class="annot"><a href="Data.Conduit.Zlib.html#compress"><span class="hs-identifier hs-type">compress</span></a></span><span>
-</span><span id="line-144"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129378"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129378"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span id="local-6989586621679082310"><span class="annot"><a href="Data.Conduit.Zlib.html#compress"><span class="hs-identifier hs-type">compress</span></a></span><span>
+</span><span id="line-144"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082310"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082310"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-145"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>         </span><span class="hs-comment">-- ^ Compression level</span><span>
 </span><span id="line-146"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">WindowBits</span></span><span>  </span><span class="hs-comment">-- ^ Zlib parameter (see the zlib-bindings package as well as the zlib C library)</span><span>
-</span><span id="line-147"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679129378"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-147"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679082310"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
 </span><span id="line-148"></span><span id="compress"><span class="annot"><span class="annottext">compress :: Int -&gt; WindowBits -&gt; ConduitT ByteString ByteString m ()
 </span><a href="Data.Conduit.Zlib.html#compress"><span class="hs-identifier hs-var hs-var">compress</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-149"></span><span>    </span><span class="annot"><span class="annottext">ConduitT ByteString ByteString m (Maybe (Flush ByteString))
@@ -396,24 +403,25 @@ forall a. a -&gt; Flush a
 forall (m :: * -&gt; *) i. Monad m =&gt; Consumer i m (Maybe i)
 </span><span class="hs-identifier hs-var">await</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; ConduitT ByteString ByteString m ()
 forall (m :: * -&gt; *) o i. Monad m =&gt; Flush o -&gt; ConduitT i o m ()
-</span><a href="#local-6989586621679129243"><span class="hs-identifier hs-var">yield'</span></a></span><span>
+</span><a href="#local-6989586621679082175"><span class="hs-identifier hs-var">yield'</span></a></span><span>
 </span><span id="line-150"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-151"></span><span>    </span><span id="local-6989586621679129243"><span class="annot"><span class="annottext">yield' :: Flush o -&gt; ConduitT i o m ()
-</span><a href="#local-6989586621679129243"><span class="hs-identifier hs-var hs-var">yield'</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; ConduitT i o m ()
+</span><span id="line-151"></span><span>    </span><span id="local-6989586621679082175"><span class="annot"><span class="annottext">yield' :: Flush o -&gt; ConduitT i o m ()
+</span><a href="#local-6989586621679082175"><span class="hs-identifier hs-var hs-var">yield'</span></a></span></span><span> </span><span class="annot"><span class="annottext">Flush o
+</span><span class="hs-identifier hs-var">Flush</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; ConduitT i o m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-152"></span><span>    </span><span class="annot"><a href="#local-6989586621679129243"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679129242"><span class="annot"><span class="annottext">bs :: o
-</span><a href="#local-6989586621679129242"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">o -&gt; ConduitT i o m ()
+</span><span id="line-152"></span><span>    </span><span class="annot"><a href="#local-6989586621679082175"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679082174"><span class="annot"><span class="annottext">o
+</span><a href="#local-6989586621679082174"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">o -&gt; ConduitT i o m ()
 forall (m :: * -&gt; *) o i. Monad m =&gt; o -&gt; ConduitT i o m ()
 </span><span class="hs-identifier hs-var">yield</span></span><span> </span><span class="annot"><span class="annottext">o
-</span><a href="#local-6989586621679129242"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621679082174"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-153"></span><span>
 </span><span id="line-154"></span><span class="hs-comment">-- | Same as 'compress', but allows you to explicitly flush the stream.</span><span>
-</span><span id="line-155"></span><span id="local-6989586621679129241"><span class="annot"><a href="Data.Conduit.Zlib.html#compressFlush"><span class="hs-identifier hs-type">compressFlush</span></a></span><span>
-</span><span id="line-156"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129241"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129241"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-155"></span><span id="local-6989586621679082173"><span class="annot"><a href="Data.Conduit.Zlib.html#compressFlush"><span class="hs-identifier hs-type">compressFlush</span></a></span><span>
+</span><span id="line-156"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082173"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082173"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-157"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>         </span><span class="hs-comment">-- ^ Compression level</span><span>
 </span><span id="line-158"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">WindowBits</span></span><span>  </span><span class="hs-comment">-- ^ Zlib parameter (see the zlib-bindings package as well as the zlib C library)</span><span>
-</span><span id="line-159"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679129241"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-159"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679082173"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
 </span><span id="line-160"></span><span id="compressFlush"><span class="annot"><span class="annottext">compressFlush :: Int
 -&gt; WindowBits
 -&gt; ConduitT (Flush ByteString) (Flush ByteString) m ()
@@ -436,21 +444,21 @@ forall (m :: * -&gt; *) i. Monad m =&gt; Consumer i m (Maybe i)
 forall (m :: * -&gt; *) o i. Monad m =&gt; o -&gt; ConduitT i o m ()
 </span><span class="hs-identifier hs-var">yield</span></span><span>
 </span><span id="line-161"></span><span>
-</span><span id="line-162"></span><span id="local-6989586621679129315"><span id="local-6989586621679129316"><span class="annot"><a href="Data.Conduit.Zlib.html#helperCompress"><span class="hs-identifier hs-type">helperCompress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679129316"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129315"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129315"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679129315"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadTrans</span></span><span> </span><span class="annot"><a href="#local-6989586621679129316"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-163"></span><span>               </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129316"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129315"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-164"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129316"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129315"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-162"></span><span id="local-6989586621679082247"><span id="local-6989586621679082248"><span class="annot"><a href="Data.Conduit.Zlib.html#helperCompress"><span class="hs-identifier hs-type">helperCompress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679082248"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082247"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082247"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadThrow</span></span><span> </span><span class="annot"><a href="#local-6989586621679082247"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadTrans</span></span><span> </span><span class="annot"><a href="#local-6989586621679082248"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-163"></span><span>               </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082248"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082247"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-164"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082248"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082247"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-165"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-166"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">WindowBits</span></span><span>
-</span><span id="line-167"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679129316"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129315"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-167"></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082248"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082247"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-168"></span><span id="helperCompress"><span class="annot"><span class="annottext">helperCompress :: t m (Maybe (Flush ByteString))
 -&gt; (Flush ByteString -&gt; t m ()) -&gt; Int -&gt; WindowBits -&gt; t m ()
-</span><a href="Data.Conduit.Zlib.html#helperCompress"><span class="hs-identifier hs-var hs-var">helperCompress</span></a></span></span><span> </span><span id="local-6989586621679129240"><span class="annot"><span class="annottext">await' :: t m (Maybe (Flush ByteString))
-</span><a href="#local-6989586621679129240"><span class="hs-identifier hs-var">await'</span></a></span></span><span> </span><span id="local-6989586621679129239"><span class="annot"><span class="annottext">yield' :: Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129239"><span class="hs-identifier hs-var">yield'</span></a></span></span><span> </span><span id="local-6989586621679129238"><span class="annot"><span class="annottext">level :: Int
-</span><a href="#local-6989586621679129238"><span class="hs-identifier hs-var">level</span></a></span></span><span> </span><span id="local-6989586621679129237"><span class="annot"><span class="annottext">config :: WindowBits
-</span><a href="#local-6989586621679129237"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Conduit.Zlib.html#helperCompress"><span class="hs-identifier hs-var hs-var">helperCompress</span></a></span></span><span> </span><span id="local-6989586621679082172"><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
+</span><a href="#local-6989586621679082172"><span class="hs-identifier hs-var">await'</span></a></span></span><span> </span><span id="local-6989586621679082171"><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082171"><span class="hs-identifier hs-var">yield'</span></a></span></span><span> </span><span id="local-6989586621679082170"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082170"><span class="hs-identifier hs-var">level</span></a></span></span><span> </span><span id="local-6989586621679082169"><span class="annot"><span class="annottext">WindowBits
+</span><a href="#local-6989586621679082169"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-169"></span><span>    </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
-</span><a href="#local-6989586621679129240"><span class="hs-identifier hs-var">await'</span></a></span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
+</span><a href="#local-6989586621679082172"><span class="hs-identifier hs-var">await'</span></a></span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
 -&gt; (Maybe (Flush ByteString) -&gt; t m ()) -&gt; t m ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">t m ()
@@ -461,13 +469,13 @@ forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; t m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129235"><span class="hs-identifier hs-var">start</span></a></span><span>
+</span><a href="#local-6989586621679082167"><span class="hs-identifier hs-var">start</span></a></span><span>
 </span><span id="line-170"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-171"></span><span>    </span><span id="local-6989586621679129235"><span class="annot"><span class="annottext">start :: Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129235"><span class="hs-identifier hs-var hs-var">start</span></a></span></span><span> </span><span id="local-6989586621679129234"><span class="annot"><span class="annottext">input :: Flush ByteString
-</span><a href="#local-6989586621679129234"><span class="hs-identifier hs-var">input</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-172"></span><span>        </span><span id="local-6989586621679129233"><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129233"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Deflate -&gt; t m Deflate
+</span><span id="line-171"></span><span>    </span><span id="local-6989586621679082167"><span class="annot"><span class="annottext">start :: Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082167"><span class="hs-identifier hs-var hs-var">start</span></a></span></span><span> </span><span id="local-6989586621679082166"><span class="annot"><span class="annottext">Flush ByteString
+</span><a href="#local-6989586621679082166"><span class="hs-identifier hs-var">input</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-172"></span><span>        </span><span id="local-6989586621679082165"><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082165"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Deflate -&gt; t m Deflate
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -479,17 +487,17 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; WindowBits -&gt; IO Deflate
 </span><span class="hs-identifier hs-var">initDeflate</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679129238"><span class="hs-identifier hs-var">level</span></a></span><span> </span><span class="annot"><span class="annottext">WindowBits
-</span><a href="#local-6989586621679129237"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621679082170"><span class="hs-identifier hs-var">level</span></a></span><span> </span><span class="annot"><span class="annottext">WindowBits
+</span><a href="#local-6989586621679082169"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-173"></span><span>        </span><span class="annot"><span class="annottext">Deflate -&gt; Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129231"><span class="hs-identifier hs-var">push</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129233"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
-</span><a href="#local-6989586621679129234"><span class="hs-identifier hs-var">input</span></a></span><span>
+</span><a href="#local-6989586621679082163"><span class="hs-identifier hs-var">push</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082165"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
+</span><a href="#local-6989586621679082166"><span class="hs-identifier hs-var">input</span></a></span><span>
 </span><span id="line-174"></span><span>
-</span><span id="line-175"></span><span>    </span><span id="local-6989586621679129230"><span class="annot"><span class="annottext">continue :: Deflate -&gt; t m ()
-</span><a href="#local-6989586621679129230"><span class="hs-identifier hs-var hs-var">continue</span></a></span></span><span> </span><span id="local-6989586621679129229"><span class="annot"><span class="annottext">def :: Deflate
-</span><a href="#local-6989586621679129229"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
-</span><a href="#local-6989586621679129240"><span class="hs-identifier hs-var">await'</span></a></span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
+</span><span id="line-175"></span><span>    </span><span id="local-6989586621679082162"><span class="annot"><span class="annottext">continue :: Deflate -&gt; t m ()
+</span><a href="#local-6989586621679082162"><span class="hs-identifier hs-var hs-var">continue</span></a></span></span><span> </span><span id="local-6989586621679082161"><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082161"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
+</span><a href="#local-6989586621679082172"><span class="hs-identifier hs-var">await'</span></a></span><span> </span><span class="annot"><span class="annottext">t m (Maybe (Flush ByteString))
 -&gt; (Maybe (Flush ByteString) -&gt; t m ()) -&gt; t m ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">t m ()
@@ -498,16 +506,16 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 -&gt; t m ()
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deflate -&gt; t m ()
-</span><a href="#local-6989586621679129228"><span class="hs-identifier hs-var">close</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129229"><span class="hs-identifier hs-var">def</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deflate -&gt; Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129231"><span class="hs-identifier hs-var">push</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129229"><span class="hs-identifier hs-var">def</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679082160"><span class="hs-identifier hs-var">close</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082161"><span class="hs-identifier hs-var">def</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deflate -&gt; Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082163"><span class="hs-identifier hs-var">push</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082161"><span class="hs-identifier hs-var">def</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-176"></span><span>
-</span><span id="line-177"></span><span>    </span><span id="local-6989586621679129227"><span class="annot"><span class="annottext">goPopper :: Popper -&gt; t m ()
-</span><a href="#local-6989586621679129227"><span class="hs-identifier hs-var hs-var">goPopper</span></a></span></span><span> </span><span id="local-6989586621679129226"><span class="annot"><span class="annottext">popper :: Popper
-</span><a href="#local-6989586621679129226"><span class="hs-identifier hs-var">popper</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-178"></span><span>        </span><span id="local-6989586621679129225"><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129225"><span class="hs-identifier hs-var">mbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
+</span><span id="line-177"></span><span>    </span><span id="local-6989586621679082159"><span class="annot"><span class="annottext">goPopper :: Popper -&gt; t m ()
+</span><a href="#local-6989586621679082159"><span class="hs-identifier hs-var hs-var">goPopper</span></a></span></span><span> </span><span id="local-6989586621679082158"><span class="annot"><span class="annottext">Popper
+</span><a href="#local-6989586621679082158"><span class="hs-identifier hs-var">popper</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-178"></span><span>        </span><span id="local-6989586621679082157"><span class="annot"><span class="annottext">PopperRes
+</span><a href="#local-6989586621679082157"><span class="hs-identifier hs-var">mbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -516,24 +524,25 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Popper -&gt; m PopperRes
 forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 </span><a href="Data.Conduit.Zlib.html#unsafeLiftIO"><span class="hs-identifier hs-var">unsafeLiftIO</span></a></span><span> </span><span class="annot"><span class="annottext">Popper
-</span><a href="#local-6989586621679129226"><span class="hs-identifier hs-var">popper</span></a></span><span>
+</span><a href="#local-6989586621679082158"><span class="hs-identifier hs-var">popper</span></a></span><span>
 </span><span id="line-179"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129225"><span class="hs-identifier hs-var">mbs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-180"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; t m ()
+</span><a href="#local-6989586621679082157"><span class="hs-identifier hs-var">mbs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-180"></span><span>            </span><span class="annot"><span class="annottext">PopperRes
+</span><span class="hs-identifier hs-var">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; t m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-181"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679129224"><span class="annot"><span class="annottext">bs :: ByteString
-</span><a href="#local-6989586621679129224"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129239"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
+</span><span id="line-181"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679082156"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082156"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082171"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
 forall a. a -&gt; Flush a
 </span><span class="hs-identifier hs-var">Chunk</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129224"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t m () -&gt; t m () -&gt; t m ()
+</span><a href="#local-6989586621679082156"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t m () -&gt; t m () -&gt; t m ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Popper -&gt; t m ()
-</span><a href="#local-6989586621679129227"><span class="hs-identifier hs-var">goPopper</span></a></span><span> </span><span class="annot"><span class="annottext">Popper
-</span><a href="#local-6989586621679129226"><span class="hs-identifier hs-var">popper</span></a></span><span>
-</span><span id="line-182"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679129223"><span class="annot"><span class="annottext">e :: ZlibException
-</span><a href="#local-6989586621679129223"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
+</span><a href="#local-6989586621679082159"><span class="hs-identifier hs-var">goPopper</span></a></span><span> </span><span class="annot"><span class="annottext">Popper
+</span><a href="#local-6989586621679082158"><span class="hs-identifier hs-var">popper</span></a></span><span>
+</span><span id="line-182"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679082155"><span class="annot"><span class="annottext">ZlibException
+</span><a href="#local-6989586621679082155"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -542,14 +551,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ZlibException -&gt; m ()
 forall (m :: * -&gt; *) e a. (MonadThrow m, Exception e) =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwM</span></span><span> </span><span class="annot"><span class="annottext">ZlibException
-</span><a href="#local-6989586621679129223"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679082155"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-183"></span><span>
-</span><span id="line-184"></span><span>    </span><span id="local-6989586621679129231"><span class="annot"><span class="annottext">push :: Deflate -&gt; Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129231"><span class="hs-identifier hs-var hs-var">push</span></a></span></span><span> </span><span id="local-6989586621679129222"><span class="annot"><span class="annottext">def :: Deflate
-</span><a href="#local-6989586621679129222"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679129221"><span class="annot"><span class="annottext">x :: ByteString
-</span><a href="#local-6989586621679129221"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-185"></span><span>        </span><span id="local-6989586621679129220"><span class="annot"><span class="annottext">Popper
-</span><a href="#local-6989586621679129220"><span class="hs-identifier hs-var">popper</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Popper -&gt; t m Popper
+</span><span id="line-184"></span><span>    </span><span id="local-6989586621679082163"><span class="annot"><span class="annottext">push :: Deflate -&gt; Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082163"><span class="hs-identifier hs-var hs-var">push</span></a></span></span><span> </span><span id="local-6989586621679082154"><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082154"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chunk</span></span><span> </span><span id="local-6989586621679082153"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082153"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-185"></span><span>        </span><span id="local-6989586621679082152"><span class="annot"><span class="annottext">Popper
+</span><a href="#local-6989586621679082152"><span class="hs-identifier hs-var">popper</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m Popper -&gt; t m Popper
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -561,19 +570,20 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Deflate -&gt; ByteString -&gt; IO Popper
 </span><span class="hs-identifier hs-var">feedDeflate</span></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129222"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129221"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679082154"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082153"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-186"></span><span>        </span><span class="annot"><span class="annottext">Popper -&gt; t m ()
-</span><a href="#local-6989586621679129227"><span class="hs-identifier hs-var">goPopper</span></a></span><span> </span><span class="annot"><span class="annottext">Popper
-</span><a href="#local-6989586621679129220"><span class="hs-identifier hs-var">popper</span></a></span><span>
+</span><a href="#local-6989586621679082159"><span class="hs-identifier hs-var">goPopper</span></a></span><span> </span><span class="annot"><span class="annottext">Popper
+</span><a href="#local-6989586621679082152"><span class="hs-identifier hs-var">popper</span></a></span><span>
 </span><span id="line-187"></span><span>        </span><span class="annot"><span class="annottext">Deflate -&gt; t m ()
-</span><a href="#local-6989586621679129230"><span class="hs-identifier hs-var">continue</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129222"><span class="hs-identifier hs-var">def</span></a></span><span>
+</span><a href="#local-6989586621679082162"><span class="hs-identifier hs-var">continue</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082154"><span class="hs-identifier hs-var">def</span></a></span><span>
 </span><span id="line-188"></span><span>
-</span><span id="line-189"></span><span>    </span><span class="annot"><a href="#local-6989586621679129231"><span class="hs-identifier hs-var">push</span></a></span><span> </span><span id="local-6989586621679129218"><span class="annot"><span class="annottext">def :: Deflate
-</span><a href="#local-6989586621679129218"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flush</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-190"></span><span>        </span><span id="local-6989586621679129217"><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129217"><span class="hs-identifier hs-var">mchunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
+</span><span id="line-189"></span><span>    </span><span class="annot"><a href="#local-6989586621679082163"><span class="hs-identifier hs-var">push</span></a></span><span> </span><span id="local-6989586621679082150"><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082150"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
+</span><span class="hs-identifier hs-var">Flush</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-190"></span><span>        </span><span id="local-6989586621679082149"><span class="annot"><span class="annottext">PopperRes
+</span><a href="#local-6989586621679082149"><span class="hs-identifier hs-var">mchunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -585,22 +595,23 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Deflate -&gt; Popper
 </span><span class="hs-identifier hs-var">flushDeflate</span></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129218"><span class="hs-identifier hs-var">def</span></a></span><span>
+</span><a href="#local-6989586621679082150"><span class="hs-identifier hs-var">def</span></a></span><span>
 </span><span id="line-191"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129217"><span class="hs-identifier hs-var">mchunk</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-192"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; t m ()
+</span><a href="#local-6989586621679082149"><span class="hs-identifier hs-var">mchunk</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-192"></span><span>            </span><span class="annot"><span class="annottext">PopperRes
+</span><span class="hs-identifier hs-var">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; t m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-193"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679129215"><span class="annot"><span class="annottext">x :: ByteString
-</span><a href="#local-6989586621679129215"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129239"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">(Flush ByteString -&gt; t m ()) -&gt; Flush ByteString -&gt; t m ()
+</span><span id="line-193"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679082147"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082147"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082171"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">(Flush ByteString -&gt; t m ()) -&gt; Flush ByteString -&gt; t m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
 forall a. a -&gt; Flush a
 </span><span class="hs-identifier hs-var">Chunk</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129215"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-194"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679129214"><span class="annot"><span class="annottext">e :: ZlibException
-</span><a href="#local-6989586621679129214"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
+</span><a href="#local-6989586621679082147"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-194"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679082146"><span class="annot"><span class="annottext">ZlibException
+</span><a href="#local-6989586621679082146"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -609,20 +620,20 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ZlibException -&gt; m ()
 forall (m :: * -&gt; *) e a. (MonadThrow m, Exception e) =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwM</span></span><span> </span><span class="annot"><span class="annottext">ZlibException
-</span><a href="#local-6989586621679129214"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679082146"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-195"></span><span>        </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129239"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
+</span><a href="#local-6989586621679082171"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="annot"><span class="annottext">Flush ByteString
 forall a. Flush a
 </span><span class="hs-identifier hs-var">Flush</span></span><span>
 </span><span id="line-196"></span><span>        </span><span class="annot"><span class="annottext">Deflate -&gt; t m ()
-</span><a href="#local-6989586621679129230"><span class="hs-identifier hs-var">continue</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129218"><span class="hs-identifier hs-var">def</span></a></span><span>
+</span><a href="#local-6989586621679082162"><span class="hs-identifier hs-var">continue</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082150"><span class="hs-identifier hs-var">def</span></a></span><span>
 </span><span id="line-197"></span><span>
-</span><span id="line-198"></span><span>    </span><span id="local-6989586621679129228"><span class="annot"><span class="annottext">close :: Deflate -&gt; t m ()
-</span><a href="#local-6989586621679129228"><span class="hs-identifier hs-var hs-var">close</span></a></span></span><span> </span><span id="local-6989586621679129213"><span class="annot"><span class="annottext">def :: Deflate
-</span><a href="#local-6989586621679129213"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-199"></span><span>        </span><span id="local-6989586621679129212"><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129212"><span class="hs-identifier hs-var">mchunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
+</span><span id="line-198"></span><span>    </span><span id="local-6989586621679082160"><span class="annot"><span class="annottext">close :: Deflate -&gt; t m ()
+</span><a href="#local-6989586621679082160"><span class="hs-identifier hs-var hs-var">close</span></a></span></span><span> </span><span id="local-6989586621679082145"><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082145"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-199"></span><span>        </span><span id="local-6989586621679082144"><span class="annot"><span class="annottext">PopperRes
+</span><a href="#local-6989586621679082144"><span class="hs-identifier hs-var">mchunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m PopperRes -&gt; t m PopperRes
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -634,24 +645,25 @@ forall (m :: * -&gt; *) a. (PrimMonad m, MonadThrow m) =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Deflate -&gt; Popper
 </span><span class="hs-identifier hs-var">finishDeflate</span></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129213"><span class="hs-identifier hs-var">def</span></a></span><span>
+</span><a href="#local-6989586621679082145"><span class="hs-identifier hs-var">def</span></a></span><span>
 </span><span id="line-200"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">PopperRes
-</span><a href="#local-6989586621679129212"><span class="hs-identifier hs-var">mchunk</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-201"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; t m ()
+</span><a href="#local-6989586621679082144"><span class="hs-identifier hs-var">mchunk</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-201"></span><span>            </span><span class="annot"><span class="annottext">PopperRes
+</span><span class="hs-identifier hs-var">PRDone</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; t m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-202"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679129210"><span class="annot"><span class="annottext">chunk :: ByteString
-</span><a href="#local-6989586621679129210"><span class="hs-identifier hs-var">chunk</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
-</span><a href="#local-6989586621679129239"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
+</span><span id="line-202"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRNext</span></span><span> </span><span id="local-6989586621679082142"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082142"><span class="hs-identifier hs-var">chunk</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Flush ByteString -&gt; t m ()
+</span><a href="#local-6989586621679082171"><span class="hs-identifier hs-var">yield'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Flush ByteString
 forall a. a -&gt; Flush a
 </span><span class="hs-identifier hs-var">Chunk</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129210"><span class="hs-identifier hs-var">chunk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t m () -&gt; t m () -&gt; t m ()
+</span><a href="#local-6989586621679082142"><span class="hs-identifier hs-var">chunk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t m () -&gt; t m () -&gt; t m ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Deflate -&gt; t m ()
-</span><a href="#local-6989586621679129228"><span class="hs-identifier hs-var">close</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
-</span><a href="#local-6989586621679129213"><span class="hs-identifier hs-var">def</span></a></span><span>
-</span><span id="line-203"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679129209"><span class="annot"><span class="annottext">e :: ZlibException
-</span><a href="#local-6989586621679129209"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
+</span><a href="#local-6989586621679082160"><span class="hs-identifier hs-var">close</span></a></span><span> </span><span class="annot"><span class="annottext">Deflate
+</span><a href="#local-6989586621679082145"><span class="hs-identifier hs-var">def</span></a></span><span>
+</span><span id="line-203"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">PRError</span></span><span> </span><span id="local-6989586621679082141"><span class="annot"><span class="annottext">ZlibException
+</span><a href="#local-6989586621679082141"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m () -&gt; t m ()
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -660,7 +672,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ZlibException -&gt; m ()
 forall (m :: * -&gt; *) e a. (MonadThrow m, Exception e) =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwM</span></span><span> </span><span class="annot"><span class="annottext">ZlibException
-</span><a href="#local-6989586621679129209"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679082141"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-204"></span><span>
 </span><span id="line-205"></span><span class="hs-comment">-- | The standard 'decompress' and 'ungzip' functions will only decompress a</span><span>
 </span><span id="line-206"></span><span class="hs-comment">-- single compressed entity from the stream. This combinator will exhaust the</span><span>
@@ -679,40 +691,41 @@ forall (m :: * -&gt; *) e a. (MonadThrow m, Exception e) =&gt; e -&gt; m a
 </span><span id="line-219"></span><span class="hs-comment">-- &gt; sourceFile &quot;combined.gz&quot; $$ (ungzip &gt;&gt; multiple ungzip) =$ consume</span><span>
 </span><span id="line-220"></span><span class="hs-comment">--</span><span>
 </span><span id="line-221"></span><span class="hs-comment">-- @since 1.1.10</span><span>
-</span><span id="line-222"></span><span id="local-6989586621679129207"><span id="local-6989586621679129208"><span class="annot"><a href="Data.Conduit.Zlib.html#multiple"><span class="hs-identifier hs-type">multiple</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679129208"><span class="hs-identifier hs-type">m</span></a></span><span>
-</span><span id="line-223"></span><span>         </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679129207"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129208"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-224"></span><span>         </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679129207"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679129208"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-222"></span><span id="local-6989586621679082139"><span id="local-6989586621679082140"><span class="annot"><a href="Data.Conduit.Zlib.html#multiple"><span class="hs-identifier hs-type">multiple</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679082140"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-223"></span><span>         </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679082139"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082140"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-224"></span><span>         </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConduitT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="#local-6989586621679082139"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082140"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-225"></span><span id="multiple"><span class="annot"><span class="annottext">multiple :: ConduitT ByteString a m () -&gt; ConduitT ByteString a m ()
-</span><a href="Data.Conduit.Zlib.html#multiple"><span class="hs-identifier hs-var hs-var">multiple</span></a></span></span><span> </span><span id="local-6989586621679129206"><span class="annot"><span class="annottext">inner :: ConduitT ByteString a m ()
-</span><a href="#local-6989586621679129206"><span class="hs-identifier hs-var">inner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Conduit.Zlib.html#multiple"><span class="hs-identifier hs-var hs-var">multiple</span></a></span></span><span> </span><span id="local-6989586621679082138"><span class="annot"><span class="annottext">ConduitT ByteString a m ()
+</span><a href="#local-6989586621679082138"><span class="hs-identifier hs-var">inner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-226"></span><span>    </span><span class="annot"><span class="annottext">ConduitT ByteString a m ()
-</span><a href="#local-6989586621679129205"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><a href="#local-6989586621679082137"><span class="hs-identifier hs-var">loop</span></a></span><span>
 </span><span id="line-227"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-228"></span><span>    </span><span id="local-6989586621679129205"><span class="annot"><span class="annottext">loop :: ConduitT ByteString a m ()
-</span><a href="#local-6989586621679129205"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-229"></span><span>        </span><span id="local-6989586621679129204"><span class="annot"><span class="annottext">Maybe ByteString
-</span><a href="#local-6989586621679129204"><span class="hs-identifier hs-var">mbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ConduitT ByteString a m (Maybe ByteString)
+</span><span id="line-228"></span><span>    </span><span id="local-6989586621679082137"><span class="annot"><span class="annottext">loop :: ConduitT ByteString a m ()
+</span><a href="#local-6989586621679082137"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-229"></span><span>        </span><span id="local-6989586621679082136"><span class="annot"><span class="annottext">Maybe ByteString
+</span><a href="#local-6989586621679082136"><span class="hs-identifier hs-var">mbs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ConduitT ByteString a m (Maybe ByteString)
 forall (m :: * -&gt; *) i. Monad m =&gt; Consumer i m (Maybe i)
 </span><span class="hs-identifier hs-var">await</span></span><span>
 </span><span id="line-230"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe ByteString
-</span><a href="#local-6989586621679129204"><span class="hs-identifier hs-var">mbs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-231"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; ConduitT ByteString a m ()
+</span><a href="#local-6989586621679082136"><span class="hs-identifier hs-var">mbs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-231"></span><span>            </span><span class="annot"><span class="annottext">Maybe ByteString
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; ConduitT ByteString a m ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-232"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679129203"><span class="annot"><span class="annottext">bs :: ByteString
-</span><a href="#local-6989586621679129203"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
+</span><span id="line-232"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082135"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082135"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
 </span><span id="line-233"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Bool
 </span><span class="hs-identifier hs-var">S.null</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129203"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ConduitT ByteString a m ()
-</span><a href="#local-6989586621679129205"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><a href="#local-6989586621679082135"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ConduitT ByteString a m ()
+</span><a href="#local-6989586621679082137"><span class="hs-identifier hs-var">loop</span></a></span><span>
 </span><span id="line-234"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-235"></span><span>                    </span><span class="annot"><span class="annottext">ByteString -&gt; ConduitT ByteString a m ()
 forall i o (m :: * -&gt; *). i -&gt; ConduitT i o m ()
 </span><span class="hs-identifier hs-var">leftover</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679129203"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621679082135"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-236"></span><span>                    </span><span class="annot"><span class="annottext">ConduitT ByteString a m ()
-</span><a href="#local-6989586621679129206"><span class="hs-identifier hs-var">inner</span></a></span><span>
+</span><a href="#local-6989586621679082138"><span class="hs-identifier hs-var">inner</span></a></span><span>
 </span><span id="line-237"></span><span>                    </span><span class="annot"><span class="annottext">ConduitT ByteString a m ()
-</span><a href="#local-6989586621679129205"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><a href="#local-6989586621679082137"><span class="hs-identifier hs-var">loop</span></a></span><span>
 </span><span id="line-238"></span></pre></body></html>

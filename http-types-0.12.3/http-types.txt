@@ -340,7 +340,7 @@ renderMethod :: Either ByteString StdMethod -> Method
 
 -- | Convert a <a>StdMethod</a> to a <tt>ByteString</tt>.
 renderStdMethod :: StdMethod -> Method
-instance GHC.Arr.Ix Network.HTTP.Types.Method.StdMethod
+instance GHC.Ix.Ix Network.HTTP.Types.Method.StdMethod
 instance GHC.Enum.Bounded Network.HTTP.Types.Method.StdMethod
 instance GHC.Enum.Enum Network.HTTP.Types.Method.StdMethod
 instance GHC.Classes.Ord Network.HTTP.Types.Method.StdMethod

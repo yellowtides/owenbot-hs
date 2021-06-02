@@ -1821,14 +1821,14 @@ unzip :: Seq (a, b) -> (Seq a, Seq b)
 --   better off simply calculating the sequence of pairs and using
 --   <a>fmap</a> to extract each component sequence.
 unzipWith :: (a -> (b, c)) -> Seq a -> (Seq b, Seq c)
-instance GHC.Read.Read a => GHC.Read.Read (Data.Sequence.Internal.ViewR a)
-instance GHC.Show.Show a => GHC.Show.Show (Data.Sequence.Internal.ViewR a)
-instance GHC.Classes.Ord a => GHC.Classes.Ord (Data.Sequence.Internal.ViewR a)
-instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Sequence.Internal.ViewR a)
 instance GHC.Read.Read a => GHC.Read.Read (Data.Sequence.Internal.ViewL a)
 instance GHC.Show.Show a => GHC.Show.Show (Data.Sequence.Internal.ViewL a)
 instance GHC.Classes.Ord a => GHC.Classes.Ord (Data.Sequence.Internal.ViewL a)
 instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Sequence.Internal.ViewL a)
+instance GHC.Read.Read a => GHC.Read.Read (Data.Sequence.Internal.ViewR a)
+instance GHC.Show.Show a => GHC.Show.Show (Data.Sequence.Internal.ViewR a)
+instance GHC.Classes.Ord a => GHC.Classes.Ord (Data.Sequence.Internal.ViewR a)
+instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Sequence.Internal.ViewR a)
 instance GHC.Generics.Generic1 Data.Sequence.Internal.FingerTree
 instance GHC.Generics.Generic (Data.Sequence.Internal.FingerTree a)
 instance GHC.Generics.Generic1 Data.Sequence.Internal.Digit

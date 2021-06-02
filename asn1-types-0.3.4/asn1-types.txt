@@ -41,10 +41,10 @@ bitArrayGetData :: BitArray -> ByteString
 
 -- | number of bit to skip at the end (padding)
 toBitArray :: ByteString -> Int -> BitArray
-instance GHC.Classes.Eq Data.ASN1.BitArray.BitArray
-instance GHC.Show.Show Data.ASN1.BitArray.BitArray
 instance GHC.Classes.Eq Data.ASN1.BitArray.BitArrayOutOfBound
 instance GHC.Show.Show Data.ASN1.BitArray.BitArrayOutOfBound
+instance GHC.Classes.Eq Data.ASN1.BitArray.BitArray
+instance GHC.Show.Show Data.ASN1.BitArray.BitArray
 instance GHC.Exception.Type.Exception Data.ASN1.BitArray.BitArrayOutOfBound
 
 
@@ -108,16 +108,16 @@ ConstructionBegin :: ASN1Event
 
 -- | Constructed value end
 ConstructionEnd :: ASN1Event
-instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Event
-instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Event
-instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Header
-instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Header
-instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Length
-instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Length
 instance GHC.Enum.Enum Data.ASN1.Types.Lowlevel.ASN1Class
 instance GHC.Classes.Ord Data.ASN1.Types.Lowlevel.ASN1Class
 instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Class
 instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Class
+instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Length
+instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Length
+instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Header
+instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Header
+instance GHC.Classes.Eq Data.ASN1.Types.Lowlevel.ASN1Event
+instance GHC.Show.Show Data.ASN1.Types.Lowlevel.ASN1Event
 
 
 -- | Different String types available in ASN1
@@ -174,12 +174,12 @@ asn1CharacterString :: ASN1StringEncoding -> String -> ASN1CharacterString
 
 -- | try to decode an <a>ASN1CharacterString</a> to a String
 asn1CharacterToString :: ASN1CharacterString -> Maybe String
-instance GHC.Classes.Ord Data.ASN1.Types.String.ASN1CharacterString
-instance GHC.Classes.Eq Data.ASN1.Types.String.ASN1CharacterString
-instance GHC.Show.Show Data.ASN1.Types.String.ASN1CharacterString
 instance GHC.Classes.Ord Data.ASN1.Types.String.ASN1StringEncoding
 instance GHC.Classes.Eq Data.ASN1.Types.String.ASN1StringEncoding
 instance GHC.Show.Show Data.ASN1.Types.String.ASN1StringEncoding
+instance GHC.Classes.Ord Data.ASN1.Types.String.ASN1CharacterString
+instance GHC.Classes.Eq Data.ASN1.Types.String.ASN1CharacterString
+instance GHC.Show.Show Data.ASN1.Types.String.ASN1CharacterString
 instance Data.String.IsString Data.ASN1.Types.String.ASN1CharacterString
 
 
@@ -290,13 +290,13 @@ asn1CharacterString :: ASN1StringEncoding -> String -> ASN1CharacterString
 
 -- | try to decode an <a>ASN1CharacterString</a> to a String
 asn1CharacterToString :: ASN1CharacterString -> Maybe String
-instance GHC.Classes.Eq Data.ASN1.Types.ASN1
-instance GHC.Show.Show Data.ASN1.Types.ASN1
+instance GHC.Classes.Eq Data.ASN1.Types.ASN1ConstructionType
+instance GHC.Show.Show Data.ASN1.Types.ASN1ConstructionType
 instance GHC.Classes.Ord Data.ASN1.Types.ASN1TimeType
 instance GHC.Classes.Eq Data.ASN1.Types.ASN1TimeType
 instance GHC.Show.Show Data.ASN1.Types.ASN1TimeType
-instance GHC.Classes.Eq Data.ASN1.Types.ASN1ConstructionType
-instance GHC.Show.Show Data.ASN1.Types.ASN1ConstructionType
+instance GHC.Classes.Eq Data.ASN1.Types.ASN1
+instance GHC.Show.Show Data.ASN1.Types.ASN1
 
 
 module Data.ASN1.Pretty

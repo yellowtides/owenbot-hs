@@ -38,7 +38,7 @@
 </span><a href="Data.Hourglass.Diff.html#periodMonths"><span class="hs-identifier hs-var hs-var">periodMonths</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="periodDays"><span class="annot"><span class="annottext">Period -&gt; Int
 </span><a href="Data.Hourglass.Diff.html#periodDays"><span class="hs-identifier hs-var hs-var">periodDays</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-38"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081211"><span id="local-6989586621679081213"><span id="local-6989586621679081215"><span class="annot"><span class="annottext">Int -&gt; Period -&gt; ShowS
+</span><span id="line-38"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061288"><span id="local-6989586621679061290"><span id="local-6989586621679061292"><span class="annot"><span class="annottext">Int -&gt; Period -&gt; ShowS
 [Period] -&gt; ShowS
 Period -&gt; String
 (Int -&gt; Period -&gt; ShowS)
@@ -51,7 +51,7 @@ show :: Period -&gt; String
 $cshow :: Period -&gt; String
 showsPrec :: Int -&gt; Period -&gt; ShowS
 $cshowsPrec :: Int -&gt; Period -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679081202"><span id="local-6989586621679081204"><span id="local-6989586621679081206"><span id="local-6989586621679081208"><span class="annot"><span class="annottext">ReadPrec [Period]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061279"><span id="local-6989586621679061281"><span id="local-6989586621679061283"><span id="local-6989586621679061285"><span class="annot"><span class="annottext">ReadPrec [Period]
 ReadPrec Period
 Int -&gt; ReadS Period
 ReadS [Period]
@@ -71,7 +71,7 @@ readList :: ReadS [Period]
 $creadList :: ReadS [Period]
 readsPrec :: Int -&gt; ReadS Period
 $creadsPrec :: Int -&gt; ReadS Period
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679081197"><span id="local-6989586621679081199"><span class="annot"><span class="annottext">Period -&gt; Period -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061274"><span id="local-6989586621679061276"><span class="annot"><span class="annottext">Period -&gt; Period -&gt; Bool
 (Period -&gt; Period -&gt; Bool)
 -&gt; (Period -&gt; Period -&gt; Bool) -&gt; Eq Period
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -79,9 +79,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: Period -&gt; Period -&gt; Bool
 == :: Period -&gt; Period -&gt; Bool
 $c== :: Period -&gt; Period -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679081181"><span id="local-6989586621679081183"><span id="local-6989586621679081185"><span id="local-6989586621679081187"><span id="local-6989586621679081189"><span id="local-6989586621679081191"><span id="local-6989586621679081193"><span class="annot"><span class="annottext">Eq Period
-Eq Period =&gt;
-(Period -&gt; Period -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061258"><span id="local-6989586621679061260"><span id="local-6989586621679061262"><span id="local-6989586621679061264"><span id="local-6989586621679061266"><span id="local-6989586621679061268"><span id="local-6989586621679061270"><span class="annot"><span class="annottext">Eq Period
+Eq Period
+-&gt; (Period -&gt; Period -&gt; Ordering)
 -&gt; (Period -&gt; Period -&gt; Bool)
 -&gt; (Period -&gt; Period -&gt; Bool)
 -&gt; (Period -&gt; Period -&gt; Bool)
@@ -93,8 +93,8 @@ Period -&gt; Period -&gt; Bool
 Period -&gt; Period -&gt; Ordering
 Period -&gt; Period -&gt; Period
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -117,13 +117,13 @@ $c&lt; :: Period -&gt; Period -&gt; Bool
 compare :: Period -&gt; Period -&gt; Ordering
 $ccompare :: Period -&gt; Period -&gt; Ordering
 $cp1Ord :: Eq Period
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="%24cPeriod"><span id="%24tPeriod"><span id="local-6989586621679081151"><span id="local-6989586621679081153"><span id="local-6989586621679081155"><span id="local-6989586621679081157"><span id="local-6989586621679081159"><span id="local-6989586621679081161"><span id="local-6989586621679081163"><span id="local-6989586621679081165"><span id="local-6989586621679081167"><span id="local-6989586621679081169"><span id="local-6989586621679081171"><span id="local-6989586621679081173"><span id="local-6989586621679081175"><span id="local-6989586621679081177"><span class="annot"><span class="annottext">Typeable Period
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="%24cPeriod"><span id="%24tPeriod"><span id="local-6989586621679061228"><span id="local-6989586621679061230"><span id="local-6989586621679061232"><span id="local-6989586621679061234"><span id="local-6989586621679061236"><span id="local-6989586621679061238"><span id="local-6989586621679061240"><span id="local-6989586621679061242"><span id="local-6989586621679061244"><span id="local-6989586621679061246"><span id="local-6989586621679061248"><span id="local-6989586621679061250"><span id="local-6989586621679061252"><span id="local-6989586621679061254"><span class="annot"><span class="annottext">Typeable Period
 DataType
 Constr
-Typeable Period =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; Period -&gt; c Period)
+Typeable Period
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; Period -&gt; c Period)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c Period)
@@ -162,10 +162,10 @@ Period -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c Period
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -270,71 +270,71 @@ $cp1Data :: Typeable Period
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-41"></span><span>    </span><span id="local-6989586621679081145"><span class="annot"><span class="annottext">rnf :: Period -&gt; ()
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">rnf</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679081143"><span class="annot"><span class="annottext">y :: Int
-</span><a href="#local-6989586621679081143"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679081142"><span class="annot"><span class="annottext">m :: Int
-</span><a href="#local-6989586621679081142"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679081141"><span class="annot"><span class="annottext">d :: Int
-</span><a href="#local-6989586621679081141"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081143"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><span id="line-41"></span><span>    </span><span id="local-6989586621679061222"><span class="annot"><span class="annottext">rnf :: Period -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">rnf</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679061220"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061220"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679061219"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061219"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679061218"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061218"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061220"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081142"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><a href="#local-6989586621679061219"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081141"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><a href="#local-6989586621679061218"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-cpp">
 #if (MIN_VERSION_base(4,11,0))
-</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081136"><span id="local-6989586621679081138"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-44"></span><span>    </span><span id="local-6989586621679081134"><span class="annot"><span class="annottext">&lt;&gt; :: Period -&gt; Period -&gt; Period
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679081133"><span class="annot"><span class="annottext">y1 :: Int
-</span><a href="#local-6989586621679081133"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679081132"><span class="annot"><span class="annottext">m1 :: Int
-</span><a href="#local-6989586621679081132"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679081131"><span class="annot"><span class="annottext">d1 :: Int
-</span><a href="#local-6989586621679081131"><span class="hs-identifier hs-var">d1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679081130"><span class="annot"><span class="annottext">y2 :: Int
-</span><a href="#local-6989586621679081130"><span class="hs-identifier hs-var">y2</span></a></span></span><span> </span><span id="local-6989586621679081129"><span class="annot"><span class="annottext">m2 :: Int
-</span><a href="#local-6989586621679081129"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679081128"><span class="annot"><span class="annottext">d2 :: Int
-</span><a href="#local-6989586621679081128"><span class="hs-identifier hs-var">d2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679061213"><span id="local-6989586621679061215"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-44"></span><span>    </span><span id="local-6989586621679061211"><span class="annot"><span class="annottext">&lt;&gt; :: Period -&gt; Period -&gt; Period
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679061210"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061210"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679061209"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061209"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679061208"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061208"><span class="hs-identifier hs-var">d1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679061207"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061207"><span class="hs-identifier hs-var">y2</span></a></span></span><span> </span><span id="local-6989586621679061206"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061206"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679061205"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061205"><span class="hs-identifier hs-var">d2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-45"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Period
 </span><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-var">Period</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081133"><span class="hs-identifier hs-var">y1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061210"><span class="hs-identifier hs-var">y1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081130"><span class="hs-identifier hs-var">y2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081132"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061207"><span class="hs-identifier hs-var">y2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061209"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081129"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081131"><span class="hs-identifier hs-var">d1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061206"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061208"><span class="hs-identifier hs-var">d1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081128"><span class="hs-identifier hs-var">d2</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+</span><a href="#local-6989586621679061205"><span class="hs-identifier hs-var">d2</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
 #endif
-</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081122"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-48"></span><span>    </span><span id="local-6989586621679081120"><span class="annot"><span class="annottext">mempty :: Period
+</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679061199"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>    </span><span id="local-6989586621679061197"><span class="annot"><span class="annottext">mempty :: Period
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Period
-</span><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-var">Period</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
-</span><span id="line-49"></span><span>    </span><span id="local-6989586621679081119"><span class="annot"><span class="annottext">mappend :: Period -&gt; Period -&gt; Period
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mappend</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679081118"><span class="annot"><span class="annottext">y1 :: Int
-</span><a href="#local-6989586621679081118"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679081117"><span class="annot"><span class="annottext">m1 :: Int
-</span><a href="#local-6989586621679081117"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679081116"><span class="annot"><span class="annottext">d1 :: Int
-</span><a href="#local-6989586621679081116"><span class="hs-identifier hs-var">d1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679081115"><span class="annot"><span class="annottext">y2 :: Int
-</span><a href="#local-6989586621679081115"><span class="hs-identifier hs-var">y2</span></a></span></span><span> </span><span id="local-6989586621679081114"><span class="annot"><span class="annottext">m2 :: Int
-</span><a href="#local-6989586621679081114"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679081113"><span class="annot"><span class="annottext">d2 :: Int
-</span><a href="#local-6989586621679081113"><span class="hs-identifier hs-var">d2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-var">Period</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679061196"><span class="annot"><span class="annottext">mappend :: Period -&gt; Period -&gt; Period
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mappend</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679061195"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061195"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679061194"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061194"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679061193"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061193"><span class="hs-identifier hs-var">d1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679061192"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061192"><span class="hs-identifier hs-var">y2</span></a></span></span><span> </span><span id="local-6989586621679061191"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061191"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679061190"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061190"><span class="hs-identifier hs-var">d2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-50"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Period
 </span><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-var">Period</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081118"><span class="hs-identifier hs-var">y1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061195"><span class="hs-identifier hs-var">y1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081115"><span class="hs-identifier hs-var">y2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081117"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061192"><span class="hs-identifier hs-var">y2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061194"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081114"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081116"><span class="hs-identifier hs-var">d1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061191"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061193"><span class="hs-identifier hs-var">d1</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679081113"><span class="hs-identifier hs-var">d2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679061190"><span class="hs-identifier hs-var">d2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span>
 </span><span id="line-52"></span><span class="hs-comment">-- | An amount of time in terms of constant value like hours (3600 seconds),</span><span>
 </span><span id="line-53"></span><span class="hs-comment">-- minutes (60 seconds), seconds and nanoseconds.</span><span>
@@ -347,7 +347,7 @@ forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="Data.Hourglass.Diff.html#durationSeconds"><span class="hs-identifier hs-var hs-var">durationSeconds</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-type">Seconds</span></a></span><span>     </span><span class="hs-comment">-- ^ number of seconds</span><span>
 </span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="durationNs"><span class="annot"><span class="annottext">Duration -&gt; NanoSeconds
 </span><a href="Data.Hourglass.Diff.html#durationNs"><span class="hs-identifier hs-var hs-var">durationNs</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-type">NanoSeconds</span></a></span><span> </span><span class="hs-comment">-- ^ number of nanoseconds</span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081102"><span id="local-6989586621679081104"><span id="local-6989586621679081106"><span class="annot"><span class="annottext">Int -&gt; Duration -&gt; ShowS
+</span><span id="line-59"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061179"><span id="local-6989586621679061181"><span id="local-6989586621679061183"><span class="annot"><span class="annottext">Int -&gt; Duration -&gt; ShowS
 [Duration] -&gt; ShowS
 Duration -&gt; String
 (Int -&gt; Duration -&gt; ShowS)
@@ -360,7 +360,7 @@ show :: Duration -&gt; String
 $cshow :: Duration -&gt; String
 showsPrec :: Int -&gt; Duration -&gt; ShowS
 $cshowsPrec :: Int -&gt; Duration -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679081094"><span id="local-6989586621679081096"><span id="local-6989586621679081098"><span id="local-6989586621679081100"><span class="annot"><span class="annottext">ReadPrec [Duration]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061171"><span id="local-6989586621679061173"><span id="local-6989586621679061175"><span id="local-6989586621679061177"><span class="annot"><span class="annottext">ReadPrec [Duration]
 ReadPrec Duration
 Int -&gt; ReadS Duration
 ReadS [Duration]
@@ -380,7 +380,7 @@ readList :: ReadS [Duration]
 $creadList :: ReadS [Duration]
 readsPrec :: Int -&gt; ReadS Duration
 $creadsPrec :: Int -&gt; ReadS Duration
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679081090"><span id="local-6989586621679081092"><span class="annot"><span class="annottext">Duration -&gt; Duration -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061167"><span id="local-6989586621679061169"><span class="annot"><span class="annottext">Duration -&gt; Duration -&gt; Bool
 (Duration -&gt; Duration -&gt; Bool)
 -&gt; (Duration -&gt; Duration -&gt; Bool) -&gt; Eq Duration
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -388,9 +388,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: Duration -&gt; Duration -&gt; Bool
 == :: Duration -&gt; Duration -&gt; Bool
 $c== :: Duration -&gt; Duration -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679081075"><span id="local-6989586621679081077"><span id="local-6989586621679081079"><span id="local-6989586621679081081"><span id="local-6989586621679081083"><span id="local-6989586621679081085"><span id="local-6989586621679081087"><span class="annot"><span class="annottext">Eq Duration
-Eq Duration =&gt;
-(Duration -&gt; Duration -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061152"><span id="local-6989586621679061154"><span id="local-6989586621679061156"><span id="local-6989586621679061158"><span id="local-6989586621679061160"><span id="local-6989586621679061162"><span id="local-6989586621679061164"><span class="annot"><span class="annottext">Eq Duration
+Eq Duration
+-&gt; (Duration -&gt; Duration -&gt; Ordering)
 -&gt; (Duration -&gt; Duration -&gt; Bool)
 -&gt; (Duration -&gt; Duration -&gt; Bool)
 -&gt; (Duration -&gt; Duration -&gt; Bool)
@@ -402,8 +402,8 @@ Duration -&gt; Duration -&gt; Bool
 Duration -&gt; Duration -&gt; Ordering
 Duration -&gt; Duration -&gt; Duration
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -426,13 +426,13 @@ $c&lt; :: Duration -&gt; Duration -&gt; Bool
 compare :: Duration -&gt; Duration -&gt; Ordering
 $ccompare :: Duration -&gt; Duration -&gt; Ordering
 $cp1Ord :: Eq Duration
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="%24cDuration"><span id="%24tDuration"><span id="local-6989586621679081046"><span id="local-6989586621679081048"><span id="local-6989586621679081050"><span id="local-6989586621679081052"><span id="local-6989586621679081054"><span id="local-6989586621679081056"><span id="local-6989586621679081058"><span id="local-6989586621679081060"><span id="local-6989586621679081062"><span id="local-6989586621679081064"><span id="local-6989586621679081066"><span id="local-6989586621679081068"><span id="local-6989586621679081070"><span id="local-6989586621679081072"><span class="annot"><span class="annottext">Typeable Duration
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="%24cDuration"><span id="%24tDuration"><span id="local-6989586621679061123"><span id="local-6989586621679061125"><span id="local-6989586621679061127"><span id="local-6989586621679061129"><span id="local-6989586621679061131"><span id="local-6989586621679061133"><span id="local-6989586621679061135"><span id="local-6989586621679061137"><span id="local-6989586621679061139"><span id="local-6989586621679061141"><span id="local-6989586621679061143"><span id="local-6989586621679061145"><span id="local-6989586621679061147"><span id="local-6989586621679061149"><span class="annot"><span class="annottext">Typeable Duration
 DataType
 Constr
-Typeable Duration =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; Duration -&gt; c Duration)
+Typeable Duration
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; Duration -&gt; c Duration)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c Duration)
@@ -471,10 +471,10 @@ Duration -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c Duration
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -585,137 +585,142 @@ $cp1Data :: Typeable Duration
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-60"></span><span>
 </span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-62"></span><span>    </span><span id="local-6989586621679081042"><span class="annot"><span class="annottext">rnf :: Duration -&gt; ()
-</span><a href="#local-6989586621679081042"><span class="hs-identifier hs-var hs-var hs-var hs-var">rnf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679081041"><span class="annot"><span class="annottext">h :: Hours
-</span><a href="#local-6989586621679081041"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span id="local-6989586621679081040"><span class="annot"><span class="annottext">m :: Minutes
-</span><a href="#local-6989586621679081040"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679081039"><span class="annot"><span class="annottext">s :: Seconds
-</span><a href="#local-6989586621679081039"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679081038"><span class="annot"><span class="annottext">ns :: NanoSeconds
-</span><a href="#local-6989586621679081038"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Hours
-</span><a href="#local-6989586621679081041"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Hours -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621679061119"><span class="annot"><span class="annottext">rnf :: Duration -&gt; ()
+</span><a href="#local-6989586621679061119"><span class="hs-identifier hs-var hs-var hs-var hs-var">rnf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679061118"><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061118"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span id="local-6989586621679061117"><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061117"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679061116"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061116"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679061115"><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061115"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061118"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Hours -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="annot"><span class="annottext">Minutes
-</span><a href="#local-6989586621679081040"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Minutes -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><a href="#local-6989586621679061117"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Minutes -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679081039"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><a href="#local-6989586621679061116"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="annot"><span class="annottext">NanoSeconds
-</span><a href="#local-6989586621679081038"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">NanoSeconds -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><a href="#local-6989586621679061115"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">NanoSeconds -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-cpp">
 #if (MIN_VERSION_base(4,11,0))
-</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081033"><span id="local-6989586621679081035"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-65"></span><span>    </span><span id="local-6989586621679081032"><span class="annot"><span class="annottext">&lt;&gt; :: Duration -&gt; Duration -&gt; Duration
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679081031"><span class="annot"><span class="annottext">h1 :: Hours
-</span><a href="#local-6989586621679081031"><span class="hs-identifier hs-var">h1</span></a></span></span><span> </span><span id="local-6989586621679081030"><span class="annot"><span class="annottext">m1 :: Minutes
-</span><a href="#local-6989586621679081030"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679081029"><span class="annot"><span class="annottext">s1 :: Seconds
-</span><a href="#local-6989586621679081029"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span id="local-6989586621679081028"><span class="annot"><span class="annottext">ns1 :: NanoSeconds
-</span><a href="#local-6989586621679081028"><span class="hs-identifier hs-var">ns1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679081027"><span class="annot"><span class="annottext">h2 :: Hours
-</span><a href="#local-6989586621679081027"><span class="hs-identifier hs-var">h2</span></a></span></span><span> </span><span id="local-6989586621679081026"><span class="annot"><span class="annottext">m2 :: Minutes
-</span><a href="#local-6989586621679081026"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679081025"><span class="annot"><span class="annottext">s2 :: Seconds
-</span><a href="#local-6989586621679081025"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span id="local-6989586621679081024"><span class="annot"><span class="annottext">ns2 :: NanoSeconds
-</span><a href="#local-6989586621679081024"><span class="hs-identifier hs-var">ns2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679061110"><span id="local-6989586621679061112"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-65"></span><span>    </span><span id="local-6989586621679061109"><span class="annot"><span class="annottext">&lt;&gt; :: Duration -&gt; Duration -&gt; Duration
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679061108"><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061108"><span class="hs-identifier hs-var">h1</span></a></span></span><span> </span><span id="local-6989586621679061107"><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061107"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679061106"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061106"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span id="local-6989586621679061105"><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061105"><span class="hs-identifier hs-var">ns1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679061104"><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061104"><span class="hs-identifier hs-var">h2</span></a></span></span><span> </span><span id="local-6989586621679061103"><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061103"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679061102"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061102"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span id="local-6989586621679061101"><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061101"><span class="hs-identifier hs-var">ns2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-66"></span><span>        </span><span class="annot"><span class="annottext">Hours -&gt; Minutes -&gt; Seconds -&gt; NanoSeconds -&gt; Duration
 </span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Hours
-</span><a href="#local-6989586621679081031"><span class="hs-identifier hs-var">h1</span></a></span><span class="annot"><span class="annottext">Hours -&gt; Hours -&gt; Hours
+</span><a href="#local-6989586621679061108"><span class="hs-identifier hs-var">h1</span></a></span><span class="annot"><span class="annottext">Hours -&gt; Hours -&gt; Hours
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Hours
-</span><a href="#local-6989586621679081027"><span class="hs-identifier hs-var">h2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minutes
-</span><a href="#local-6989586621679081030"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Minutes -&gt; Minutes -&gt; Minutes
+</span><a href="#local-6989586621679061104"><span class="hs-identifier hs-var">h2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061107"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Minutes -&gt; Minutes -&gt; Minutes
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Minutes
-</span><a href="#local-6989586621679081026"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679081029"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061103"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061106"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679081025"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NanoSeconds
-</span><a href="#local-6989586621679081028"><span class="hs-identifier hs-var">ns1</span></a></span><span class="annot"><span class="annottext">NanoSeconds -&gt; NanoSeconds -&gt; NanoSeconds
+</span><a href="#local-6989586621679061102"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061105"><span class="hs-identifier hs-var">ns1</span></a></span><span class="annot"><span class="annottext">NanoSeconds -&gt; NanoSeconds -&gt; NanoSeconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">NanoSeconds
-</span><a href="#local-6989586621679081024"><span class="hs-identifier hs-var">ns2</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+</span><a href="#local-6989586621679061101"><span class="hs-identifier hs-var">ns2</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
 #endif
-</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081019"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679081018"><span class="annot"><span class="annottext">mempty :: Duration
+</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679061096"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679061095"><span class="annot"><span class="annottext">mempty :: Duration
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Hours -&gt; Minutes -&gt; Seconds -&gt; NanoSeconds -&gt; Duration
-</span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
-</span><span id="line-70"></span><span>    </span><span id="local-6989586621679081017"><span class="annot"><span class="annottext">mappend :: Duration -&gt; Duration -&gt; Duration
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mappend</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679081016"><span class="annot"><span class="annottext">h1 :: Hours
-</span><a href="#local-6989586621679081016"><span class="hs-identifier hs-var">h1</span></a></span></span><span> </span><span id="local-6989586621679081015"><span class="annot"><span class="annottext">m1 :: Minutes
-</span><a href="#local-6989586621679081015"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679081014"><span class="annot"><span class="annottext">s1 :: Seconds
-</span><a href="#local-6989586621679081014"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span id="local-6989586621679081013"><span class="annot"><span class="annottext">ns1 :: NanoSeconds
-</span><a href="#local-6989586621679081013"><span class="hs-identifier hs-var">ns1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679081012"><span class="annot"><span class="annottext">h2 :: Hours
-</span><a href="#local-6989586621679081012"><span class="hs-identifier hs-var">h2</span></a></span></span><span> </span><span id="local-6989586621679081011"><span class="annot"><span class="annottext">m2 :: Minutes
-</span><a href="#local-6989586621679081011"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679081010"><span class="annot"><span class="annottext">s2 :: Seconds
-</span><a href="#local-6989586621679081010"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span id="local-6989586621679081009"><span class="annot"><span class="annottext">ns2 :: NanoSeconds
-</span><a href="#local-6989586621679081009"><span class="hs-identifier hs-var">ns2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="annot"><span class="annottext">Hours
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Minutes
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Seconds
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">NanoSeconds
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-70"></span><span>    </span><span id="local-6989586621679061094"><span class="annot"><span class="annottext">mappend :: Duration -&gt; Duration -&gt; Duration
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mappend</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679061093"><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061093"><span class="hs-identifier hs-var">h1</span></a></span></span><span> </span><span id="local-6989586621679061092"><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061092"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679061091"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061091"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span id="local-6989586621679061090"><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061090"><span class="hs-identifier hs-var">ns1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679061089"><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061089"><span class="hs-identifier hs-var">h2</span></a></span></span><span> </span><span id="local-6989586621679061088"><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061088"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span id="local-6989586621679061087"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061087"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span id="local-6989586621679061086"><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061086"><span class="hs-identifier hs-var">ns2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-71"></span><span>        </span><span class="annot"><span class="annottext">Hours -&gt; Minutes -&gt; Seconds -&gt; NanoSeconds -&gt; Duration
 </span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Hours
-</span><a href="#local-6989586621679081016"><span class="hs-identifier hs-var">h1</span></a></span><span class="annot"><span class="annottext">Hours -&gt; Hours -&gt; Hours
+</span><a href="#local-6989586621679061093"><span class="hs-identifier hs-var">h1</span></a></span><span class="annot"><span class="annottext">Hours -&gt; Hours -&gt; Hours
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Hours
-</span><a href="#local-6989586621679081012"><span class="hs-identifier hs-var">h2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minutes
-</span><a href="#local-6989586621679081015"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Minutes -&gt; Minutes -&gt; Minutes
+</span><a href="#local-6989586621679061089"><span class="hs-identifier hs-var">h2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061092"><span class="hs-identifier hs-var">m1</span></a></span><span class="annot"><span class="annottext">Minutes -&gt; Minutes -&gt; Minutes
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Minutes
-</span><a href="#local-6989586621679081011"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679081014"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061088"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061091"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679081010"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NanoSeconds
-</span><a href="#local-6989586621679081013"><span class="hs-identifier hs-var">ns1</span></a></span><span class="annot"><span class="annottext">NanoSeconds -&gt; NanoSeconds -&gt; NanoSeconds
+</span><a href="#local-6989586621679061087"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061090"><span class="hs-identifier hs-var">ns1</span></a></span><span class="annot"><span class="annottext">NanoSeconds -&gt; NanoSeconds -&gt; NanoSeconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">NanoSeconds
-</span><a href="#local-6989586621679081009"><span class="hs-identifier hs-var">ns2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679061086"><span class="hs-identifier hs-var">ns2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-72"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Time.Types.html#TimeInterval"><span class="hs-identifier hs-type">TimeInterval</span></a></span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-73"></span><span>    </span><span id="local-6989586621679081005"><span class="annot"><span class="annottext">fromSeconds :: Seconds -&gt; (Duration, Seconds)
-</span><a href="Time.Types.html#fromSeconds"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSeconds</span></a></span></span><span> </span><span id="local-6989586621679081003"><span class="annot"><span class="annottext">s :: Seconds
-</span><a href="#local-6989586621679081003"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Duration -&gt; Duration
+</span><span id="line-73"></span><span>    </span><span id="local-6989586621679061082"><span class="annot"><span class="annottext">fromSeconds :: Seconds -&gt; (Duration, Seconds)
+</span><a href="Time.Types.html#fromSeconds"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSeconds</span></a></span></span><span> </span><span id="local-6989586621679061080"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061080"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Duration -&gt; Duration
 </span><a href="Data.Hourglass.Diff.html#durationNormalize"><span class="hs-identifier hs-var">durationNormalize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Hours -&gt; Minutes -&gt; Seconds -&gt; NanoSeconds -&gt; Duration
-</span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679081003"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>    </span><span id="local-6989586621679081002"><span class="annot"><span class="annottext">toSeconds :: Duration -&gt; Seconds
-</span><a href="Time.Types.html#toSeconds"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSeconds</span></a></span></span><span> </span><span id="local-6989586621679081000"><span class="annot"><span class="annottext">d :: Duration
-</span><a href="#local-6989586621679081000"><span class="hs-identifier hs-var">d</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Seconds, NanoSeconds) -&gt; Seconds
+</span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="annot"><span class="annottext">Hours
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Minutes
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061080"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">NanoSeconds
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Seconds
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679061079"><span class="annot"><span class="annottext">toSeconds :: Duration -&gt; Seconds
+</span><a href="Time.Types.html#toSeconds"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSeconds</span></a></span></span><span> </span><span id="local-6989586621679061077"><span class="annot"><span class="annottext">Duration
+</span><a href="#local-6989586621679061077"><span class="hs-identifier hs-var">d</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Seconds, NanoSeconds) -&gt; Seconds
 forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((Seconds, NanoSeconds) -&gt; Seconds)
 -&gt; (Seconds, NanoSeconds) -&gt; Seconds
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Duration -&gt; (Seconds, NanoSeconds)
 </span><a href="Data.Hourglass.Diff.html#durationFlatten"><span class="hs-identifier hs-var">durationFlatten</span></a></span><span> </span><span class="annot"><span class="annottext">Duration
-</span><a href="#local-6989586621679081000"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><a href="#local-6989586621679061077"><span class="hs-identifier hs-var">d</span></a></span><span>
 </span><span id="line-75"></span><span>
 </span><span id="line-76"></span><span class="hs-comment">-- | Flatten a duration to a number of seconds, nanoseconds</span><span>
 </span><span id="line-77"></span><span class="annot"><a href="Data.Hourglass.Diff.html#durationFlatten"><span class="hs-identifier hs-type">durationFlatten</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-type">Seconds</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-type">NanoSeconds</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-78"></span><span id="durationFlatten"><span class="annot"><span class="annottext">durationFlatten :: Duration -&gt; (Seconds, NanoSeconds)
-</span><a href="Data.Hourglass.Diff.html#durationFlatten"><span class="hs-identifier hs-var hs-var">durationFlatten</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679080999"><span class="annot"><span class="annottext">h :: Hours
-</span><a href="#local-6989586621679080999"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span id="local-6989586621679080998"><span class="annot"><span class="annottext">m :: Minutes
-</span><a href="#local-6989586621679080998"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679080997"><span class="annot"><span class="annottext">s :: Seconds
-</span><a href="#local-6989586621679080997"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-type">NanoSeconds</span></a></span><span> </span><span id="local-6989586621679080995"><span class="annot"><span class="annottext">ns :: Int64
-</span><a href="#local-6989586621679080995"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Hourglass.Diff.html#durationFlatten"><span class="hs-identifier hs-var hs-var">durationFlatten</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span id="local-6989586621679061076"><span class="annot"><span class="annottext">Hours
+</span><a href="#local-6989586621679061076"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span id="local-6989586621679061075"><span class="annot"><span class="annottext">Minutes
+</span><a href="#local-6989586621679061075"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679061074"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061074"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-type">NanoSeconds</span></a></span><span> </span><span id="local-6989586621679061072"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061072"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-79"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Hours -&gt; Seconds
 forall i. TimeInterval i =&gt; i -&gt; Seconds
 </span><a href="Time.Types.html#toSeconds"><span class="hs-identifier hs-var">toSeconds</span></a></span><span> </span><span class="annot"><span class="annottext">Hours
-</span><a href="#local-6989586621679080999"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061076"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Minutes -&gt; Seconds
 forall i. TimeInterval i =&gt; i -&gt; Seconds
 </span><a href="Time.Types.html#toSeconds"><span class="hs-identifier hs-var">toSeconds</span></a></span><span> </span><span class="annot"><span class="annottext">Minutes
-</span><a href="#local-6989586621679080998"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061075"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679080997"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061074"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Seconds
 </span><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-var">Seconds</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080993"><span class="hs-identifier hs-var">sacc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; NanoSeconds
+</span><a href="#local-6989586621679061070"><span class="hs-identifier hs-var">sacc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; NanoSeconds
 </span><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-var">NanoSeconds</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080992"><span class="hs-identifier hs-var">ns'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-80"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679080993"><span class="annot"><span class="annottext">sacc :: Int64
-</span><a href="#local-6989586621679080993"><span class="hs-identifier hs-var">sacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080992"><span class="annot"><span class="annottext">ns' :: Int64
-</span><a href="#local-6989586621679080992"><span class="hs-identifier hs-var">ns'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080995"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
+</span><a href="#local-6989586621679061069"><span class="hs-identifier hs-var">ns'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061070"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061070"><span class="hs-identifier hs-var">sacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061069"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061069"><span class="hs-identifier hs-var">ns'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061072"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">1000000000</span></span><span>
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">1000000000</span></span><span>
 </span><span id="line-81"></span><span>
 </span><span id="line-82"></span><span class="hs-comment">-- | Normalize all fields to represent the same value</span><span>
 </span><span id="line-83"></span><span class="hs-comment">-- with the biggest units possible.</span><span>
@@ -723,193 +728,206 @@ forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
 </span><span id="line-85"></span><span class="hs-comment">-- For example, 62 minutes is normalized as 1h 2minutes</span><span>
 </span><span id="line-86"></span><span class="annot"><a href="Data.Hourglass.Diff.html#durationNormalize"><span class="hs-identifier hs-type">durationNormalize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span>
 </span><span id="line-87"></span><span id="durationNormalize"><span class="annot"><span class="annottext">durationNormalize :: Duration -&gt; Duration
-</span><a href="Data.Hourglass.Diff.html#durationNormalize"><span class="hs-identifier hs-var hs-var">durationNormalize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Hours"><span class="hs-identifier hs-type">Hours</span></a></span><span> </span><span id="local-6989586621679080989"><span class="annot"><span class="annottext">h :: Int64
-</span><a href="#local-6989586621679080989"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Minutes"><span class="hs-identifier hs-type">Minutes</span></a></span><span> </span><span id="local-6989586621679080987"><span class="annot"><span class="annottext">mi :: Int64
-</span><a href="#local-6989586621679080987"><span class="hs-identifier hs-var">mi</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-type">Seconds</span></a></span><span> </span><span id="local-6989586621679080986"><span class="annot"><span class="annottext">s :: Int64
-</span><a href="#local-6989586621679080986"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-type">NanoSeconds</span></a></span><span> </span><span id="local-6989586621679080985"><span class="annot"><span class="annottext">ns :: Int64
-</span><a href="#local-6989586621679080985"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Hourglass.Diff.html#durationNormalize"><span class="hs-identifier hs-var hs-var">durationNormalize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-type">Duration</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Hours"><span class="hs-identifier hs-type">Hours</span></a></span><span> </span><span id="local-6989586621679061066"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061066"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Minutes"><span class="hs-identifier hs-type">Minutes</span></a></span><span> </span><span id="local-6989586621679061064"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061064"><span class="hs-identifier hs-var">mi</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-type">Seconds</span></a></span><span> </span><span id="local-6989586621679061063"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061063"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-type">NanoSeconds</span></a></span><span> </span><span id="local-6989586621679061062"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061062"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-88"></span><span>    </span><span class="annot"><span class="annottext">Hours -&gt; Minutes -&gt; Seconds -&gt; NanoSeconds -&gt; Duration
 </span><a href="Data.Hourglass.Diff.html#Duration"><span class="hs-identifier hs-var">Duration</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Hours
 </span><a href="Time.Types.html#Hours"><span class="hs-identifier hs-var">Hours</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080989"><span class="hs-identifier hs-var">h</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679061066"><span class="hs-identifier hs-var">h</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080984"><span class="hs-identifier hs-var">hacc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Minutes
+</span><a href="#local-6989586621679061061"><span class="hs-identifier hs-var">hacc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Minutes
 </span><a href="Time.Types.html#Minutes"><span class="hs-identifier hs-var">Minutes</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080983"><span class="hs-identifier hs-var">mi'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Seconds
+</span><a href="#local-6989586621679061060"><span class="hs-identifier hs-var">mi'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; Seconds
 </span><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-var">Seconds</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080982"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; NanoSeconds
+</span><a href="#local-6989586621679061059"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64 -&gt; NanoSeconds
 </span><a href="Time.Types.html#NanoSeconds"><span class="hs-identifier hs-var">NanoSeconds</span></a></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080981"><span class="hs-identifier hs-var">ns'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-89"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679080984"><span class="annot"><span class="annottext">hacc :: Int64
-</span><a href="#local-6989586621679080984"><span class="hs-identifier hs-var">hacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080983"><span class="annot"><span class="annottext">mi' :: Int64
-</span><a href="#local-6989586621679080983"><span class="hs-identifier hs-var">mi'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080987"><span class="hs-identifier hs-var">mi</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><a href="#local-6989586621679061058"><span class="hs-identifier hs-var">ns'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061061"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061061"><span class="hs-identifier hs-var">hacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061060"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061060"><span class="hs-identifier hs-var">mi'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061064"><span class="hs-identifier hs-var">mi</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080980"><span class="hs-identifier hs-var">miacc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
+</span><a href="#local-6989586621679061057"><span class="hs-identifier hs-var">miacc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">60</span></span><span>
-</span><span id="line-90"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679080980"><span class="annot"><span class="annottext">miacc :: Int64
-</span><a href="#local-6989586621679080980"><span class="hs-identifier hs-var">miacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080982"><span class="annot"><span class="annottext">s' :: Int64
-</span><a href="#local-6989586621679080982"><span class="hs-identifier hs-var">s'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080986"><span class="hs-identifier hs-var">s</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">60</span></span><span>
+</span><span id="line-90"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679061057"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061057"><span class="hs-identifier hs-var">miacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061059"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061059"><span class="hs-identifier hs-var">s'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061063"><span class="hs-identifier hs-var">s</span></a></span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; Int64
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080979"><span class="hs-identifier hs-var">sacc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
+</span><a href="#local-6989586621679061056"><span class="hs-identifier hs-var">sacc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">60</span></span><span>
-</span><span id="line-91"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679080979"><span class="annot"><span class="annottext">sacc :: Int64
-</span><a href="#local-6989586621679080979"><span class="hs-identifier hs-var">sacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080981"><span class="annot"><span class="annottext">ns' :: Int64
-</span><a href="#local-6989586621679080981"><span class="hs-identifier hs-var">ns'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679080985"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">60</span></span><span>
+</span><span id="line-91"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679061056"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061056"><span class="hs-identifier hs-var">sacc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061058"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061058"><span class="hs-identifier hs-var">ns'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679061062"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Int64 -&gt; (Int64, Int64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">1000000000</span></span><span>
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int64
+</span><span class="hs-number">1000000000</span></span><span>
 </span><span id="line-92"></span><span>
 </span><span id="line-93"></span><span class="hs-comment">-- | add a period of time to a date</span><span>
 </span><span id="line-94"></span><span class="annot"><a href="Data.Hourglass.Diff.html#dateAddPeriod"><span class="hs-identifier hs-type">dateAddPeriod</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Time.Types.html#Date"><span class="hs-identifier hs-type">Date</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Time.Types.html#Date"><span class="hs-identifier hs-type">Date</span></a></span><span>
 </span><span id="line-95"></span><span id="dateAddPeriod"><span class="annot"><span class="annottext">dateAddPeriod :: Date -&gt; Period -&gt; Date
-</span><a href="Data.Hourglass.Diff.html#dateAddPeriod"><span class="hs-identifier hs-var hs-var">dateAddPeriod</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Date"><span class="hs-identifier hs-type">Date</span></a></span><span> </span><span id="local-6989586621679080977"><span class="annot"><span class="annottext">yOrig :: Int
-</span><a href="#local-6989586621679080977"><span class="hs-identifier hs-var">yOrig</span></a></span></span><span> </span><span id="local-6989586621679080976"><span class="annot"><span class="annottext">mOrig :: Month
-</span><a href="#local-6989586621679080976"><span class="hs-identifier hs-var">mOrig</span></a></span></span><span> </span><span id="local-6989586621679080975"><span class="annot"><span class="annottext">dOrig :: Int
-</span><a href="#local-6989586621679080975"><span class="hs-identifier hs-var">dOrig</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679080974"><span class="annot"><span class="annottext">yDiff :: Int
-</span><a href="#local-6989586621679080974"><span class="hs-identifier hs-var">yDiff</span></a></span></span><span> </span><span id="local-6989586621679080973"><span class="annot"><span class="annottext">mDiff :: Int
-</span><a href="#local-6989586621679080973"><span class="hs-identifier hs-var">mDiff</span></a></span></span><span> </span><span id="local-6989586621679080972"><span class="annot"><span class="annottext">dDiff :: Int
-</span><a href="#local-6989586621679080972"><span class="hs-identifier hs-var">dDiff</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Hourglass.Diff.html#dateAddPeriod"><span class="hs-identifier hs-var hs-var">dateAddPeriod</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Date"><span class="hs-identifier hs-type">Date</span></a></span><span> </span><span id="local-6989586621679061054"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061054"><span class="hs-identifier hs-var">yOrig</span></a></span></span><span> </span><span id="local-6989586621679061053"><span class="annot"><span class="annottext">Month
+</span><a href="#local-6989586621679061053"><span class="hs-identifier hs-var">mOrig</span></a></span></span><span> </span><span id="local-6989586621679061052"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061052"><span class="hs-identifier hs-var">dOrig</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Hourglass.Diff.html#Period"><span class="hs-identifier hs-type">Period</span></a></span><span> </span><span id="local-6989586621679061051"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061051"><span class="hs-identifier hs-var">yDiff</span></a></span></span><span> </span><span id="local-6989586621679061050"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061050"><span class="hs-identifier hs-var">mDiff</span></a></span></span><span> </span><span id="local-6989586621679061049"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061049"><span class="hs-identifier hs-var">dDiff</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-96"></span><span>    </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
-</span><a href="#local-6989586621679080971"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080977"><span class="hs-identifier hs-var">yOrig</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061048"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061054"><span class="hs-identifier hs-var">yOrig</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080974"><span class="hs-identifier hs-var">yDiff</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061051"><span class="hs-identifier hs-var">yDiff</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080970"><span class="hs-identifier hs-var">yDiffAcc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080969"><span class="hs-identifier hs-var">mStartPos</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080975"><span class="hs-identifier hs-var">dOrig</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061047"><span class="hs-identifier hs-var">yDiffAcc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061046"><span class="hs-identifier hs-var">mStartPos</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061052"><span class="hs-identifier hs-var">dOrig</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080972"><span class="hs-identifier hs-var">dDiff</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679061049"><span class="hs-identifier hs-var">dDiff</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-97"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-98"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679080970"><span class="annot"><span class="annottext">yDiffAcc :: Int
-</span><a href="#local-6989586621679080970"><span class="hs-identifier hs-var">yDiffAcc</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679080969"><span class="annot"><span class="annottext">mStartPos :: Int
-</span><a href="#local-6989586621679080969"><span class="hs-identifier hs-var">mStartPos</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Month -&gt; Int
+</span><span id="line-98"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679061047"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061047"><span class="hs-identifier hs-var">yDiffAcc</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679061046"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061046"><span class="hs-identifier hs-var">mStartPos</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Month -&gt; Int
 forall a. Enum a =&gt; a -&gt; Int
 </span><span class="hs-identifier hs-var">fromEnum</span></span><span> </span><span class="annot"><span class="annottext">Month
-</span><a href="#local-6989586621679080976"><span class="hs-identifier hs-var">mOrig</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679061053"><span class="hs-identifier hs-var">mOrig</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080973"><span class="hs-identifier hs-var">mDiff</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; (Int, Int)
+</span><a href="#local-6989586621679061050"><span class="hs-identifier hs-var">mDiff</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; (Int, Int)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">12</span></span><span>
-</span><span id="line-99"></span><span>    </span><span id="local-6989586621679080971"><span class="annot"><span class="annottext">loop :: Int -&gt; Int -&gt; Int -&gt; Date
-</span><a href="#local-6989586621679080971"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span id="local-6989586621679080967"><span class="annot"><span class="annottext">y :: Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679080966"><span class="annot"><span class="annottext">m :: Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679080965"><span class="annot"><span class="annottext">d :: Int
-</span><a href="#local-6989586621679080965"><span class="hs-identifier hs-var">d</span></a></span></span><span>
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">12</span></span><span>
+</span><span id="line-99"></span><span>    </span><span id="local-6989586621679061048"><span class="annot"><span class="annottext">loop :: Int -&gt; Int -&gt; Int -&gt; Date
+</span><a href="#local-6989586621679061048"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span id="local-6989586621679061044"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679061043"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679061042"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061042"><span class="hs-identifier hs-var">d</span></a></span></span><span>
 </span><span id="line-100"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080965"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
-forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-101"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679080963"><span class="annot"><span class="annottext">m' :: Int
-</span><a href="#local-6989586621679080963"><span class="hs-identifier hs-var">m'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080962"><span class="annot"><span class="annottext">y' :: Int
-</span><a href="#local-6989586621679080962"><span class="hs-identifier hs-var">y'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
-forall a. Eq a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
-</span><span id="line-102"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">11</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
-forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
-</span><span id="line-103"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
-forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-104"></span><span>            </span><span class="hs-keyword">in</span><span>
-</span><span id="line-105"></span><span>            </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
-</span><a href="#local-6989586621679080971"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080962"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080963"><span class="hs-identifier hs-var">m'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month -&gt; Int
-</span><a href="Data.Hourglass.Calendar.html#daysInMonth"><span class="hs-identifier hs-var">daysInMonth</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080962"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month
-forall a. Enum a =&gt; Int -&gt; a
-</span><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080963"><span class="hs-identifier hs-var">m'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
-forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080965"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-106"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080965"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679061042"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080959"><span class="hs-identifier hs-var">dMonth</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Month -&gt; Int -&gt; Date
-</span><a href="Time.Types.html#Date"><span class="hs-identifier hs-var">Date</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month
-forall a. Enum a =&gt; Int -&gt; a
-</span><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080965"><span class="hs-identifier hs-var">d</span></a></span><span>
-</span><span id="line-107"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><span class="hs-identifier hs-var">otherwise</span></span><span>  </span><span class="hs-glyph">=</span><span>
-</span><span id="line-108"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679080958"><span class="annot"><span class="annottext">newDiff :: Int
-</span><a href="#local-6989586621679080958"><span class="hs-identifier hs-var hs-var">newDiff</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080965"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-101"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061040"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061040"><span class="hs-identifier hs-var">m'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061039"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061039"><span class="hs-identifier hs-var">y'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-102"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">11</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080959"><span class="hs-identifier hs-var">dMonth</span></a></span><span>
-</span><span id="line-109"></span><span>             </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
-forall a. Eq a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">11</span></span><span>
-</span><span id="line-110"></span><span>                    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
-</span><a href="#local-6989586621679080971"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-103"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080958"><span class="hs-identifier hs-var">newDiff</span></a></span><span>
-</span><span id="line-111"></span><span>                    </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
-</span><a href="#local-6989586621679080971"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
-forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080958"><span class="hs-identifier hs-var">newDiff</span></a></span><span>
-</span><span id="line-112"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679080959"><span class="annot"><span class="annottext">dMonth :: Int
-</span><a href="#local-6989586621679080959"><span class="hs-identifier hs-var hs-var">dMonth</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Month -&gt; Int
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span>            </span><span class="hs-keyword">in</span><span>
+</span><span id="line-105"></span><span>            </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
+</span><a href="#local-6989586621679061048"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061039"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061040"><span class="hs-identifier hs-var">m'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month -&gt; Int
 </span><a href="Data.Hourglass.Calendar.html#daysInMonth"><span class="hs-identifier hs-var">daysInMonth</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080967"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month
+</span><a href="#local-6989586621679061039"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month
 forall a. Enum a =&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679080966"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679061040"><span class="hs-identifier hs-var">m'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061042"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061042"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061036"><span class="hs-identifier hs-var">dMonth</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Month -&gt; Int -&gt; Date
+</span><a href="Time.Types.html#Date"><span class="hs-identifier hs-var">Date</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month
+forall a. Enum a =&gt; Int -&gt; a
+</span><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061042"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-107"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>  </span><span class="hs-glyph">=</span><span>
+</span><span id="line-108"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679061035"><span class="annot"><span class="annottext">newDiff :: Int
+</span><a href="#local-6989586621679061035"><span class="hs-identifier hs-var hs-var">newDiff</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061042"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061036"><span class="hs-identifier hs-var">dMonth</span></a></span><span>
+</span><span id="line-109"></span><span>             </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">11</span></span><span>
+</span><span id="line-110"></span><span>                    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
+</span><a href="#local-6989586621679061048"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061035"><span class="hs-identifier hs-var">newDiff</span></a></span><span>
+</span><span id="line-111"></span><span>                    </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Date
+</span><a href="#local-6989586621679061048"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061035"><span class="hs-identifier hs-var">newDiff</span></a></span><span>
+</span><span id="line-112"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679061036"><span class="annot"><span class="annottext">dMonth :: Int
+</span><a href="#local-6989586621679061036"><span class="hs-identifier hs-var hs-var">dMonth</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Month -&gt; Int
+</span><a href="Data.Hourglass.Calendar.html#daysInMonth"><span class="hs-identifier hs-var">daysInMonth</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061044"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Month
+forall a. Enum a =&gt; Int -&gt; a
+</span><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061043"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-113"></span><span>
 </span><span id="line-114"></span><span class="hs-comment">-- | Add a number of seconds to an Elapsed type</span><span>
 </span><span id="line-115"></span><span class="annot"><a href="Data.Hourglass.Diff.html#elapsedTimeAddSeconds"><span class="hs-identifier hs-type">elapsedTimeAddSeconds</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-type">Elapsed</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-type">Seconds</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-type">Elapsed</span></a></span><span>
 </span><span id="line-116"></span><span id="elapsedTimeAddSeconds"><span class="annot"><span class="annottext">elapsedTimeAddSeconds :: Elapsed -&gt; Seconds -&gt; Elapsed
-</span><a href="Data.Hourglass.Diff.html#elapsedTimeAddSeconds"><span class="hs-identifier hs-var hs-var">elapsedTimeAddSeconds</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-type">Elapsed</span></a></span><span> </span><span id="local-6989586621679080956"><span class="annot"><span class="annottext">s1 :: Seconds
-</span><a href="#local-6989586621679080956"><span class="hs-identifier hs-var">s1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080955"><span class="annot"><span class="annottext">s2 :: Seconds
-</span><a href="#local-6989586621679080955"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Elapsed
+</span><a href="Data.Hourglass.Diff.html#elapsedTimeAddSeconds"><span class="hs-identifier hs-var hs-var">elapsedTimeAddSeconds</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-type">Elapsed</span></a></span><span> </span><span id="local-6989586621679061033"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061033"><span class="hs-identifier hs-var">s1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061032"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061032"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Seconds -&gt; Elapsed
 </span><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-var">Elapsed</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679080956"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061033"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679080955"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679061032"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-117"></span><span>
 </span><span id="line-118"></span><span class="hs-comment">-- | Add a number of seconds to an ElapsedP type</span><span>
 </span><span id="line-119"></span><span class="annot"><a href="Data.Hourglass.Diff.html#elapsedTimeAddSecondsP"><span class="hs-identifier hs-type">elapsedTimeAddSecondsP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Time.Types.html#ElapsedP"><span class="hs-identifier hs-type">ElapsedP</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Time.Types.html#Seconds"><span class="hs-identifier hs-type">Seconds</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Time.Types.html#ElapsedP"><span class="hs-identifier hs-type">ElapsedP</span></a></span><span>
 </span><span id="line-120"></span><span id="elapsedTimeAddSecondsP"><span class="annot"><span class="annottext">elapsedTimeAddSecondsP :: ElapsedP -&gt; Seconds -&gt; ElapsedP
-</span><a href="Data.Hourglass.Diff.html#elapsedTimeAddSecondsP"><span class="hs-identifier hs-var hs-var">elapsedTimeAddSecondsP</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#ElapsedP"><span class="hs-identifier hs-type">ElapsedP</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-type">Elapsed</span></a></span><span> </span><span id="local-6989586621679080953"><span class="annot"><span class="annottext">s1 :: Seconds
-</span><a href="#local-6989586621679080953"><span class="hs-identifier hs-var">s1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080952"><span class="annot"><span class="annottext">ns1 :: NanoSeconds
-</span><a href="#local-6989586621679080952"><span class="hs-identifier hs-var">ns1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080951"><span class="annot"><span class="annottext">s2 :: Seconds
-</span><a href="#local-6989586621679080951"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.Hourglass.Diff.html#elapsedTimeAddSecondsP"><span class="hs-identifier hs-var hs-var">elapsedTimeAddSecondsP</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#ElapsedP"><span class="hs-identifier hs-type">ElapsedP</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-type">Elapsed</span></a></span><span> </span><span id="local-6989586621679061030"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061030"><span class="hs-identifier hs-var">s1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061029"><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061029"><span class="hs-identifier hs-var">ns1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061028"><span class="annot"><span class="annottext">Seconds
+</span><a href="#local-6989586621679061028"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-121"></span><span>    </span><span class="annot"><span class="annottext">Elapsed -&gt; NanoSeconds -&gt; ElapsedP
 </span><a href="Time.Types.html#ElapsedP"><span class="hs-identifier hs-var">ElapsedP</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds -&gt; Elapsed
 </span><a href="Time.Types.html#Elapsed"><span class="hs-identifier hs-var">Elapsed</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679080953"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
+</span><a href="#local-6989586621679061030"><span class="hs-identifier hs-var">s1</span></a></span><span class="annot"><span class="annottext">Seconds -&gt; Seconds -&gt; Seconds
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Seconds
-</span><a href="#local-6989586621679080951"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NanoSeconds
-</span><a href="#local-6989586621679080952"><span class="hs-identifier hs-var">ns1</span></a></span><span>
+</span><a href="#local-6989586621679061028"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NanoSeconds
+</span><a href="#local-6989586621679061029"><span class="hs-identifier hs-var">ns1</span></a></span><span>
 </span><span id="line-122"></span><span>
 </span><span id="line-123"></span><span class="hs-comment">{- disabled for warning purpose. to be implemented
 

@@ -29,20 +29,10 @@ PrivateNumber :: Integer -> PrivateNumber
 -- | Represent Diffie Hellman shared secret.
 newtype SharedKey
 SharedKey :: Integer -> SharedKey
-instance GHC.Classes.Ord Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Num.Num Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Real.Real Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Enum.Enum Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Classes.Eq Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Read.Read Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Show.Show Crypto.Types.PubKey.DH.SharedKey
-instance GHC.Classes.Ord Crypto.Types.PubKey.DH.PrivateNumber
-instance GHC.Num.Num Crypto.Types.PubKey.DH.PrivateNumber
-instance GHC.Real.Real Crypto.Types.PubKey.DH.PrivateNumber
-instance GHC.Enum.Enum Crypto.Types.PubKey.DH.PrivateNumber
-instance GHC.Classes.Eq Crypto.Types.PubKey.DH.PrivateNumber
-instance GHC.Read.Read Crypto.Types.PubKey.DH.PrivateNumber
-instance GHC.Show.Show Crypto.Types.PubKey.DH.PrivateNumber
+instance Data.Data.Data Crypto.Types.PubKey.DH.Params
+instance GHC.Classes.Eq Crypto.Types.PubKey.DH.Params
+instance GHC.Read.Read Crypto.Types.PubKey.DH.Params
+instance GHC.Show.Show Crypto.Types.PubKey.DH.Params
 instance GHC.Classes.Ord Crypto.Types.PubKey.DH.PublicNumber
 instance GHC.Num.Num Crypto.Types.PubKey.DH.PublicNumber
 instance GHC.Real.Real Crypto.Types.PubKey.DH.PublicNumber
@@ -50,10 +40,20 @@ instance GHC.Enum.Enum Crypto.Types.PubKey.DH.PublicNumber
 instance GHC.Classes.Eq Crypto.Types.PubKey.DH.PublicNumber
 instance GHC.Read.Read Crypto.Types.PubKey.DH.PublicNumber
 instance GHC.Show.Show Crypto.Types.PubKey.DH.PublicNumber
-instance Data.Data.Data Crypto.Types.PubKey.DH.Params
-instance GHC.Classes.Eq Crypto.Types.PubKey.DH.Params
-instance GHC.Read.Read Crypto.Types.PubKey.DH.Params
-instance GHC.Show.Show Crypto.Types.PubKey.DH.Params
+instance GHC.Classes.Ord Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Num.Num Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Real.Real Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Enum.Enum Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Classes.Eq Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Read.Read Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Show.Show Crypto.Types.PubKey.DH.PrivateNumber
+instance GHC.Classes.Ord Crypto.Types.PubKey.DH.SharedKey
+instance GHC.Num.Num Crypto.Types.PubKey.DH.SharedKey
+instance GHC.Real.Real Crypto.Types.PubKey.DH.SharedKey
+instance GHC.Enum.Enum Crypto.Types.PubKey.DH.SharedKey
+instance GHC.Classes.Eq Crypto.Types.PubKey.DH.SharedKey
+instance GHC.Read.Read Crypto.Types.PubKey.DH.SharedKey
+instance GHC.Show.Show Crypto.Types.PubKey.DH.SharedKey
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.DH.Params
 
 
@@ -120,26 +120,26 @@ toPublicKey :: KeyPair -> PublicKey
 
 -- | Private key of a DSA Key pair
 toPrivateKey :: KeyPair -> PrivateKey
-instance Data.Data.Data Crypto.Types.PubKey.DSA.KeyPair
-instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.KeyPair
-instance GHC.Read.Read Crypto.Types.PubKey.DSA.KeyPair
-instance GHC.Show.Show Crypto.Types.PubKey.DSA.KeyPair
-instance Data.Data.Data Crypto.Types.PubKey.DSA.PrivateKey
-instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.PrivateKey
-instance GHC.Read.Read Crypto.Types.PubKey.DSA.PrivateKey
-instance GHC.Show.Show Crypto.Types.PubKey.DSA.PrivateKey
-instance Data.Data.Data Crypto.Types.PubKey.DSA.PublicKey
-instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.PublicKey
-instance GHC.Read.Read Crypto.Types.PubKey.DSA.PublicKey
-instance GHC.Show.Show Crypto.Types.PubKey.DSA.PublicKey
-instance Data.Data.Data Crypto.Types.PubKey.DSA.Signature
-instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.Signature
-instance GHC.Read.Read Crypto.Types.PubKey.DSA.Signature
-instance GHC.Show.Show Crypto.Types.PubKey.DSA.Signature
 instance Data.Data.Data Crypto.Types.PubKey.DSA.Params
 instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.Params
 instance GHC.Read.Read Crypto.Types.PubKey.DSA.Params
 instance GHC.Show.Show Crypto.Types.PubKey.DSA.Params
+instance Data.Data.Data Crypto.Types.PubKey.DSA.Signature
+instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.Signature
+instance GHC.Read.Read Crypto.Types.PubKey.DSA.Signature
+instance GHC.Show.Show Crypto.Types.PubKey.DSA.Signature
+instance Data.Data.Data Crypto.Types.PubKey.DSA.PublicKey
+instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.PublicKey
+instance GHC.Read.Read Crypto.Types.PubKey.DSA.PublicKey
+instance GHC.Show.Show Crypto.Types.PubKey.DSA.PublicKey
+instance Data.Data.Data Crypto.Types.PubKey.DSA.PrivateKey
+instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.PrivateKey
+instance GHC.Read.Read Crypto.Types.PubKey.DSA.PrivateKey
+instance GHC.Show.Show Crypto.Types.PubKey.DSA.PrivateKey
+instance Data.Data.Data Crypto.Types.PubKey.DSA.KeyPair
+instance GHC.Classes.Eq Crypto.Types.PubKey.DSA.KeyPair
+instance GHC.Read.Read Crypto.Types.PubKey.DSA.KeyPair
+instance GHC.Show.Show Crypto.Types.PubKey.DSA.KeyPair
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.DSA.KeyPair
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.DSA.PublicKey
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.DSA.Signature
@@ -249,32 +249,32 @@ SEC_t571r1 :: CurveName
 -- | Get the curve definition associated with a recommended known curve
 --   name.
 getCurveByName :: CurveName -> Curve
+instance Data.Data.Data Crypto.Types.PubKey.ECC.Point
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.Point
+instance GHC.Read.Read Crypto.Types.PubKey.ECC.Point
+instance GHC.Show.Show Crypto.Types.PubKey.ECC.Point
+instance Data.Data.Data Crypto.Types.PubKey.ECC.CurveCommon
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurveCommon
+instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurveCommon
+instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurveCommon
+instance Data.Data.Data Crypto.Types.PubKey.ECC.CurvePrime
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurvePrime
+instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurvePrime
+instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurvePrime
+instance Data.Data.Data Crypto.Types.PubKey.ECC.CurveBinary
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurveBinary
+instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurveBinary
+instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurveBinary
+instance Data.Data.Data Crypto.Types.PubKey.ECC.Curve
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.Curve
+instance GHC.Read.Read Crypto.Types.PubKey.ECC.Curve
+instance GHC.Show.Show Crypto.Types.PubKey.ECC.Curve
 instance Data.Data.Data Crypto.Types.PubKey.ECC.CurveName
 instance GHC.Enum.Enum Crypto.Types.PubKey.ECC.CurveName
 instance GHC.Classes.Ord Crypto.Types.PubKey.ECC.CurveName
 instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurveName
 instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurveName
 instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurveName
-instance Data.Data.Data Crypto.Types.PubKey.ECC.Curve
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.Curve
-instance GHC.Read.Read Crypto.Types.PubKey.ECC.Curve
-instance GHC.Show.Show Crypto.Types.PubKey.ECC.Curve
-instance Data.Data.Data Crypto.Types.PubKey.ECC.CurveBinary
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurveBinary
-instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurveBinary
-instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurveBinary
-instance Data.Data.Data Crypto.Types.PubKey.ECC.CurvePrime
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurvePrime
-instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurvePrime
-instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurvePrime
-instance Data.Data.Data Crypto.Types.PubKey.ECC.CurveCommon
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.CurveCommon
-instance GHC.Read.Read Crypto.Types.PubKey.ECC.CurveCommon
-instance GHC.Show.Show Crypto.Types.PubKey.ECC.CurveCommon
-instance Data.Data.Data Crypto.Types.PubKey.ECC.Point
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECC.Point
-instance GHC.Read.Read Crypto.Types.PubKey.ECC.Point
-instance GHC.Show.Show Crypto.Types.PubKey.ECC.Point
 instance Data.ASN1.OID.OIDable Crypto.Types.PubKey.ECC.CurveName
 instance Data.ASN1.OID.OIDNameable Crypto.Types.PubKey.ECC.CurveName
 
@@ -318,22 +318,22 @@ toPublicKey :: KeyPair -> PublicKey
 
 -- | Private key of a ECDSA Key pair.
 toPrivateKey :: KeyPair -> PrivateKey
-instance Data.Data.Data Crypto.Types.PubKey.ECDSA.KeyPair
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.KeyPair
-instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.KeyPair
-instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.KeyPair
-instance Data.Data.Data Crypto.Types.PubKey.ECDSA.PublicKey
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.PublicKey
-instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.PublicKey
-instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.PublicKey
-instance Data.Data.Data Crypto.Types.PubKey.ECDSA.PrivateKey
-instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.PrivateKey
-instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.PrivateKey
-instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.PrivateKey
 instance Data.Data.Data Crypto.Types.PubKey.ECDSA.Signature
 instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.Signature
 instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.Signature
 instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.Signature
+instance Data.Data.Data Crypto.Types.PubKey.ECDSA.PrivateKey
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.PrivateKey
+instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.PrivateKey
+instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.PrivateKey
+instance Data.Data.Data Crypto.Types.PubKey.ECDSA.PublicKey
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.PublicKey
+instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.PublicKey
+instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.PublicKey
+instance Data.Data.Data Crypto.Types.PubKey.ECDSA.KeyPair
+instance GHC.Classes.Eq Crypto.Types.PubKey.ECDSA.KeyPair
+instance GHC.Read.Read Crypto.Types.PubKey.ECDSA.KeyPair
+instance GHC.Show.Show Crypto.Types.PubKey.ECDSA.KeyPair
 
 
 module Crypto.Types.PubKey.RSA
@@ -402,18 +402,18 @@ toPublicKey :: KeyPair -> PublicKey
 
 -- | Private key of a RSA KeyPair
 toPrivateKey :: KeyPair -> PrivateKey
-instance Data.Data.Data Crypto.Types.PubKey.RSA.KeyPair
-instance GHC.Classes.Eq Crypto.Types.PubKey.RSA.KeyPair
-instance GHC.Read.Read Crypto.Types.PubKey.RSA.KeyPair
-instance GHC.Show.Show Crypto.Types.PubKey.RSA.KeyPair
-instance Data.Data.Data Crypto.Types.PubKey.RSA.PrivateKey
-instance GHC.Classes.Eq Crypto.Types.PubKey.RSA.PrivateKey
-instance GHC.Read.Read Crypto.Types.PubKey.RSA.PrivateKey
-instance GHC.Show.Show Crypto.Types.PubKey.RSA.PrivateKey
 instance Data.Data.Data Crypto.Types.PubKey.RSA.PublicKey
 instance GHC.Classes.Eq Crypto.Types.PubKey.RSA.PublicKey
 instance GHC.Read.Read Crypto.Types.PubKey.RSA.PublicKey
 instance GHC.Show.Show Crypto.Types.PubKey.RSA.PublicKey
+instance Data.Data.Data Crypto.Types.PubKey.RSA.PrivateKey
+instance GHC.Classes.Eq Crypto.Types.PubKey.RSA.PrivateKey
+instance GHC.Read.Read Crypto.Types.PubKey.RSA.PrivateKey
+instance GHC.Show.Show Crypto.Types.PubKey.RSA.PrivateKey
+instance Data.Data.Data Crypto.Types.PubKey.RSA.KeyPair
+instance GHC.Classes.Eq Crypto.Types.PubKey.RSA.KeyPair
+instance GHC.Read.Read Crypto.Types.PubKey.RSA.KeyPair
+instance GHC.Show.Show Crypto.Types.PubKey.RSA.KeyPair
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.RSA.KeyPair
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.RSA.PrivateKey
 instance Data.ASN1.Types.ASN1Object Crypto.Types.PubKey.RSA.PublicKey

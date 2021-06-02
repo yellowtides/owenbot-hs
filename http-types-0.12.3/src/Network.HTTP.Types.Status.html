@@ -121,7 +121,7 @@
 </span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var hs-var">statusCode</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-121"></span><span>             </span><span class="hs-special">,</span><span> </span><span id="statusMessage"><span class="annot"><span class="annottext">Status -&gt; ByteString
 </span><a href="Network.HTTP.Types.Status.html#statusMessage"><span class="hs-identifier hs-var hs-var">statusMessage</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
-</span><span id="line-122"></span><span>             </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679063648"><span id="local-6989586621679063650"><span id="local-6989586621679063652"><span class="annot"><span class="annottext">Int -&gt; Status -&gt; ShowS
+</span><span id="line-122"></span><span>             </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679044222"><span id="local-6989586621679044224"><span id="local-6989586621679044226"><span class="annot"><span class="annottext">Int -&gt; Status -&gt; ShowS
 [Status] -&gt; ShowS
 Status -&gt; String
 (Int -&gt; Status -&gt; ShowS)
@@ -136,142 +136,190 @@ showsPrec :: Int -&gt; Status -&gt; ShowS
 $cshowsPrec :: Int -&gt; Status -&gt; ShowS
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-123"></span><span>
-</span><span id="line-124"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679063644"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-124"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679044218"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-125"></span><span>    </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679063642"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063642"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span id="local-6989586621679063641"><span class="annot"><span class="annottext">== :: Status -&gt; Status -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679044216"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044216"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span id="local-6989586621679044215"><span class="annot"><span class="annottext">== :: Status -&gt; Status -&gt; Bool
 </span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679063640"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063640"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063642"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679044214"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044214"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044216"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063640"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679044214"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-126"></span><span>
-</span><span id="line-127"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679063626"><span id="local-6989586621679063628"><span id="local-6989586621679063630"><span id="local-6989586621679063632"><span id="local-6989586621679063634"><span id="local-6989586621679063636"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-128"></span><span>    </span><span id="local-6989586621679063624"><span class="annot"><span class="annottext">compare :: Status -&gt; Status -&gt; Ordering
+</span><span id="line-127"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679044200"><span id="local-6989586621679044202"><span id="local-6989586621679044204"><span id="local-6989586621679044206"><span id="local-6989586621679044208"><span id="local-6989586621679044210"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-128"></span><span>    </span><span id="local-6989586621679044198"><span class="annot"><span class="annottext">compare :: Status -&gt; Status -&gt; Ordering
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679063622"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063622"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679063621"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063621"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063622"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Ordering
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679044196"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044196"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679044195"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044195"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044196"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Ordering
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span class="hs-operator hs-var">`compare`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063621"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679044195"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-129"></span><span>
-</span><span id="line-130"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679063607"><span id="local-6989586621679063609"><span id="local-6989586621679063611"><span id="local-6989586621679063613"><span id="local-6989586621679063617"><span id="local-6989586621679063619"><span class="annot"><span class="hs-identifier hs-type">Enum</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-131"></span><span>    </span><span id="local-6989586621679063605"><span class="annot"><span class="annottext">fromEnum :: Status -&gt; Int
+</span><span id="line-130"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679044181"><span id="local-6989586621679044183"><span id="local-6989586621679044185"><span id="local-6989586621679044187"><span id="local-6989586621679044191"><span id="local-6989586621679044193"><span class="annot"><span class="hs-identifier hs-type">Enum</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-131"></span><span>    </span><span id="local-6989586621679044179"><span class="annot"><span class="annottext">fromEnum :: Status -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromEnum</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status -&gt; Int
 </span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var hs-var">statusCode</span></a></span><span>
-</span><span id="line-132"></span><span>    </span><span id="local-6989586621679063603"><span class="annot"><span class="annottext">toEnum :: Int -&gt; Status
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toEnum</span></span></span><span> </span><span class="hs-number">100</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-132"></span><span>    </span><span id="local-6989586621679044177"><span class="annot"><span class="annottext">toEnum :: Int -&gt; Status
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toEnum</span></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">100</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status100"><span class="hs-identifier hs-var">status100</span></a></span><span>
-</span><span id="line-133"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">101</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-133"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">101</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status101"><span class="hs-identifier hs-var">status101</span></a></span><span>
-</span><span id="line-134"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">200</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-134"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">200</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status200"><span class="hs-identifier hs-var">status200</span></a></span><span>
-</span><span id="line-135"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">201</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-135"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">201</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status201"><span class="hs-identifier hs-var">status201</span></a></span><span>
-</span><span id="line-136"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">202</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-136"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">202</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status202"><span class="hs-identifier hs-var">status202</span></a></span><span>
-</span><span id="line-137"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">203</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-137"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">203</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status203"><span class="hs-identifier hs-var">status203</span></a></span><span>
-</span><span id="line-138"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">204</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-138"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">204</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status204"><span class="hs-identifier hs-var">status204</span></a></span><span>
-</span><span id="line-139"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">205</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-139"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">205</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status205"><span class="hs-identifier hs-var">status205</span></a></span><span>
-</span><span id="line-140"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">206</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-140"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">206</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status206"><span class="hs-identifier hs-var">status206</span></a></span><span>
-</span><span id="line-141"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">300</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-141"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">300</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status300"><span class="hs-identifier hs-var">status300</span></a></span><span>
-</span><span id="line-142"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">301</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-142"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">301</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status301"><span class="hs-identifier hs-var">status301</span></a></span><span>
-</span><span id="line-143"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">302</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-143"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">302</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status302"><span class="hs-identifier hs-var">status302</span></a></span><span>
-</span><span id="line-144"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">303</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-144"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">303</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status303"><span class="hs-identifier hs-var">status303</span></a></span><span>
-</span><span id="line-145"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">304</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-145"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">304</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status304"><span class="hs-identifier hs-var">status304</span></a></span><span>
-</span><span id="line-146"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">305</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-146"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">305</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status305"><span class="hs-identifier hs-var">status305</span></a></span><span>
-</span><span id="line-147"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">307</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-147"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">307</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status307"><span class="hs-identifier hs-var">status307</span></a></span><span>
-</span><span id="line-148"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">308</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-148"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">308</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status308"><span class="hs-identifier hs-var">status308</span></a></span><span>
-</span><span id="line-149"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">400</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-149"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">400</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status400"><span class="hs-identifier hs-var">status400</span></a></span><span>
-</span><span id="line-150"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">401</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-150"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">401</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status401"><span class="hs-identifier hs-var">status401</span></a></span><span>
-</span><span id="line-151"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">402</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-151"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">402</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status402"><span class="hs-identifier hs-var">status402</span></a></span><span>
-</span><span id="line-152"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">403</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-152"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">403</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status403"><span class="hs-identifier hs-var">status403</span></a></span><span>
-</span><span id="line-153"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">404</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-153"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">404</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status404"><span class="hs-identifier hs-var">status404</span></a></span><span>
-</span><span id="line-154"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">405</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-154"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">405</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status405"><span class="hs-identifier hs-var">status405</span></a></span><span>
-</span><span id="line-155"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">406</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-155"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">406</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status406"><span class="hs-identifier hs-var">status406</span></a></span><span>
-</span><span id="line-156"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">407</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-156"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">407</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status407"><span class="hs-identifier hs-var">status407</span></a></span><span>
-</span><span id="line-157"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">408</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-157"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">408</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status408"><span class="hs-identifier hs-var">status408</span></a></span><span>
-</span><span id="line-158"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">409</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-158"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">409</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status409"><span class="hs-identifier hs-var">status409</span></a></span><span>
-</span><span id="line-159"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">410</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-159"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">410</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status410"><span class="hs-identifier hs-var">status410</span></a></span><span>
-</span><span id="line-160"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">411</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-160"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">411</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status411"><span class="hs-identifier hs-var">status411</span></a></span><span>
-</span><span id="line-161"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">412</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-161"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">412</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status412"><span class="hs-identifier hs-var">status412</span></a></span><span>
-</span><span id="line-162"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">413</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-162"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">413</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status413"><span class="hs-identifier hs-var">status413</span></a></span><span>
-</span><span id="line-163"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">414</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-163"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">414</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status414"><span class="hs-identifier hs-var">status414</span></a></span><span>
-</span><span id="line-164"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">415</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-164"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">415</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status415"><span class="hs-identifier hs-var">status415</span></a></span><span>
-</span><span id="line-165"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">416</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-165"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">416</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status416"><span class="hs-identifier hs-var">status416</span></a></span><span>
-</span><span id="line-166"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">417</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-166"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">417</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status417"><span class="hs-identifier hs-var">status417</span></a></span><span>
-</span><span id="line-167"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">418</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-167"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">418</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status418"><span class="hs-identifier hs-var">status418</span></a></span><span>
-</span><span id="line-168"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">422</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-168"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">422</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status422"><span class="hs-identifier hs-var">status422</span></a></span><span>
-</span><span id="line-169"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">426</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-169"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">426</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status426"><span class="hs-identifier hs-var">status426</span></a></span><span>
-</span><span id="line-170"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">428</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-170"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">428</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status428"><span class="hs-identifier hs-var">status428</span></a></span><span>
-</span><span id="line-171"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">429</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-171"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">429</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status429"><span class="hs-identifier hs-var">status429</span></a></span><span>
-</span><span id="line-172"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">431</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-172"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">431</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status431"><span class="hs-identifier hs-var">status431</span></a></span><span>
-</span><span id="line-173"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">500</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-173"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">500</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status500"><span class="hs-identifier hs-var">status500</span></a></span><span>
-</span><span id="line-174"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">501</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-174"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">501</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status501"><span class="hs-identifier hs-var">status501</span></a></span><span>
-</span><span id="line-175"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">502</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-175"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">502</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status502"><span class="hs-identifier hs-var">status502</span></a></span><span>
-</span><span id="line-176"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">503</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-176"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">503</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status503"><span class="hs-identifier hs-var">status503</span></a></span><span>
-</span><span id="line-177"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">504</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-177"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">504</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status504"><span class="hs-identifier hs-var">status504</span></a></span><span>
-</span><span id="line-178"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">505</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-178"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">505</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status505"><span class="hs-identifier hs-var">status505</span></a></span><span>
-</span><span id="line-179"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="hs-number">511</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
+</span><span id="line-179"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">511</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status511"><span class="hs-identifier hs-var">status511</span></a></span><span>
-</span><span id="line-180"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span id="local-6989586621679063601"><span class="annot"><span class="annottext">c :: Int
-</span><a href="#local-6989586621679063601"><span class="hs-identifier hs-var">c</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
+</span><span id="line-180"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toEnum</span></span><span> </span><span id="local-6989586621679044175"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044175"><span class="hs-identifier hs-var">c</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
 </span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063601"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679044175"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
 </span><span class="hs-identifier hs-var">B.empty</span></span><span>
 </span><span id="line-181"></span><span>
 </span><span id="line-182"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bounded</span></span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-183"></span><span>  </span><span id="local-6989586621679063596"><span class="annot"><span class="annottext">minBound :: Status
+</span><span id="line-183"></span><span>  </span><span id="local-6989586621679044170"><span class="annot"><span class="annottext">minBound :: Status
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">minBound</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status100"><span class="hs-identifier hs-var">status100</span></a></span><span>
-</span><span id="line-184"></span><span>  </span><span id="local-6989586621679063594"><span class="annot"><span class="annottext">maxBound :: Status
+</span><span id="line-184"></span><span>  </span><span id="local-6989586621679044168"><span class="annot"><span class="annottext">maxBound :: Status
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">maxBound</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Network.HTTP.Types.Status.html#status511"><span class="hs-identifier hs-var">status511</span></a></span><span>
 </span><span id="line-185"></span><span>
@@ -285,7 +333,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-191"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status100"><span class="hs-identifier hs-type">status100</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-192"></span><span id="status100"><span class="annot"><span class="annottext">status100 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status100"><span class="hs-identifier hs-var hs-var">status100</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">100</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Continue&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">100</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Continue&quot;</span></span><span>
 </span><span id="line-193"></span><span>
 </span><span id="line-194"></span><span class="hs-comment">-- | Continue 100</span><span>
 </span><span id="line-195"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#continue100"><span class="hs-identifier hs-type">continue100</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -297,7 +347,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-199"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status101"><span class="hs-identifier hs-type">status101</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-200"></span><span id="status101"><span class="annot"><span class="annottext">status101 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status101"><span class="hs-identifier hs-var hs-var">status101</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">101</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Switching Protocols&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">101</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Switching Protocols&quot;</span></span><span>
 </span><span id="line-201"></span><span>
 </span><span id="line-202"></span><span class="hs-comment">-- | Switching Protocols 101</span><span>
 </span><span id="line-203"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#switchingProtocols101"><span class="hs-identifier hs-type">switchingProtocols101</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -309,7 +361,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-207"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status200"><span class="hs-identifier hs-type">status200</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-208"></span><span id="status200"><span class="annot"><span class="annottext">status200 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status200"><span class="hs-identifier hs-var hs-var">status200</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">200</span></span><span> </span><span class="annot"><span class="hs-string">&quot;OK&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">200</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;OK&quot;</span></span><span>
 </span><span id="line-209"></span><span>
 </span><span id="line-210"></span><span class="hs-comment">-- | OK 200</span><span>
 </span><span id="line-211"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#ok200"><span class="hs-identifier hs-type">ok200</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -321,7 +375,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-215"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status201"><span class="hs-identifier hs-type">status201</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-216"></span><span id="status201"><span class="annot"><span class="annottext">status201 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status201"><span class="hs-identifier hs-var hs-var">status201</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">201</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Created&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">201</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Created&quot;</span></span><span>
 </span><span id="line-217"></span><span>
 </span><span id="line-218"></span><span class="hs-comment">-- | Created 201</span><span>
 </span><span id="line-219"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#created201"><span class="hs-identifier hs-type">created201</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -333,7 +389,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-223"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status202"><span class="hs-identifier hs-type">status202</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-224"></span><span id="status202"><span class="annot"><span class="annottext">status202 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status202"><span class="hs-identifier hs-var hs-var">status202</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">202</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Accepted&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">202</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Accepted&quot;</span></span><span>
 </span><span id="line-225"></span><span>
 </span><span id="line-226"></span><span class="hs-comment">-- | Accepted 202</span><span>
 </span><span id="line-227"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#accepted202"><span class="hs-identifier hs-type">accepted202</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -345,7 +403,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-231"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status203"><span class="hs-identifier hs-type">status203</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-232"></span><span id="status203"><span class="annot"><span class="annottext">status203 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status203"><span class="hs-identifier hs-var hs-var">status203</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">203</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Non-Authoritative Information&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">203</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Non-Authoritative Information&quot;</span></span><span>
 </span><span id="line-233"></span><span>
 </span><span id="line-234"></span><span class="hs-comment">-- | Non-Authoritative Information 203</span><span>
 </span><span id="line-235"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#nonAuthoritative203"><span class="hs-identifier hs-type">nonAuthoritative203</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -357,7 +417,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-239"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status204"><span class="hs-identifier hs-type">status204</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-240"></span><span id="status204"><span class="annot"><span class="annottext">status204 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status204"><span class="hs-identifier hs-var hs-var">status204</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">204</span></span><span> </span><span class="annot"><span class="hs-string">&quot;No Content&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">204</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;No Content&quot;</span></span><span>
 </span><span id="line-241"></span><span>
 </span><span id="line-242"></span><span class="hs-comment">-- | No Content 204</span><span>
 </span><span id="line-243"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#noContent204"><span class="hs-identifier hs-type">noContent204</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -369,7 +431,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-247"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status205"><span class="hs-identifier hs-type">status205</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-248"></span><span id="status205"><span class="annot"><span class="annottext">status205 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status205"><span class="hs-identifier hs-var hs-var">status205</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">205</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Reset Content&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">205</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Reset Content&quot;</span></span><span>
 </span><span id="line-249"></span><span>
 </span><span id="line-250"></span><span class="hs-comment">-- | Reset Content 205</span><span>
 </span><span id="line-251"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#resetContent205"><span class="hs-identifier hs-type">resetContent205</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -381,7 +445,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-255"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status206"><span class="hs-identifier hs-type">status206</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-256"></span><span id="status206"><span class="annot"><span class="annottext">status206 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status206"><span class="hs-identifier hs-var hs-var">status206</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">206</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Partial Content&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">206</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Partial Content&quot;</span></span><span>
 </span><span id="line-257"></span><span>
 </span><span id="line-258"></span><span class="hs-comment">-- | Partial Content 206</span><span>
 </span><span id="line-259"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#partialContent206"><span class="hs-identifier hs-type">partialContent206</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -393,7 +459,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-263"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status300"><span class="hs-identifier hs-type">status300</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-264"></span><span id="status300"><span class="annot"><span class="annottext">status300 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status300"><span class="hs-identifier hs-var hs-var">status300</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">300</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Multiple Choices&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">300</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Multiple Choices&quot;</span></span><span>
 </span><span id="line-265"></span><span>
 </span><span id="line-266"></span><span class="hs-comment">-- | Multiple Choices 300</span><span>
 </span><span id="line-267"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#multipleChoices300"><span class="hs-identifier hs-type">multipleChoices300</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -405,7 +473,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-271"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status301"><span class="hs-identifier hs-type">status301</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-272"></span><span id="status301"><span class="annot"><span class="annottext">status301 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status301"><span class="hs-identifier hs-var hs-var">status301</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">301</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Moved Permanently&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">301</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Moved Permanently&quot;</span></span><span>
 </span><span id="line-273"></span><span>
 </span><span id="line-274"></span><span class="hs-comment">-- | Moved Permanently 301</span><span>
 </span><span id="line-275"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#movedPermanently301"><span class="hs-identifier hs-type">movedPermanently301</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -417,7 +487,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-279"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status302"><span class="hs-identifier hs-type">status302</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-280"></span><span id="status302"><span class="annot"><span class="annottext">status302 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status302"><span class="hs-identifier hs-var hs-var">status302</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">302</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Found&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">302</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Found&quot;</span></span><span>
 </span><span id="line-281"></span><span>
 </span><span id="line-282"></span><span class="hs-comment">-- | Found 302</span><span>
 </span><span id="line-283"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#found302"><span class="hs-identifier hs-type">found302</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -429,7 +501,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-287"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status303"><span class="hs-identifier hs-type">status303</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-288"></span><span id="status303"><span class="annot"><span class="annottext">status303 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status303"><span class="hs-identifier hs-var hs-var">status303</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">303</span></span><span> </span><span class="annot"><span class="hs-string">&quot;See Other&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">303</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;See Other&quot;</span></span><span>
 </span><span id="line-289"></span><span>
 </span><span id="line-290"></span><span class="hs-comment">-- | See Other 303</span><span>
 </span><span id="line-291"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#seeOther303"><span class="hs-identifier hs-type">seeOther303</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -441,7 +515,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-295"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status304"><span class="hs-identifier hs-type">status304</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-296"></span><span id="status304"><span class="annot"><span class="annottext">status304 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status304"><span class="hs-identifier hs-var hs-var">status304</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">304</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Not Modified&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">304</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Not Modified&quot;</span></span><span>
 </span><span id="line-297"></span><span>
 </span><span id="line-298"></span><span class="hs-comment">-- | Not Modified 304</span><span>
 </span><span id="line-299"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#notModified304"><span class="hs-identifier hs-type">notModified304</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -453,7 +529,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-303"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status305"><span class="hs-identifier hs-type">status305</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-304"></span><span id="status305"><span class="annot"><span class="annottext">status305 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status305"><span class="hs-identifier hs-var hs-var">status305</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">305</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Use Proxy&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">305</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Use Proxy&quot;</span></span><span>
 </span><span id="line-305"></span><span>
 </span><span id="line-306"></span><span class="hs-comment">-- | Use Proxy 305</span><span>
 </span><span id="line-307"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#useProxy305"><span class="hs-identifier hs-type">useProxy305</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -465,7 +543,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-311"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status307"><span class="hs-identifier hs-type">status307</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-312"></span><span id="status307"><span class="annot"><span class="annottext">status307 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status307"><span class="hs-identifier hs-var hs-var">status307</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">307</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Temporary Redirect&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">307</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Temporary Redirect&quot;</span></span><span>
 </span><span id="line-313"></span><span>
 </span><span id="line-314"></span><span class="hs-comment">-- | Temporary Redirect 307</span><span>
 </span><span id="line-315"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#temporaryRedirect307"><span class="hs-identifier hs-type">temporaryRedirect307</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -477,7 +557,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-319"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status308"><span class="hs-identifier hs-type">status308</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-320"></span><span id="status308"><span class="annot"><span class="annottext">status308 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status308"><span class="hs-identifier hs-var hs-var">status308</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">308</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Permanent Redirect&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">308</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Permanent Redirect&quot;</span></span><span>
 </span><span id="line-321"></span><span>
 </span><span id="line-322"></span><span class="hs-comment">-- | Permanent Redirect 308</span><span>
 </span><span id="line-323"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#permanentRedirect308"><span class="hs-identifier hs-type">permanentRedirect308</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -489,7 +571,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-327"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status400"><span class="hs-identifier hs-type">status400</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-328"></span><span id="status400"><span class="annot"><span class="annottext">status400 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status400"><span class="hs-identifier hs-var hs-var">status400</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Bad Request&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Bad Request&quot;</span></span><span>
 </span><span id="line-329"></span><span>
 </span><span id="line-330"></span><span class="hs-comment">-- | Bad Request 400</span><span>
 </span><span id="line-331"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#badRequest400"><span class="hs-identifier hs-type">badRequest400</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -501,7 +585,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-335"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status401"><span class="hs-identifier hs-type">status401</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-336"></span><span id="status401"><span class="annot"><span class="annottext">status401 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status401"><span class="hs-identifier hs-var hs-var">status401</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">401</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Unauthorized&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">401</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Unauthorized&quot;</span></span><span>
 </span><span id="line-337"></span><span>
 </span><span id="line-338"></span><span class="hs-comment">-- | Unauthorized 401</span><span>
 </span><span id="line-339"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#unauthorized401"><span class="hs-identifier hs-type">unauthorized401</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -513,7 +599,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-343"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status402"><span class="hs-identifier hs-type">status402</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-344"></span><span id="status402"><span class="annot"><span class="annottext">status402 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status402"><span class="hs-identifier hs-var hs-var">status402</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">402</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Payment Required&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">402</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Payment Required&quot;</span></span><span>
 </span><span id="line-345"></span><span>
 </span><span id="line-346"></span><span class="hs-comment">-- | Payment Required 402</span><span>
 </span><span id="line-347"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#paymentRequired402"><span class="hs-identifier hs-type">paymentRequired402</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -525,7 +613,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-351"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status403"><span class="hs-identifier hs-type">status403</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-352"></span><span id="status403"><span class="annot"><span class="annottext">status403 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status403"><span class="hs-identifier hs-var hs-var">status403</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">403</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Forbidden&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">403</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Forbidden&quot;</span></span><span>
 </span><span id="line-353"></span><span>
 </span><span id="line-354"></span><span class="hs-comment">-- | Forbidden 403</span><span>
 </span><span id="line-355"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#forbidden403"><span class="hs-identifier hs-type">forbidden403</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -537,7 +627,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-359"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status404"><span class="hs-identifier hs-type">status404</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-360"></span><span id="status404"><span class="annot"><span class="annottext">status404 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status404"><span class="hs-identifier hs-var hs-var">status404</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">404</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Not Found&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">404</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Not Found&quot;</span></span><span>
 </span><span id="line-361"></span><span>
 </span><span id="line-362"></span><span class="hs-comment">-- | Not Found 404</span><span>
 </span><span id="line-363"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#notFound404"><span class="hs-identifier hs-type">notFound404</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -549,7 +641,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-367"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status405"><span class="hs-identifier hs-type">status405</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-368"></span><span id="status405"><span class="annot"><span class="annottext">status405 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status405"><span class="hs-identifier hs-var hs-var">status405</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">405</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Method Not Allowed&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">405</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Method Not Allowed&quot;</span></span><span>
 </span><span id="line-369"></span><span>
 </span><span id="line-370"></span><span class="hs-comment">-- | Method Not Allowed 405</span><span>
 </span><span id="line-371"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#methodNotAllowed405"><span class="hs-identifier hs-type">methodNotAllowed405</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -561,7 +655,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-375"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status406"><span class="hs-identifier hs-type">status406</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-376"></span><span id="status406"><span class="annot"><span class="annottext">status406 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status406"><span class="hs-identifier hs-var hs-var">status406</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">406</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Not Acceptable&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">406</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Not Acceptable&quot;</span></span><span>
 </span><span id="line-377"></span><span>
 </span><span id="line-378"></span><span class="hs-comment">-- | Not Acceptable 406</span><span>
 </span><span id="line-379"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#notAcceptable406"><span class="hs-identifier hs-type">notAcceptable406</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -573,7 +669,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-383"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status407"><span class="hs-identifier hs-type">status407</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-384"></span><span id="status407"><span class="annot"><span class="annottext">status407 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status407"><span class="hs-identifier hs-var hs-var">status407</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">407</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Proxy Authentication Required&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">407</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Proxy Authentication Required&quot;</span></span><span>
 </span><span id="line-385"></span><span>
 </span><span id="line-386"></span><span class="hs-comment">-- | Proxy Authentication Required 407</span><span>
 </span><span id="line-387"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#proxyAuthenticationRequired407"><span class="hs-identifier hs-type">proxyAuthenticationRequired407</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -585,7 +683,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-391"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status408"><span class="hs-identifier hs-type">status408</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-392"></span><span id="status408"><span class="annot"><span class="annottext">status408 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status408"><span class="hs-identifier hs-var hs-var">status408</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">408</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Request Timeout&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">408</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Request Timeout&quot;</span></span><span>
 </span><span id="line-393"></span><span>
 </span><span id="line-394"></span><span class="hs-comment">-- | Request Timeout 408</span><span>
 </span><span id="line-395"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#requestTimeout408"><span class="hs-identifier hs-type">requestTimeout408</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -597,7 +697,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-399"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status409"><span class="hs-identifier hs-type">status409</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-400"></span><span id="status409"><span class="annot"><span class="annottext">status409 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status409"><span class="hs-identifier hs-var hs-var">status409</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">409</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Conflict&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">409</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Conflict&quot;</span></span><span>
 </span><span id="line-401"></span><span>
 </span><span id="line-402"></span><span class="hs-comment">-- | Conflict 409</span><span>
 </span><span id="line-403"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#conflict409"><span class="hs-identifier hs-type">conflict409</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -609,7 +711,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-407"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status410"><span class="hs-identifier hs-type">status410</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-408"></span><span id="status410"><span class="annot"><span class="annottext">status410 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status410"><span class="hs-identifier hs-var hs-var">status410</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">410</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Gone&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">410</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Gone&quot;</span></span><span>
 </span><span id="line-409"></span><span>
 </span><span id="line-410"></span><span class="hs-comment">-- | Gone 410</span><span>
 </span><span id="line-411"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#gone410"><span class="hs-identifier hs-type">gone410</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -621,7 +725,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-415"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status411"><span class="hs-identifier hs-type">status411</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-416"></span><span id="status411"><span class="annot"><span class="annottext">status411 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status411"><span class="hs-identifier hs-var hs-var">status411</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">411</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Length Required&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">411</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Length Required&quot;</span></span><span>
 </span><span id="line-417"></span><span>
 </span><span id="line-418"></span><span class="hs-comment">-- | Length Required 411</span><span>
 </span><span id="line-419"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#lengthRequired411"><span class="hs-identifier hs-type">lengthRequired411</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -633,7 +739,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-423"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status412"><span class="hs-identifier hs-type">status412</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-424"></span><span id="status412"><span class="annot"><span class="annottext">status412 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status412"><span class="hs-identifier hs-var hs-var">status412</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">412</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Precondition Failed&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">412</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Precondition Failed&quot;</span></span><span>
 </span><span id="line-425"></span><span>
 </span><span id="line-426"></span><span class="hs-comment">-- | Precondition Failed 412</span><span>
 </span><span id="line-427"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#preconditionFailed412"><span class="hs-identifier hs-type">preconditionFailed412</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -645,7 +753,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-431"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status413"><span class="hs-identifier hs-type">status413</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-432"></span><span id="status413"><span class="annot"><span class="annottext">status413 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status413"><span class="hs-identifier hs-var hs-var">status413</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">413</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Request Entity Too Large&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">413</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Request Entity Too Large&quot;</span></span><span>
 </span><span id="line-433"></span><span>
 </span><span id="line-434"></span><span class="hs-comment">-- | Request Entity Too Large 413</span><span>
 </span><span id="line-435"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#requestEntityTooLarge413"><span class="hs-identifier hs-type">requestEntityTooLarge413</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -657,7 +767,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-439"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status414"><span class="hs-identifier hs-type">status414</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-440"></span><span id="status414"><span class="annot"><span class="annottext">status414 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status414"><span class="hs-identifier hs-var hs-var">status414</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">414</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Request-URI Too Long&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">414</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Request-URI Too Long&quot;</span></span><span>
 </span><span id="line-441"></span><span>
 </span><span id="line-442"></span><span class="hs-comment">-- | Request-URI Too Long 414</span><span>
 </span><span id="line-443"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#requestURITooLong414"><span class="hs-identifier hs-type">requestURITooLong414</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -669,7 +781,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-447"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status415"><span class="hs-identifier hs-type">status415</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-448"></span><span id="status415"><span class="annot"><span class="annottext">status415 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status415"><span class="hs-identifier hs-var hs-var">status415</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">415</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Unsupported Media Type&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">415</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Unsupported Media Type&quot;</span></span><span>
 </span><span id="line-449"></span><span>
 </span><span id="line-450"></span><span class="hs-comment">-- | Unsupported Media Type 415</span><span>
 </span><span id="line-451"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#unsupportedMediaType415"><span class="hs-identifier hs-type">unsupportedMediaType415</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -681,7 +795,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-455"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status416"><span class="hs-identifier hs-type">status416</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-456"></span><span id="status416"><span class="annot"><span class="annottext">status416 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status416"><span class="hs-identifier hs-var hs-var">status416</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">416</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Requested Range Not Satisfiable&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">416</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Requested Range Not Satisfiable&quot;</span></span><span>
 </span><span id="line-457"></span><span>
 </span><span id="line-458"></span><span class="hs-comment">-- | Requested Range Not Satisfiable 416</span><span>
 </span><span id="line-459"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#requestedRangeNotSatisfiable416"><span class="hs-identifier hs-type">requestedRangeNotSatisfiable416</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -693,7 +809,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-463"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status417"><span class="hs-identifier hs-type">status417</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-464"></span><span id="status417"><span class="annot"><span class="annottext">status417 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status417"><span class="hs-identifier hs-var hs-var">status417</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">417</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Expectation Failed&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">417</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Expectation Failed&quot;</span></span><span>
 </span><span id="line-465"></span><span>
 </span><span id="line-466"></span><span class="hs-comment">-- | Expectation Failed 417</span><span>
 </span><span id="line-467"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#expectationFailed417"><span class="hs-identifier hs-type">expectationFailed417</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -705,7 +823,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-471"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status418"><span class="hs-identifier hs-type">status418</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-472"></span><span id="status418"><span class="annot"><span class="annottext">status418 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status418"><span class="hs-identifier hs-var hs-var">status418</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">418</span></span><span> </span><span class="annot"><span class="hs-string">&quot;I'm a teapot&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">418</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;I'm a teapot&quot;</span></span><span>
 </span><span id="line-473"></span><span>
 </span><span id="line-474"></span><span class="hs-comment">-- | I'm a teapot 418</span><span>
 </span><span id="line-475"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#imATeapot418"><span class="hs-identifier hs-type">imATeapot418</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -718,7 +838,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-480"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status422"><span class="hs-identifier hs-type">status422</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-481"></span><span id="status422"><span class="annot"><span class="annottext">status422 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status422"><span class="hs-identifier hs-var hs-var">status422</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">422</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Unprocessable Entity&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">422</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Unprocessable Entity&quot;</span></span><span>
 </span><span id="line-482"></span><span>
 </span><span id="line-483"></span><span class="hs-comment">-- | Unprocessable Entity 422</span><span>
 </span><span id="line-484"></span><span class="hs-comment">-- (&lt;https://tools.ietf.org/html/rfc4918 RFC 4918&gt;)</span><span>
@@ -732,7 +854,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-490"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status426"><span class="hs-identifier hs-type">status426</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-491"></span><span id="status426"><span class="annot"><span class="annottext">status426 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status426"><span class="hs-identifier hs-var hs-var">status426</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">426</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Upgrade Required&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">426</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Upgrade Required&quot;</span></span><span>
 </span><span id="line-492"></span><span>
 </span><span id="line-493"></span><span class="hs-comment">-- | Upgrade Required 426</span><span>
 </span><span id="line-494"></span><span class="hs-comment">-- (&lt;https://tools.ietf.org/html/rfc7231#section-6.5.15&gt;)</span><span>
@@ -746,7 +870,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-500"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status428"><span class="hs-identifier hs-type">status428</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-501"></span><span id="status428"><span class="annot"><span class="annottext">status428 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status428"><span class="hs-identifier hs-var hs-var">status428</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">428</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Precondition Required&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">428</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Precondition Required&quot;</span></span><span>
 </span><span id="line-502"></span><span>
 </span><span id="line-503"></span><span class="hs-comment">-- | Precondition Required 428</span><span>
 </span><span id="line-504"></span><span class="hs-comment">-- (&lt;https://tools.ietf.org/html/rfc6585 RFC 6585&gt;)</span><span>
@@ -760,7 +886,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-510"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status429"><span class="hs-identifier hs-type">status429</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-511"></span><span id="status429"><span class="annot"><span class="annottext">status429 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status429"><span class="hs-identifier hs-var hs-var">status429</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">429</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Too Many Requests&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">429</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Too Many Requests&quot;</span></span><span>
 </span><span id="line-512"></span><span>
 </span><span id="line-513"></span><span class="hs-comment">-- | Too Many Requests 429</span><span>
 </span><span id="line-514"></span><span class="hs-comment">-- (&lt;https://tools.ietf.org/html/rfc6585 RFC 6585&gt;)</span><span>
@@ -774,7 +902,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-520"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status431"><span class="hs-identifier hs-type">status431</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-521"></span><span id="status431"><span class="annot"><span class="annottext">status431 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status431"><span class="hs-identifier hs-var hs-var">status431</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">431</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Request Header Fields Too Large&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">431</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Request Header Fields Too Large&quot;</span></span><span>
 </span><span id="line-522"></span><span>
 </span><span id="line-523"></span><span class="hs-comment">-- | Request Header Fields Too Large 431</span><span>
 </span><span id="line-524"></span><span class="hs-comment">-- (&lt;https://tools.ietf.org/html/rfc6585 RFC 6585&gt;)</span><span>
@@ -787,7 +917,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-529"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status500"><span class="hs-identifier hs-type">status500</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-530"></span><span id="status500"><span class="annot"><span class="annottext">status500 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status500"><span class="hs-identifier hs-var hs-var">status500</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">500</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Internal Server Error&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">500</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Internal Server Error&quot;</span></span><span>
 </span><span id="line-531"></span><span>
 </span><span id="line-532"></span><span class="hs-comment">-- | Internal Server Error 500</span><span>
 </span><span id="line-533"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#internalServerError500"><span class="hs-identifier hs-type">internalServerError500</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -799,7 +931,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-537"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status501"><span class="hs-identifier hs-type">status501</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-538"></span><span id="status501"><span class="annot"><span class="annottext">status501 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status501"><span class="hs-identifier hs-var hs-var">status501</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">501</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Not Implemented&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">501</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Not Implemented&quot;</span></span><span>
 </span><span id="line-539"></span><span>
 </span><span id="line-540"></span><span class="hs-comment">-- | Not Implemented 501</span><span>
 </span><span id="line-541"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#notImplemented501"><span class="hs-identifier hs-type">notImplemented501</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -811,7 +945,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-545"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status502"><span class="hs-identifier hs-type">status502</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-546"></span><span id="status502"><span class="annot"><span class="annottext">status502 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status502"><span class="hs-identifier hs-var hs-var">status502</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">502</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Bad Gateway&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">502</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Bad Gateway&quot;</span></span><span>
 </span><span id="line-547"></span><span>
 </span><span id="line-548"></span><span class="hs-comment">-- | Bad Gateway 502</span><span>
 </span><span id="line-549"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#badGateway502"><span class="hs-identifier hs-type">badGateway502</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -823,7 +959,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-553"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status503"><span class="hs-identifier hs-type">status503</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-554"></span><span id="status503"><span class="annot"><span class="annottext">status503 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status503"><span class="hs-identifier hs-var hs-var">status503</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">503</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Service Unavailable&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">503</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Service Unavailable&quot;</span></span><span>
 </span><span id="line-555"></span><span>
 </span><span id="line-556"></span><span class="hs-comment">-- | Service Unavailable 503</span><span>
 </span><span id="line-557"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#serviceUnavailable503"><span class="hs-identifier hs-type">serviceUnavailable503</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -835,7 +973,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-561"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status504"><span class="hs-identifier hs-type">status504</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-562"></span><span id="status504"><span class="annot"><span class="annottext">status504 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status504"><span class="hs-identifier hs-var hs-var">status504</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">504</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Gateway Timeout&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">504</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Gateway Timeout&quot;</span></span><span>
 </span><span id="line-563"></span><span>
 </span><span id="line-564"></span><span class="hs-comment">-- | Gateway Timeout 504</span><span>
 </span><span id="line-565"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#gatewayTimeout504"><span class="hs-identifier hs-type">gatewayTimeout504</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -847,7 +987,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-569"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status505"><span class="hs-identifier hs-type">status505</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-570"></span><span id="status505"><span class="annot"><span class="annottext">status505 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status505"><span class="hs-identifier hs-var hs-var">status505</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">505</span></span><span> </span><span class="annot"><span class="hs-string">&quot;HTTP Version Not Supported&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">505</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;HTTP Version Not Supported&quot;</span></span><span>
 </span><span id="line-571"></span><span>
 </span><span id="line-572"></span><span class="hs-comment">-- | HTTP Version Not Supported 505</span><span>
 </span><span id="line-573"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#httpVersionNotSupported505"><span class="hs-identifier hs-type">httpVersionNotSupported505</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
@@ -860,7 +1002,9 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-578"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#status511"><span class="hs-identifier hs-type">status511</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-579"></span><span id="status511"><span class="annot"><span class="annottext">status511 :: Status
 </span><a href="Network.HTTP.Types.Status.html#status511"><span class="hs-identifier hs-var hs-var">status511</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; Status
-</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="hs-number">511</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Network Authentication Required&quot;</span></span><span>
+</span><a href="Network.HTTP.Types.Status.html#mkStatus"><span class="hs-identifier hs-var">mkStatus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">511</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Network Authentication Required&quot;</span></span><span>
 </span><span id="line-580"></span><span>
 </span><span id="line-581"></span><span class="hs-comment">-- | Network Authentication Required 511</span><span>
 </span><span id="line-582"></span><span class="hs-comment">-- (&lt;https://tools.ietf.org/html/rfc6585 RFC 6585&gt;)</span><span>
@@ -873,69 +1017,79 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span id="line-587"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#statusIsInformational"><span class="hs-identifier hs-type">statusIsInformational</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-588"></span><span id="statusIsInformational"><span class="annot"><span class="annottext">statusIsInformational :: Status -&gt; Bool
 </span><a href="Network.HTTP.Types.Status.html#statusIsInformational"><span class="hs-identifier hs-var hs-var">statusIsInformational</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679063592"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063592"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063592"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679044166"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044166"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044166"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="hs-number">100</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">100</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063592"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679044166"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">200</span></span><span>
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">200</span></span><span>
 </span><span id="line-589"></span><span>
 </span><span id="line-590"></span><span class="hs-comment">-- | Successful class</span><span>
 </span><span id="line-591"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#statusIsSuccessful"><span class="hs-identifier hs-type">statusIsSuccessful</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-592"></span><span id="statusIsSuccessful"><span class="annot"><span class="annottext">statusIsSuccessful :: Status -&gt; Bool
 </span><a href="Network.HTTP.Types.Status.html#statusIsSuccessful"><span class="hs-identifier hs-var hs-var">statusIsSuccessful</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679063589"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063589"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063589"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679044163"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044163"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044163"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="hs-number">200</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">200</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063589"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679044163"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">300</span></span><span>
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">300</span></span><span>
 </span><span id="line-593"></span><span>
 </span><span id="line-594"></span><span class="hs-comment">-- | Redirection class</span><span>
 </span><span id="line-595"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#statusIsRedirection"><span class="hs-identifier hs-type">statusIsRedirection</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-596"></span><span id="statusIsRedirection"><span class="annot"><span class="annottext">statusIsRedirection :: Status -&gt; Bool
 </span><a href="Network.HTTP.Types.Status.html#statusIsRedirection"><span class="hs-identifier hs-var hs-var">statusIsRedirection</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679063588"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063588"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063588"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679044162"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044162"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044162"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="hs-number">300</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">300</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063588"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679044162"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">400</span></span><span>
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">400</span></span><span>
 </span><span id="line-597"></span><span>
 </span><span id="line-598"></span><span class="hs-comment">-- | Client Error class</span><span>
 </span><span id="line-599"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#statusIsClientError"><span class="hs-identifier hs-type">statusIsClientError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-600"></span><span id="statusIsClientError"><span class="annot"><span class="annottext">statusIsClientError :: Status -&gt; Bool
 </span><a href="Network.HTTP.Types.Status.html#statusIsClientError"><span class="hs-identifier hs-var hs-var">statusIsClientError</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679063587"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063587"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063587"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679044161"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044161"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044161"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063587"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679044161"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">500</span></span><span>
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">500</span></span><span>
 </span><span id="line-601"></span><span>
 </span><span id="line-602"></span><span class="hs-comment">-- | Server Error class</span><span>
 </span><span id="line-603"></span><span class="annot"><a href="Network.HTTP.Types.Status.html#statusIsServerError"><span class="hs-identifier hs-type">statusIsServerError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-604"></span><span id="statusIsServerError"><span class="annot"><span class="annottext">statusIsServerError :: Status -&gt; Bool
 </span><a href="Network.HTTP.Types.Status.html#statusIsServerError"><span class="hs-identifier hs-var hs-var">statusIsServerError</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.HTTP.Types.Status.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">statusCode :: Status -&gt; Int
-</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679063586"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063586"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063586"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Network.HTTP.Types.Status.html#statusCode"><span class="hs-identifier hs-var">statusCode</span></a></span><span class="hs-glyph">=</span><span id="local-6989586621679044160"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044160"><span class="hs-identifier hs-var">code</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679044160"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="hs-number">500</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">500</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679063586"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679044160"><span class="hs-identifier hs-var">code</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">600</span></span><span>
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">600</span></span><span>
 </span><span id="line-605"></span></pre></body></html>

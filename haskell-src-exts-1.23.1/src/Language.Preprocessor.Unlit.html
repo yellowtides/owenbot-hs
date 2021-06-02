@@ -1,0 +1,509 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- | Part of this code is from &quot;Report on the Programming Language Haskell&quot;,</span><span>
+</span><span id="line-2"></span><span class="hs-comment">--   version 1.2, appendix C.</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wwarn #-}</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Language.Preprocessor.Unlit</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unlit"><span class="hs-identifier">unlit</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isPrefixOf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">data</span><span> </span><span id="Classified"><span class="annot"><a href="Language.Preprocessor.Unlit.html#Classified"><span class="hs-identifier hs-var">Classified</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Program"><span class="annot"><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-var">Program</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Blank"><span class="annot"><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Comment"><span class="annot"><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span></span><span>
+</span><span id="line-10"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span id="Include"><span class="annot"><a href="Language.Preprocessor.Unlit.html#Include"><span class="hs-identifier hs-var">Include</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Pre"><span class="annot"><a href="Language.Preprocessor.Unlit.html#Pre"><span class="hs-identifier hs-var">Pre</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-type">classify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Classified"><span class="hs-identifier hs-type">Classified</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-13"></span><span id="classify"><span class="annot"><span class="annottext">classify :: [String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var hs-var">classify</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>                </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-14"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\\'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424387"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424387"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424386"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424386"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424387"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;begin{code}&quot;</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span> </span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="#local-6989586621679424385"><span class="hs-identifier hs-var">allProg</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424386"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-15"></span><span>   </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679424385"><span class="annot"><span class="annottext">allProg :: [String] -&gt; [Classified]
+</span><a href="#local-6989586621679424385"><span class="hs-identifier hs-var hs-var">allProg</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>  </span><span class="hs-comment">-- Should give an error message,</span><span>
+</span><span id="line-16"></span><span>                          </span><span class="hs-comment">-- but I have no good position information.</span><span>
+</span><span id="line-17"></span><span>         </span><span class="annot"><a href="#local-6989586621679424385"><span class="hs-identifier hs-var">allProg</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\\'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424384"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424384"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424383"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424383"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span>  </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;end{code}&quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; Bool
+forall a. Eq a =&gt; [a] -&gt; [a] -&gt; Bool
+</span><span class="hs-operator hs-var">`isPrefixOf`</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424384"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span> </span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424383"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-18"></span><span>         </span><span class="annot"><a href="#local-6989586621679424385"><span class="hs-identifier hs-var">allProg</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424382"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424382"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424381"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424381"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Classified
+</span><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-var">Program</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424382"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="#local-6989586621679424385"><span class="hs-identifier hs-var">allProg</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424381"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-19"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&gt;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424380"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424380"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424379"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424379"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Classified
+</span><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-var">Program</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">' '</span></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424380"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424379"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-20"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'#'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424378"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424378"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424377"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424377"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String]
+</span><span class="hs-identifier hs-var">words</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424378"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-21"></span><span>                                </span><span class="hs-special">(</span><span id="local-6989586621679424375"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424375"><span class="hs-identifier hs-var">line</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424374"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424374"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isDigit</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424375"><span class="hs-identifier hs-var">line</span></a></span><span>
+</span><span id="line-22"></span><span>                                   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String -&gt; Classified
+</span><a href="Language.Preprocessor.Unlit.html#Include"><span class="hs-identifier hs-var">Include</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Int
+forall a. Read a =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">read</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424375"><span class="hs-identifier hs-var">line</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><span class="hs-identifier hs-var">unwords</span></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424374"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>                                </span><span class="annot"><span class="annottext">[String]
+</span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Classified
+</span><a href="Language.Preprocessor.Unlit.html#Pre"><span class="hs-identifier hs-var">Pre</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424378"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-24"></span><span>                             </span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424377"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-comment">--classify (x:xs) | &quot;{-# LINE&quot; `isPrefixOf` x = Program x: classify xs</span><span>
+</span><span id="line-26"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424369"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424369"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424368"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424368"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isSpace</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424369"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424368"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-27"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424366"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424366"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424365"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424365"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>                 </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679424365"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-type">unclassify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Classified"><span class="hs-identifier hs-type">Classified</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-30"></span><span id="unclassify"><span class="annot"><span class="annottext">unclassify :: Classified -&gt; String
+</span><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-var hs-var">unclassify</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span id="local-6989586621679424363"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424363"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424363"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-var">unclassify</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Pre"><span class="hs-identifier hs-type">Pre</span></a></span><span> </span><span id="local-6989586621679424362"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424362"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'#'</span></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424362"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-32"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-var">unclassify</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Include"><span class="hs-identifier hs-type">Include</span></a></span><span> </span><span id="local-6989586621679424361"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424361"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679424360"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424360"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'#'</span></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">' '</span></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424361"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">' '</span></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424360"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-33"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-var">unclassify</span></a></span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span>
+</span><span id="line-34"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-var">unclassify</span></a></span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- | 'unlit' takes a filename (for error reports), and transforms the</span><span>
+</span><span id="line-37"></span><span class="hs-comment">--   given string, to eliminate the literate comments from the program text.</span><span>
+</span><span id="line-38"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#unlit"><span class="hs-identifier hs-type">unlit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-39"></span><span id="unlit"><span class="annot"><span class="annottext">unlit :: String -&gt; String -&gt; String
+</span><a href="Language.Preprocessor.Unlit.html#unlit"><span class="hs-identifier hs-var hs-var">unlit</span></a></span></span><span> </span><span id="local-6989586621679424357"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424357"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424356"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424356"><span class="hs-identifier hs-var">lhs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><span class="hs-identifier hs-var">unlines</span></span><span>
+</span><span id="line-40"></span><span>                 </span><span class="annot"><span class="annottext">([String] -&gt; String)
+-&gt; ([String] -&gt; [String]) -&gt; [String] -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Classified -&gt; String) -&gt; [Classified] -&gt; [String]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Classified -&gt; String
+</span><a href="Language.Preprocessor.Unlit.html#unclassify"><span class="hs-identifier hs-var">unclassify</span></a></span><span>
+</span><span id="line-41"></span><span>                 </span><span class="annot"><span class="annottext">([Classified] -&gt; [String])
+-&gt; ([String] -&gt; [Classified]) -&gt; [String] -&gt; [String]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424357"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-glyph">::</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>
+</span><span id="line-42"></span><span>                 </span><span class="annot"><span class="annottext">([Classified] -&gt; [Classified])
+-&gt; ([String] -&gt; [Classified]) -&gt; [String] -&gt; [Classified]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#classify"><span class="hs-identifier hs-var">classify</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; [String]
+</span><a href="Language.Preprocessor.Unlit.html#inlines"><span class="hs-identifier hs-var">inlines</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424356"><span class="hs-identifier hs-var">lhs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-type">adjacent</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Classified"><span class="hs-identifier hs-type">Classified</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Classified"><span class="hs-identifier hs-type">Classified</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Classified"><span class="hs-identifier hs-type">Classified</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-45"></span><span id="adjacent"><span class="annot"><span class="annottext">adjacent :: String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var hs-var">adjacent</span></a></span></span><span> </span><span id="local-6989586621679424351"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424351"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Classified
+</span><span class="hs-identifier">_</span></span><span>             </span><span class="hs-special">(</span><span id="local-6989586621679424350"><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424350"><span class="hs-identifier hs-var">x</span></a></span></span><span>              </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424349"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424349"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424350"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424351"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424350"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424349"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-comment">-- force evaluation of line number</span><span>
+</span><span id="line-46"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424348"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424348"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424347"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424347"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424346"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424346"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424345"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424345"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span><span>      </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424344"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424344"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Classified]
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Int -&gt; String -&gt; String -&gt; String
+</span><a href="Language.Preprocessor.Unlit.html#message"><span class="hs-identifier hs-var">message</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424348"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424347"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;program&quot;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;comment&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424341"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424341"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424340"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424340"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424339"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424339"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424338"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424338"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Include"><span class="hs-identifier hs-type">Include</span></a></span><span> </span><span id="local-6989586621679424337"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424337"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679424336"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424336"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424335"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424335"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424338"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424336"><span class="hs-identifier hs-var">f</span></a></span><span>    </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424337"><span class="hs-identifier hs-var">i</span></a></span><span>     </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424339"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424335"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-48"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424334"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424334"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424333"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424333"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424332"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424332"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424331"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424331"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Pre"><span class="hs-identifier hs-type">Pre</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span>      </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424330"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424330"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424331"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424334"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424333"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424332"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424330"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-49"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424328"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424328"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424327"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424327"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424326"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424326"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span><span>     </span><span class="hs-special">(</span><span id="local-6989586621679424325"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424325"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424324"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424324"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Classified]
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Int -&gt; String -&gt; String -&gt; String
+</span><a href="Language.Preprocessor.Unlit.html#message"><span class="hs-identifier hs-var">message</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424328"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424327"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;comment&quot;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;program&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424323"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424323"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424322"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424322"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424321"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424321"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span><span>     </span><span class="hs-special">(</span><span id="local-6989586621679424320"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424320"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Include"><span class="hs-identifier hs-type">Include</span></a></span><span> </span><span id="local-6989586621679424319"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424319"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679424318"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424318"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424317"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424317"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424320"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424318"><span class="hs-identifier hs-var">f</span></a></span><span>    </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424319"><span class="hs-identifier hs-var">i</span></a></span><span>     </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424321"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424317"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-51"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424316"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424316"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424315"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424315"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424314"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424314"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Comment"><span class="hs-identifier hs-var">Comment</span></a></span><span>     </span><span class="hs-special">(</span><span id="local-6989586621679424313"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424313"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Pre"><span class="hs-identifier hs-type">Pre</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span>      </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424312"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424312"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424313"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424316"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424315"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424314"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424312"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-52"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424311"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424311"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424310"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424310"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424309"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424309"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>       </span><span class="hs-special">(</span><span id="local-6989586621679424308"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424308"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Include"><span class="hs-identifier hs-type">Include</span></a></span><span> </span><span id="local-6989586621679424307"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424307"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679424306"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424306"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424305"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424305"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424308"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424306"><span class="hs-identifier hs-var">f</span></a></span><span>    </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424307"><span class="hs-identifier hs-var">i</span></a></span><span>     </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424309"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424305"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424304"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424304"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424303"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424303"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424302"><span class="annot"><span class="annottext">y :: Classified
+</span><a href="#local-6989586621679424302"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><span class="annottext">Classified
+</span><a href="Language.Preprocessor.Unlit.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>       </span><span class="hs-special">(</span><span id="local-6989586621679424301"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424301"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Preprocessor.Unlit.html#Pre"><span class="hs-identifier hs-type">Pre</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span>      </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424300"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424300"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424301"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424304"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424303"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424302"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424300"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-54"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424299"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424299"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424298"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424298"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="annot"><span class="annottext">Classified
+</span><span class="hs-identifier">_</span></span><span>             </span><span class="hs-special">(</span><span id="local-6989586621679424297"><span class="annot"><span class="annottext">x :: Classified
+</span><a href="#local-6989586621679424297"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span id="local-6989586621679424296"><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424296"><span class="hs-identifier hs-var">next</span></a></span></span><span>         </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424295"><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424295"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424297"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Classified -&gt; [Classified] -&gt; [Classified]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Classified -&gt; [Classified] -&gt; [Classified]
+</span><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424299"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424298"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Classified
+</span><a href="#local-6989586621679424297"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[Classified]
+</span><a href="#local-6989586621679424295"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-55"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#adjacent"><span class="hs-identifier hs-var">adjacent</span></a></span><span> </span><span id="local-6989586621679424294"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424294"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679424293"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424293"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="annot"><span class="annottext">Classified
+</span><span class="hs-identifier">_</span></span><span>             </span><span class="hs-special">[</span><span class="hs-special">]</span><span>                   </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#message"><span class="hs-identifier hs-type">message</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-58"></span><span id="message"><span class="annot"><span class="annottext">message :: String -&gt; Int -&gt; String -&gt; String -&gt; String
+</span><a href="Language.Preprocessor.Unlit.html#message"><span class="hs-identifier hs-var hs-var">message</span></a></span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;\&quot;\&quot;&quot;</span></span><span> </span><span id="local-6989586621679424292"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424292"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424291"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424291"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679424290"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424290"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Line &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424292"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;: &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424291"><span class="hs-identifier hs-var">p</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; line before &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424290"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; line.\n&quot;</span></span><span>
+</span><span id="line-59"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#message"><span class="hs-identifier hs-var">message</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span id="local-6989586621679424289"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424289"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424288"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424288"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679424287"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424287"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Line &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424289"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;: &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424288"><span class="hs-identifier hs-var">p</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; line before &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424287"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; line.\n&quot;</span></span><span>
+</span><span id="line-60"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#message"><span class="hs-identifier hs-var">message</span></a></span><span> </span><span id="local-6989586621679424286"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424286"><span class="hs-identifier hs-var">file</span></a></span></span><span>   </span><span id="local-6989586621679424285"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424285"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679424284"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424284"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679424283"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424283"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;In file &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424286"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; at line &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679424285"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;: &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424284"><span class="hs-identifier hs-var">p</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; line before &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424283"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; line.\n&quot;</span></span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- Re-implementation of 'lines', for better efficiency (but decreased laziness).</span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- Also, importantly, accepts non-standard DOS and Mac line ending characters.</span><span>
+</span><span id="line-65"></span><span class="annot"><a href="Language.Preprocessor.Unlit.html#inlines"><span class="hs-identifier hs-type">inlines</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
+</span><span id="line-66"></span><span id="inlines"><span class="annot"><span class="annottext">inlines :: String -&gt; [String]
+</span><a href="Language.Preprocessor.Unlit.html#inlines"><span class="hs-identifier hs-var hs-var">inlines</span></a></span></span><span> </span><span id="local-6989586621679424282"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424282"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (String -&gt; String) -&gt; [String]
+</span><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424282"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-68"></span><span>  </span><span id="local-6989586621679424281"><span class="annot"><span class="annottext">lines' :: String -&gt; (String -&gt; String) -&gt; [String]
+</span><a href="#local-6989586621679424281"><span class="hs-identifier hs-var hs-var">lines'</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>             </span><span id="local-6989586621679424279"><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424279"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424279"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-69"></span><span>  </span><span class="annot"><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\^M'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\n'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424278"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424278"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679424277"><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424277"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424277"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; [String]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; (String -&gt; String) -&gt; [String]
+</span><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424278"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>      </span><span class="hs-comment">-- DOS</span><span>
+</span><span id="line-70"></span><span>  </span><span class="annot"><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\^M'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424276"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424276"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span>      </span><span id="local-6989586621679424275"><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424275"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424275"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; [String]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; (String -&gt; String) -&gt; [String]
+</span><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424276"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>      </span><span class="hs-comment">-- MacOS</span><span>
+</span><span id="line-71"></span><span>  </span><span class="annot"><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\n'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424274"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424274"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span>       </span><span id="local-6989586621679424273"><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424273"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424273"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; [String]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; (String -&gt; String) -&gt; [String]
+</span><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424274"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>      </span><span class="hs-comment">-- Unix</span><span>
+</span><span id="line-72"></span><span>  </span><span class="annot"><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679424272"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679424272"><span class="hs-identifier hs-var">c</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679424271"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424271"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span>          </span><span id="local-6989586621679424270"><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424270"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (String -&gt; String) -&gt; [String]
+</span><a href="#local-6989586621679424281"><span class="hs-identifier hs-var">lines'</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679424271"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; String
+</span><a href="#local-6989586621679424270"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; String) -&gt; (String -&gt; String) -&gt; String -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679424272"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span></pre></body></html>

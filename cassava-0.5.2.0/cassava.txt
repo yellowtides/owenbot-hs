@@ -276,10 +276,10 @@ encodeNamedRecord :: ToNamedRecord a => a -> NamedBuilder a
 --   compose builders in a left-associative, <a>foldl</a>` style makes the
 --   building not be incremental.
 data NamedBuilder a
+instance GHC.Base.Functor Data.Csv.Incremental.HeaderParser
+instance GHC.Base.Functor Data.Csv.Incremental.Parser
 instance GHC.Show.Show Data.Csv.Incremental.More
 instance GHC.Classes.Eq Data.Csv.Incremental.More
-instance GHC.Base.Functor Data.Csv.Incremental.Parser
-instance GHC.Base.Functor Data.Csv.Incremental.HeaderParser
 instance GHC.Base.Semigroup (Data.Csv.Incremental.NamedBuilder a)
 instance GHC.Base.Monoid (Data.Csv.Incremental.NamedBuilder a)
 instance GHC.Base.Semigroup (Data.Csv.Incremental.Builder a)

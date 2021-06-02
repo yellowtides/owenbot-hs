@@ -70,14 +70,14 @@ toLE :: ByteSwap a => a -> LE a
 --   
 --   e.g. Word16, Word32, Word64
 class Storable a => ByteSwap a
-instance Foreign.Storable.Storable a => Foreign.Storable.Storable (Data.Memory.Endian.BE a)
-instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Memory.Endian.BE a)
-instance GHC.Show.Show a => GHC.Show.Show (Data.Memory.Endian.BE a)
+instance GHC.Classes.Eq Data.Memory.Endian.Endianness
+instance GHC.Show.Show Data.Memory.Endian.Endianness
 instance Foreign.Storable.Storable a => Foreign.Storable.Storable (Data.Memory.Endian.LE a)
 instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Memory.Endian.LE a)
 instance GHC.Show.Show a => GHC.Show.Show (Data.Memory.Endian.LE a)
-instance GHC.Classes.Eq Data.Memory.Endian.Endianness
-instance GHC.Show.Show Data.Memory.Endian.Endianness
+instance Foreign.Storable.Storable a => Foreign.Storable.Storable (Data.Memory.Endian.BE a)
+instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Memory.Endian.BE a)
+instance GHC.Show.Show a => GHC.Show.Show (Data.Memory.Endian.BE a)
 instance Data.Memory.Endian.ByteSwap GHC.Word.Word16
 instance Data.Memory.Endian.ByteSwap GHC.Word.Word32
 instance Data.Memory.Endian.ByteSwap GHC.Word.Word64

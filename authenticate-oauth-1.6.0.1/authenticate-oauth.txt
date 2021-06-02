@@ -206,28 +206,28 @@ getAccessTokenWith :: MonadIO m => AccessTokenRequest -> m (Either (Response Byt
 paramEncode :: ByteString -> ByteString
 addScope :: ByteString -> Request -> Request
 addMaybeProxy :: Maybe Proxy -> Request -> Request
-instance Data.Data.Data Web.Authenticate.OAuth.Credential
-instance GHC.Read.Read Web.Authenticate.OAuth.Credential
-instance GHC.Classes.Ord Web.Authenticate.OAuth.Credential
-instance GHC.Classes.Eq Web.Authenticate.OAuth.Credential
-instance GHC.Show.Show Web.Authenticate.OAuth.Credential
-instance Data.Data.Data Web.Authenticate.OAuth.OAuthException
-instance GHC.Classes.Eq Web.Authenticate.OAuth.OAuthException
-instance GHC.Show.Show Web.Authenticate.OAuth.OAuthException
-instance Data.Data.Data Web.Authenticate.OAuth.OAuth
-instance GHC.Read.Read Web.Authenticate.OAuth.OAuth
-instance GHC.Classes.Eq Web.Authenticate.OAuth.OAuth
-instance GHC.Show.Show Web.Authenticate.OAuth.OAuth
-instance Data.Data.Data Web.Authenticate.OAuth.SignMethod
-instance GHC.Read.Read Web.Authenticate.OAuth.SignMethod
-instance GHC.Classes.Eq Web.Authenticate.OAuth.SignMethod
-instance GHC.Show.Show Web.Authenticate.OAuth.SignMethod
 instance GHC.Read.Read Web.Authenticate.OAuth.OAuthVersion
 instance Data.Data.Data Web.Authenticate.OAuth.OAuthVersion
 instance GHC.Classes.Ord Web.Authenticate.OAuth.OAuthVersion
 instance GHC.Enum.Enum Web.Authenticate.OAuth.OAuthVersion
 instance GHC.Classes.Eq Web.Authenticate.OAuth.OAuthVersion
 instance GHC.Show.Show Web.Authenticate.OAuth.OAuthVersion
+instance Data.Data.Data Web.Authenticate.OAuth.SignMethod
+instance GHC.Read.Read Web.Authenticate.OAuth.SignMethod
+instance GHC.Classes.Eq Web.Authenticate.OAuth.SignMethod
+instance GHC.Show.Show Web.Authenticate.OAuth.SignMethod
+instance Data.Data.Data Web.Authenticate.OAuth.OAuth
+instance GHC.Read.Read Web.Authenticate.OAuth.OAuth
+instance GHC.Classes.Eq Web.Authenticate.OAuth.OAuth
+instance GHC.Show.Show Web.Authenticate.OAuth.OAuth
+instance Data.Data.Data Web.Authenticate.OAuth.OAuthException
+instance GHC.Classes.Eq Web.Authenticate.OAuth.OAuthException
+instance GHC.Show.Show Web.Authenticate.OAuth.OAuthException
+instance Data.Data.Data Web.Authenticate.OAuth.Credential
+instance GHC.Read.Read Web.Authenticate.OAuth.Credential
+instance GHC.Classes.Ord Web.Authenticate.OAuth.Credential
+instance GHC.Classes.Eq Web.Authenticate.OAuth.Credential
+instance GHC.Show.Show Web.Authenticate.OAuth.Credential
 instance GHC.Exception.Type.Exception Web.Authenticate.OAuth.OAuthException
 instance Data.Default.Class.Default Web.Authenticate.OAuth.OAuth
 

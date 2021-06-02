@@ -34,222 +34,227 @@ API of 'compile','execute', and 'regexec'.
 </span><span id="line-34"></span><span class="hs-comment">{- By Chris Kuklewicz, 2007. BSD License, see the LICENSE file. -}</span><span>
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">RegexContext</span></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-37"></span><span>  </span><span id="local-6989586621679125815"><span class="annot"><span class="annottext">match :: Regex -&gt; Seq Char -&gt; Seq Char
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621679096686"><span class="annot"><span class="annottext">match :: Regex -&gt; Seq Char -&gt; Seq Char
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">match</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; Seq Char
 forall a b. RegexLike a b =&gt; a -&gt; b -&gt; b
 </span><span class="hs-identifier hs-var">polymatch</span></span><span>
-</span><span id="line-38"></span><span>  </span><span id="local-6989586621679125813"><span class="annot"><span class="annottext">matchM :: Regex -&gt; Seq Char -&gt; m (Seq Char)
+</span><span id="line-38"></span><span>  </span><span id="local-6989586621679096684"><span class="annot"><span class="annottext">matchM :: Regex -&gt; Seq Char -&gt; m (Seq Char)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchM</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; m (Seq Char)
 forall a b (m :: * -&gt; *).
 (RegexLike a b, MonadFail m) =&gt;
 a -&gt; b -&gt; m b
 </span><span class="hs-identifier hs-var">polymatchM</span></span><span>
 </span><span id="line-39"></span><span>
-</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679125805"><span id="local-6989586621679125807"><span id="local-6989586621679125809"><span class="annot"><span class="hs-identifier hs-type">RegexMaker</span></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#CompOption"><span class="hs-identifier hs-type">CompOption</span></a></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#ExecOption"><span class="hs-identifier hs-type">ExecOption</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-41"></span><span>  </span><span id="local-6989586621679125802"><span class="annot"><span class="annottext">makeRegexOptsM :: CompOption -&gt; ExecOption -&gt; Seq Char -&gt; m Regex
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">makeRegexOptsM</span></span></span><span> </span><span id="local-6989586621679125800"><span class="annot"><span class="annottext">c :: CompOption
-</span><a href="#local-6989586621679125800"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679125799"><span class="annot"><span class="annottext">e :: ExecOption
-</span><a href="#local-6989586621679125799"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679125798"><span class="annot"><span class="annottext">source :: Seq Char
-</span><a href="#local-6989586621679125798"><span class="hs-identifier hs-var">source</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679096676"><span id="local-6989586621679096678"><span id="local-6989586621679096680"><span class="annot"><span class="hs-identifier hs-type">RegexMaker</span></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#CompOption"><span class="hs-identifier hs-type">CompOption</span></a></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#ExecOption"><span class="hs-identifier hs-type">ExecOption</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679096673"><span class="annot"><span class="annottext">makeRegexOptsM :: CompOption -&gt; ExecOption -&gt; Seq Char -&gt; m Regex
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">makeRegexOptsM</span></span></span><span> </span><span id="local-6989586621679096671"><span class="annot"><span class="annottext">CompOption
+</span><a href="#local-6989586621679096671"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679096670"><span class="annot"><span class="annottext">ExecOption
+</span><a href="#local-6989586621679096670"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679096669"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096669"><span class="hs-identifier hs-var">source</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-42"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either ParseError (Pattern, (GroupIndex, DoPa))
 </span><a href="Text.Regex.TDFA.ReadRegex.html#parseRegex"><span class="hs-identifier hs-var">parseRegex</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seq Char -&gt; String
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">F.toList</span></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125798"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-43"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679125797"><span class="annot"><span class="annottext">err :: ParseError
-</span><a href="#local-6989586621679125797"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; m Regex
+</span><a href="#local-6989586621679096669"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-43"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679096668"><span class="annot"><span class="annottext">ParseError
+</span><a href="#local-6989586621679096668"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; m Regex
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><span class="hs-identifier hs-var">fail</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; m Regex) -&gt; String -&gt; m Regex
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="hs-string">&quot;parseRegex for Text.Regex.TDFA.Sequence failed:&quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;parseRegex for Text.Regex.TDFA.Sequence failed:&quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">ParseError -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ParseError
-</span><a href="#local-6989586621679125797"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-44"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679125795"><span class="annot"><span class="annottext">pattern :: (Pattern, (GroupIndex, DoPa))
-</span><a href="#local-6989586621679125795"><span class="hs-identifier hs-var">pattern</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; m Regex
+</span><a href="#local-6989586621679096668"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-44"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679096666"><span class="annot"><span class="annottext">(Pattern, (GroupIndex, DoPa))
+</span><a href="#local-6989586621679096666"><span class="hs-identifier hs-var">pattern</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; m Regex
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Regex -&gt; m Regex) -&gt; Regex -&gt; m Regex
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Pattern, (GroupIndex, DoPa)) -&gt; CompOption -&gt; ExecOption -&gt; Regex
 </span><a href="Text.Regex.TDFA.TDFA.html#patternToRegex"><span class="hs-identifier hs-var">patternToRegex</span></a></span><span> </span><span class="annot"><span class="annottext">(Pattern, (GroupIndex, DoPa))
-</span><a href="#local-6989586621679125795"><span class="hs-identifier hs-var">pattern</span></a></span><span> </span><span class="annot"><span class="annottext">CompOption
-</span><a href="#local-6989586621679125800"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ExecOption
-</span><a href="#local-6989586621679125799"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679096666"><span class="hs-identifier hs-var">pattern</span></a></span><span> </span><span class="annot"><span class="annottext">CompOption
+</span><a href="#local-6989586621679096671"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">ExecOption
+</span><a href="#local-6989586621679096670"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-45"></span><span>
 </span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">RegexLike</span></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-47"></span><span>  </span><span id="local-6989586621679125786"><span class="annot"><span class="annottext">matchOnce :: Regex -&gt; Seq Char -&gt; Maybe MatchArray
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchOnce</span></span></span><span> </span><span id="local-6989586621679125784"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679125784"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679125783"><span class="annot"><span class="annottext">s :: Seq Char
-</span><a href="#local-6989586621679125783"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[MatchArray] -&gt; Maybe MatchArray
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679096657"><span class="annot"><span class="annottext">matchOnce :: Regex -&gt; Seq Char -&gt; Maybe MatchArray
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchOnce</span></span></span><span> </span><span id="local-6989586621679096655"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096655"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679096654"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096654"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[MatchArray] -&gt; Maybe MatchArray
 forall a. [a] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">listToMaybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; [MatchArray]
 forall regex source.
 RegexLike regex source =&gt;
 regex -&gt; source -&gt; [MatchArray]
 </span><span class="hs-identifier hs-var">matchAll</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125784"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125783"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-48"></span><span>  </span><span id="local-6989586621679125781"><span class="annot"><span class="annottext">matchAll :: Regex -&gt; Seq Char -&gt; [MatchArray]
-</span><a href="#local-6989586621679125781"><span class="hs-identifier hs-var hs-var hs-var hs-var">matchAll</span></a></span></span><span> </span><span id="local-6989586621679125780"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679125780"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679125779"><span class="annot"><span class="annottext">s :: Seq Char
-</span><a href="#local-6989586621679125779"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; GroupIndex -&gt; Char -&gt; Seq Char -&gt; [MatchArray]
+</span><a href="#local-6989586621679096655"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096654"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679096652"><span class="annot"><span class="annottext">matchAll :: Regex -&gt; Seq Char -&gt; [MatchArray]
+</span><a href="#local-6989586621679096652"><span class="hs-identifier hs-var hs-var hs-var hs-var">matchAll</span></a></span></span><span> </span><span id="local-6989586621679096651"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096651"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679096650"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096650"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; GroupIndex -&gt; Char -&gt; Seq Char -&gt; [MatchArray]
 forall text.
 Uncons text =&gt;
 Regex -&gt; GroupIndex -&gt; Char -&gt; text -&gt; [MatchArray]
 </span><a href="Text.Regex.TDFA.NewDFA.Engine.html#execMatch"><span class="hs-identifier hs-var">execMatch</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125780"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="hs-char">'\n'</span></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125779"><span class="hs-identifier hs-var">s</span></a></span><span>
-</span><span id="line-49"></span><span>  </span><span id="local-6989586621679125778"><span class="annot"><span class="annottext">matchCount :: Regex -&gt; Seq Char -&gt; GroupIndex
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchCount</span></span></span><span> </span><span id="local-6989586621679125776"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679125776"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679125775"><span class="annot"><span class="annottext">s :: Seq Char
-</span><a href="#local-6989586621679125775"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[MatchArray] -&gt; GroupIndex
+</span><a href="#local-6989586621679096651"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">GroupIndex
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'\n'</span></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096650"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679096649"><span class="annot"><span class="annottext">matchCount :: Regex -&gt; Seq Char -&gt; GroupIndex
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchCount</span></span></span><span> </span><span id="local-6989586621679096647"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096647"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679096646"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096646"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[MatchArray] -&gt; GroupIndex
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; GroupIndex
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; [MatchArray]
 forall regex source.
 RegexLike regex source =&gt;
 regex -&gt; source -&gt; [MatchArray]
 </span><span class="hs-identifier hs-var">matchAll</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125773"><span class="hs-identifier hs-var">r'</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125775"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-50"></span><span>    </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679125773"><span class="annot"><span class="annottext">r' :: Regex
-</span><a href="#local-6989586621679125773"><span class="hs-identifier hs-var hs-var">r'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125776"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">regex_execOptions :: ExecOption
+</span><a href="#local-6989586621679096644"><span class="hs-identifier hs-var">r'</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096646"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679096644"><span class="annot"><span class="annottext">r' :: Regex
+</span><a href="#local-6989586621679096644"><span class="hs-identifier hs-var hs-var">r'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096647"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">regex_execOptions :: ExecOption
 </span><a href="Text.Regex.TDFA.Common.html#regex_execOptions"><span class="hs-identifier hs-var">regex_execOptions</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; ExecOption
 </span><a href="Text.Regex.TDFA.Common.html#regex_execOptions"><span class="hs-identifier hs-var hs-var">regex_execOptions</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125776"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">captureGroups :: Bool
+</span><a href="#local-6989586621679096647"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">captureGroups :: Bool
 </span><a href="Text.Regex.TDFA.Common.html#captureGroups"><span class="hs-identifier hs-var">captureGroups</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">}</span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-51"></span><span>  </span><span id="local-6989586621679125771"><span class="annot"><span class="annottext">matchTest :: Regex -&gt; Seq Char -&gt; Bool
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679096642"><span class="annot"><span class="annottext">matchTest :: Regex -&gt; Seq Char -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchTest</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; Bool
 forall text. Uncons text =&gt; Regex -&gt; text -&gt; Bool
 </span><a href="Text.Regex.TDFA.NewDFA.Tester.html#matchTest"><span class="hs-identifier hs-var">Tester.matchTest</span></a></span><span>
-</span><span id="line-52"></span><span>  </span><span id="local-6989586621679125769"><span class="annot"><span class="annottext">matchOnceText :: Regex
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679096640"><span class="annot"><span class="annottext">matchOnceText :: Regex
 -&gt; Seq Char -&gt; Maybe (Seq Char, MatchText (Seq Char), Seq Char)
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchOnceText</span></span></span><span> </span><span id="local-6989586621679125767"><span class="annot"><span class="annottext">regex :: Regex
-</span><a href="#local-6989586621679125767"><span class="hs-identifier hs-var">regex</span></a></span></span><span> </span><span id="local-6989586621679125766"><span class="annot"><span class="annottext">source :: Seq Char
-</span><a href="#local-6989586621679125766"><span class="hs-identifier hs-var">source</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchOnceText</span></span></span><span> </span><span id="local-6989586621679096638"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096638"><span class="hs-identifier hs-var">regex</span></a></span></span><span> </span><span id="local-6989586621679096637"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096637"><span class="hs-identifier hs-var">source</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-53"></span><span>    </span><span class="annot"><span class="annottext">(MatchArray -&gt; (Seq Char, MatchText (Seq Char), Seq Char))
 -&gt; Maybe MatchArray
 -&gt; Maybe (Seq Char, MatchText (Seq Char), Seq Char)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679125765"><span class="annot"><span class="annottext">ma :: MatchArray
-</span><a href="#local-6989586621679125765"><span class="hs-identifier hs-var">ma</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679125764"><span class="annot"><span class="annottext">o :: GroupIndex
-</span><a href="#local-6989586621679125764"><span class="hs-identifier hs-var">o</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679125763"><span class="annot"><span class="annottext">l :: GroupIndex
-</span><a href="#local-6989586621679125763"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MatchArray
-</span><a href="#local-6989586621679125765"><span class="hs-identifier hs-var">ma</span></a></span><span class="annot"><span class="annottext">MatchArray -&gt; GroupIndex -&gt; (GroupIndex, GroupIndex)
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679096636"><span class="annot"><span class="annottext">MatchArray
+</span><a href="#local-6989586621679096636"><span class="hs-identifier hs-var">ma</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679096635"><span class="annot"><span class="annottext">GroupIndex
+</span><a href="#local-6989586621679096635"><span class="hs-identifier hs-var">o</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679096634"><span class="annot"><span class="annottext">GroupIndex
+</span><a href="#local-6989586621679096634"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MatchArray
+</span><a href="#local-6989586621679096636"><span class="hs-identifier hs-var">ma</span></a></span><span class="annot"><span class="annottext">MatchArray -&gt; GroupIndex -&gt; (GroupIndex, GroupIndex)
 forall (a :: * -&gt; * -&gt; *) e i.
 (IArray a e, Ix i) =&gt;
 a i e -&gt; i -&gt; e
-</span><span class="hs-glyph hs-var">!</span></span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span class="hs-glyph hs-var">!</span></span><span class="annot"><span class="annottext">GroupIndex
+</span><span class="hs-number">0</span></span><span>
 </span><span id="line-54"></span><span>                 </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">GroupIndex -&gt; Seq Char -&gt; Seq Char
 forall source. Extract source =&gt; GroupIndex -&gt; source -&gt; source
 </span><span class="hs-identifier hs-var">before</span></span><span> </span><span class="annot"><span class="annottext">GroupIndex
-</span><a href="#local-6989586621679125764"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125766"><span class="hs-identifier hs-var">source</span></a></span><span>
+</span><a href="#local-6989586621679096635"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096637"><span class="hs-identifier hs-var">source</span></a></span><span>
 </span><span id="line-55"></span><span>                    </span><span class="hs-special">,</span><span class="annot"><span class="annottext">((GroupIndex, GroupIndex) -&gt; (Seq Char, (GroupIndex, GroupIndex)))
 -&gt; MatchArray -&gt; MatchText (Seq Char)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679125761"><span class="annot"><span class="annottext">ol :: (GroupIndex, GroupIndex)
-</span><a href="#local-6989586621679125761"><span class="hs-identifier hs-var">ol</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex) -&gt; Seq Char -&gt; Seq Char
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679096632"><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
+</span><a href="#local-6989586621679096632"><span class="hs-identifier hs-var">ol</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex) -&gt; Seq Char -&gt; Seq Char
 forall source.
 Extract source =&gt;
 (GroupIndex, GroupIndex) -&gt; source -&gt; source
 </span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
-</span><a href="#local-6989586621679125761"><span class="hs-identifier hs-var">ol</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125766"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
-</span><a href="#local-6989586621679125761"><span class="hs-identifier hs-var">ol</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">MatchArray
-</span><a href="#local-6989586621679125765"><span class="hs-identifier hs-var">ma</span></a></span><span>
+</span><a href="#local-6989586621679096632"><span class="hs-identifier hs-var">ol</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096637"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
+</span><a href="#local-6989586621679096632"><span class="hs-identifier hs-var">ol</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">MatchArray
+</span><a href="#local-6989586621679096636"><span class="hs-identifier hs-var">ma</span></a></span><span>
 </span><span id="line-56"></span><span>                    </span><span class="hs-special">,</span><span class="annot"><span class="annottext">GroupIndex -&gt; Seq Char -&gt; Seq Char
 forall source. Extract source =&gt; GroupIndex -&gt; source -&gt; source
 </span><span class="hs-identifier hs-var">after</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">GroupIndex
-</span><a href="#local-6989586621679125764"><span class="hs-identifier hs-var">o</span></a></span><span class="annot"><span class="annottext">GroupIndex -&gt; GroupIndex -&gt; GroupIndex
+</span><a href="#local-6989586621679096635"><span class="hs-identifier hs-var">o</span></a></span><span class="annot"><span class="annottext">GroupIndex -&gt; GroupIndex -&gt; GroupIndex
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">GroupIndex
-</span><a href="#local-6989586621679125763"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125766"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679096634"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096637"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-57"></span><span>         </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; Maybe MatchArray
 forall regex source.
 RegexLike regex source =&gt;
 regex -&gt; source -&gt; Maybe MatchArray
 </span><span class="hs-identifier hs-var">matchOnce</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125767"><span class="hs-identifier hs-var">regex</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125766"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-58"></span><span>  </span><span id="local-6989586621679125757"><span class="annot"><span class="annottext">matchAllText :: Regex -&gt; Seq Char -&gt; [MatchText (Seq Char)]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchAllText</span></span></span><span> </span><span id="local-6989586621679125755"><span class="annot"><span class="annottext">regex :: Regex
-</span><a href="#local-6989586621679125755"><span class="hs-identifier hs-var">regex</span></a></span></span><span> </span><span id="local-6989586621679125754"><span class="annot"><span class="annottext">source :: Seq Char
-</span><a href="#local-6989586621679125754"><span class="hs-identifier hs-var">source</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679096638"><span class="hs-identifier hs-var">regex</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096637"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679096628"><span class="annot"><span class="annottext">matchAllText :: Regex -&gt; Seq Char -&gt; [MatchText (Seq Char)]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">matchAllText</span></span></span><span> </span><span id="local-6989586621679096626"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096626"><span class="hs-identifier hs-var">regex</span></a></span></span><span> </span><span id="local-6989586621679096625"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096625"><span class="hs-identifier hs-var">source</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-59"></span><span>    </span><span class="annot"><span class="annottext">(MatchArray -&gt; MatchText (Seq Char))
 -&gt; [MatchArray] -&gt; [MatchText (Seq Char)]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((GroupIndex, GroupIndex) -&gt; (Seq Char, (GroupIndex, GroupIndex)))
 -&gt; MatchArray -&gt; MatchText (Seq Char)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679125753"><span class="annot"><span class="annottext">ol :: (GroupIndex, GroupIndex)
-</span><a href="#local-6989586621679125753"><span class="hs-identifier hs-var">ol</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex) -&gt; Seq Char -&gt; Seq Char
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679096624"><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
+</span><a href="#local-6989586621679096624"><span class="hs-identifier hs-var">ol</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex) -&gt; Seq Char -&gt; Seq Char
 forall source.
 Extract source =&gt;
 (GroupIndex, GroupIndex) -&gt; source -&gt; source
 </span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
-</span><a href="#local-6989586621679125753"><span class="hs-identifier hs-var">ol</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125754"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
-</span><a href="#local-6989586621679125753"><span class="hs-identifier hs-var">ol</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679096624"><span class="hs-identifier hs-var">ol</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096625"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(GroupIndex, GroupIndex)
+</span><a href="#local-6989586621679096624"><span class="hs-identifier hs-var">ol</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-60"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; [MatchArray]
 forall regex source.
 RegexLike regex source =&gt;
 regex -&gt; source -&gt; [MatchArray]
 </span><span class="hs-identifier hs-var">matchAll</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125755"><span class="hs-identifier hs-var">regex</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125754"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679096626"><span class="hs-identifier hs-var">regex</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096625"><span class="hs-identifier hs-var">source</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-61"></span><span>
 </span><span id="line-62"></span><span class="annot"><a href="Text.Regex.TDFA.Sequence.html#compile"><span class="hs-identifier hs-type">compile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#CompOption"><span class="hs-identifier hs-type">CompOption</span></a></span><span> </span><span class="hs-comment">-- ^ Flags (summed together)</span><span>
 </span><span id="line-63"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#ExecOption"><span class="hs-identifier hs-type">ExecOption</span></a></span><span> </span><span class="hs-comment">-- ^ Flags (summed together)</span><span>
 </span><span id="line-64"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- ^ The regular expression to compile</span><span>
 </span><span id="line-65"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-comment">-- ^ Returns: the compiled regular expression</span><span>
 </span><span id="line-66"></span><span id="compile"><span class="annot"><span class="annottext">compile :: CompOption -&gt; ExecOption -&gt; Seq Char -&gt; Either String Regex
-</span><a href="Text.Regex.TDFA.Sequence.html#compile"><span class="hs-identifier hs-var hs-var">compile</span></a></span></span><span> </span><span id="local-6989586621679125752"><span class="annot"><span class="annottext">compOpt :: CompOption
-</span><a href="#local-6989586621679125752"><span class="hs-identifier hs-var">compOpt</span></a></span></span><span> </span><span id="local-6989586621679125751"><span class="annot"><span class="annottext">execOpt :: ExecOption
-</span><a href="#local-6989586621679125751"><span class="hs-identifier hs-var">execOpt</span></a></span></span><span> </span><span id="local-6989586621679125750"><span class="annot"><span class="annottext">bs :: Seq Char
-</span><a href="#local-6989586621679125750"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Text.Regex.TDFA.Sequence.html#compile"><span class="hs-identifier hs-var hs-var">compile</span></a></span></span><span> </span><span id="local-6989586621679096623"><span class="annot"><span class="annottext">CompOption
+</span><a href="#local-6989586621679096623"><span class="hs-identifier hs-var">compOpt</span></a></span></span><span> </span><span id="local-6989586621679096622"><span class="annot"><span class="annottext">ExecOption
+</span><a href="#local-6989586621679096622"><span class="hs-identifier hs-var">execOpt</span></a></span></span><span> </span><span id="local-6989586621679096621"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096621"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-67"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either ParseError (Pattern, (GroupIndex, DoPa))
 </span><a href="Text.Regex.TDFA.ReadRegex.html#parseRegex"><span class="hs-identifier hs-var">parseRegex</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seq Char -&gt; String
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">F.toList</span></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125750"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-68"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679125749"><span class="annot"><span class="annottext">err :: ParseError
-</span><a href="#local-6989586621679125749"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Regex
+</span><a href="#local-6989586621679096621"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-68"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679096620"><span class="annot"><span class="annottext">ParseError
+</span><a href="#local-6989586621679096620"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Regex
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;parseRegex for Text.Regex.TDFA.Sequence failed:&quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;parseRegex for Text.Regex.TDFA.Sequence failed:&quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">ParseError -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ParseError
-</span><a href="#local-6989586621679125749"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-69"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679125748"><span class="annot"><span class="annottext">pattern :: (Pattern, (GroupIndex, DoPa))
-</span><a href="#local-6989586621679125748"><span class="hs-identifier hs-var">pattern</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Either String Regex
+</span><a href="#local-6989586621679096620"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679096619"><span class="annot"><span class="annottext">(Pattern, (GroupIndex, DoPa))
+</span><a href="#local-6989586621679096619"><span class="hs-identifier hs-var">pattern</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Either String Regex
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Pattern, (GroupIndex, DoPa)) -&gt; CompOption -&gt; ExecOption -&gt; Regex
 </span><a href="Text.Regex.TDFA.TDFA.html#patternToRegex"><span class="hs-identifier hs-var">patternToRegex</span></a></span><span> </span><span class="annot"><span class="annottext">(Pattern, (GroupIndex, DoPa))
-</span><a href="#local-6989586621679125748"><span class="hs-identifier hs-var">pattern</span></a></span><span> </span><span class="annot"><span class="annottext">CompOption
-</span><a href="#local-6989586621679125752"><span class="hs-identifier hs-var">compOpt</span></a></span><span> </span><span class="annot"><span class="annottext">ExecOption
-</span><a href="#local-6989586621679125751"><span class="hs-identifier hs-var">execOpt</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679096619"><span class="hs-identifier hs-var">pattern</span></a></span><span> </span><span class="annot"><span class="annottext">CompOption
+</span><a href="#local-6989586621679096623"><span class="hs-identifier hs-var">compOpt</span></a></span><span> </span><span class="annot"><span class="annottext">ExecOption
+</span><a href="#local-6989586621679096622"><span class="hs-identifier hs-var">execOpt</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-70"></span><span>
 </span><span id="line-71"></span><span class="annot"><a href="Text.Regex.TDFA.Sequence.html#execute"><span class="hs-identifier hs-type">execute</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>      </span><span class="hs-comment">-- ^ Compiled regular expression</span><span>
 </span><span id="line-72"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- ^ ByteString to match against</span><span>
 </span><span id="line-73"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">MatchArray</span></span><span class="hs-special">)</span><span>
 </span><span id="line-74"></span><span id="execute"><span class="annot"><span class="annottext">execute :: Regex -&gt; Seq Char -&gt; Either String (Maybe MatchArray)
-</span><a href="Text.Regex.TDFA.Sequence.html#execute"><span class="hs-identifier hs-var hs-var">execute</span></a></span></span><span> </span><span id="local-6989586621679125747"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679125747"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679125746"><span class="annot"><span class="annottext">bs :: Seq Char
-</span><a href="#local-6989586621679125746"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe MatchArray -&gt; Either String (Maybe MatchArray)
+</span><a href="Text.Regex.TDFA.Sequence.html#execute"><span class="hs-identifier hs-var hs-var">execute</span></a></span></span><span> </span><span id="local-6989586621679096618"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096618"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679096617"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096617"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe MatchArray -&gt; Either String (Maybe MatchArray)
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Seq Char -&gt; Maybe MatchArray
 forall regex source.
 RegexLike regex source =&gt;
 regex -&gt; source -&gt; Maybe MatchArray
 </span><span class="hs-identifier hs-var">matchOnce</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125747"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125746"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679096618"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096617"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-75"></span><span>
 </span><span id="line-76"></span><span class="annot"><a href="Text.Regex.TDFA.Sequence.html#regexec"><span class="hs-identifier hs-type">regexec</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Text.Regex.TDFA.Common.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>      </span><span class="hs-comment">-- ^ Compiled regular expression</span><span>
 </span><span id="line-77"></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- ^ ByteString to match against</span><span>
@@ -257,39 +262,41 @@ regex -&gt; source -&gt; Maybe MatchArray
 </span><span id="line-79"></span><span id="regexec"><span class="annot"><span class="annottext">regexec :: Regex
 -&gt; Seq Char
 -&gt; Either String (Maybe (Seq Char, Seq Char, Seq Char, [Seq Char]))
-</span><a href="Text.Regex.TDFA.Sequence.html#regexec"><span class="hs-identifier hs-var hs-var">regexec</span></a></span></span><span> </span><span id="local-6989586621679125745"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679125745"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679125744"><span class="annot"><span class="annottext">bs :: Seq Char
-</span><a href="#local-6989586621679125744"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Text.Regex.TDFA.Sequence.html#regexec"><span class="hs-identifier hs-var hs-var">regexec</span></a></span></span><span> </span><span id="local-6989586621679096616"><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679096616"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679096615"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096615"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-80"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Regex
 -&gt; Seq Char -&gt; Maybe (Seq Char, MatchText (Seq Char), Seq Char)
 forall regex source.
 RegexLike regex source =&gt;
 regex -&gt; source -&gt; Maybe (source, MatchText source, source)
 </span><span class="hs-identifier hs-var">matchOnceText</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679125745"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125744"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-81"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Seq Char, Seq Char, Seq Char, [Seq Char])
+</span><a href="#local-6989586621679096616"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096615"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-81"></span><span>    </span><span class="annot"><span class="annottext">Maybe (Seq Char, MatchText (Seq Char), Seq Char)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Seq Char, Seq Char, Seq Char, [Seq Char])
 -&gt; Either String (Maybe (Seq Char, Seq Char, Seq Char, [Seq Char]))
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe (Seq Char, Seq Char, Seq Char, [Seq Char])
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span>
-</span><span id="line-82"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679125743"><span class="annot"><span class="annottext">pre :: Seq Char
-</span><a href="#local-6989586621679125743"><span class="hs-identifier hs-var">pre</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679125742"><span class="annot"><span class="annottext">mt :: MatchText (Seq Char)
-</span><a href="#local-6989586621679125742"><span class="hs-identifier hs-var">mt</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679125741"><span class="annot"><span class="annottext">post :: Seq Char
-</span><a href="#local-6989586621679125741"><span class="hs-identifier hs-var">post</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-83"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679125740"><span class="annot"><span class="annottext">main :: Seq Char
-</span><a href="#local-6989586621679125740"><span class="hs-identifier hs-var hs-var">main</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Seq Char, (GroupIndex, GroupIndex)) -&gt; Seq Char
+</span><span id="line-82"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679096614"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096614"><span class="hs-identifier hs-var">pre</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679096613"><span class="annot"><span class="annottext">MatchText (Seq Char)
+</span><a href="#local-6989586621679096613"><span class="hs-identifier hs-var">mt</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679096612"><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096612"><span class="hs-identifier hs-var">post</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-83"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679096611"><span class="annot"><span class="annottext">main :: Seq Char
+</span><a href="#local-6989586621679096611"><span class="hs-identifier hs-var hs-var">main</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Seq Char, (GroupIndex, GroupIndex)) -&gt; Seq Char
 forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MatchText (Seq Char)
-</span><a href="#local-6989586621679125742"><span class="hs-identifier hs-var">mt</span></a></span><span class="annot"><span class="annottext">MatchText (Seq Char)
+</span><a href="#local-6989586621679096613"><span class="hs-identifier hs-var">mt</span></a></span><span class="annot"><span class="annottext">MatchText (Seq Char)
 -&gt; GroupIndex -&gt; (Seq Char, (GroupIndex, GroupIndex))
 forall (a :: * -&gt; * -&gt; *) e i.
 (IArray a e, Ix i) =&gt;
 a i e -&gt; i -&gt; e
-</span><span class="hs-glyph hs-var">!</span></span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
-</span><span id="line-84"></span><span>          </span><span id="local-6989586621679125739"><span class="annot"><span class="annottext">rest :: [Seq Char]
-</span><a href="#local-6989586621679125739"><span class="hs-identifier hs-var hs-var">rest</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Seq Char, (GroupIndex, GroupIndex)) -&gt; Seq Char)
+</span><span class="hs-glyph hs-var">!</span></span><span class="annot"><span class="annottext">GroupIndex
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span>          </span><span id="local-6989586621679096610"><span class="annot"><span class="annottext">rest :: [Seq Char]
+</span><a href="#local-6989586621679096610"><span class="hs-identifier hs-var hs-var">rest</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Seq Char, (GroupIndex, GroupIndex)) -&gt; Seq Char)
 -&gt; [(Seq Char, (GroupIndex, GroupIndex))] -&gt; [Seq Char]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">(Seq Char, (GroupIndex, GroupIndex)) -&gt; Seq Char
@@ -300,7 +307,7 @@ forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">tail</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MatchText (Seq Char) -&gt; [(Seq Char, (GroupIndex, GroupIndex))]
 forall (a :: * -&gt; * -&gt; *) e i. (IArray a e, Ix i) =&gt; a i e -&gt; [e]
 </span><span class="hs-identifier hs-var">elems</span></span><span> </span><span class="annot"><span class="annottext">MatchText (Seq Char)
-</span><a href="#local-6989586621679125742"><span class="hs-identifier hs-var">mt</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- will be []</span><span>
+</span><a href="#local-6989586621679096613"><span class="hs-identifier hs-var">mt</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- will be []</span><span>
 </span><span id="line-85"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Maybe (Seq Char, Seq Char, Seq Char, [Seq Char])
 -&gt; Either String (Maybe (Seq Char, Seq Char, Seq Char, [Seq Char]))
 forall a b. b -&gt; Either a b
@@ -308,8 +315,8 @@ forall a b. b -&gt; Either a b
 -&gt; Maybe (Seq Char, Seq Char, Seq Char, [Seq Char])
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125743"><span class="hs-identifier hs-var">pre</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125740"><span class="hs-identifier hs-var">main</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Seq Char
-</span><a href="#local-6989586621679125741"><span class="hs-identifier hs-var">post</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">[Seq Char]
-</span><a href="#local-6989586621679125739"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679096614"><span class="hs-identifier hs-var">pre</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096611"><span class="hs-identifier hs-var">main</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Seq Char
+</span><a href="#local-6989586621679096612"><span class="hs-identifier hs-var">post</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">[Seq Char]
+</span><a href="#local-6989586621679096610"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span></pre></body></html>

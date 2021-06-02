@@ -343,7 +343,7 @@ module Control.Concurrent.STM.TArray
 --   be replaced by a more efficient implementation in the future (the
 --   interface will remain the same, however).
 data TArray i e
-instance GHC.Arr.Ix i => GHC.Classes.Eq (Control.Concurrent.STM.TArray.TArray i e)
+instance GHC.Ix.Ix i => GHC.Classes.Eq (Control.Concurrent.STM.TArray.TArray i e)
 instance Data.Array.Base.MArray Control.Concurrent.STM.TArray.TArray e GHC.Conc.Sync.STM
 
 

@@ -17,14 +17,16 @@
 </span><span id="line-17"></span><span>
 </span><span id="line-18"></span><span class="annot"><a href="TemplateRE.html#threeDig"><span class="hs-identifier hs-type">threeDig</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-19"></span><span id="threeDig"><span class="annot"><span class="annottext">threeDig :: Text
-</span><a href="TemplateRE.html#threeDig"><span class="hs-identifier hs-var hs-var">threeDig</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;[0-9]{1,3}&quot;</span></span><span>
+</span><a href="TemplateRE.html#threeDig"><span class="hs-identifier hs-var hs-var">threeDig</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;[0-9]{1,3}&quot;</span></span><span>
 </span><span id="line-20"></span><span>
 </span><span id="line-21"></span><span class="annot"><a href="TemplateRE.html#oneDot"><span class="hs-identifier hs-type">oneDot</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="TemplateRE.html#twoDot"><span class="hs-identifier hs-type">twoDot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-22"></span><span id="oneDot"><span class="annot"><span class="annottext">oneDot :: Text
 </span><a href="TemplateRE.html#oneDot"><span class="hs-identifier hs-var hs-var">oneDot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="TemplateRE.html#threeDig"><span class="hs-identifier hs-var">threeDig</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;\\.&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;\\.&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="TemplateRE.html#threeDig"><span class="hs-identifier hs-var">threeDig</span></a></span><span>
@@ -32,35 +34,44 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="TemplateRE.html#twoDot"><span class="hs-identifier hs-var hs-var">twoDot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="TemplateRE.html#oneDot"><span class="hs-identifier hs-var">oneDot</span></a></span><span>   </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;\\.&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;\\.&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="TemplateRE.html#threeDig"><span class="hs-identifier hs-var">threeDig</span></a></span><span>
 </span><span id="line-24"></span><span>
 </span><span id="line-25"></span><span class="annot"><a href="TemplateRE.html#trailingWS"><span class="hs-identifier hs-type">trailingWS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-26"></span><span id="trailingWS"><span class="annot"><span class="annottext">trailingWS :: Text
-</span><a href="TemplateRE.html#trailingWS"><span class="hs-identifier hs-var hs-var">trailingWS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot; *$&quot;</span></span><span>
+</span><a href="TemplateRE.html#trailingWS"><span class="hs-identifier hs-var hs-var">trailingWS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot; *$&quot;</span></span><span>
 </span><span id="line-27"></span><span>
 </span><span id="line-28"></span><span class="annot"><a href="TemplateRE.html#textbookRE"><span class="hs-identifier hs-type">textbookRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-29"></span><span id="textbookRE"><span class="annot"><span class="annottext">textbookRE :: Text
-</span><a href="TemplateRE.html#textbookRE"><span class="hs-identifier hs-var hs-var">textbookRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;t(ext)?b(ook)? *&quot;</span></span><span>
+</span><a href="TemplateRE.html#textbookRE"><span class="hs-identifier hs-var hs-var">textbookRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;t(ext)?b(ook)? *&quot;</span></span><span>
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="annot"><a href="TemplateRE.html#thmRE"><span class="hs-identifier hs-type">thmRE</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="TemplateRE.html#defRE"><span class="hs-identifier hs-type">defRE</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="TemplateRE.html#lemRE"><span class="hs-identifier hs-type">lemRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-32"></span><span id="thmRE"><span class="annot"><span class="annottext">thmRE :: Text
-</span><a href="TemplateRE.html#thmRE"><span class="hs-identifier hs-var hs-var">thmRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;th(eore)?m *&quot;</span></span><span>
+</span><a href="TemplateRE.html#thmRE"><span class="hs-identifier hs-var hs-var">thmRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;th(eore)?m *&quot;</span></span><span>
 </span><span id="line-33"></span><span id="defRE"><span class="annot"><span class="annottext">defRE :: Text
-</span><a href="TemplateRE.html#defRE"><span class="hs-identifier hs-var hs-var">defRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;def(inition)? *&quot;</span></span><span>
+</span><a href="TemplateRE.html#defRE"><span class="hs-identifier hs-var hs-var">defRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;def(inition)? *&quot;</span></span><span>
 </span><span id="line-34"></span><span id="lemRE"><span class="annot"><span class="annottext">lemRE :: Text
-</span><a href="TemplateRE.html#lemRE"><span class="hs-identifier hs-var hs-var">lemRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;lem(ma)? *&quot;</span></span><span>
+</span><a href="TemplateRE.html#lemRE"><span class="hs-identifier hs-var hs-var">lemRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;lem(ma)? *&quot;</span></span><span>
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="annot"><a href="TemplateRE.html#quotedArgRE"><span class="hs-identifier hs-type">quotedArgRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-37"></span><span id="quotedArgRE"><span class="annot"><span class="annottext">quotedArgRE :: Text
-</span><a href="TemplateRE.html#quotedArgRE"><span class="hs-identifier hs-var hs-var">quotedArgRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;\&quot;(.*)\&quot;&quot;</span></span><span>
+</span><a href="TemplateRE.html#quotedArgRE"><span class="hs-identifier hs-var hs-var">quotedArgRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;\&quot;(.*)\&quot;&quot;</span></span><span>
 </span><span id="line-38"></span><span>
 </span><span id="line-39"></span><span class="annot"><a href="TemplateRE.html#accoladedArgRE"><span class="hs-identifier hs-type">accoladedArgRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-40"></span><span id="accoladedArgRE"><span class="annot"><span class="annottext">accoladedArgRE :: Text
-</span><a href="TemplateRE.html#accoladedArgRE"><span class="hs-identifier hs-var hs-var">accoladedArgRE</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;({.*})&quot;</span></span><span>
+</span><a href="TemplateRE.html#accoladedArgRE"><span class="hs-identifier hs-var hs-var">accoladedArgRE</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;({.*})&quot;</span></span><span>
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span class="annot"><a href="TemplateRE.html#spaceRE"><span class="hs-identifier hs-type">spaceRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-43"></span><span id="spaceRE"><span class="annot"><span class="annottext">spaceRE :: Text
-</span><a href="TemplateRE.html#spaceRE"><span class="hs-identifier hs-var hs-var">spaceRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot; +&quot;</span></span></pre></body></html>
+</span><a href="TemplateRE.html#spaceRE"><span class="hs-identifier hs-var hs-var">spaceRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot; +&quot;</span></span></pre></body></html>

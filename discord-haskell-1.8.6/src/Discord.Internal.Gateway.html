@@ -22,31 +22,31 @@
 </span><span id="line-22"></span><span>
 </span><span id="line-23"></span><span class="annot"><a href="Discord.Internal.Gateway.html#startCacheThread"><span class="hs-identifier hs-type">startCacheThread</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Chan</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#DiscordHandleCache"><span class="hs-identifier hs-type">DiscordHandleCache</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ThreadId</span></span><span class="hs-special">)</span><span>
 </span><span id="line-24"></span><span id="startCacheThread"><span class="annot"><span class="annottext">startCacheThread :: Chan Text -&gt; IO (DiscordHandleCache, ThreadId)
-</span><a href="Discord.Internal.Gateway.html#startCacheThread"><span class="hs-identifier hs-var hs-var">startCacheThread</span></a></span></span><span> </span><span id="local-6989586621679242809"><span class="annot"><span class="annottext">log :: Chan Text
-</span><a href="#local-6989586621679242809"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-25"></span><span>  </span><span id="local-6989586621679242808"><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242808"><span class="hs-identifier hs-var">events</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Chan (Either GatewayException Event))
+</span><a href="Discord.Internal.Gateway.html#startCacheThread"><span class="hs-identifier hs-var hs-var">startCacheThread</span></a></span></span><span> </span><span id="local-6989586621679168850"><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679168850"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-25"></span><span>  </span><span id="local-6989586621679168849"><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679168849"><span class="hs-identifier hs-var">events</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Chan (Either GatewayException Event))
 forall a. IO (Chan a)
 </span><span class="hs-identifier hs-var">newChan</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Chan</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.EventLoop.html#GatewayException"><span class="hs-identifier hs-type">GatewayException</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#Event"><span class="hs-identifier hs-type">Event</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-26"></span><span>  </span><span id="local-6989586621679242807"><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242807"><span class="hs-identifier hs-var">cache</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (MVar (Either (Cache, GatewayException) Cache))
+</span><span id="line-26"></span><span>  </span><span id="local-6989586621679168848"><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168848"><span class="hs-identifier hs-var">cache</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (MVar (Either (Cache, GatewayException) Cache))
 forall a. IO (MVar a)
 </span><span class="hs-identifier hs-var">newEmptyMVar</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MVar</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier hs-type">Cache</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.EventLoop.html#GatewayException"><span class="hs-identifier hs-type">GatewayException</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier hs-type">Cache</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-27"></span><span>  </span><span id="local-6989586621679242806"><span class="annot"><span class="annottext">ThreadId
-</span><a href="#local-6989586621679242806"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ThreadId
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679168847"><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679168847"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ThreadId
 </span><span class="hs-identifier hs-var">forkIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ThreadId) -&gt; IO () -&gt; IO ThreadId
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">DiscordHandleCache -&gt; Chan Text -&gt; IO ()
 </span><a href="Discord.Internal.Gateway.Cache.html#cacheLoop"><span class="hs-identifier hs-var">cacheLoop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242808"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242807"><span class="hs-identifier hs-var">cache</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Chan Text
-</span><a href="#local-6989586621679242809"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><a href="#local-6989586621679168849"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168848"><span class="hs-identifier hs-var">cache</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679168850"><span class="hs-identifier hs-var">log</span></a></span><span>
 </span><span id="line-28"></span><span>  </span><span class="annot"><span class="annottext">(DiscordHandleCache, ThreadId) -&gt; IO (DiscordHandleCache, ThreadId)
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242808"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242807"><span class="hs-identifier hs-var">cache</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId
-</span><a href="#local-6989586621679242806"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168849"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168848"><span class="hs-identifier hs-var">cache</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679168847"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="hs-comment">-- | Create a Chan for websockets. This creates a thread that</span><span>
 </span><span id="line-31"></span><span class="hs-comment">--   writes all the received Events to the Chan</span><span>
@@ -55,45 +55,46 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 -&gt; DiscordHandleCache
 -&gt; Chan Text
 -&gt; IO (DiscordHandleGateway, ThreadId)
-</span><a href="Discord.Internal.Gateway.html#startGatewayThread"><span class="hs-identifier hs-var hs-var">startGatewayThread</span></a></span></span><span> </span><span id="local-6989586621679242805"><span class="annot"><span class="annottext">auth :: Auth
-</span><a href="#local-6989586621679242805"><span class="hs-identifier hs-var">auth</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242804"><span class="annot"><span class="annottext">_events :: Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242804"><span class="hs-identifier hs-var">_events</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679242803"><span class="annot"><span class="annottext">log :: Chan Text
-</span><a href="#local-6989586621679242803"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-34"></span><span>  </span><span id="local-6989586621679242802"><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242802"><span class="hs-identifier hs-var">events</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="Discord.Internal.Gateway.html#startGatewayThread"><span class="hs-identifier hs-var hs-var">startGatewayThread</span></a></span></span><span> </span><span id="local-6989586621679168846"><span class="annot"><span class="annottext">Auth
+</span><a href="#local-6989586621679168846"><span class="hs-identifier hs-var">auth</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679168845"><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679168845"><span class="hs-identifier hs-var">_events</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679168844"><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679168844"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679168843"><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679168843"><span class="hs-identifier hs-var">events</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
 -&gt; IO (Chan (Either GatewayException Event))
 forall a. Chan a -&gt; IO (Chan a)
 </span><span class="hs-identifier hs-var">dupChan</span></span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242804"><span class="hs-identifier hs-var">_events</span></a></span><span>
-</span><span id="line-35"></span><span>  </span><span id="local-6989586621679242801"><span class="annot"><span class="annottext">Chan GatewaySendable
-</span><a href="#local-6989586621679242801"><span class="hs-identifier hs-var">sends</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Chan GatewaySendable)
+</span><a href="#local-6989586621679168845"><span class="hs-identifier hs-var">_events</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span id="local-6989586621679168842"><span class="annot"><span class="annottext">Chan GatewaySendable
+</span><a href="#local-6989586621679168842"><span class="hs-identifier hs-var">sends</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Chan GatewaySendable)
 forall a. IO (Chan a)
 </span><span class="hs-identifier hs-var">newChan</span></span><span>
-</span><span id="line-36"></span><span>  </span><span id="local-6989586621679242800"><span class="annot"><span class="annottext">IORef (Maybe UpdateStatusOpts)
-</span><a href="#local-6989586621679242800"><span class="hs-identifier hs-var">status</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Maybe UpdateStatusOpts -&gt; IO (IORef (Maybe UpdateStatusOpts))
+</span><span id="line-36"></span><span>  </span><span id="local-6989586621679168841"><span class="annot"><span class="annottext">IORef (Maybe UpdateStatusOpts)
+</span><a href="#local-6989586621679168841"><span class="hs-identifier hs-var">status</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Maybe UpdateStatusOpts -&gt; IO (IORef (Maybe UpdateStatusOpts))
 forall a. a -&gt; IO (IORef a)
 </span><span class="hs-identifier hs-var">newIORef</span></span><span> </span><span class="annot"><span class="annottext">Maybe UpdateStatusOpts
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-37"></span><span>  </span><span id="local-6989586621679242799"><span class="annot"><span class="annottext">ThreadId
-</span><a href="#local-6989586621679242799"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ThreadId
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621679168840"><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679168840"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ThreadId
 </span><span class="hs-identifier hs-var">forkIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ThreadId) -&gt; IO () -&gt; IO ThreadId
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Auth -&gt; DiscordHandleGateway -&gt; Chan Text -&gt; IO ()
 </span><a href="Discord.Internal.Gateway.EventLoop.html#connectionLoop"><span class="hs-identifier hs-var">connectionLoop</span></a></span><span> </span><span class="annot"><span class="annottext">Auth
-</span><a href="#local-6989586621679242805"><span class="hs-identifier hs-var">auth</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242802"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Chan GatewaySendable
-</span><a href="#local-6989586621679242801"><span class="hs-identifier hs-var">sends</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">IORef (Maybe UpdateStatusOpts)
-</span><a href="#local-6989586621679242800"><span class="hs-identifier hs-var">status</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Chan Text
-</span><a href="#local-6989586621679242803"><span class="hs-identifier hs-var">log</span></a></span><span>
+</span><a href="#local-6989586621679168846"><span class="hs-identifier hs-var">auth</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679168843"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Chan GatewaySendable
+</span><a href="#local-6989586621679168842"><span class="hs-identifier hs-var">sends</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">IORef (Maybe UpdateStatusOpts)
+</span><a href="#local-6989586621679168841"><span class="hs-identifier hs-var">status</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679168844"><span class="hs-identifier hs-var">log</span></a></span><span>
 </span><span id="line-38"></span><span>  </span><span class="annot"><span class="annottext">(DiscordHandleGateway, ThreadId)
 -&gt; IO (DiscordHandleGateway, ThreadId)
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242802"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Chan GatewaySendable
-</span><a href="#local-6989586621679242801"><span class="hs-identifier hs-var">sends</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">IORef (Maybe UpdateStatusOpts)
-</span><a href="#local-6989586621679242800"><span class="hs-identifier hs-var">status</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId
-</span><a href="#local-6989586621679242799"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168843"><span class="hs-identifier hs-var">events</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Chan GatewaySendable
+</span><a href="#local-6989586621679168842"><span class="hs-identifier hs-var">sends</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">IORef (Maybe UpdateStatusOpts)
+</span><a href="#local-6989586621679168841"><span class="hs-identifier hs-var">status</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ThreadId
+</span><a href="#local-6989586621679168840"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span>
 </span><span id="line-41"></span><span>

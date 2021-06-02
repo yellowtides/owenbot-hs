@@ -29,7 +29,7 @@
 </span><a href="Discord.Internal.Types.User.html#userVerified"><span class="hs-identifier hs-var hs-var">userVerified</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>   </span><span class="hs-comment">-- ^ Whether the email has been verified.</span><span>
 </span><span id="line-22"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="userEmail"><span class="annot"><span class="annottext">User -&gt; Maybe Text
 </span><a href="Discord.Internal.Types.User.html#userEmail"><span class="hs-identifier hs-var hs-var">userEmail</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-comment">-- ^ The user's email.</span><span>
-</span><span id="line-23"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679237587"><span id="local-6989586621679237589"><span id="local-6989586621679237591"><span class="annot"><span class="annottext">Int -&gt; User -&gt; ShowS
+</span><span id="line-23"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163627"><span id="local-6989586621679163629"><span id="local-6989586621679163631"><span class="annot"><span class="annottext">Int -&gt; User -&gt; ShowS
 [User] -&gt; ShowS
 User -&gt; String
 (Int -&gt; User -&gt; ShowS)
@@ -42,16 +42,16 @@ show :: User -&gt; String
 $cshow :: User -&gt; String
 showsPrec :: Int -&gt; User -&gt; ShowS
 $cshowsPrec :: Int -&gt; User -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679237582"><span id="local-6989586621679237584"><span class="annot"><span class="annottext">User -&gt; User -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163622"><span id="local-6989586621679163624"><span class="annot"><span class="annottext">User -&gt; User -&gt; Bool
 (User -&gt; User -&gt; Bool) -&gt; (User -&gt; User -&gt; Bool) -&gt; Eq User
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 /= :: User -&gt; User -&gt; Bool
 $c/= :: User -&gt; User -&gt; Bool
 == :: User -&gt; User -&gt; Bool
 $c== :: User -&gt; User -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679237566"><span id="local-6989586621679237568"><span id="local-6989586621679237570"><span id="local-6989586621679237572"><span id="local-6989586621679237574"><span id="local-6989586621679237576"><span id="local-6989586621679237578"><span class="annot"><span class="annottext">Eq User
-Eq User =&gt;
-(User -&gt; User -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163606"><span id="local-6989586621679163608"><span id="local-6989586621679163610"><span id="local-6989586621679163612"><span id="local-6989586621679163614"><span id="local-6989586621679163616"><span id="local-6989586621679163618"><span class="annot"><span class="annottext">Eq User
+Eq User
+-&gt; (User -&gt; User -&gt; Ordering)
 -&gt; (User -&gt; User -&gt; Bool)
 -&gt; (User -&gt; User -&gt; Bool)
 -&gt; (User -&gt; User -&gt; Bool)
@@ -63,8 +63,8 @@ User -&gt; User -&gt; Bool
 User -&gt; User -&gt; Ordering
 User -&gt; User -&gt; User
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -89,15 +89,16 @@ $ccompare :: User -&gt; User -&gt; Ordering
 $cp1Ord :: Eq User
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-24"></span><span>
-</span><span id="line-25"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679237562"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-26"></span><span>  </span><span id="local-6989586621679237560"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser User
+</span><span id="line-25"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163602"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-26"></span><span>  </span><span id="local-6989586621679163600"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser User
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (Object -&gt; Parser User) -&gt; Value -&gt; Parser User
 forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
-</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;User&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser User) -&gt; Value -&gt; Parser User)
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;User&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser User) -&gt; Value -&gt; Parser User)
 -&gt; (Object -&gt; Parser User) -&gt; Value -&gt; Parser User
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679237557"><span class="annot"><span class="annottext">o :: Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679163597"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-27"></span><span>    </span><span class="annot"><span class="annottext">UserId
 -&gt; Text
 -&gt; Text
@@ -131,9 +132,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
       -&gt; User)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;id&quot;</span></span><span>
 </span><span id="line-28"></span><span>         </span><span class="annot"><span class="annottext">Parser
   (Text
    -&gt; Text
@@ -156,9 +158,10 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
       -&gt; User)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;username&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;username&quot;</span></span><span>
 </span><span id="line-29"></span><span>         </span><span class="annot"><span class="annottext">Parser
   (Text
    -&gt; Maybe Text
@@ -174,9 +177,10 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
       -&gt; Bool -&gt; Bool -&gt; Maybe Bool -&gt; Maybe Bool -&gt; Maybe Text -&gt; User)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;discriminator&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;discriminator&quot;</span></span><span>
 </span><span id="line-30"></span><span>         </span><span class="annot"><span class="annottext">Parser
   (Maybe Text
    -&gt; Bool -&gt; Bool -&gt; Maybe Bool -&gt; Maybe Bool -&gt; Maybe Text -&gt; User)
@@ -185,18 +189,20 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
      (Bool -&gt; Bool -&gt; Maybe Bool -&gt; Maybe Bool -&gt; Maybe Text -&gt; User)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Text)
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Text)
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
-</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;avatar&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;avatar&quot;</span></span><span>
 </span><span id="line-31"></span><span>         </span><span class="annot"><span class="annottext">Parser
   (Bool -&gt; Bool -&gt; Maybe Bool -&gt; Maybe Bool -&gt; Maybe Text -&gt; User)
 -&gt; Parser Bool
 -&gt; Parser (Bool -&gt; Maybe Bool -&gt; Maybe Bool -&gt; Maybe Text -&gt; User)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Bool)
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Bool)
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
-</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;bot&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Maybe Bool) -&gt; Bool -&gt; Parser Bool
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;bot&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Maybe Bool) -&gt; Bool -&gt; Parser Bool
 forall a. Parser (Maybe a) -&gt; a -&gt; Parser a
 </span><span class="hs-operator hs-var">.!=</span></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
@@ -212,95 +218,130 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 -&gt; Parser (Maybe Bool) -&gt; Parser (Maybe Bool -&gt; Maybe Text -&gt; User)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Bool)
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Bool)
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
-</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;mfa_enabled&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;mfa_enabled&quot;</span></span><span>
 </span><span id="line-34"></span><span>         </span><span class="annot"><span class="annottext">Parser (Maybe Bool -&gt; Maybe Text -&gt; User)
 -&gt; Parser (Maybe Bool) -&gt; Parser (Maybe Text -&gt; User)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Bool)
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Bool)
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
-</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;verified&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;verified&quot;</span></span><span>
 </span><span id="line-35"></span><span>         </span><span class="annot"><span class="annottext">Parser (Maybe Text -&gt; User) -&gt; Parser (Maybe Text) -&gt; Parser User
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237557"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Text)
+</span><a href="#local-6989586621679163597"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser (Maybe Text)
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser (Maybe a)
-</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="hs-string">&quot;email&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:?</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;email&quot;</span></span><span>
 </span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679237546"><span id="local-6989586621679237548"><span id="local-6989586621679237550"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-38"></span><span>  </span><span id="local-6989586621679237544"><span class="annot"><span class="annottext">toJSON :: User -&gt; Value
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span> </span><span id="local-6989586621679237534"><span id="local-6989586621679237535"><span id="local-6989586621679237536"><span id="local-6989586621679237537"><span id="local-6989586621679237538"><span id="local-6989586621679237539"><span id="local-6989586621679237540"><span id="local-6989586621679237541"><span id="local-6989586621679237542"><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
+</span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163586"><span id="local-6989586621679163588"><span id="local-6989586621679163590"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-38"></span><span>  </span><span id="local-6989586621679163584"><span class="annot"><span class="annottext">toJSON :: User -&gt; Value
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#User"><span class="hs-identifier hs-type">User</span></a></span><span class="hs-special">{</span><span id="local-6989586621679163574"><span id="local-6989586621679163575"><span id="local-6989586621679163576"><span id="local-6989586621679163577"><span id="local-6989586621679163578"><span id="local-6989586621679163579"><span id="local-6989586621679163580"><span id="local-6989586621679163581"><span id="local-6989586621679163582"><span class="annot"><span class="annottext">Bool
+Maybe Bool
+Maybe Text
+Text
+UserId
+userEmail :: Maybe Text
+userVerified :: Maybe Bool
+userMfa :: Maybe Bool
+userIsWebhook :: Bool
+userIsBot :: Bool
+userAvatar :: Maybe Text
+userDiscrim :: Text
+userName :: Text
+userId :: UserId
+userEmail :: User -&gt; Maybe Text
+userVerified :: User -&gt; Maybe Bool
+userMfa :: User -&gt; Maybe Bool
+userIsWebhook :: User -&gt; Bool
+userIsBot :: User -&gt; Bool
+userAvatar :: User -&gt; Maybe Text
+userDiscrim :: User -&gt; Text
+userName :: User -&gt; Text
+userId :: User -&gt; UserId
+</span><a href="#local-6989586621679163574"><span class="hs-glyph hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">..</span></a></span></span></span></span></span></span></span></span></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
 </span><span class="hs-identifier hs-var">object</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679237532"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679237531"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679237532"><span class="annot"><span class="annottext">name :: Text
-</span><a href="#local-6989586621679237532"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679237531"><span class="annot"><span class="annottext">value :: Value
-</span><a href="#local-6989586621679237531"><span class="hs-identifier hs-var">value</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span>
-</span><span id="line-39"></span><span>              </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span class="hs-special">,</span><span>            </span><span class="annot"><span class="annottext">UserId -&gt; Value
+</span><a href="#local-6989586621679163572"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679163571"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163572"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163572"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679163571"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679163571"><span class="hs-identifier hs-var">value</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-39"></span><span>              </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;id&quot;</span></span><span class="hs-special">,</span><span>            </span><span class="annot"><span class="annottext">UserId -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; Value) -&gt; Maybe UserId -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Maybe UserId
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679237542"><span class="hs-identifier hs-var">userId</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-40"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;username&quot;</span></span><span class="hs-special">,</span><span>      </span><span class="annot"><span class="annottext">Text -&gt; Value
+</span><a href="#local-6989586621679163582"><span class="hs-identifier hs-var">userId</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;username&quot;</span></span><span class="hs-special">,</span><span>      </span><span class="annot"><span class="annottext">Text -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Maybe Text
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679237541"><span class="hs-identifier hs-var">userName</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-41"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;discriminator&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value
+</span><a href="#local-6989586621679163581"><span class="hs-identifier hs-var">userName</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;discriminator&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Maybe Text
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679237540"><span class="hs-identifier hs-var">userDiscrim</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-42"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;avatar&quot;</span></span><span class="hs-special">,</span><span>        </span><span class="annot"><span class="annottext">Text -&gt; Value
+</span><a href="#local-6989586621679163580"><span class="hs-identifier hs-var">userDiscrim</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;avatar&quot;</span></span><span class="hs-special">,</span><span>        </span><span class="annot"><span class="annottext">Text -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span>      </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679237539"><span class="hs-identifier hs-var">userAvatar</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;bot&quot;</span></span><span class="hs-special">,</span><span>           </span><span class="annot"><span class="annottext">Bool -&gt; Value
+</span><a href="#local-6989586621679163579"><span class="hs-identifier hs-var">userAvatar</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;bot&quot;</span></span><span class="hs-special">,</span><span>           </span><span class="annot"><span class="annottext">Bool -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Value) -&gt; Maybe Bool -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Maybe Bool
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679237538"><span class="hs-identifier hs-var">userIsBot</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;webhook&quot;</span></span><span class="hs-special">,</span><span>       </span><span class="annot"><span class="annottext">Bool -&gt; Value
+</span><a href="#local-6989586621679163578"><span class="hs-identifier hs-var">userIsBot</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhook&quot;</span></span><span class="hs-special">,</span><span>       </span><span class="annot"><span class="annottext">Bool -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Value) -&gt; Maybe Bool -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Maybe Bool
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679237537"><span class="hs-identifier hs-var">userIsWebhook</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;mfa_enabled&quot;</span></span><span class="hs-special">,</span><span>   </span><span class="annot"><span class="annottext">Bool -&gt; Value
+</span><a href="#local-6989586621679163577"><span class="hs-identifier hs-var">userIsWebhook</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;mfa_enabled&quot;</span></span><span class="hs-special">,</span><span>   </span><span class="annot"><span class="annottext">Bool -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Value) -&gt; Maybe Bool -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span>      </span><span class="annot"><span class="annottext">Maybe Bool
-</span><a href="#local-6989586621679237536"><span class="hs-identifier hs-var">userMfa</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;verified&quot;</span></span><span class="hs-special">,</span><span>      </span><span class="annot"><span class="annottext">Bool -&gt; Value
+</span><a href="#local-6989586621679163576"><span class="hs-identifier hs-var">userMfa</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;verified&quot;</span></span><span class="hs-special">,</span><span>      </span><span class="annot"><span class="annottext">Bool -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Value) -&gt; Maybe Bool -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span>      </span><span class="annot"><span class="annottext">Maybe Bool
-</span><a href="#local-6989586621679237535"><span class="hs-identifier hs-var">userVerified</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-47"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;email&quot;</span></span><span class="hs-special">,</span><span>         </span><span class="annot"><span class="annottext">Text -&gt; Value
+</span><a href="#local-6989586621679163575"><span class="hs-identifier hs-var">userVerified</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;email&quot;</span></span><span class="hs-special">,</span><span>         </span><span class="annot"><span class="annottext">Text -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span>      </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679237534"><span class="hs-identifier hs-var">userEmail</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679163574"><span class="hs-identifier hs-var">userEmail</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-48"></span><span>              </span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>
 </span><span id="line-49"></span><span>
 </span><span id="line-50"></span><span class="hs-keyword">data</span><span> </span><span id="Webhook"><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-var">Webhook</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Webhook"><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-var">Webhook</span></a></span></span><span>
@@ -310,7 +351,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="Discord.Internal.Types.User.html#webhookToken"><span class="hs-identifier hs-var hs-var">webhookToken</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
 </span><span id="line-53"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="webhookChannelId"><span class="annot"><span class="annottext">Webhook -&gt; UserId
 </span><a href="Discord.Internal.Types.User.html#webhookChannelId"><span class="hs-identifier hs-var hs-var">webhookChannelId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span>
-</span><span id="line-54"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679237519"><span id="local-6989586621679237521"><span id="local-6989586621679237523"><span class="annot"><span class="annottext">Int -&gt; Webhook -&gt; ShowS
+</span><span id="line-54"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163559"><span id="local-6989586621679163561"><span id="local-6989586621679163563"><span class="annot"><span class="annottext">Int -&gt; Webhook -&gt; ShowS
 [Webhook] -&gt; ShowS
 Webhook -&gt; String
 (Int -&gt; Webhook -&gt; ShowS)
@@ -323,7 +364,7 @@ show :: Webhook -&gt; String
 $cshow :: Webhook -&gt; String
 showsPrec :: Int -&gt; Webhook -&gt; ShowS
 $cshowsPrec :: Int -&gt; Webhook -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679237515"><span id="local-6989586621679237517"><span class="annot"><span class="annottext">Webhook -&gt; Webhook -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163555"><span id="local-6989586621679163557"><span class="annot"><span class="annottext">Webhook -&gt; Webhook -&gt; Bool
 (Webhook -&gt; Webhook -&gt; Bool)
 -&gt; (Webhook -&gt; Webhook -&gt; Bool) -&gt; Eq Webhook
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -331,9 +372,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: Webhook -&gt; Webhook -&gt; Bool
 == :: Webhook -&gt; Webhook -&gt; Bool
 $c== :: Webhook -&gt; Webhook -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679237500"><span id="local-6989586621679237502"><span id="local-6989586621679237504"><span id="local-6989586621679237506"><span id="local-6989586621679237508"><span id="local-6989586621679237510"><span id="local-6989586621679237512"><span class="annot"><span class="annottext">Eq Webhook
-Eq Webhook =&gt;
-(Webhook -&gt; Webhook -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163540"><span id="local-6989586621679163542"><span id="local-6989586621679163544"><span id="local-6989586621679163546"><span id="local-6989586621679163548"><span id="local-6989586621679163550"><span id="local-6989586621679163552"><span class="annot"><span class="annottext">Eq Webhook
+Eq Webhook
+-&gt; (Webhook -&gt; Webhook -&gt; Ordering)
 -&gt; (Webhook -&gt; Webhook -&gt; Bool)
 -&gt; (Webhook -&gt; Webhook -&gt; Bool)
 -&gt; (Webhook -&gt; Webhook -&gt; Bool)
@@ -345,8 +386,8 @@ Webhook -&gt; Webhook -&gt; Bool
 Webhook -&gt; Webhook -&gt; Ordering
 Webhook -&gt; Webhook -&gt; Webhook
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -371,36 +412,40 @@ $ccompare :: Webhook -&gt; Webhook -&gt; Ordering
 $cp1Ord :: Eq Webhook
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679237497"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-57"></span><span>  </span><span id="local-6989586621679237496"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Webhook
-</span><a href="#local-6989586621679237496"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (Object -&gt; Parser Webhook) -&gt; Value -&gt; Parser Webhook
+</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163537"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>  </span><span id="local-6989586621679163536"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Webhook
+</span><a href="#local-6989586621679163536"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (Object -&gt; Parser Webhook) -&gt; Value -&gt; Parser Webhook
 forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
-</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Webhook&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser Webhook) -&gt; Value -&gt; Parser Webhook)
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Webhook&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser Webhook) -&gt; Value -&gt; Parser Webhook)
 -&gt; (Object -&gt; Parser Webhook) -&gt; Value -&gt; Parser Webhook
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679237495"><span class="annot"><span class="annottext">o :: Object
-</span><a href="#local-6989586621679237495"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679163535"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679163535"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">UserId -&gt; Text -&gt; UserId -&gt; Webhook
 </span><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-var">Webhook</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; Text -&gt; UserId -&gt; Webhook)
 -&gt; Parser UserId -&gt; Parser (Text -&gt; UserId -&gt; Webhook)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237495"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+</span><a href="#local-6989586621679163535"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;id&quot;</span></span><span>
 </span><span id="line-59"></span><span>            </span><span class="annot"><span class="annottext">Parser (Text -&gt; UserId -&gt; Webhook)
 -&gt; Parser Text -&gt; Parser (UserId -&gt; Webhook)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237495"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+</span><a href="#local-6989586621679163535"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;token&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;token&quot;</span></span><span>
 </span><span id="line-60"></span><span>            </span><span class="annot"><span class="annottext">Parser (UserId -&gt; Webhook) -&gt; Parser UserId -&gt; Parser Webhook
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237495"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
+</span><a href="#local-6989586621679163535"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="hs-string">&quot;channel_id&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span>  </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;channel_id&quot;</span></span><span>
 </span><span id="line-61"></span><span>
 </span><span id="line-62"></span><span class="hs-keyword">data</span><span> </span><span id="ConnectionObject"><span class="annot"><a href="Discord.Internal.Types.User.html#ConnectionObject"><span class="hs-identifier hs-var">ConnectionObject</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ConnectionObject"><span class="annot"><a href="Discord.Internal.Types.User.html#ConnectionObject"><span class="hs-identifier hs-var">ConnectionObject</span></a></span></span><span>
 </span><span id="line-63"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="connectionObjectId"><span class="annot"><span class="annottext">ConnectionObject -&gt; Text
@@ -421,7 +466,7 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
 </span><a href="Discord.Internal.Types.User.html#connectionObjectShownInPresenceUpdates"><span class="hs-identifier hs-var hs-var">connectionObjectShownInPresenceUpdates</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="connectionObjectVisibleToOthers"><span class="annot"><span class="annottext">ConnectionObject -&gt; Bool
 </span><a href="Discord.Internal.Types.User.html#connectionObjectVisibleToOthers"><span class="hs-identifier hs-var hs-var">connectionObjectVisibleToOthers</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
-</span><span id="line-72"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679237478"><span id="local-6989586621679237480"><span id="local-6989586621679237482"><span class="annot"><span class="annottext">Int -&gt; ConnectionObject -&gt; ShowS
+</span><span id="line-72"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163518"><span id="local-6989586621679163520"><span id="local-6989586621679163522"><span class="annot"><span class="annottext">Int -&gt; ConnectionObject -&gt; ShowS
 [ConnectionObject] -&gt; ShowS
 ConnectionObject -&gt; String
 (Int -&gt; ConnectionObject -&gt; ShowS)
@@ -436,7 +481,7 @@ show :: ConnectionObject -&gt; String
 $cshow :: ConnectionObject -&gt; String
 showsPrec :: Int -&gt; ConnectionObject -&gt; ShowS
 $cshowsPrec :: Int -&gt; ConnectionObject -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679237474"><span id="local-6989586621679237476"><span class="annot"><span class="annottext">ConnectionObject -&gt; ConnectionObject -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163514"><span id="local-6989586621679163516"><span class="annot"><span class="annottext">ConnectionObject -&gt; ConnectionObject -&gt; Bool
 (ConnectionObject -&gt; ConnectionObject -&gt; Bool)
 -&gt; (ConnectionObject -&gt; ConnectionObject -&gt; Bool)
 -&gt; Eq ConnectionObject
@@ -445,9 +490,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: ConnectionObject -&gt; ConnectionObject -&gt; Bool
 == :: ConnectionObject -&gt; ConnectionObject -&gt; Bool
 $c== :: ConnectionObject -&gt; ConnectionObject -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679237459"><span id="local-6989586621679237461"><span id="local-6989586621679237463"><span id="local-6989586621679237465"><span id="local-6989586621679237467"><span id="local-6989586621679237469"><span id="local-6989586621679237471"><span class="annot"><span class="annottext">Eq ConnectionObject
-Eq ConnectionObject =&gt;
-(ConnectionObject -&gt; ConnectionObject -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163499"><span id="local-6989586621679163501"><span id="local-6989586621679163503"><span id="local-6989586621679163505"><span id="local-6989586621679163507"><span id="local-6989586621679163509"><span id="local-6989586621679163511"><span class="annot"><span class="annottext">Eq ConnectionObject
+Eq ConnectionObject
+-&gt; (ConnectionObject -&gt; ConnectionObject -&gt; Ordering)
 -&gt; (ConnectionObject -&gt; ConnectionObject -&gt; Bool)
 -&gt; (ConnectionObject -&gt; ConnectionObject -&gt; Bool)
 -&gt; (ConnectionObject -&gt; ConnectionObject -&gt; Bool)
@@ -459,8 +504,8 @@ ConnectionObject -&gt; ConnectionObject -&gt; Bool
 ConnectionObject -&gt; ConnectionObject -&gt; Ordering
 ConnectionObject -&gt; ConnectionObject -&gt; ConnectionObject
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -485,26 +530,28 @@ $ccompare :: ConnectionObject -&gt; ConnectionObject -&gt; Ordering
 $cp1Ord :: Eq ConnectionObject
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-73"></span><span>
-</span><span id="line-74"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679237456"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#ConnectionObject"><span class="hs-identifier hs-type">ConnectionObject</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-75"></span><span>  </span><span id="local-6989586621679237455"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser ConnectionObject
-</span><a href="#local-6989586621679237455"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span id="line-74"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163496"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#ConnectionObject"><span class="hs-identifier hs-type">ConnectionObject</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-75"></span><span>  </span><span id="local-6989586621679163495"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser ConnectionObject
+</span><a href="#local-6989586621679163495"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; (Object -&gt; Parser ConnectionObject)
 -&gt; Value
 -&gt; Parser ConnectionObject
 forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
-</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="hs-string">&quot;ConnectionObject&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser ConnectionObject)
+</span><span class="hs-identifier hs-var">withObject</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;ConnectionObject&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Object -&gt; Parser ConnectionObject)
  -&gt; Value -&gt; Parser ConnectionObject)
 -&gt; (Object -&gt; Parser ConnectionObject)
 -&gt; Value
 -&gt; Parser ConnectionObject
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679237454"><span class="annot"><span class="annottext">o :: Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-76"></span><span>    </span><span id="local-6989586621679237453"><span class="annot"><span class="annottext">[Object]
-</span><a href="#local-6989586621679237453"><span class="hs-identifier hs-var">integrations</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [Object]
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679163494"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-76"></span><span>    </span><span id="local-6989586621679163493"><span class="annot"><span class="annottext">[Object]
+</span><a href="#local-6989586621679163493"><span class="hs-identifier hs-var">integrations</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [Object]
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;integrations&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;integrations&quot;</span></span><span>
 </span><span id="line-77"></span><span>    </span><span class="annot"><span class="annottext">Text
 -&gt; Text
 -&gt; Text
@@ -538,9 +585,10 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
       -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;id&quot;</span></span><span>
 </span><span id="line-78"></span><span>               </span><span class="annot"><span class="annottext">Parser
   (Text
    -&gt; Text
@@ -563,9 +611,10 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
       -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;name&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;name&quot;</span></span><span>
 </span><span id="line-79"></span><span>               </span><span class="annot"><span class="annottext">Parser
   (Text
    -&gt; Bool
@@ -581,9 +630,10 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
       -&gt; [UserId] -&gt; Bool -&gt; Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;type&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;type&quot;</span></span><span>
 </span><span id="line-80"></span><span>               </span><span class="annot"><span class="annottext">Parser
   (Bool
    -&gt; [UserId] -&gt; Bool -&gt; Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
@@ -592,9 +642,10 @@ forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
      ([UserId] -&gt; Bool -&gt; Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;revoked&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;revoked&quot;</span></span><span>
 </span><span id="line-81"></span><span>               </span><span class="annot"><span class="annottext">Parser
   ([UserId] -&gt; Bool -&gt; Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
 -&gt; Parser [UserId]
@@ -608,38 +659,44 @@ t (m a) -&gt; m (t a)
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser UserId
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;id&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Object]
-</span><a href="#local-6989586621679237453"><span class="hs-identifier hs-var">integrations</span></a></span><span class="hs-special">)</span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;id&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Object]
+</span><a href="#local-6989586621679163493"><span class="hs-identifier hs-var">integrations</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-82"></span><span>               </span><span class="annot"><span class="annottext">Parser (Bool -&gt; Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
 -&gt; Parser Bool -&gt; Parser (Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;verified&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;verified&quot;</span></span><span>
 </span><span id="line-83"></span><span>               </span><span class="annot"><span class="annottext">Parser (Bool -&gt; Bool -&gt; Bool -&gt; ConnectionObject)
 -&gt; Parser Bool -&gt; Parser (Bool -&gt; Bool -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;friend_sync&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;friend_sync&quot;</span></span><span>
 </span><span id="line-84"></span><span>               </span><span class="annot"><span class="annottext">Parser (Bool -&gt; Bool -&gt; ConnectionObject)
 -&gt; Parser Bool -&gt; Parser (Bool -&gt; ConnectionObject)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Bool
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;show_activity&quot;</span></span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;show_activity&quot;</span></span><span>
 </span><span id="line-85"></span><span>               </span><span class="annot"><span class="annottext">Parser (Bool -&gt; ConnectionObject)
 -&gt; Parser Bool -&gt; Parser ConnectionObject
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">(==)</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-glyph">::</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Bool) -&gt; Parser Int -&gt; Parser Bool
+</span><span class="hs-operator hs-var">(==)</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-glyph">::</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Bool) -&gt; Parser Int -&gt; Parser Bool
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621679237454"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Int
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Int
 forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
-</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="hs-string">&quot;visibility&quot;</span></span><span class="hs-special">)</span><span>
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;visibility&quot;</span></span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span></pre></body></html>

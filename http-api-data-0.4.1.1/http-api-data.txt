@@ -961,7 +961,7 @@ instance GHC.Classes.Eq Web.Internal.FormUrlEncoded.Form
 instance Web.Internal.FormUrlEncoded.ToForm Web.Internal.FormUrlEncoded.Form
 instance (Web.Internal.FormUrlEncoded.ToFormKey k, Web.Internal.HttpApiData.ToHttpApiData v) => Web.Internal.FormUrlEncoded.ToForm [(k, v)]
 instance (Web.Internal.FormUrlEncoded.ToFormKey k, Web.Internal.HttpApiData.ToHttpApiData v) => Web.Internal.FormUrlEncoded.ToForm (Data.Map.Internal.Map k [v])
-instance (Web.Internal.FormUrlEncoded.ToFormKey k, Web.Internal.HttpApiData.ToHttpApiData v) => Web.Internal.FormUrlEncoded.ToForm (Data.HashMap.Base.HashMap k [v])
+instance (Web.Internal.FormUrlEncoded.ToFormKey k, Web.Internal.HttpApiData.ToHttpApiData v) => Web.Internal.FormUrlEncoded.ToForm (Data.HashMap.Internal.HashMap k [v])
 instance Web.Internal.HttpApiData.ToHttpApiData v => Web.Internal.FormUrlEncoded.ToForm (Data.IntMap.Internal.IntMap [v])
 instance forall k (t :: k) (f :: * -> *) (g :: * -> *). Web.Internal.FormUrlEncoded.NotSupported Web.Internal.FormUrlEncoded.ToForm t "is a sum type" => Web.Internal.FormUrlEncoded.GToForm t (f GHC.Generics.:+: g)
 instance forall k (t :: k) (f :: * -> *) (g :: * -> *). (Web.Internal.FormUrlEncoded.GToForm t f, Web.Internal.FormUrlEncoded.GToForm t g) => Web.Internal.FormUrlEncoded.GToForm t (f GHC.Generics.:*: g)
@@ -974,7 +974,7 @@ instance forall k (s :: GHC.Generics.Meta) (t :: k) i. GHC.Generics.Selector s =
 instance Web.Internal.FormUrlEncoded.FromForm Web.Internal.FormUrlEncoded.Form
 instance (Web.Internal.FormUrlEncoded.FromFormKey k, Web.Internal.HttpApiData.FromHttpApiData v) => Web.Internal.FormUrlEncoded.FromForm [(k, v)]
 instance (GHC.Classes.Ord k, Web.Internal.FormUrlEncoded.FromFormKey k, Web.Internal.HttpApiData.FromHttpApiData v) => Web.Internal.FormUrlEncoded.FromForm (Data.Map.Internal.Map k [v])
-instance (GHC.Classes.Eq k, Data.Hashable.Class.Hashable k, Web.Internal.FormUrlEncoded.FromFormKey k, Web.Internal.HttpApiData.FromHttpApiData v) => Web.Internal.FormUrlEncoded.FromForm (Data.HashMap.Base.HashMap k [v])
+instance (GHC.Classes.Eq k, Data.Hashable.Class.Hashable k, Web.Internal.FormUrlEncoded.FromFormKey k, Web.Internal.HttpApiData.FromHttpApiData v) => Web.Internal.FormUrlEncoded.FromForm (Data.HashMap.Internal.HashMap k [v])
 instance Web.Internal.HttpApiData.FromHttpApiData v => Web.Internal.FormUrlEncoded.FromForm (Data.IntMap.Internal.IntMap [v])
 instance forall k (t :: k) (f :: * -> *) (g :: * -> *). Web.Internal.FormUrlEncoded.NotSupported Web.Internal.FormUrlEncoded.FromForm t "is a sum type" => Web.Internal.FormUrlEncoded.GFromForm t (f GHC.Generics.:+: g)
 instance forall k (t :: k) (f :: * -> *) (g :: * -> *). (Web.Internal.FormUrlEncoded.GFromForm t f, Web.Internal.FormUrlEncoded.GFromForm t g) => Web.Internal.FormUrlEncoded.GFromForm t (f GHC.Generics.:*: g)

@@ -22,7 +22,7 @@
 </span><a href="Discord.Internal.Gateway.Cache.html#_guilds"><span class="hs-identifier hs-var hs-var">_guilds</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">M.Map</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Guild.html#Guild"><span class="hs-identifier hs-type">Guild</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Guild.html#GuildInfo"><span class="hs-identifier hs-type">GuildInfo</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span>            </span><span class="hs-special">,</span><span> </span><span id="_channels"><span class="annot"><span class="annottext">Cache -&gt; Map ChannelId Channel
 </span><a href="Discord.Internal.Gateway.Cache.html#_channels"><span class="hs-identifier hs-var hs-var">_channels</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">M.Map</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span>
-</span><span id="line-21"></span><span>            </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242734"><span id="local-6989586621679242736"><span id="local-6989586621679242738"><span class="annot"><span class="annottext">Int -&gt; Cache -&gt; ShowS
+</span><span id="line-21"></span><span>            </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679168775"><span id="local-6989586621679168777"><span id="local-6989586621679168779"><span class="annot"><span class="annottext">Int -&gt; Cache -&gt; ShowS
 [Cache] -&gt; ShowS
 Cache -&gt; String
 (Int -&gt; Cache -&gt; ShowS)
@@ -41,24 +41,26 @@ $cshowsPrec :: Int -&gt; Cache -&gt; ShowS
 </span><span id="line-24"></span><span>
 </span><span id="line-25"></span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#cacheLoop"><span class="hs-identifier hs-type">cacheLoop</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#DiscordHandleCache"><span class="hs-identifier hs-type">DiscordHandleCache</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Chan</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-26"></span><span id="cacheLoop"><span class="annot"><span class="annottext">cacheLoop :: DiscordHandleCache -&gt; Chan Text -&gt; IO ()
-</span><a href="Discord.Internal.Gateway.Cache.html#cacheLoop"><span class="hs-identifier hs-var hs-var">cacheLoop</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679242731"><span class="annot"><span class="annottext">eventChan :: Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242731"><span class="hs-identifier hs-var">eventChan</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679242730"><span class="annot"><span class="annottext">cache :: MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242730"><span class="hs-identifier hs-var">cache</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679242729"><span class="annot"><span class="annottext">log :: Chan Text
-</span><a href="#local-6989586621679242729"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-27"></span><span>      </span><span id="local-6989586621679242728"><span class="annot"><span class="annottext">Either GatewayException Event
-</span><a href="#local-6989586621679242728"><span class="hs-identifier hs-var">ready</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="Discord.Internal.Gateway.Cache.html#cacheLoop"><span class="hs-identifier hs-var hs-var">cacheLoop</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679168772"><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><a href="#local-6989586621679168772"><span class="hs-identifier hs-var">eventChan</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679168771"><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168771"><span class="hs-identifier hs-var">cache</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679168770"><span class="annot"><span class="annottext">Chan Text
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">log</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-27"></span><span>      </span><span id="local-6989586621679168769"><span class="annot"><span class="annottext">Either GatewayException Event
+</span><a href="#local-6989586621679168769"><span class="hs-identifier hs-var">ready</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
 -&gt; IO (Either GatewayException Event)
 forall a. Chan a -&gt; IO a
 </span><span class="hs-identifier hs-var">readChan</span></span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242731"><span class="hs-identifier hs-var">eventChan</span></a></span><span>
+</span><a href="#local-6989586621679168772"><span class="hs-identifier hs-var">eventChan</span></a></span><span>
 </span><span id="line-28"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either GatewayException Event
-</span><a href="#local-6989586621679242728"><span class="hs-identifier hs-var">ready</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-29"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Events.html#Ready"><span class="hs-identifier hs-type">Ready</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679242725"><span class="annot"><span class="annottext">user :: User
-</span><a href="#local-6989586621679242725"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span id="local-6989586621679242724"><span class="annot"><span class="annottext">dmChannels :: [Channel]
-</span><a href="#local-6989586621679242724"><span class="hs-identifier hs-var">dmChannels</span></a></span></span><span> </span><span id="local-6989586621679242723"><span class="annot"><span class="annottext">_unavailableGuilds :: [GuildUnavailable]
-</span><a href="#local-6989586621679242723"><span class="hs-identifier hs-var">_unavailableGuilds</span></a></span></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-30"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679242722"><span class="annot"><span class="annottext">dmChans :: Map ChannelId Channel
-</span><a href="#local-6989586621679242722"><span class="hs-identifier hs-var hs-var">dmChans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(ChannelId, Channel)] -&gt; Map ChannelId Channel
+</span><a href="#local-6989586621679168769"><span class="hs-identifier hs-var">ready</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-29"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Events.html#Ready"><span class="hs-identifier hs-type">Ready</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679168766"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679168766"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span id="local-6989586621679168765"><span class="annot"><span class="annottext">[Channel]
+</span><a href="#local-6989586621679168765"><span class="hs-identifier hs-var">dmChannels</span></a></span></span><span> </span><span id="local-6989586621679168764"><span class="annot"><span class="annottext">[GuildUnavailable]
+</span><a href="#local-6989586621679168764"><span class="hs-identifier hs-var">_unavailableGuilds</span></a></span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-30"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168763"><span class="annot"><span class="annottext">dmChans :: Map ChannelId Channel
+</span><a href="#local-6989586621679168763"><span class="hs-identifier hs-var hs-var">dmChans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(ChannelId, Channel)] -&gt; Map ChannelId Channel
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[ChannelId] -&gt; [Channel] -&gt; [(ChannelId, Channel)]
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
@@ -66,13 +68,13 @@ forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Channel -&gt; ChannelId
 </span><a href="Discord.Internal.Types.Channel.html#channelId"><span class="hs-identifier hs-var hs-var">channelId</span></a></span><span> </span><span class="annot"><span class="annottext">[Channel]
-</span><a href="#local-6989586621679242724"><span class="hs-identifier hs-var">dmChannels</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Channel]
-</span><a href="#local-6989586621679242724"><span class="hs-identifier hs-var">dmChannels</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168765"><span class="hs-identifier hs-var">dmChannels</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Channel]
+</span><a href="#local-6989586621679168765"><span class="hs-identifier hs-var">dmChannels</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-31"></span><span>          </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
 -&gt; Either (Cache, GatewayException) Cache -&gt; IO ()
 forall a. MVar a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">putMVar</span></span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242730"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679168771"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Either (Cache, GatewayException) Cache
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User
 -&gt; Map ChannelId Channel
@@ -80,158 +82,161 @@ forall a b. b -&gt; Either a b
 -&gt; Map ChannelId Channel
 -&gt; Cache
 </span><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier hs-var">Cache</span></a></span><span> </span><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679242725"><span class="hs-identifier hs-var">user</span></a></span><span> </span><span class="annot"><span class="annottext">Map ChannelId Channel
-</span><a href="#local-6989586621679242722"><span class="hs-identifier hs-var">dmChans</span></a></span><span> </span><span class="annot"><span class="annottext">Map ChannelId (Guild, GuildInfo)
+</span><a href="#local-6989586621679168766"><span class="hs-identifier hs-var">user</span></a></span><span> </span><span class="annot"><span class="annottext">Map ChannelId Channel
+</span><a href="#local-6989586621679168763"><span class="hs-identifier hs-var">dmChans</span></a></span><span> </span><span class="annot"><span class="annottext">Map ChannelId (Guild, GuildInfo)
 forall k a. Map k a
 </span><span class="hs-identifier hs-var">M.empty</span></span><span> </span><span class="annot"><span class="annottext">Map ChannelId Channel
 forall k a. Map k a
 </span><span class="hs-identifier hs-var">M.empty</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>          </span><span class="annot"><span class="annottext">IO ()
-</span><a href="#local-6989586621679242717"><span class="hs-identifier hs-var">loop</span></a></span><span>
-</span><span id="line-33"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679242716"><span class="annot"><span class="annottext">r :: Event
-</span><a href="#local-6989586621679242716"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679168758"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-33"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679168757"><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-34"></span><span>          </span><span class="annot"><span class="annottext">Chan Text -&gt; Text -&gt; IO ()
 forall a. Chan a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">writeChan</span></span><span> </span><span class="annot"><span class="annottext">Chan Text
-</span><a href="#local-6989586621679242729"><span class="hs-identifier hs-var">log</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;cache - stopping cache - expected Ready event, but got &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">log</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;cache - stopping cache - expected Ready event, but got &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Event -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Event
-</span><a href="#local-6989586621679242716"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-35"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679242712"><span class="annot"><span class="annottext">e :: GatewayException
-</span><a href="#local-6989586621679242712"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679168753"><span class="annot"><span class="annottext">GatewayException
+</span><a href="#local-6989586621679168753"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-36"></span><span>          </span><span class="annot"><span class="annottext">Chan Text -&gt; Text -&gt; IO ()
 forall a. Chan a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">writeChan</span></span><span> </span><span class="annot"><span class="annottext">Chan Text
-</span><a href="#local-6989586621679242729"><span class="hs-identifier hs-var">log</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;cache - stopping cache - gateway exception &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">log</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;cache - stopping cache - gateway exception &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">GatewayException -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">GatewayException
-</span><a href="#local-6989586621679242712"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168753"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-38"></span><span>  </span><span class="annot"><a href="#local-6989586621679242717"><span class="hs-identifier hs-type">loop</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-39"></span><span>  </span><span id="local-6989586621679242717"><span class="annot"><span class="annottext">loop :: IO ()
-</span><a href="#local-6989586621679242717"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ()
+</span><span id="line-38"></span><span>  </span><span class="annot"><a href="#local-6989586621679168758"><span class="hs-identifier hs-type">loop</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679168758"><span class="annot"><span class="annottext">loop :: IO ()
+</span><a href="#local-6989586621679168758"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO ()
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">forever</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; IO ()) -&gt; IO () -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-40"></span><span>    </span><span id="local-6989586621679242711"><span class="annot"><span class="annottext">Either GatewayException Event
-</span><a href="#local-6989586621679242711"><span class="hs-identifier hs-var">eventOrExcept</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
+</span><span id="line-40"></span><span>    </span><span id="local-6989586621679168752"><span class="annot"><span class="annottext">Either GatewayException Event
+</span><a href="#local-6989586621679168752"><span class="hs-identifier hs-var">eventOrExcept</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
 -&gt; IO (Either GatewayException Event)
 forall a. Chan a -&gt; IO a
 </span><span class="hs-identifier hs-var">readChan</span></span><span> </span><span class="annot"><span class="annottext">Chan (Either GatewayException Event)
-</span><a href="#local-6989586621679242731"><span class="hs-identifier hs-var">eventChan</span></a></span><span>
-</span><span id="line-41"></span><span>    </span><span id="local-6989586621679242710"><span class="annot"><span class="annottext">Either (Cache, GatewayException) Cache
-</span><a href="#local-6989586621679242710"><span class="hs-identifier hs-var">minfo</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168772"><span class="hs-identifier hs-var">eventChan</span></a></span><span>
+</span><span id="line-41"></span><span>    </span><span id="local-6989586621679168751"><span class="annot"><span class="annottext">Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679168751"><span class="hs-identifier hs-var">minfo</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
 -&gt; IO (Either (Cache, GatewayException) Cache)
 forall a. MVar a -&gt; IO a
 </span><span class="hs-identifier hs-var">takeMVar</span></span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242730"><span class="hs-identifier hs-var">cache</span></a></span><span>
+</span><a href="#local-6989586621679168771"><span class="hs-identifier hs-var">cache</span></a></span><span>
 </span><span id="line-42"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either (Cache, GatewayException) Cache
-</span><a href="#local-6989586621679242710"><span class="hs-identifier hs-var">minfo</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-43"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679242708"><span class="annot"><span class="annottext">nope :: (Cache, GatewayException)
-</span><a href="#local-6989586621679242708"><span class="hs-identifier hs-var">nope</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168751"><span class="hs-identifier hs-var">minfo</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-43"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679168749"><span class="annot"><span class="annottext">(Cache, GatewayException)
+</span><a href="#local-6989586621679168749"><span class="hs-identifier hs-var">nope</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
 -&gt; Either (Cache, GatewayException) Cache -&gt; IO ()
 forall a. MVar a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">putMVar</span></span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242730"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Cache, GatewayException) -&gt; Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679168771"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Cache, GatewayException) -&gt; Either (Cache, GatewayException) Cache
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(Cache, GatewayException)
-</span><a href="#local-6989586621679242708"><span class="hs-identifier hs-var">nope</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679242707"><span class="annot"><span class="annottext">info :: Cache
-</span><a href="#local-6989586621679242707"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either GatewayException Event
-</span><a href="#local-6989586621679242711"><span class="hs-identifier hs-var">eventOrExcept</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-45"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679242706"><span class="annot"><span class="annottext">e :: GatewayException
-</span><a href="#local-6989586621679242706"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168749"><span class="hs-identifier hs-var">nope</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679168748"><span class="annot"><span class="annottext">Cache
+</span><a href="#local-6989586621679168748"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either GatewayException Event
+</span><a href="#local-6989586621679168752"><span class="hs-identifier hs-var">eventOrExcept</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-45"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679168747"><span class="annot"><span class="annottext">GatewayException
+</span><a href="#local-6989586621679168747"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
 -&gt; Either (Cache, GatewayException) Cache -&gt; IO ()
 forall a. MVar a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">putMVar</span></span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242730"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Cache, GatewayException) -&gt; Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679168771"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Cache, GatewayException) -&gt; Either (Cache, GatewayException) Cache
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache
-</span><a href="#local-6989586621679242707"><span class="hs-identifier hs-var">info</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">GatewayException
-</span><a href="#local-6989586621679242706"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679242705"><span class="annot"><span class="annottext">event :: Event
-</span><a href="#local-6989586621679242705"><span class="hs-identifier hs-var">event</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
+</span><a href="#local-6989586621679168748"><span class="hs-identifier hs-var">info</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">GatewayException
+</span><a href="#local-6989586621679168747"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>                      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679168746"><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679168746"><span class="hs-identifier hs-var">event</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
 -&gt; Either (Cache, GatewayException) Cache -&gt; IO ()
 forall a. MVar a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">putMVar</span></span><span> </span><span class="annot"><span class="annottext">MVar (Either (Cache, GatewayException) Cache)
-</span><a href="#local-6989586621679242730"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Either (Cache, GatewayException) Cache
+</span><a href="#local-6989586621679168771"><span class="hs-identifier hs-var">cache</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Either (Cache, GatewayException) Cache
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Event -&gt; Cache
 </span><a href="Discord.Internal.Gateway.Cache.html#adjustCache"><span class="hs-identifier hs-var">adjustCache</span></a></span><span> </span><span class="annot"><span class="annottext">Cache
-</span><a href="#local-6989586621679242707"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="annot"><span class="annottext">Event
-</span><a href="#local-6989586621679242705"><span class="hs-identifier hs-var">event</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168748"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679168746"><span class="hs-identifier hs-var">event</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>
 </span><span id="line-48"></span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#adjustCache"><span class="hs-identifier hs-type">adjustCache</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier hs-type">Cache</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Events.html#Event"><span class="hs-identifier hs-type">Event</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#Cache"><span class="hs-identifier hs-type">Cache</span></a></span><span>
 </span><span id="line-49"></span><span id="adjustCache"><span class="annot"><span class="annottext">adjustCache :: Cache -&gt; Event -&gt; Cache
-</span><a href="Discord.Internal.Gateway.Cache.html#adjustCache"><span class="hs-identifier hs-var hs-var">adjustCache</span></a></span></span><span> </span><span id="local-6989586621679242703"><span class="annot"><span class="annottext">minfo :: Cache
-</span><a href="#local-6989586621679242703"><span class="hs-identifier hs-var">minfo</span></a></span></span><span> </span><span id="local-6989586621679242702"><span class="annot"><span class="annottext">event :: Event
-</span><a href="#local-6989586621679242702"><span class="hs-identifier hs-var">event</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Event
-</span><a href="#local-6989586621679242702"><span class="hs-identifier hs-var">event</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="Discord.Internal.Gateway.Cache.html#adjustCache"><span class="hs-identifier hs-var hs-var">adjustCache</span></a></span></span><span> </span><span id="local-6989586621679168744"><span class="annot"><span class="annottext">Cache
+</span><a href="#local-6989586621679168744"><span class="hs-identifier hs-var">minfo</span></a></span></span><span> </span><span id="local-6989586621679168743"><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679168743"><span class="hs-identifier hs-var">event</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679168743"><span class="hs-identifier hs-var">event</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-50"></span><span>  </span><span class="hs-comment">--ChannelCreate Channel</span><span>
 </span><span id="line-51"></span><span>  </span><span class="hs-comment">--ChannelUpdate Channel</span><span>
 </span><span id="line-52"></span><span>  </span><span class="hs-comment">--ChannelDelete Channel</span><span>
-</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildCreate"><span class="hs-identifier hs-type">GuildCreate</span></a></span><span> </span><span id="local-6989586621679242700"><span class="annot"><span class="annottext">guild :: Guild
-</span><a href="#local-6989586621679242700"><span class="hs-identifier hs-var">guild</span></a></span></span><span> </span><span id="local-6989586621679242699"><span class="annot"><span class="annottext">info :: GuildInfo
-</span><a href="#local-6989586621679242699"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-54"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679242698"><span class="annot"><span class="annottext">newChans :: [Channel]
-</span><a href="#local-6989586621679242698"><span class="hs-identifier hs-var hs-var">newChans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Channel -&gt; Channel) -&gt; [Channel] -&gt; [Channel]
+</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Discord.Internal.Types.Events.html#GuildCreate"><span class="hs-identifier hs-type">GuildCreate</span></a></span><span> </span><span id="local-6989586621679168741"><span class="annot"><span class="annottext">Guild
+</span><a href="#local-6989586621679168741"><span class="hs-identifier hs-var">guild</span></a></span></span><span> </span><span id="local-6989586621679168740"><span class="annot"><span class="annottext">GuildInfo
+</span><a href="#local-6989586621679168740"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-54"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168739"><span class="annot"><span class="annottext">newChans :: [Channel]
+</span><a href="#local-6989586621679168739"><span class="hs-identifier hs-var hs-var">newChans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Channel -&gt; Channel) -&gt; [Channel] -&gt; [Channel]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChannelId -&gt; Channel -&gt; Channel
 </span><a href="Discord.Internal.Gateway.Cache.html#setChanGuildID"><span class="hs-identifier hs-var">setChanGuildID</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Guild -&gt; ChannelId
 </span><a href="Discord.Internal.Types.Guild.html#guildId"><span class="hs-identifier hs-var hs-var">guildId</span></a></span><span> </span><span class="annot"><span class="annottext">Guild
-</span><a href="#local-6989586621679242700"><span class="hs-identifier hs-var">guild</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Channel] -&gt; [Channel]) -&gt; [Channel] -&gt; [Channel]
+</span><a href="#local-6989586621679168741"><span class="hs-identifier hs-var">guild</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Channel] -&gt; [Channel]) -&gt; [Channel] -&gt; [Channel]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">GuildInfo -&gt; [Channel]
 </span><a href="Discord.Internal.Types.Guild.html#guildChannels"><span class="hs-identifier hs-var hs-var">guildChannels</span></a></span><span> </span><span class="annot"><span class="annottext">GuildInfo
-</span><a href="#local-6989586621679242699"><span class="hs-identifier hs-var">info</span></a></span><span>
-</span><span id="line-55"></span><span>        </span><span id="local-6989586621679242694"><span class="annot"><span class="annottext">g :: Map ChannelId (Guild, GuildInfo)
-</span><a href="#local-6989586621679242694"><span class="hs-identifier hs-var hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679168740"><span class="hs-identifier hs-var">info</span></a></span><span>
+</span><span id="line-55"></span><span>        </span><span id="local-6989586621679168735"><span class="annot"><span class="annottext">g :: Map ChannelId (Guild, GuildInfo)
+</span><a href="#local-6989586621679168735"><span class="hs-identifier hs-var hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelId
 -&gt; (Guild, GuildInfo)
 -&gt; Map ChannelId (Guild, GuildInfo)
 -&gt; Map ChannelId (Guild, GuildInfo)
 forall k a. Ord k =&gt; k -&gt; a -&gt; Map k a -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.insert</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Guild -&gt; ChannelId
 </span><a href="Discord.Internal.Types.Guild.html#guildId"><span class="hs-identifier hs-var hs-var">guildId</span></a></span><span> </span><span class="annot"><span class="annottext">Guild
-</span><a href="#local-6989586621679242700"><span class="hs-identifier hs-var">guild</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Guild
-</span><a href="#local-6989586621679242700"><span class="hs-identifier hs-var">guild</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">GuildInfo
-</span><a href="#local-6989586621679242699"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">guildChannels :: [Channel]
+</span><a href="#local-6989586621679168741"><span class="hs-identifier hs-var">guild</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Guild
+</span><a href="#local-6989586621679168741"><span class="hs-identifier hs-var">guild</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">GuildInfo
+</span><a href="#local-6989586621679168740"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">guildChannels :: [Channel]
 </span><a href="Discord.Internal.Types.Guild.html#guildChannels"><span class="hs-identifier hs-var">guildChannels</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Channel]
-</span><a href="#local-6989586621679242698"><span class="hs-identifier hs-var">newChans</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Map ChannelId (Guild, GuildInfo)
+</span><a href="#local-6989586621679168739"><span class="hs-identifier hs-var">newChans</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Map ChannelId (Guild, GuildInfo)
 </span><a href="Discord.Internal.Gateway.Cache.html#_guilds"><span class="hs-identifier hs-var hs-var">_guilds</span></a></span><span> </span><span class="annot"><span class="annottext">Cache
-</span><a href="#local-6989586621679242703"><span class="hs-identifier hs-var">minfo</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-56"></span><span>        </span><span id="local-6989586621679242692"><span class="annot"><span class="annottext">c :: Map ChannelId Channel
-</span><a href="#local-6989586621679242692"><span class="hs-identifier hs-var hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Channel -&gt; Channel -&gt; Channel)
+</span><a href="#local-6989586621679168744"><span class="hs-identifier hs-var">minfo</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>        </span><span id="local-6989586621679168733"><span class="annot"><span class="annottext">c :: Map ChannelId Channel
+</span><a href="#local-6989586621679168733"><span class="hs-identifier hs-var hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Channel -&gt; Channel -&gt; Channel)
 -&gt; Map ChannelId Channel
 -&gt; Map ChannelId Channel
 -&gt; Map ChannelId Channel
 forall k a. Ord k =&gt; (a -&gt; a -&gt; a) -&gt; Map k a -&gt; Map k a -&gt; Map k a
-</span><span class="hs-identifier hs-var">M.unionWith</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679242690"><span class="annot"><span class="annottext">a :: Channel
-</span><a href="#local-6989586621679242690"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242690"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><span class="hs-identifier hs-var">M.unionWith</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679168731"><span class="annot"><span class="annottext">Channel
+</span><a href="#local-6989586621679168731"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="annot"><span class="annottext">Channel
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Channel
+</span><a href="#local-6989586621679168731"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-57"></span><span>                        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(ChannelId, Channel)] -&gt; Map ChannelId Channel
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromList</span></span><span> </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Channel -&gt; ChannelId
 </span><a href="Discord.Internal.Types.Channel.html#channelId"><span class="hs-identifier hs-var hs-var">channelId</span></a></span><span> </span><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242689"><span class="hs-identifier hs-var">ch</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242689"><span class="hs-identifier hs-var">ch</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679242689"><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242689"><span class="hs-identifier hs-var">ch</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Channel]
-</span><a href="#local-6989586621679242698"><span class="hs-identifier hs-var">newChans</span></a></span><span> </span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168730"><span class="hs-identifier hs-var">ch</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Channel
+</span><a href="#local-6989586621679168730"><span class="hs-identifier hs-var">ch</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679168730"><span class="annot"><span class="annottext">Channel
+</span><a href="#local-6989586621679168730"><span class="hs-identifier hs-var">ch</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Channel]
+</span><a href="#local-6989586621679168739"><span class="hs-identifier hs-var">newChans</span></a></span><span> </span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-58"></span><span>                        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Cache -&gt; Map ChannelId Channel
 </span><a href="Discord.Internal.Gateway.Cache.html#_channels"><span class="hs-identifier hs-var hs-var">_channels</span></a></span><span> </span><span class="annot"><span class="annottext">Cache
-</span><a href="#local-6989586621679242703"><span class="hs-identifier hs-var">minfo</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679168744"><span class="hs-identifier hs-var">minfo</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-59"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Cache
-</span><a href="#local-6989586621679242703"><span class="hs-identifier hs-var">minfo</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_guilds :: Map ChannelId (Guild, GuildInfo)
+</span><a href="#local-6989586621679168744"><span class="hs-identifier hs-var">minfo</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_guilds :: Map ChannelId (Guild, GuildInfo)
 </span><a href="Discord.Internal.Gateway.Cache.html#_guilds"><span class="hs-identifier hs-var">_guilds</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map ChannelId (Guild, GuildInfo)
-</span><a href="#local-6989586621679242694"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_channels :: Map ChannelId Channel
+</span><a href="#local-6989586621679168735"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_channels :: Map ChannelId Channel
 </span><a href="Discord.Internal.Gateway.Cache.html#_channels"><span class="hs-identifier hs-var">_channels</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map ChannelId Channel
-</span><a href="#local-6989586621679242692"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><a href="#local-6989586621679168733"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-special">}</span><span>
 </span><span id="line-60"></span><span>  </span><span class="hs-comment">--GuildUpdate guild -&gt; do</span><span>
 </span><span id="line-61"></span><span>  </span><span class="hs-comment">--  let g = M.insert (guildId guild) guild (_guilds minfo)</span><span>
 </span><span id="line-62"></span><span>  </span><span class="hs-comment">--      m2 = minfo { _guilds = g }</span><span>
@@ -241,20 +246,21 @@ forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span id="line-66"></span><span>  </span><span class="hs-comment">--      c = M.filterWithKey (\(keyGuildId,_) _ -&gt; keyGuildId /= guildId guild) (_channels minfo)</span><span>
 </span><span id="line-67"></span><span>  </span><span class="hs-comment">--      m2 = minfo { _guilds = g, _channels = c }</span><span>
 </span><span id="line-68"></span><span>  </span><span class="hs-comment">--  putMVar cache m2</span><span>
-</span><span id="line-69"></span><span>  </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Cache
-</span><a href="#local-6989586621679242703"><span class="hs-identifier hs-var">minfo</span></a></span><span>
+</span><span id="line-69"></span><span>  </span><span class="annot"><span class="annottext">Event
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Cache
+</span><a href="#local-6989586621679168744"><span class="hs-identifier hs-var">minfo</span></a></span><span>
 </span><span id="line-70"></span><span>
 </span><span id="line-71"></span><span class="annot"><a href="Discord.Internal.Gateway.Cache.html#setChanGuildID"><span class="hs-identifier hs-type">setChanGuildID</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Channel.html#Channel"><span class="hs-identifier hs-type">Channel</span></a></span><span>
 </span><span id="line-72"></span><span id="setChanGuildID"><span class="annot"><span class="annottext">setChanGuildID :: ChannelId -&gt; Channel -&gt; Channel
-</span><a href="Discord.Internal.Gateway.Cache.html#setChanGuildID"><span class="hs-identifier hs-var hs-var">setChanGuildID</span></a></span></span><span> </span><span id="local-6989586621679242688"><span class="annot"><span class="annottext">s :: ChannelId
-</span><a href="#local-6989586621679242688"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679242687"><span class="annot"><span class="annottext">c :: Channel
-</span><a href="#local-6989586621679242687"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Channel -&gt; Bool
+</span><a href="Discord.Internal.Gateway.Cache.html#setChanGuildID"><span class="hs-identifier hs-var hs-var">setChanGuildID</span></a></span></span><span> </span><span id="local-6989586621679168729"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679168729"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679168728"><span class="annot"><span class="annottext">Channel
+</span><a href="#local-6989586621679168728"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Channel -&gt; Bool
 </span><a href="Discord.Internal.Types.Channel.html#channelIsInGuild"><span class="hs-identifier hs-var">channelIsInGuild</span></a></span><span> </span><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242687"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><a href="#local-6989586621679168728"><span class="hs-identifier hs-var">c</span></a></span><span>
 </span><span id="line-73"></span><span>                     </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242687"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">channelGuild :: ChannelId
-</span><a href="#local-6989586621679242685"><span class="hs-identifier hs-var">channelGuild</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679242688"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><a href="#local-6989586621679168728"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">channelGuild :: ChannelId
+</span><a href="Discord.Internal.Types.Channel.html#channelGuild"><span class="hs-identifier hs-var">channelGuild</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679168729"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">}</span><span>
 </span><span id="line-74"></span><span>                     </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Channel
-</span><a href="#local-6989586621679242687"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><a href="#local-6989586621679168728"><span class="hs-identifier hs-var">c</span></a></span><span>
 </span><span id="line-75"></span></pre></body></html>

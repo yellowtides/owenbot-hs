@@ -15,12 +15,12 @@
 </span><span id="line-15"></span><span>
 </span><span id="line-16"></span><span class="annot"><a href="Data.X509.File.html#readPEMs"><span class="hs-identifier hs-type">readPEMs</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PEM</span></span><span class="hs-special">]</span><span>
 </span><span id="line-17"></span><span id="readPEMs"><span class="annot"><span class="annottext">readPEMs :: FilePath -&gt; IO [PEM]
-</span><a href="Data.X509.File.html#readPEMs"><span class="hs-identifier hs-var hs-var">readPEMs</span></a></span></span><span> </span><span id="local-6989586621679089130"><span class="annot"><span class="annottext">filepath :: FilePath
-</span><a href="#local-6989586621679089130"><span class="hs-identifier hs-var">filepath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-18"></span><span>    </span><span id="local-6989586621679089129"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679089129"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ByteString
+</span><a href="Data.X509.File.html#readPEMs"><span class="hs-identifier hs-var hs-var">readPEMs</span></a></span></span><span> </span><span id="local-6989586621679055089"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679055089"><span class="hs-identifier hs-var">filepath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-18"></span><span>    </span><span id="local-6989586621679055088"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679055088"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ByteString
 </span><span class="hs-identifier hs-var">L.readFile</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679089130"><span class="hs-identifier hs-var">filepath</span></a></span><span>
+</span><a href="#local-6989586621679055089"><span class="hs-identifier hs-var">filepath</span></a></span><span>
 </span><span id="line-19"></span><span>    </span><span class="annot"><span class="annottext">[PEM] -&gt; IO [PEM]
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">([PEM] -&gt; IO [PEM]) -&gt; [PEM] -&gt; IO [PEM]
@@ -36,31 +36,31 @@ forall a. a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either FilePath [PEM]
 </span><span class="hs-identifier hs-var">pemParseLBS</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679089129"><span class="hs-identifier hs-var">content</span></a></span><span>
+</span><a href="#local-6989586621679055088"><span class="hs-identifier hs-var">content</span></a></span><span>
 </span><span id="line-20"></span><span>
 </span><span id="line-21"></span><span class="hs-comment">-- | return all the signed objects in a file.</span><span>
 </span><span id="line-22"></span><span class="hs-comment">--</span><span>
 </span><span id="line-23"></span><span class="hs-comment">-- (only one type at a time).</span><span>
-</span><span id="line-24"></span><span id="local-6989586621679089124"><span class="annot"><a href="Data.X509.File.html#readSignedObject"><span class="hs-identifier hs-type">readSignedObject</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="#local-6989586621679089124"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679089124"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679089124"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span id="local-6989586621679055083"><span class="annot"><a href="Data.X509.File.html#readSignedObject"><span class="hs-identifier hs-type">readSignedObject</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="#local-6989586621679055083"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679055083"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679055083"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>                 </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span>
-</span><span id="line-26"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">X509.SignedExact</span></span><span> </span><span class="annot"><a href="#local-6989586621679089124"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-26"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">X509.SignedExact</span></span><span> </span><span class="annot"><a href="#local-6989586621679055083"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-27"></span><span id="readSignedObject"><span class="annot"><span class="annottext">readSignedObject :: FilePath -&gt; IO [SignedExact a]
-</span><a href="Data.X509.File.html#readSignedObject"><span class="hs-identifier hs-var hs-var">readSignedObject</span></a></span></span><span> </span><span id="local-6989586621679089123"><span class="annot"><span class="annottext">filepath :: FilePath
-</span><a href="#local-6989586621679089123"><span class="hs-identifier hs-var">filepath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[PEM] -&gt; [SignedExact a]
+</span><a href="Data.X509.File.html#readSignedObject"><span class="hs-identifier hs-var hs-var">readSignedObject</span></a></span></span><span> </span><span id="local-6989586621679055082"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679055082"><span class="hs-identifier hs-var">filepath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[PEM] -&gt; [SignedExact a]
 forall a. (Show a, Eq a, ASN1Object a) =&gt; [PEM] -&gt; [SignedExact a]
-</span><a href="#local-6989586621679089122"><span class="hs-identifier hs-var">decodePEMs</span></a></span><span> </span><span class="annot"><span class="annottext">([PEM] -&gt; [SignedExact a]) -&gt; IO [PEM] -&gt; IO [SignedExact a]
+</span><a href="#local-6989586621679055081"><span class="hs-identifier hs-var">decodePEMs</span></a></span><span> </span><span class="annot"><span class="annottext">([PEM] -&gt; [SignedExact a]) -&gt; IO [PEM] -&gt; IO [SignedExact a]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO [PEM]
 </span><a href="Data.X509.File.html#readPEMs"><span class="hs-identifier hs-var">readPEMs</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679089123"><span class="hs-identifier hs-var">filepath</span></a></span><span>
-</span><span id="line-28"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679089122"><span class="annot"><span class="annottext">decodePEMs :: [PEM] -&gt; [SignedExact a]
-</span><a href="#local-6989586621679089122"><span class="hs-identifier hs-var hs-var">decodePEMs</span></a></span></span><span> </span><span id="local-6989586621679089120"><span class="annot"><span class="annottext">pems :: [PEM]
-</span><a href="#local-6989586621679089120"><span class="hs-identifier hs-var">pems</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679055082"><span class="hs-identifier hs-var">filepath</span></a></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679055081"><span class="annot"><span class="annottext">decodePEMs :: [PEM] -&gt; [SignedExact a]
+</span><a href="#local-6989586621679055081"><span class="hs-identifier hs-var hs-var">decodePEMs</span></a></span></span><span> </span><span id="local-6989586621679055079"><span class="annot"><span class="annottext">[PEM]
+</span><a href="#local-6989586621679055079"><span class="hs-identifier hs-var">pems</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-29"></span><span>          </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">SignedExact a
-</span><a href="#local-6989586621679089119"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679089118"><span class="annot"><span class="annottext">PEM
-</span><a href="#local-6989586621679089118"><span class="hs-identifier hs-var">pem</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[PEM]
-</span><a href="#local-6989586621679089120"><span class="hs-identifier hs-var">pems</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679089119"><span class="annot"><span class="annottext">obj :: SignedExact a
-</span><a href="#local-6989586621679089119"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString -&gt; Either FilePath (SignedExact a)
+</span><a href="#local-6989586621679055078"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679055077"><span class="annot"><span class="annottext">PEM
+</span><a href="#local-6989586621679055077"><span class="hs-identifier hs-var">pem</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[PEM]
+</span><a href="#local-6989586621679055079"><span class="hs-identifier hs-var">pems</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679055078"><span class="annot"><span class="annottext">SignedExact a
+</span><a href="#local-6989586621679055078"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString -&gt; Either FilePath (SignedExact a)
 forall a.
 (Show a, Eq a, ASN1Object a) =&gt;
 ByteString -&gt; Either FilePath (SignedExact a)
@@ -69,13 +69,13 @@ ByteString -&gt; Either FilePath (SignedExact a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PEM -&gt; ByteString
 </span><span class="hs-identifier hs-var hs-var">pemContent</span></span><span> </span><span class="annot"><span class="annottext">PEM
-</span><a href="#local-6989586621679089118"><span class="hs-identifier hs-var">pem</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679055077"><span class="hs-identifier hs-var">pem</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="hs-comment">-- | return all the private keys that were successfully read from a file.</span><span>
 </span><span id="line-32"></span><span class="annot"><a href="Data.X509.File.html#readKeyFile"><span class="hs-identifier hs-type">readKeyFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">X509.PrivKey</span></span><span class="hs-special">]</span><span>
 </span><span id="line-33"></span><span id="readKeyFile"><span class="annot"><span class="annottext">readKeyFile :: FilePath -&gt; IO [PrivKey]
-</span><a href="Data.X509.File.html#readKeyFile"><span class="hs-identifier hs-var hs-var">readKeyFile</span></a></span></span><span> </span><span id="local-6989586621679089116"><span class="annot"><span class="annottext">path :: FilePath
-</span><a href="#local-6989586621679089116"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Maybe PrivKey] -&gt; [PrivKey]
+</span><a href="Data.X509.File.html#readKeyFile"><span class="hs-identifier hs-var hs-var">readKeyFile</span></a></span></span><span> </span><span id="local-6989586621679055075"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679055075"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Maybe PrivKey] -&gt; [PrivKey]
 forall a. [Maybe a] -&gt; [a]
 </span><span class="hs-identifier hs-var">catMaybes</span></span><span> </span><span class="annot"><span class="annottext">([Maybe PrivKey] -&gt; [PrivKey])
 -&gt; ([PEM] -&gt; [Maybe PrivKey]) -&gt; [PEM] -&gt; [PrivKey]
@@ -90,5 +90,5 @@ Foldable t =&gt;
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO [PEM]
 </span><a href="Data.X509.File.html#readPEMs"><span class="hs-identifier hs-var">readPEMs</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679089116"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><a href="#local-6989586621679055075"><span class="hs-identifier hs-var">path</span></a></span><span>
 </span><span id="line-34"></span></pre></body></html>

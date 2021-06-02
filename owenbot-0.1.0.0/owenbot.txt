@@ -23,6 +23,86 @@ writeSingleColCSV :: FilePath -> [Text] -> IO ()
 addToCSV :: FilePath -> [[Text]] -> IO ()
 writeHashMapToCSV :: FilePath -> HashMap Text Text -> IO ()
 
+
+-- | Provides the errors for Commands. Its usage is mainly internal, to be
+--   used from <a>Command.Command</a>.
+module Command.Error
+
+-- | This represents any error that can arise from an invocation of a
+--   command. Some are thrown by the system (such as ArgumentParseError),
+--   however you can also manually throw them with <tt>throwM</tt> within
+--   any handler.
+data CommandError
+
+-- | Indicates the command arguments failed to parse, either because of
+--   lack of arguments, incorrect types, or too many arguments.
+ArgumentParseError :: Text -> CommandError
+
+-- | Indicates that a requirement for this command failed to pass. The
+--   reason is specified in the text field.
+RequirementError :: Text -> CommandError
+
+-- | This is a value unused by the system, and is free to be used by the
+--   handler as they wish.
+ProcessingError :: Text -> CommandError
+
+-- | Indicates there was a fatal Discord call somewhere in the handler.
+DiscordError :: RestCallErrorCode -> CommandError
+
+-- | Indicates there was some sort of runtime error. This contains all
+--   sorts of errors, however they are guaranteed to be safe synchronous
+--   exceptions.
+HaskellError :: SomeException -> CommandError
+instance GHC.Show.Show Command.Error.CommandError
+instance GHC.Exception.Type.Exception Command.Error.CommandError
+
+
+-- | Parser component for Commands. Its usage is mainly internal, to be
+--   used from <a>Command.Command</a>.
+--   
+--   If you want to add your own parser argument type, this is the module.
+module Command.Parser
+
+-- | A <tt>ParsableArgument</tt> is a dataclass that represents arguments
+--   that can be parsed from a message. Any datatype that is an instance of
+--   this dataclass can be used as function arguments for a command handler
+--   in <tt>command</tt>.
+class ParsableArgument a
+
+-- | <tt>parserForArg msg</tt> returns a parser that contains the parsed
+--   element.
+parserForArg :: ParsableArgument a => Message -> Parser a
+
+-- | Datatype wrapper for the remaining text in the input. Handy for
+--   capturing everything remaining. The accessor function <tt>getEm</tt>
+--   isn't really meant to be used since pattern matching can do
+--   everything. Open to renaming.
+--   
+--   Example usage:
+--   
+--   <pre>
+--   setStatus =
+--       command "status"
+--       $ \msg newStatus newType (Remaining newName) -&gt; do
+--           ...
+--   </pre>
+data RemainingText
+Remaining :: Text -> RemainingText
+[getEm] :: RemainingText -> Text
+
+-- | <tt>manyTill1 p end</tt> is a parser that applies parser <tt>p</tt>
+--   <i>one</i> or more times until parser <tt>end</tt> succeeds. This is a
+--   variation on <a>manyTill</a> from Parsec.
+manyTill1 :: Stream s m t => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+instance Command.Parser.ParsableArgument Command.Parser.RemainingText
+instance Command.Parser.ParsableArgument Discord.Internal.Types.Channel.Message
+instance Command.Parser.ParsableArgument GHC.Base.String
+instance Command.Parser.ParsableArgument Data.Text.Internal.Text
+instance Command.Parser.ParsableArgument [Data.Text.Internal.Text]
+instance Command.Parser.ParsableArgument a => Command.Parser.ParsableArgument (GHC.Maybe.Maybe a)
+instance Command.Parser.ParsableArgument Discord.Internal.Types.Gateway.UpdateStatusType
+instance Command.Parser.ParsableArgument Discord.Internal.Types.Gateway.ActivityType
+
 module Config
 
 module DB
@@ -52,6 +132,110 @@ fetch :: FilePath -> Text -> IO Text
 --   should really signal failure to the caller
 store :: FilePath -> Text -> Text -> IO ()
 
+module Discord.Internal.Monad
+
+-- | <tt>MonadDiscord</tt> is a data class of Monads that can interact with
+--   Discord. It requires MonadThrow to throw possible errors like HTTP
+--   errors, MonadMask as a helper for common operations paired with errors
+--   (like <tt>finally</tt>), and MonadFail to allow convenient
+--   pattern-matching in do-notation (not necessary, but helps a lot with
+--   our code style).
+class (Monad m, MonadThrow m, MonadMask m, MonadFail m) => MonadDiscord m
+getChannel :: MonadDiscord m => ChannelId -> m Channel
+modifyChannel :: MonadDiscord m => ChannelId -> ModifyChannelOpts -> m Channel
+deleteChannel :: MonadDiscord m => ChannelId -> m Channel
+getChannelMessages :: MonadDiscord m => ChannelId -> (Int, MessageTiming) -> m [Message]
+getChannelMessage :: MonadDiscord m => (ChannelId, MessageId) -> m Message
+createMessage :: MonadDiscord m => ChannelId -> Text -> m Message
+createMessageEmbed :: MonadDiscord m => ChannelId -> Text -> CreateEmbed -> m Message
+createMessageUploadFile :: MonadDiscord m => ChannelId -> Text -> ByteString -> m Message
+createMessageDetailed :: MonadDiscord m => ChannelId -> MessageDetailedOpts -> m Message
+createReaction :: MonadDiscord m => (ChannelId, MessageId) -> Text -> m ()
+deleteOwnReaction :: MonadDiscord m => (ChannelId, MessageId) -> Text -> m ()
+deleteUserReaction :: MonadDiscord m => (ChannelId, MessageId) -> UserId -> Text -> m ()
+deleteSingleReaction :: MonadDiscord m => (ChannelId, MessageId) -> Text -> m ()
+getReactions :: MonadDiscord m => (ChannelId, MessageId) -> Text -> (Int, ReactionTiming) -> m [User]
+deleteAllReactions :: MonadDiscord m => (ChannelId, MessageId) -> m ()
+editMessage :: MonadDiscord m => (ChannelId, MessageId) -> Text -> Maybe CreateEmbed -> m Message
+deleteMessage :: MonadDiscord m => (ChannelId, MessageId) -> m ()
+bulkDeleteMessage :: MonadDiscord m => (ChannelId, [MessageId]) -> m ()
+editChannelPermissions :: MonadDiscord m => ChannelId -> OverwriteId -> ChannelPermissionsOpts -> m ()
+getChannelInvites :: MonadDiscord m => ChannelId -> m Object
+createChannelInvite :: MonadDiscord m => ChannelId -> ChannelInviteOpts -> m Invite
+deleteChannelPermission :: MonadDiscord m => ChannelId -> OverwriteId -> m ()
+triggerTypingIndicator :: MonadDiscord m => ChannelId -> m ()
+getPinnedMessages :: MonadDiscord m => ChannelId -> m [Message]
+addPinnedMessage :: MonadDiscord m => (ChannelId, MessageId) -> m ()
+deletePinnedMessage :: MonadDiscord m => (ChannelId, MessageId) -> m ()
+groupDMAddRecipient :: MonadDiscord m => ChannelId -> GroupDMAddRecipientOpts -> m ()
+groupDMRemoveRecipient :: MonadDiscord m => ChannelId -> UserId -> m ()
+listGuildEmojis :: MonadDiscord m => GuildId -> m [Emoji]
+getGuildEmoji :: MonadDiscord m => GuildId -> EmojiId -> m Emoji
+createGuildEmoji :: MonadDiscord m => GuildId -> Text -> ByteString -> m Emoji
+modifyGuildEmoji :: MonadDiscord m => GuildId -> EmojiId -> ModifyGuildEmojiOpts -> m Emoji
+deleteGuildEmoji :: MonadDiscord m => GuildId -> EmojiId -> m ()
+createGuild :: MonadDiscord m => CreateGuildOpts -> m Guild
+getGuild :: MonadDiscord m => GuildId -> m Guild
+modifyGuild :: MonadDiscord m => GuildId -> ModifyGuildOpts -> m Guild
+deleteGuild :: MonadDiscord m => GuildId -> m ()
+getGuildChannels :: MonadDiscord m => GuildId -> m [Channel]
+createGuildChannel :: MonadDiscord m => GuildId -> Text -> [Overwrite] -> CreateGuildChannelOpts -> m Channel
+modifyGuildChannelPositions :: MonadDiscord m => GuildId -> [(ChannelId, Int)] -> m [Channel]
+getGuildMember :: MonadDiscord m => GuildId -> UserId -> m GuildMember
+listGuildMembers :: MonadDiscord m => GuildId -> GuildMembersTiming -> m [GuildMember]
+addGuildMember :: MonadDiscord m => GuildId -> UserId -> AddGuildMemberOpts -> m ()
+modifyGuildMember :: MonadDiscord m => GuildId -> UserId -> ModifyGuildMemberOpts -> m ()
+modifyCurrentUserNick :: MonadDiscord m => GuildId -> Text -> m ()
+addGuildMemberRole :: MonadDiscord m => GuildId -> UserId -> RoleId -> m ()
+removeGuildMemberRole :: MonadDiscord m => GuildId -> UserId -> RoleId -> m ()
+removeGuildMember :: MonadDiscord m => GuildId -> UserId -> m ()
+getGuildBans :: MonadDiscord m => GuildId -> m [GuildBan]
+getGuildBan :: MonadDiscord m => GuildId -> UserId -> m GuildBan
+createGuildBan :: MonadDiscord m => GuildId -> UserId -> CreateGuildBanOpts -> m ()
+removeGuildBan :: MonadDiscord m => GuildId -> UserId -> m ()
+getGuildRoles :: MonadDiscord m => GuildId -> m [Role]
+createGuildRole :: MonadDiscord m => GuildId -> ModifyGuildRoleOpts -> m Role
+modifyGuildRolePositions :: MonadDiscord m => GuildId -> [(RoleId, Integer)] -> m [Role]
+modifyGuildRole :: MonadDiscord m => GuildId -> RoleId -> ModifyGuildRoleOpts -> m Role
+deleteGuildRole :: MonadDiscord m => GuildId -> RoleId -> m ()
+getGuildPruneCount :: MonadDiscord m => GuildId -> Integer -> m Object
+beginGuildPrune :: MonadDiscord m => GuildId -> Integer -> m Object
+getGuildVoiceRegions :: MonadDiscord m => GuildId -> m [VoiceRegion]
+getGuildInvites :: MonadDiscord m => GuildId -> m [Invite]
+getGuildIntegrations :: MonadDiscord m => GuildId -> m [Integration]
+createGuildIntegration :: MonadDiscord m => GuildId -> IntegrationId -> CreateGuildIntegrationOpts -> m ()
+modifyGuildIntegration :: MonadDiscord m => GuildId -> IntegrationId -> ModifyGuildIntegrationOpts -> m ()
+deleteGuildIntegration :: MonadDiscord m => GuildId -> IntegrationId -> m ()
+syncGuildIntegration :: MonadDiscord m => GuildId -> IntegrationId -> m ()
+getGuildEmbed :: MonadDiscord m => GuildId -> m GuildEmbed
+modifyGuildEmbed :: MonadDiscord m => GuildId -> GuildEmbed -> m GuildEmbed
+getGuildVanityURL :: MonadDiscord m => GuildId -> m Text
+getInvite :: MonadDiscord m => Text -> m Invite
+deleteInvite :: MonadDiscord m => Text -> m Invite
+getCurrentUser :: MonadDiscord m => m User
+getUser :: MonadDiscord m => UserId -> m User
+modifyCurrentUser :: MonadDiscord m => Text -> CurrentUserAvatar -> m User
+getCurrentUserGuilds :: MonadDiscord m => m [PartialGuild]
+leaveGuild :: MonadDiscord m => GuildId -> m ()
+getUserDMs :: MonadDiscord m => m [Channel]
+createDM :: MonadDiscord m => UserId -> m Channel
+getUserConnections :: MonadDiscord m => m [ConnectionObject]
+listVoiceRegions :: MonadDiscord m => m [VoiceRegion]
+createWebhook :: MonadDiscord m => ChannelId -> CreateWebhookOpts -> m Webhook
+getChannelWebhooks :: MonadDiscord m => ChannelId -> m [Webhook]
+getGuildWebhooks :: MonadDiscord m => GuildId -> m [Webhook]
+getWebhook :: MonadDiscord m => WebhookId -> m Webhook
+getWebhookWithToken :: MonadDiscord m => WebhookId -> Text -> m Webhook
+modifyWebhook :: MonadDiscord m => WebhookId -> ModifyWebhookOpts -> m Webhook
+modifyWebhookWithToken :: MonadDiscord m => WebhookId -> Text -> ModifyWebhookOpts -> m Webhook
+deleteWebhook :: MonadDiscord m => WebhookId -> m ()
+deleteWebhookWithToken :: MonadDiscord m => WebhookId -> Text -> m ()
+executeWebhookWithToken :: MonadDiscord m => WebhookId -> Text -> ExecuteWebhookWithTokenOpts -> m ()
+respond :: MonadDiscord m => Message -> Text -> m ()
+instance GHC.Show.Show Discord.Internal.Monad.RequestResponse
+instance Discord.Internal.Monad.MonadDiscord Discord.DiscordHandler
+instance Discord.Internal.Monad.MonadDiscord (Control.Monad.Trans.Reader.ReaderT Discord.Internal.Types.Prelude.Auth GHC.Types.IO)
+
 module Owoifier
 
 -- | This takes a text and returns an owofied text e.g. "North
@@ -62,17 +246,337 @@ owoify :: Text -> Text
 --   of the string
 weakOwoify :: Text -> Text
 
+
+-- | Amateur attempt at command abstraction and polyvariadic magic.
+--   
+--   Inspired heavily but calamity-commands, which is provided by Ben Simms
+--   2020 under the MIT license.
+--   
+--   Ideally, this module wouldn't need to be touched after its initial
+--   creation (and hence quite the jump in complex GHC extensions compared
+--   to other modules), however it is documented quite extensively anyway.
+--   
+--   <b>As an OwenDev, you do not need to enable any GHC extensions, as
+--   the</b> <b>extensions are used internally within this module only</b>.
+--   
+--   <h3><b>Notable extensions used (if you want to know)</b></h3>
+--   
+--   <ul>
+--   <li>ScopedTypeVariables: For using the same type variables in
+--   <tt>where</tt> statements as function declarations.</li>
+--   <li>FlexibleInstances: To allow complex type variables in instance
+--   declarations, like <tt>CommandHandlerType m (a -&gt; m ())</tt>.
+--   <a>Read more</a></li>
+--   <li>FunctionalDependencies: To write that <tt>m</tt> can be determined
+--   from <tt>h</tt> in <tt>CommandHandlerType</tt>. It makes logical sense
+--   to tell GHC this because <tt>h</tt> must be in the <tt>m</tt> monad
+--   (otherwise, <tt>h</tt> may be in another monad). <a>Read more</a></li>
+--   <li>MultiParamTypeClasses: For declaring CommandHandlerType that has 2
+--   params. This comes with FunctionalDependencies automatically, and is
+--   not explicitly used.</li>
+--   <li>UndecidableInstances: Risky, but I think I logically checked over
+--   it. Used in the <tt>m (a -&gt; b)</tt> instance declaration of
+--   <a>CommandHandlerType</a>, because <tt>(a -&gt; b)</tt> doesn't
+--   explicitly determine the required functional dependency (<tt>h -&gt;
+--   m</tt>). The extension is risky because the type-checker can fail to
+--   terminate if the instance declarations recursively reference each
+--   other. In this module however, all instances strictly converges to the
+--   <tt>m (m ())</tt> instance so I say it is safe. <a>Read more</a></li>
+--   <li>ExistentialQuantification: For declaring <a>Command</a> with only
+--   the monad. This is not idiomatic Haskell (usually parametric
+--   polymorphism is fine), but in this use case, the type signatures can
+--   be drastically improved: <a>see the examples in this change</a>. This
+--   also allows us to define a list of <a>Command</a>s, which was not
+--   possible before. This change allows us to create <a>runHelp</a> and
+--   <a>runCommands</a>. <a>Read more on existential types</a> , and
+--   <a>even more here</a>. <a>This comes at a price (although the benefits
+--   outweigh the prices here)</a> , as now the compiler loses the
+--   information about what arguments the command handler takes. <a>Record
+--   selector functions will no longer work too</a> , but this is covered
+--   by using pattern matching.</li>
+--   <li>RecordWildCards: Enables you to write <tt>Command{..}</tt> in
+--   pattern matches to create accessors instead of doing <tt>(Command one
+--   two three four five)</tt>. Helps with ExistentialQuantification
+--   because otherwise unpacking the <tt>Command</tt> ADT will be really
+--   really long. Not necessary but helpful.</li>
+--   </ul>
+--   
+--   Implementation references:
+--   
+--   <ul>
+--   <li><a>Varargs - Haskell Wiki</a></li>
+--   <li><a>Haskell-polyvariadic</a></li>
+--   <li><a>How to create a polyvariadic haskell function?</a></li>
+--   <li><a>How to write a Haskell function that takes a variadic function
+--   as an argument</a></li>
+--   </ul>
+--   
+--   Design references:
+--   
+--   <ul>
+--   <li><a>calamity-commands</a></li>
+--   </ul>
+module Command.Command
+
+-- | A <tt>Command</tt> is a datatype containing the metadata for a
+--   user-registered command.
+--   
+--   <tt>Command m</tt> is a command that runs in the monad <tt>m</tt>,
+--   which when called will trigger a polyvariadic handler function. The
+--   handler *must* be in the <tt>m</tt> monad, which is enforced by the
+--   type-checker (to see the details, look in <tt>CommandHandlerType</tt>
+--   in the source code).
+--   
+--   The contents of this abstract datatype are not exported from this
+--   module for encapsulation. Use <a>command</a>, <a>parsecCommand</a>, or
+--   <a>regexCommand</a> to instantiate one.
+data Command m
+
+-- | <tt>command name handler</tt> creates a <a>Command</a> named
+--   <tt>name</tt>, which upon receiving a message will call
+--   <tt>handler</tt>. The <tt>name</tt> cannot contain any spaces, as it
+--   breaks the parser. The <tt>handler</tt> function can take an arbitrary
+--   amount of arguments of arbitrary types (it is polyvariadic), as long
+--   as they are instances of <a>ParsableArgument</a>.
+--   
+--   The Command that this function creates is polymorphic in the Monad it
+--   is run in. This means you can call it from <a>DiscordHandler</a> or
+--   any other Monad that satisfies the constraints of <a>MonadDiscord</a>.
+--   
+--   <h2><b>Examples:</b></h2>
+--   
+--   <tt>pong</tt> below responds to a ping by a pong.
+--   
+--   <pre>
+--   pong :: (MonadDiscord m) =&gt; Command m
+--   pong = command "ping" $ \msg -&gt; respond msg "pong!"
+--   </pre>
+--   
+--   <tt>pong2</tt> shows that <tt>help</tt> and <tt>runCommand</tt> can be
+--   composed to create a normal receiver.
+--   
+--   <pre>
+--   pong2 :: (MonadDiscord m) =&gt; Message -&gt; m ()
+--   pong2
+--       = runCommand
+--       . help "Custom help message"
+--       . command "ping" $ \msg -&gt; respond msg "pong!"
+--   </pre>
+--   
+--   <tt>weather</tt> below shows having arbitrary arguments in action.
+--   <tt>location</tt> is likely inferred to be <a>Text</a>.
+--   
+--   <pre>
+--   weather = command "weather" $ \msg location -&gt; do
+--       result &lt;- liftIO $ getWeather location
+--       respond msg $ "Weather at " &lt;&gt; location &lt;&gt; " is " &lt;&gt; result &lt;&gt; "!"
+--   </pre>
+--   
+--   <tt>complex</tt> shows that you can parse any type! (as long as you
+--   create an instance declaration of <a>ParsableArgument</a> for it).
+--   Ideally this should be placed in <tt>Command/Parser.hs</tt> among all
+--   the other parsers.
+--   
+--   <pre>
+--   instance ParsableArgument Int where
+--       parserForArg msg = do
+--           -- some parsec
+--           parsed &lt;- read &lt;$&gt; many digit
+--           endOrSpaces
+--           remaining &lt;- getInput
+--           pure (parsed, remaining)
+--   
+--   complex :: (MonadDiscord m) =&gt; Command m
+--   complex = command "setLimit" $ \i -&gt; do
+--       ...
+--   </pre>
+command :: (CommandHandlerType m h, MonadDiscord m) => Text -> h -> Command m
+
+-- | <tt>runCommand command msg</tt> runs the specified <a>Command</a> with
+--   the given message. It checks for any requirement failures, then calls
+--   the <tt>commandApplier</tt> function in the <a>Command</a> ADT. Any
+--   errors inside the handler is caught and appropriately handled.
+--   
+--   <ul>
+--   <li>If a custom parser is defined, the requirements are checked and
+--   the parser is called.</li>
+--   <li>If a custom parser is not defined, the command name is first
+--   matched and confirmed, before doing the requirement check and parser
+--   calls. If the name does not match, it does nothing (<tt>pure
+--   ()</tt>).</li>
+--   </ul>
+--   
+--   <pre>
+--   runCommand pong :: Message -&gt; m ()
+--   </pre>
+runCommand :: forall m. MonadDiscord m => Command m -> Message -> m ()
+
+-- | <tt>runCommands</tt> calls runCommand for all the Commands, and folds
+--   them with the Monadic bind (<a>&gt;&gt;</a>).
+runCommands :: (MonadDiscord m, Alternative m) => [Command m] -> Message -> m ()
+
+-- | <tt>runHelp</tt> creates a super duper simple help command that just
+--   lists each command's names together with their help text.
+runHelp :: MonadDiscord m => Text -> [Command m] -> Message -> m ()
+
+-- | <tt>parsecCommand</tt> defines a command that has no name, and has a
+--   custom parser. It can help things like "::quotes" because they have
+--   special syntax that demands a special parser.
+--   
+--   <a>prefix</a>, if used together, is ignored. Other compoasble
+--   functions like <a>help</a>, <a>requires</a>, and <a>onError</a> are
+--   still valid.
+--   
+--   The handler <b>must</b> take a <a>Message</a> and a <a>String</a> as
+--   argument (nothing more, nothing less), where the latter is the result
+--   of the parser.
+--   
+--   <pre>
+--   example
+--       = requires moderatorPrivs
+--       . parsecCommand (string '::' &gt;&gt; many1 anyChar) $ msg quoteName -&gt; do
+--           ...
+--           -- this is triggered on "::<a>or more chars</a>" where quoteName
+--           -- contains the section enclosed in &lt;&gt;
+--   </pre>
+parsecCommand :: MonadDiscord m => Parser String -> (Message -> String -> m ()) -> Command m
+
+-- | <tt>regexCommand</tt> defines a command that has no name, and has a
+--   custom regular expression matcher. Convenient when parsers can get
+--   complicated, although slow.
+--   
+--   <a>prefix</a>, if used together, is ignored. Other compoasble
+--   functions like <a>help</a>, <a>requires</a>, and <a>onError</a> are
+--   still valid.
+--   
+--   The handler <b>must</b> take a <a>Message</a> and a '[T.Text]' as
+--   argument, where the latter are the list of captured values from the
+--   Regex (same as the past <tt>newCommand</tt>).
+--   
+--   <pre>
+--   thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ msg caps -&gt; do
+--       let verb = head caps
+--   ...
+--   </pre>
+regexCommand :: MonadDiscord m => Text -> (Message -> [Text] -> m ()) -> Command m
+
+-- | <tt>help</tt> sets the help message for the command. The default is
+--   "Help not available."
+help :: Text -> Command m -> Command m
+
+-- | <tt>alias</tt> adds an alias for the command's name. This is ignored
+--   if a custom parser like <a>regexCommand</a> or <a>parsecCommand</a> is
+--   used.
+--   
+--   Functionally, this is equivalent to defining a new command with the
+--   same handler.
+alias :: Text -> Command m -> Command m
+
+-- | <tt>onError</tt> overwrites the default error handler of a command
+--   with a custom implementation. Usually the default
+--   <a>defaultErrorHandler</a> suffices.
+--   
+--   <pre>
+--   example
+--       = onError (\msg e -&gt; respond msg (T.pack $ show e))
+--       . command "example" $ do
+--           ...
+--   </pre>
+onError :: (Message -> CommandError -> m ()) -> Command m -> Command m
+
+-- | <tt>defaultErrorHandler m e</tt> is the default error handler unless
+--   you override it manually. This is exported and documented for
+--   reference only.
+--   
+--   <ul>
+--   <li><i>On argument error</i> It calls <a>respond</a> with the errors.
+--   This isn't owoified for legibility.</li>
+--   <li><i>On requirement error</i> It sends a DM to the invoking user
+--   with the errors.</li>
+--   <li><i>On a processing error</i> It calls <a>respond</a> with the
+--   error.</li>
+--   <li><i>On a Discord request failure</i> It calls <a>respond</a> with
+--   the error.</li>
+--   <li><i>On a Runtime/Haskell error</i> It calls <a>respond</a> with the
+--   error, owoified.</li>
+--   </ul>
+defaultErrorHandler :: MonadDiscord m => Message -> CommandError -> m ()
+
+-- | <tt>requires</tt> adds a requirement to the command. The requirement
+--   is a function that takes a <a>Message</a> and either returns
+--   <tt><a>Nothing</a></tt> (no problem) or <tt><a>Just</a>
+--   "explanation"</tt>. The function is in the <tt>m</tt> monad so it can
+--   access any additional information from Discord as necessary.
+--   
+--   Commands default to having no requirements.
+requires :: (Message -> m (Maybe Text)) -> Command m -> Command m
+
+-- | A <tt>ParsableArgument</tt> is a dataclass that represents arguments
+--   that can be parsed from a message. Any datatype that is an instance of
+--   this dataclass can be used as function arguments for a command handler
+--   in <tt>command</tt>.
+class ParsableArgument a
+
+-- | Datatype wrapper for the remaining text in the input. Handy for
+--   capturing everything remaining. The accessor function <tt>getEm</tt>
+--   isn't really meant to be used since pattern matching can do
+--   everything. Open to renaming.
+--   
+--   Example usage:
+--   
+--   <pre>
+--   setStatus =
+--       command "status"
+--       $ \msg newStatus newType (Remaining newName) -&gt; do
+--           ...
+--   </pre>
+data RemainingText
+Remaining :: Text -> RemainingText
+[getEm] :: RemainingText -> Text
+
+-- | Monads in which <a>IO</a> computations may be embedded. Any monad
+--   built by applying a sequence of monad transformers to the <a>IO</a>
+--   monad will be an instance of this class.
+--   
+--   Instances should satisfy the following laws, which state that
+--   <a>liftIO</a> is a transformer of monads:
+--   
+--   <ul>
+--   <li><pre><a>liftIO</a> . <a>return</a> = <a>return</a></pre></li>
+--   <li><pre><a>liftIO</a> (m &gt;&gt;= f) = <a>liftIO</a> m &gt;&gt;=
+--   (<a>liftIO</a> . f)</pre></li>
+--   </ul>
+class Monad m => MonadIO (m :: Type -> Type)
+
+-- | Lift a computation from the <a>IO</a> monad.
+liftIO :: MonadIO m => IO a -> m a
+instance Control.Monad.Catch.MonadThrow m => Command.Command.CommandHandlerType m (m ())
+instance (Control.Monad.Catch.MonadThrow m, Command.Parser.ParsableArgument a, Command.Command.CommandHandlerType m b) => Command.Command.CommandHandlerType m (a -> b)
+instance (Control.Monad.Catch.MonadThrow m, Command.Parser.ParsableArgument a) => Command.Command.CommandHandlerType m (a -> m ())
+
+
+-- | This module simply reexports <a>Command.Command</a>.
+module Command
+
 module Status
 
--- | Convert intuitive strings into the respective DataTypes Passes values
---   onto updateStatus' Although we revert to defaults if enums don't
---   match, the caller of this function should always check first on their
---   own and provide approriate error messages.
-updateStatus :: Text -> Text -> Text -> DiscordHandler ()
-editStatusFile :: Text -> Text -> Text -> IO ()
+-- | <tt>editStatusFile</tt> puts the status values into "status.csv" by
+--   calling <a>show</a> on them and converting it to <a>Text</a>.
+editStatusFile :: UpdateStatusType -> ActivityType -> Text -> IO ()
 
--- | Sets the status from file on bot launch Should be called only once.
+-- | <tt>setStatusFromFile</tt> reads "status.csv" from the Config
+--   directory, and reads in the 3 columns as <a>UpdateStatusType</a>,
+--   <a>ActivityType</a>, and <a>Text</a>. The values are used to call
+--   <a>updateStatus</a>.
+--   
+--   Incorrect formats (read parse errors) are ignored.
 setStatusFromFile :: DiscordHandler ()
+
+-- | <a>updateStatus</a> updates the status through the Discord gateway.
+--   Therefore, it requires DiscordHandler and is not polymorphic.
+updateStatus :: UpdateStatusType -> ActivityType -> Text -> DiscordHandler ()
+instance GHC.Read.Read Discord.Internal.Types.Gateway.UpdateStatusType
+instance GHC.Read.Read Discord.Internal.Types.Gateway.ActivityType
 
 module TemplateRE
 oneDot :: Text
@@ -96,32 +600,32 @@ emojiToUsableText :: Emoji -> Text
 -- | <a>sendMessageChan</a> attempts to send the given <tt>Text</tt> in the
 --   channel with the given <tt>channelID</tt>. Surpesses any error
 --   message(s), returning <tt>()</tt>.
-sendMessageChan :: ChannelId -> Text -> DiscordHandler ()
+sendMessageChan :: MonadDiscord m => ChannelId -> Text -> m ()
 
 -- | <a>sendReply</a> attempts to send a reply to the given <a>Message</a>.
 --   Suppresses any error message(s), returning <tt>()</tt>.
-sendReply :: Message -> Bool -> Text -> DiscordHandler ()
+sendReply :: MonadDiscord m => Message -> Bool -> Text -> m ()
 
 -- | <a>sendMessageChanEmbed</a> attempts to send the given embed with the
 --   given <tt>Text</tt> in the channel with the given <tt>channelID</tt>.
 --   Surpesses any error message(s), returning <tt>()</tt>.
-sendMessageChanEmbed :: ChannelId -> Text -> CreateEmbed -> DiscordHandler ()
+sendMessageChanEmbed :: MonadDiscord m => ChannelId -> Text -> CreateEmbed -> m ()
 
 -- | <a>sendMessageChanPingsDisabled</a> acts in the same way as
 --   <a>sendMessageChan</a>, but disables all pings (<tt>everyone,
 --   </tt>user, @role) pings from the message.
-sendMessageChanPingsDisabled :: ChannelId -> Text -> DiscordHandler ()
+sendMessageChanPingsDisabled :: MonadDiscord m => ChannelId -> Text -> m ()
 
 -- | <a>sendMessageDM</a> attempts to send the given <tt>Text</tt> as a
 --   direct message to the user with the given <a>UserId</a>. Surpresses
 --   any error message(s), returning <tt>()</tt>.
-sendMessageDM :: UserId -> Text -> DiscordHandler ()
+sendMessageDM :: MonadDiscord m => UserId -> Text -> m ()
 
 -- | <a>sendFileChan</a> attempts to send the file at the provided
 --   <a>FilePath</a> in the channel with the provided <a>ChannelId</a>. The
 --   file attachment is annotated by the given <tt>Text</tt>. Surpresses
 --   any error message(s), returning <tt>()</tt>.
-sendFileChan :: ChannelId -> Text -> FilePath -> DiscordHandler ()
+sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> Text -> FilePath -> m ()
 
 -- | <a>addReaction</a> attempts to add a reaction to the given message ID.
 --   Supresses any error message(s), returning <tt>()</tt>.
@@ -129,7 +633,7 @@ addReaction :: ChannelId -> MessageId -> Text -> DiscordHandler ()
 
 -- | <a>messageFromReaction</a> attempts to get the Message instance from a
 --   reaction.
-messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
+messageFromReaction :: MonadDiscord m => ReactionInfo -> m Message
 
 -- | <a>pingUser</a> constructs a minimal <tt>Text</tt> pinging the given
 --   user.
@@ -166,6 +670,9 @@ newCommand :: Message -> Text -> ([Text] -> DiscordHandler ()) -> DiscordHandler
 --   messaged directly and reprimanded so harshly that they will never
 --   attempt to use a dev command ever again.
 newDevCommand :: Message -> Text -> ([Text] -> DiscordHandler ()) -> DiscordHandler ()
+
+-- | Similar to newDev command, however looks up the Moderator role name
+--   instead of using ID to determine the message authors role.
 newModCommand :: Message -> Text -> ([Text] -> DiscordHandler ()) -> DiscordHandler ()
 
 -- | <a>linkChannel</a> constructs a minimal <tt>Text</tt> linking the
@@ -174,7 +681,7 @@ linkChannel :: ChannelId -> Text
 
 -- | <a>getMessageLink</a> attempts to construct the Discord URL of the
 --   given message, as a <tt>Text</tt>.
-getMessageLink :: Message -> DiscordHandler (Either RestCallErrorCode Text)
+getMessageLink :: Message -> DiscordHandler Text
 
 -- | <a>hasRoleByName</a> checks whether the provided message was sent by a
 --   user that has a role matching the provided <tt>Text</tt> exactly.
@@ -183,6 +690,10 @@ hasRoleByName :: Message -> Text -> DiscordHandler Bool
 -- | <a>hasRoleByID</a> checks whether the provided message was sent by a
 --   user that has a role matching the provided <a>RoleId</a>.
 hasRoleByID :: Message -> RoleId -> DiscordHandler Bool
+
+-- | channelRequirement is a requirement for a Command to be in a certain
+--   channel.
+channelRequirement :: MonadDiscord m => String -> Message -> m (Maybe Text)
 
 -- | <a>isMod</a> checks whether the provided message was sent by a user
 --   with the <tt>Moderator</tt> role.
@@ -211,7 +722,11 @@ captureCommandOutput :: String -> IO Text
 
 -- | <a>update</a> calls a shell script that updates the bot's repo
 update :: IO Bool
+
+-- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer
+
+-- | Moves channel position in guild
 moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
 
 -- | <a>isEmojiValid</a> determines whether an emoji (provided in Discord
@@ -222,7 +737,7 @@ isEmojiValid :: Text -> GuildId -> DiscordHandler Bool
 -- | <a>isRoleInGuild</a> determines whether a role containing the given
 --   text exists in the guild (case insensitive). If it does, then it
 --   returns the role's ID. Otherwise, <a>Nothing</a> is returned.
-isRoleInGuild :: Text -> GuildId -> DiscordHandler (Maybe RoleId)
+isRoleInGuild :: MonadDiscord m => Text -> GuildId -> m (Maybe RoleId)
 
 module RoleSelfAssign
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -240,14 +755,18 @@ commandReceivers :: [Message -> DiscordHandler ()]
 miscReceivers :: [Message -> DiscordHandler ()]
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 
+-- | <a>Joke</a> function to change owen's pronouns randomly in servers on
+--   startup, cause owen is our favourite genderfluid icon
+changePronouns :: (MonadDiscord m, MonadIO m) => m ()
+
 module MCServer
 receivers :: [Message -> DiscordHandler ()]
-instance GHC.Generics.Generic MCServer.ServerStatus
-instance GHC.Show.Show MCServer.ServerStatus
-instance GHC.Generics.Generic MCServer.ServerPlayers
-instance GHC.Show.Show MCServer.ServerPlayers
 instance GHC.Generics.Generic MCServer.ServerMOTD
 instance GHC.Show.Show MCServer.ServerMOTD
+instance GHC.Generics.Generic MCServer.ServerPlayers
+instance GHC.Show.Show MCServer.ServerPlayers
+instance GHC.Generics.Generic MCServer.ServerStatus
+instance GHC.Show.Show MCServer.ServerStatus
 instance Data.Aeson.Types.FromJSON.FromJSON MCServer.ServerStatus
 instance Data.Aeson.Types.ToJSON.ToJSON MCServer.ServerStatus
 instance Data.Aeson.Types.FromJSON.FromJSON MCServer.ServerPlayers
@@ -263,6 +782,15 @@ receivers :: [Message -> DiscordHandler ()]
 
 module Helpme
 receivers :: [Message -> DiscordHandler ()]
+
+module Haskell
+receivers :: [Message -> DiscordHandler ()]
+instance GHC.Generics.Generic Haskell.Repo
+instance GHC.Show.Show Haskell.Repo
+instance GHC.Generics.Generic Haskell.HoogleResp
+instance GHC.Show.Show Haskell.HoogleResp
+instance Data.Aeson.Types.FromJSON.FromJSON Haskell.HoogleResp
+instance Data.Aeson.Types.FromJSON.FromJSON Haskell.Repo
 
 module HallOfFame
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -286,7 +814,8 @@ reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 
 module Admin
 receivers :: [Message -> DiscordHandler ()]
-sendGitInfoChan :: ChannelId -> DiscordHandler ()
+sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
+sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 instance GHC.Classes.Eq Admin.Lock
 instance GHC.Show.Show Admin.Lock
 

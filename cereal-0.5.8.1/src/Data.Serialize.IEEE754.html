@@ -114,8 +114,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-74"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Data.Serialize.IEEE754.html#wordToFloat"><span class="hs-pragma hs-type">wordToFloat</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-75"></span><span class="annot"><a href="Data.Serialize.IEEE754.html#wordToFloat"><span class="hs-identifier hs-type">wordToFloat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span>
 </span><span id="line-76"></span><span id="wordToFloat"><span class="annot"><span class="annottext">wordToFloat :: Word32 -&gt; Float
-</span><a href="Data.Serialize.IEEE754.html#wordToFloat"><span class="hs-identifier hs-var hs-var">wordToFloat</span></a></span></span><span> </span><span id="local-6989586621679074477"><span class="annot"><span class="annottext">w :: Word32
-</span><a href="#local-6989586621679074477"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Float -&gt; Float
+</span><a href="Data.Serialize.IEEE754.html#wordToFloat"><span class="hs-identifier hs-var hs-var">wordToFloat</span></a></span></span><span> </span><span id="local-6989586621679049613"><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679049613"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Float -&gt; Float
 forall a. IO a -&gt; a
 </span><span class="hs-identifier hs-var">unsafeDupablePerformIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Float -&gt; Float) -&gt; IO Float -&gt; Float
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -124,25 +124,25 @@ forall a b. Storable a =&gt; (Ptr a -&gt; IO b) -&gt; IO b
 </span><span class="hs-identifier hs-var">alloca</span></span><span> </span><span class="annot"><span class="annottext">((Ptr Word32 -&gt; IO Float) -&gt; IO Float)
 -&gt; (Ptr Word32 -&gt; IO Float) -&gt; IO Float
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679074476"><span class="annot"><span class="annottext">Ptr Word32
-</span><a href="#local-6989586621679074476"><span class="hs-identifier hs-var">ptr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679049612"><span class="annot"><span class="annottext">Ptr Word32
+</span><a href="#local-6989586621679049612"><span class="hs-identifier hs-var">ptr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-77"></span><span>    </span><span class="annot"><span class="annottext">Ptr Word32 -&gt; Word32 -&gt; IO ()
 forall a. Storable a =&gt; Ptr a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">poke</span></span><span> </span><span class="annot"><span class="annottext">Ptr Word32
-</span><a href="#local-6989586621679074476"><span class="hs-identifier hs-var">ptr</span></a></span><span> </span><span class="annot"><span class="annottext">Word32
-</span><a href="#local-6989586621679074477"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><a href="#local-6989586621679049612"><span class="hs-identifier hs-var">ptr</span></a></span><span> </span><span class="annot"><span class="annottext">Word32
+</span><a href="#local-6989586621679049613"><span class="hs-identifier hs-var">w</span></a></span><span>
 </span><span id="line-78"></span><span>    </span><span class="annot"><span class="annottext">Ptr Float -&gt; IO Float
 forall a. Storable a =&gt; Ptr a -&gt; IO a
 </span><span class="hs-identifier hs-var">peek</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word32 -&gt; Ptr Float
 forall a b. Ptr a -&gt; Ptr b
 </span><span class="hs-identifier hs-var">castPtr</span></span><span> </span><span class="annot"><span class="annottext">Ptr Word32
-</span><a href="#local-6989586621679074476"><span class="hs-identifier hs-var">ptr</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679049612"><span class="hs-identifier hs-var">ptr</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>
 </span><span id="line-80"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Data.Serialize.IEEE754.html#wordToDouble"><span class="hs-pragma hs-type">wordToDouble</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-81"></span><span class="annot"><a href="Data.Serialize.IEEE754.html#wordToDouble"><span class="hs-identifier hs-type">wordToDouble</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span>
 </span><span id="line-82"></span><span id="wordToDouble"><span class="annot"><span class="annottext">wordToDouble :: Word64 -&gt; Double
-</span><a href="Data.Serialize.IEEE754.html#wordToDouble"><span class="hs-identifier hs-var hs-var">wordToDouble</span></a></span></span><span> </span><span id="local-6989586621679074475"><span class="annot"><span class="annottext">w :: Word64
-</span><a href="#local-6989586621679074475"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Double -&gt; Double
+</span><a href="Data.Serialize.IEEE754.html#wordToDouble"><span class="hs-identifier hs-var hs-var">wordToDouble</span></a></span></span><span> </span><span id="local-6989586621679049611"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679049611"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Double -&gt; Double
 forall a. IO a -&gt; a
 </span><span class="hs-identifier hs-var">unsafeDupablePerformIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Double -&gt; Double) -&gt; IO Double -&gt; Double
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -151,17 +151,17 @@ forall a b. Storable a =&gt; (Ptr a -&gt; IO b) -&gt; IO b
 </span><span class="hs-identifier hs-var">alloca</span></span><span> </span><span class="annot"><span class="annottext">((Ptr Word64 -&gt; IO Double) -&gt; IO Double)
 -&gt; (Ptr Word64 -&gt; IO Double) -&gt; IO Double
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679074474"><span class="annot"><span class="annottext">Ptr Word64
-</span><a href="#local-6989586621679074474"><span class="hs-identifier hs-var">ptr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679049610"><span class="annot"><span class="annottext">Ptr Word64
+</span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">ptr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-83"></span><span>    </span><span class="annot"><span class="annottext">Ptr Word64 -&gt; Word64 -&gt; IO ()
 forall a. Storable a =&gt; Ptr a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">poke</span></span><span> </span><span class="annot"><span class="annottext">Ptr Word64
-</span><a href="#local-6989586621679074474"><span class="hs-identifier hs-var">ptr</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679074475"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">ptr</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679049611"><span class="hs-identifier hs-var">w</span></a></span><span>
 </span><span id="line-84"></span><span>    </span><span class="annot"><span class="annottext">Ptr Double -&gt; IO Double
 forall a. Storable a =&gt; Ptr a -&gt; IO a
 </span><span class="hs-identifier hs-var">peek</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word64 -&gt; Ptr Double
 forall a b. Ptr a -&gt; Ptr b
 </span><span class="hs-identifier hs-var">castPtr</span></span><span> </span><span class="annot"><span class="annottext">Ptr Word64
-</span><a href="#local-6989586621679074474"><span class="hs-identifier hs-var">ptr</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">ptr</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-85"></span></pre></body></html>

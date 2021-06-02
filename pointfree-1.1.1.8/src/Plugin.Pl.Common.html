@@ -1,0 +1,816 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_A9p7xIbIHf1Aheb1mOQgqp"><span id="%24con2tag_G8Kb0op8QUo0O8rxqCAbcz"><span id="%24con2tag_HKQz3zdtRsR8Cakpp2f3LW"></span></span></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plugin.Pl.Common</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>        </span><span class="annot"><a href="Plugin.Pl.Common.html#Fixity"><span class="hs-identifier">Fixity</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier">Expr</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier">Pattern</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Decl"><span class="hs-identifier">Decl</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier">TopLevel</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>        </span><span class="annot"><a href="Plugin.Pl.Common.html#bt"><span class="hs-identifier">bt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier">sizeExpr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#mapTopLevel"><span class="hs-identifier">mapTopLevel</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#mapTopLevel%27"><span class="hs-identifier">mapTopLevel'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier">getExpr</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span>        </span><span class="annot"><a href="Plugin.Pl.Common.html#operators"><span class="hs-identifier">operators</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#reservedOps"><span class="hs-identifier">reservedOps</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#lookupOp"><span class="hs-identifier">lookupOp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#lookupFix"><span class="hs-identifier">lookupFix</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#minPrec"><span class="hs-identifier">minPrec</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#maxPrec"><span class="hs-identifier">maxPrec</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>        </span><span class="annot"><a href="Plugin.Pl.Common.html#comp"><span class="hs-identifier">comp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#flip%27"><span class="hs-identifier">flip'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#id%27"><span class="hs-identifier">id'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#const%27"><span class="hs-identifier">const'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#scomb"><span class="hs-identifier">scomb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#cons"><span class="hs-identifier">cons</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#nil"><span class="hs-identifier">nil</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#fix%27"><span class="hs-identifier">fix'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#if%27"><span class="hs-identifier">if'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#readM"><span class="hs-identifier">readM</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>        </span><span class="annot"><a href="Plugin.Pl.Common.html#makeList"><span class="hs-identifier">makeList</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#getList"><span class="hs-identifier">getList</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>        </span><span class="annot"><span class="hs-identifier">Assoc</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>        </span><span class="hs-keyword">module</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>        </span><span class="hs-keyword">module</span><span> </span><span class="annot"><span class="hs-identifier">Control.Arrow</span></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>        </span><span class="hs-keyword">module</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>        </span><span class="hs-keyword">module</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>        </span><span class="hs-keyword">module</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Base</span></span><span>
+</span><span id="line-13"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isJust</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">fromJust</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">intersperse</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">minimumBy</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Arrow</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">first</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">second</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(***)</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(&amp;&amp;&amp;)</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(|||)</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(+++)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Language.Haskell.Exts</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Assoc</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Base</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">assert</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- The rewrite rules can be found at the end of the file Rules.hs</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- Not sure if passing the information if it was used as infix or prefix</span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- is worth threading through the whole thing is worth the effort,</span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- but it stays that way until the prettyprinting algorithm gets more</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- sophisticated.</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">data</span><span> </span><span id="Fixity"><span class="annot"><a href="Plugin.Pl.Common.html#Fixity"><span class="hs-identifier hs-var">Fixity</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Pref"><span class="annot"><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Inf"><span class="annot"><a href="Plugin.Pl.Common.html#Inf"><span class="hs-identifier hs-var">Inf</span></a></span></span><span> </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679060282"><span id="local-6989586621679060284"><span id="local-6989586621679060286"><span class="annot"><span class="annottext">Int -&gt; Fixity -&gt; ShowS
+[Fixity] -&gt; ShowS
+Fixity -&gt; String
+(Int -&gt; Fixity -&gt; ShowS)
+-&gt; (Fixity -&gt; String) -&gt; ([Fixity] -&gt; ShowS) -&gt; Show Fixity
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Fixity] -&gt; ShowS
+$cshowList :: [Fixity] -&gt; ShowS
+show :: Fixity -&gt; String
+$cshow :: Fixity -&gt; String
+showsPrec :: Int -&gt; Fixity -&gt; ShowS
+$cshowsPrec :: Int -&gt; Fixity -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679060278"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Fixity"><span class="hs-identifier hs-type">Fixity</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-36"></span><span>  </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679060276"><span class="annot"><span class="annottext">== :: Fixity -&gt; Fixity -&gt; Bool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679060262"><span id="local-6989586621679060264"><span id="local-6989586621679060266"><span id="local-6989586621679060268"><span id="local-6989586621679060270"><span id="local-6989586621679060272"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Fixity"><span class="hs-identifier hs-type">Fixity</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679060260"><span class="annot"><span class="annottext">compare :: Fixity -&gt; Fixity -&gt; Ordering
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></span></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">EQ</span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">data</span><span> </span><span id="Expr"><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-var">Expr</span></a></span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Var"><span class="annot"><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Fixity"><span class="hs-identifier hs-type">Fixity</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Lambda"><span class="annot"><a href="Plugin.Pl.Common.html#Lambda"><span class="hs-identifier hs-var">Lambda</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier hs-type">Pattern</span></a></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="App"><span class="annot"><a href="Plugin.Pl.Common.html#App"><span class="hs-identifier hs-var">App</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Let"><span class="annot"><a href="Plugin.Pl.Common.html#Let"><span class="hs-identifier hs-var">Let</span></a></span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Decl"><span class="hs-identifier hs-type">Decl</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060251"><span id="local-6989586621679060253"><span class="annot"><span class="annottext">Expr -&gt; Expr -&gt; Bool
+(Expr -&gt; Expr -&gt; Bool) -&gt; (Expr -&gt; Expr -&gt; Bool) -&gt; Eq Expr
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Expr -&gt; Expr -&gt; Bool
+$c/= :: Expr -&gt; Expr -&gt; Bool
+== :: Expr -&gt; Expr -&gt; Bool
+$c== :: Expr -&gt; Expr -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060236"><span id="local-6989586621679060238"><span id="local-6989586621679060240"><span id="local-6989586621679060242"><span id="local-6989586621679060244"><span id="local-6989586621679060246"><span id="local-6989586621679060248"><span class="annot"><span class="annottext">Eq Expr
+Eq Expr
+-&gt; (Expr -&gt; Expr -&gt; Ordering)
+-&gt; (Expr -&gt; Expr -&gt; Bool)
+-&gt; (Expr -&gt; Expr -&gt; Bool)
+-&gt; (Expr -&gt; Expr -&gt; Bool)
+-&gt; (Expr -&gt; Expr -&gt; Bool)
+-&gt; (Expr -&gt; Expr -&gt; Expr)
+-&gt; (Expr -&gt; Expr -&gt; Expr)
+-&gt; Ord Expr
+Expr -&gt; Expr -&gt; Bool
+Expr -&gt; Expr -&gt; Ordering
+Expr -&gt; Expr -&gt; Expr
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Expr -&gt; Expr -&gt; Expr
+$cmin :: Expr -&gt; Expr -&gt; Expr
+max :: Expr -&gt; Expr -&gt; Expr
+$cmax :: Expr -&gt; Expr -&gt; Expr
+&gt;= :: Expr -&gt; Expr -&gt; Bool
+$c&gt;= :: Expr -&gt; Expr -&gt; Bool
+&gt; :: Expr -&gt; Expr -&gt; Bool
+$c&gt; :: Expr -&gt; Expr -&gt; Bool
+&lt;= :: Expr -&gt; Expr -&gt; Bool
+$c&lt;= :: Expr -&gt; Expr -&gt; Bool
+&lt; :: Expr -&gt; Expr -&gt; Bool
+$c&lt; :: Expr -&gt; Expr -&gt; Bool
+compare :: Expr -&gt; Expr -&gt; Ordering
+$ccompare :: Expr -&gt; Expr -&gt; Ordering
+$cp1Ord :: Eq Expr
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060230"><span id="local-6989586621679060232"><span id="local-6989586621679060234"><span class="annot"><span class="annottext">Int -&gt; Expr -&gt; ShowS
+[Expr] -&gt; ShowS
+Expr -&gt; String
+(Int -&gt; Expr -&gt; ShowS)
+-&gt; (Expr -&gt; String) -&gt; ([Expr] -&gt; ShowS) -&gt; Show Expr
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Expr] -&gt; ShowS
+$cshowList :: [Expr] -&gt; ShowS
+show :: Expr -&gt; String
+$cshow :: Expr -&gt; String
+showsPrec :: Int -&gt; Expr -&gt; ShowS
+$cshowsPrec :: Int -&gt; Expr -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">data</span><span> </span><span id="Pattern"><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier hs-var">Pattern</span></a></span></span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PVar"><span class="annot"><a href="Plugin.Pl.Common.html#PVar"><span class="hs-identifier hs-var">PVar</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PCons"><span class="annot"><a href="Plugin.Pl.Common.html#PCons"><span class="hs-identifier hs-var">PCons</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier hs-type">Pattern</span></a></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier hs-type">Pattern</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PTuple"><span class="annot"><a href="Plugin.Pl.Common.html#PTuple"><span class="hs-identifier hs-var">PTuple</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier hs-type">Pattern</span></a></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Pattern"><span class="hs-identifier hs-type">Pattern</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060223"><span id="local-6989586621679060225"><span class="annot"><span class="annottext">Pattern -&gt; Pattern -&gt; Bool
+(Pattern -&gt; Pattern -&gt; Bool)
+-&gt; (Pattern -&gt; Pattern -&gt; Bool) -&gt; Eq Pattern
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Pattern -&gt; Pattern -&gt; Bool
+$c/= :: Pattern -&gt; Pattern -&gt; Bool
+== :: Pattern -&gt; Pattern -&gt; Bool
+$c== :: Pattern -&gt; Pattern -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060208"><span id="local-6989586621679060210"><span id="local-6989586621679060212"><span id="local-6989586621679060214"><span id="local-6989586621679060216"><span id="local-6989586621679060218"><span id="local-6989586621679060220"><span class="annot"><span class="annottext">Eq Pattern
+Eq Pattern
+-&gt; (Pattern -&gt; Pattern -&gt; Ordering)
+-&gt; (Pattern -&gt; Pattern -&gt; Bool)
+-&gt; (Pattern -&gt; Pattern -&gt; Bool)
+-&gt; (Pattern -&gt; Pattern -&gt; Bool)
+-&gt; (Pattern -&gt; Pattern -&gt; Bool)
+-&gt; (Pattern -&gt; Pattern -&gt; Pattern)
+-&gt; (Pattern -&gt; Pattern -&gt; Pattern)
+-&gt; Ord Pattern
+Pattern -&gt; Pattern -&gt; Bool
+Pattern -&gt; Pattern -&gt; Ordering
+Pattern -&gt; Pattern -&gt; Pattern
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Pattern -&gt; Pattern -&gt; Pattern
+$cmin :: Pattern -&gt; Pattern -&gt; Pattern
+max :: Pattern -&gt; Pattern -&gt; Pattern
+$cmax :: Pattern -&gt; Pattern -&gt; Pattern
+&gt;= :: Pattern -&gt; Pattern -&gt; Bool
+$c&gt;= :: Pattern -&gt; Pattern -&gt; Bool
+&gt; :: Pattern -&gt; Pattern -&gt; Bool
+$c&gt; :: Pattern -&gt; Pattern -&gt; Bool
+&lt;= :: Pattern -&gt; Pattern -&gt; Bool
+$c&lt;= :: Pattern -&gt; Pattern -&gt; Bool
+&lt; :: Pattern -&gt; Pattern -&gt; Bool
+$c&lt; :: Pattern -&gt; Pattern -&gt; Bool
+compare :: Pattern -&gt; Pattern -&gt; Ordering
+$ccompare :: Pattern -&gt; Pattern -&gt; Ordering
+$cp1Ord :: Eq Pattern
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060202"><span id="local-6989586621679060204"><span id="local-6989586621679060206"><span class="annot"><span class="annottext">Int -&gt; Pattern -&gt; ShowS
+[Pattern] -&gt; ShowS
+Pattern -&gt; String
+(Int -&gt; Pattern -&gt; ShowS)
+-&gt; (Pattern -&gt; String) -&gt; ([Pattern] -&gt; ShowS) -&gt; Show Pattern
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Pattern] -&gt; ShowS
+$cshowList :: [Pattern] -&gt; ShowS
+show :: Pattern -&gt; String
+$cshow :: Pattern -&gt; String
+showsPrec :: Int -&gt; Pattern -&gt; ShowS
+$cshowsPrec :: Int -&gt; Pattern -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">data</span><span> </span><span id="Decl"><span class="annot"><a href="Plugin.Pl.Common.html#Decl"><span class="hs-identifier hs-var">Decl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Define"><span class="annot"><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-var">Define</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span>
+</span><span id="line-55"></span><span>  </span><span id="declName"><span class="annot"><span class="annottext">Decl -&gt; String
+</span><a href="Plugin.Pl.Common.html#declName"><span class="hs-identifier hs-var hs-var">declName</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span>
+</span><span id="line-56"></span><span>  </span><span id="declExpr"><span class="annot"><span class="annottext">Decl -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#declExpr"><span class="hs-identifier hs-var hs-var">declExpr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span>
+</span><span id="line-57"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060195"><span id="local-6989586621679060197"><span class="annot"><span class="annottext">Decl -&gt; Decl -&gt; Bool
+(Decl -&gt; Decl -&gt; Bool) -&gt; (Decl -&gt; Decl -&gt; Bool) -&gt; Eq Decl
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Decl -&gt; Decl -&gt; Bool
+$c/= :: Decl -&gt; Decl -&gt; Bool
+== :: Decl -&gt; Decl -&gt; Bool
+$c== :: Decl -&gt; Decl -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060180"><span id="local-6989586621679060182"><span id="local-6989586621679060184"><span id="local-6989586621679060186"><span id="local-6989586621679060188"><span id="local-6989586621679060190"><span id="local-6989586621679060192"><span class="annot"><span class="annottext">Eq Decl
+Eq Decl
+-&gt; (Decl -&gt; Decl -&gt; Ordering)
+-&gt; (Decl -&gt; Decl -&gt; Bool)
+-&gt; (Decl -&gt; Decl -&gt; Bool)
+-&gt; (Decl -&gt; Decl -&gt; Bool)
+-&gt; (Decl -&gt; Decl -&gt; Bool)
+-&gt; (Decl -&gt; Decl -&gt; Decl)
+-&gt; (Decl -&gt; Decl -&gt; Decl)
+-&gt; Ord Decl
+Decl -&gt; Decl -&gt; Bool
+Decl -&gt; Decl -&gt; Ordering
+Decl -&gt; Decl -&gt; Decl
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Decl -&gt; Decl -&gt; Decl
+$cmin :: Decl -&gt; Decl -&gt; Decl
+max :: Decl -&gt; Decl -&gt; Decl
+$cmax :: Decl -&gt; Decl -&gt; Decl
+&gt;= :: Decl -&gt; Decl -&gt; Bool
+$c&gt;= :: Decl -&gt; Decl -&gt; Bool
+&gt; :: Decl -&gt; Decl -&gt; Bool
+$c&gt; :: Decl -&gt; Decl -&gt; Bool
+&lt;= :: Decl -&gt; Decl -&gt; Bool
+$c&lt;= :: Decl -&gt; Decl -&gt; Bool
+&lt; :: Decl -&gt; Decl -&gt; Bool
+$c&lt; :: Decl -&gt; Decl -&gt; Bool
+compare :: Decl -&gt; Decl -&gt; Ordering
+$ccompare :: Decl -&gt; Decl -&gt; Ordering
+$cp1Ord :: Eq Decl
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060174"><span id="local-6989586621679060176"><span id="local-6989586621679060178"><span class="annot"><span class="annottext">Int -&gt; Decl -&gt; ShowS
+[Decl] -&gt; ShowS
+Decl -&gt; String
+(Int -&gt; Decl -&gt; ShowS)
+-&gt; (Decl -&gt; String) -&gt; ([Decl] -&gt; ShowS) -&gt; Show Decl
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Decl] -&gt; ShowS
+$cshowList :: [Decl] -&gt; ShowS
+show :: Decl -&gt; String
+$cshow :: Decl -&gt; String
+showsPrec :: Int -&gt; Decl -&gt; ShowS
+$cshowsPrec :: Int -&gt; Decl -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-keyword">data</span><span> </span><span id="TopLevel"><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-var">TopLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TLD"><span class="annot"><a href="Plugin.Pl.Common.html#TLD"><span class="hs-identifier hs-var">TLD</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Decl"><span class="hs-identifier hs-type">Decl</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="TLE"><span class="annot"><a href="Plugin.Pl.Common.html#TLE"><span class="hs-identifier hs-var">TLE</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060168"><span id="local-6989586621679060170"><span class="annot"><span class="annottext">TopLevel -&gt; TopLevel -&gt; Bool
+(TopLevel -&gt; TopLevel -&gt; Bool)
+-&gt; (TopLevel -&gt; TopLevel -&gt; Bool) -&gt; Eq TopLevel
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: TopLevel -&gt; TopLevel -&gt; Bool
+$c/= :: TopLevel -&gt; TopLevel -&gt; Bool
+== :: TopLevel -&gt; TopLevel -&gt; Bool
+$c== :: TopLevel -&gt; TopLevel -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060153"><span id="local-6989586621679060155"><span id="local-6989586621679060157"><span id="local-6989586621679060159"><span id="local-6989586621679060161"><span id="local-6989586621679060163"><span id="local-6989586621679060165"><span class="annot"><span class="annottext">Eq TopLevel
+Eq TopLevel
+-&gt; (TopLevel -&gt; TopLevel -&gt; Ordering)
+-&gt; (TopLevel -&gt; TopLevel -&gt; Bool)
+-&gt; (TopLevel -&gt; TopLevel -&gt; Bool)
+-&gt; (TopLevel -&gt; TopLevel -&gt; Bool)
+-&gt; (TopLevel -&gt; TopLevel -&gt; Bool)
+-&gt; (TopLevel -&gt; TopLevel -&gt; TopLevel)
+-&gt; (TopLevel -&gt; TopLevel -&gt; TopLevel)
+-&gt; Ord TopLevel
+TopLevel -&gt; TopLevel -&gt; Bool
+TopLevel -&gt; TopLevel -&gt; Ordering
+TopLevel -&gt; TopLevel -&gt; TopLevel
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: TopLevel -&gt; TopLevel -&gt; TopLevel
+$cmin :: TopLevel -&gt; TopLevel -&gt; TopLevel
+max :: TopLevel -&gt; TopLevel -&gt; TopLevel
+$cmax :: TopLevel -&gt; TopLevel -&gt; TopLevel
+&gt;= :: TopLevel -&gt; TopLevel -&gt; Bool
+$c&gt;= :: TopLevel -&gt; TopLevel -&gt; Bool
+&gt; :: TopLevel -&gt; TopLevel -&gt; Bool
+$c&gt; :: TopLevel -&gt; TopLevel -&gt; Bool
+&lt;= :: TopLevel -&gt; TopLevel -&gt; Bool
+$c&lt;= :: TopLevel -&gt; TopLevel -&gt; Bool
+&lt; :: TopLevel -&gt; TopLevel -&gt; Bool
+$c&lt; :: TopLevel -&gt; TopLevel -&gt; Bool
+compare :: TopLevel -&gt; TopLevel -&gt; Ordering
+$ccompare :: TopLevel -&gt; TopLevel -&gt; Ordering
+$cp1Ord :: Eq TopLevel
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060147"><span id="local-6989586621679060149"><span id="local-6989586621679060151"><span class="annot"><span class="annottext">Int -&gt; TopLevel -&gt; ShowS
+[TopLevel] -&gt; ShowS
+TopLevel -&gt; String
+(Int -&gt; TopLevel -&gt; ShowS)
+-&gt; (TopLevel -&gt; String) -&gt; ([TopLevel] -&gt; ShowS) -&gt; Show TopLevel
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [TopLevel] -&gt; ShowS
+$cshowList :: [TopLevel] -&gt; ShowS
+show :: TopLevel -&gt; String
+$cshow :: TopLevel -&gt; String
+showsPrec :: Int -&gt; TopLevel -&gt; ShowS
+$cshowsPrec :: Int -&gt; TopLevel -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><a href="Plugin.Pl.Common.html#mapTopLevel"><span class="hs-identifier hs-type">mapTopLevel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-type">TopLevel</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-type">TopLevel</span></a></span><span>
+</span><span id="line-62"></span><span id="mapTopLevel"><span class="annot"><span class="annottext">mapTopLevel :: (Expr -&gt; Expr) -&gt; TopLevel -&gt; TopLevel
+</span><a href="Plugin.Pl.Common.html#mapTopLevel"><span class="hs-identifier hs-var hs-var">mapTopLevel</span></a></span></span><span> </span><span id="local-6989586621679060146"><span class="annot"><span class="annottext">Expr -&gt; Expr
+</span><a href="#local-6989586621679060146"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679060145"><span class="annot"><span class="annottext">TopLevel
+</span><a href="#local-6989586621679060145"><span class="hs-identifier hs-var">tl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TopLevel -&gt; (Expr, Expr -&gt; TopLevel)
+</span><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier hs-var">getExpr</span></a></span><span> </span><span class="annot"><span class="annottext">TopLevel
+</span><a href="#local-6989586621679060145"><span class="hs-identifier hs-var">tl</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060144"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060144"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060143"><span class="annot"><span class="annottext">Expr -&gt; TopLevel
+</span><a href="#local-6989586621679060143"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Expr -&gt; TopLevel
+</span><a href="#local-6989586621679060143"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; TopLevel) -&gt; Expr -&gt; TopLevel
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Expr
+</span><a href="#local-6989586621679060146"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060144"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span id="local-6989586621679060142"><span class="annot"><a href="Plugin.Pl.Common.html#mapTopLevel%27"><span class="hs-identifier hs-type">mapTopLevel'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679060142"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679060142"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-type">TopLevel</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679060142"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-type">TopLevel</span></a></span></span><span>
+</span><span id="line-65"></span><span id="mapTopLevel%27"><span class="annot"><span class="annottext">mapTopLevel' :: (Expr -&gt; f Expr) -&gt; TopLevel -&gt; f TopLevel
+</span><a href="Plugin.Pl.Common.html#mapTopLevel%27"><span class="hs-identifier hs-var hs-var">mapTopLevel'</span></a></span></span><span> </span><span id="local-6989586621679060141"><span class="annot"><span class="annottext">Expr -&gt; f Expr
+</span><a href="#local-6989586621679060141"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679060140"><span class="annot"><span class="annottext">TopLevel
+</span><a href="#local-6989586621679060140"><span class="hs-identifier hs-var">tl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TopLevel -&gt; (Expr, Expr -&gt; TopLevel)
+</span><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier hs-var">getExpr</span></a></span><span> </span><span class="annot"><span class="annottext">TopLevel
+</span><a href="#local-6989586621679060140"><span class="hs-identifier hs-var">tl</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060139"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060139"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679060138"><span class="annot"><span class="annottext">Expr -&gt; TopLevel
+</span><a href="#local-6989586621679060138"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; TopLevel) -&gt; f Expr -&gt; f TopLevel
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; TopLevel
+</span><a href="#local-6989586621679060138"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">(f Expr -&gt; f TopLevel) -&gt; f Expr -&gt; f TopLevel
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; f Expr
+</span><a href="#local-6989586621679060141"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060139"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier hs-type">getExpr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-type">TopLevel</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#TopLevel"><span class="hs-identifier hs-type">TopLevel</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-68"></span><span id="getExpr"><span class="annot"><span class="annottext">getExpr :: TopLevel -&gt; (Expr, Expr -&gt; TopLevel)
+</span><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier hs-var hs-var">getExpr</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#TLD"><span class="hs-identifier hs-type">TLD</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-type">Define</span></a></span><span> </span><span id="local-6989586621679060137"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060137"><span class="hs-identifier hs-var">foo</span></a></span></span><span> </span><span id="local-6989586621679060136"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060136"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Decl] -&gt; Expr -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Let"><span class="hs-identifier hs-var">Let</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Expr -&gt; Decl
+</span><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-var">Define</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060137"><span class="hs-identifier hs-var">foo</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060136"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060137"><span class="hs-identifier hs-var">foo</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span>
+</span><span id="line-69"></span><span>                                     </span><span class="hs-glyph">\</span><span id="local-6989586621679060135"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060135"><span class="hs-identifier hs-var">e'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Decl -&gt; TopLevel
+</span><a href="Plugin.Pl.Common.html#TLD"><span class="hs-identifier hs-var">TLD</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="annot"><span class="annottext">(Decl -&gt; TopLevel) -&gt; Decl -&gt; TopLevel
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Expr -&gt; Decl
+</span><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-var">Define</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060137"><span class="hs-identifier hs-var">foo</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060135"><span class="hs-identifier hs-var">e'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span class="annot"><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier hs-var">getExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#TLD"><span class="hs-identifier hs-type">TLD</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-type">Define</span></a></span><span> </span><span id="local-6989586621679060134"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060134"><span class="hs-identifier hs-var">foo</span></a></span></span><span> </span><span id="local-6989586621679060133"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060133"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060133"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679060132"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060132"><span class="hs-identifier hs-var">e'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Decl -&gt; TopLevel
+</span><a href="Plugin.Pl.Common.html#TLD"><span class="hs-identifier hs-var">TLD</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="annot"><span class="annottext">(Decl -&gt; TopLevel) -&gt; Decl -&gt; TopLevel
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Expr -&gt; Decl
+</span><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-var">Define</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060134"><span class="hs-identifier hs-var">foo</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060132"><span class="hs-identifier hs-var">e'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span class="annot"><a href="Plugin.Pl.Common.html#getExpr"><span class="hs-identifier hs-var">getExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#TLE"><span class="hs-identifier hs-type">TLE</span></a></span><span> </span><span id="local-6989586621679060131"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060131"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060131"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Expr -&gt; TopLevel
+</span><a href="Plugin.Pl.Common.html#TLE"><span class="hs-identifier hs-var">TLE</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="annot"><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-type">sizeExpr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-74"></span><span id="sizeExpr"><span class="annot"><span class="annottext">sizeExpr :: Expr -&gt; Int
+</span><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var hs-var">sizeExpr</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-75"></span><span class="annot"><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#App"><span class="hs-identifier hs-type">App</span></a></span><span> </span><span id="local-6989586621679060130"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060130"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span id="local-6989586621679060129"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060129"><span class="hs-identifier hs-var">e2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Int
+</span><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060130"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Int
+</span><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060129"><span class="hs-identifier hs-var">e2</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-76"></span><span class="annot"><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Lambda"><span class="hs-identifier hs-type">Lambda</span></a></span><span> </span><span class="annot"><span class="annottext">Pattern
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679060127"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060127"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Int
+</span><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060127"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-77"></span><span class="annot"><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Let"><span class="hs-identifier hs-type">Let</span></a></span><span> </span><span id="local-6989586621679060126"><span class="annot"><span class="annottext">[Decl]
+</span><a href="#local-6989586621679060126"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span id="local-6989586621679060125"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060125"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
+forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
+</span><span class="hs-identifier hs-var">sum</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Decl -&gt; Int) -&gt; [Decl] -&gt; [Int]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Decl -&gt; Int
+</span><a href="#local-6989586621679060123"><span class="hs-identifier hs-var">sizeDecl</span></a></span><span> </span><span class="annot"><span class="annottext">[Decl]
+</span><a href="#local-6989586621679060126"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Int
+</span><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060125"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-78"></span><span>  </span><span id="local-6989586621679060123"><span class="annot"><span class="annottext">sizeDecl :: Decl -&gt; Int
+</span><a href="#local-6989586621679060123"><span class="hs-identifier hs-var hs-var">sizeDecl</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Define"><span class="hs-identifier hs-type">Define</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679060122"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060122"><span class="hs-identifier hs-var">e'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Int
+</span><a href="Plugin.Pl.Common.html#sizeExpr"><span class="hs-identifier hs-var">sizeExpr</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060122"><span class="hs-identifier hs-var">e'</span></a></span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="annot"><a href="Plugin.Pl.Common.html#comp"><span class="hs-identifier hs-type">comp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#flip%27"><span class="hs-identifier hs-type">flip'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#id%27"><span class="hs-identifier hs-type">id'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#const%27"><span class="hs-identifier hs-type">const'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#scomb"><span class="hs-identifier hs-type">scomb</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#cons"><span class="hs-identifier hs-type">cons</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#nil"><span class="hs-identifier hs-type">nil</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#fix%27"><span class="hs-identifier hs-type">fix'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#if%27"><span class="hs-identifier hs-type">if'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span>
+</span><span id="line-81"></span><span id="comp"><span class="annot"><span class="annottext">comp :: Expr
+</span><a href="Plugin.Pl.Common.html#comp"><span class="hs-identifier hs-var hs-var">comp</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Inf"><span class="hs-identifier hs-var">Inf</span></a></span><span>  </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;.&quot;</span></span><span>
+</span><span id="line-82"></span><span id="flip%27"><span class="annot"><span class="annottext">flip' :: Expr
+</span><a href="Plugin.Pl.Common.html#flip%27"><span class="hs-identifier hs-var hs-var">flip'</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;flip&quot;</span></span><span>
+</span><span id="line-83"></span><span id="id%27"><span class="annot"><span class="annottext">id' :: Expr
+</span><a href="Plugin.Pl.Common.html#id%27"><span class="hs-identifier hs-var hs-var">id'</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;id&quot;</span></span><span>
+</span><span id="line-84"></span><span id="const%27"><span class="annot"><span class="annottext">const' :: Expr
+</span><a href="Plugin.Pl.Common.html#const%27"><span class="hs-identifier hs-var hs-var">const'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;const&quot;</span></span><span>
+</span><span id="line-85"></span><span id="scomb"><span class="annot"><span class="annottext">scomb :: Expr
+</span><a href="Plugin.Pl.Common.html#scomb"><span class="hs-identifier hs-var hs-var">scomb</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;ap&quot;</span></span><span>
+</span><span id="line-86"></span><span id="cons"><span class="annot"><span class="annottext">cons :: Expr
+</span><a href="Plugin.Pl.Common.html#cons"><span class="hs-identifier hs-var hs-var">cons</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Inf"><span class="hs-identifier hs-var">Inf</span></a></span><span>  </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;:&quot;</span></span><span>
+</span><span id="line-87"></span><span id="nil"><span class="annot"><span class="annottext">nil :: Expr
+</span><a href="Plugin.Pl.Common.html#nil"><span class="hs-identifier hs-var hs-var">nil</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;[]&quot;</span></span><span>
+</span><span id="line-88"></span><span id="fix%27"><span class="annot"><span class="annottext">fix' :: Expr
+</span><a href="Plugin.Pl.Common.html#fix%27"><span class="hs-identifier hs-var hs-var">fix'</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fix&quot;</span></span><span>
+</span><span id="line-89"></span><span id="if%27"><span class="annot"><span class="annottext">if' :: Expr
+</span><a href="Plugin.Pl.Common.html#if%27"><span class="hs-identifier hs-var hs-var">if'</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fixity -&gt; String -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><a href="Plugin.Pl.Common.html#Pref"><span class="hs-identifier hs-var">Pref</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;if'&quot;</span></span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span class="annot"><a href="Plugin.Pl.Common.html#makeList"><span class="hs-identifier hs-type">makeList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span>
+</span><span id="line-92"></span><span id="makeList"><span class="annot"><span class="annottext">makeList :: [Expr] -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#makeList"><span class="hs-identifier hs-var hs-var">makeList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; Expr -&gt; Expr) -&gt; Expr -&gt; [Expr] -&gt; Expr
+forall (t :: * -&gt; *) a b.
+Foldable t =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldr</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679060120"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060120"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span id="local-6989586621679060119"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060119"><span class="hs-identifier hs-var">e2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="Plugin.Pl.Common.html#cons"><span class="hs-identifier hs-var">cons</span></a></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Expr -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#App"><span class="hs-operator hs-var">`App`</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060120"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Expr -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#App"><span class="hs-operator hs-var">`App`</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060119"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="Plugin.Pl.Common.html#nil"><span class="hs-identifier hs-var">nil</span></a></span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span class="hs-comment">-- Modularity is a drag</span><span>
+</span><span id="line-95"></span><span class="annot"><a href="Plugin.Pl.Common.html#getList"><span class="hs-identifier hs-type">getList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span><span id="getList"><span class="annot"><span class="annottext">getList :: Expr -&gt; ([Expr], Expr)
+</span><a href="Plugin.Pl.Common.html#getList"><span class="hs-identifier hs-var hs-var">getList</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060118"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060118"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#App"><span class="hs-operator hs-type">`App`</span></a></span><span> </span><span id="local-6989586621679060117"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060117"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#App"><span class="hs-operator hs-type">`App`</span></a></span><span> </span><span id="local-6989586621679060116"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060116"><span class="hs-identifier hs-var">tl</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060118"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Expr -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="Plugin.Pl.Common.html#cons"><span class="hs-identifier hs-var">cons</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Expr] -&gt; [Expr]) -&gt; ([Expr], Expr) -&gt; ([Expr], Expr)
+forall (a :: * -&gt; * -&gt; *) b c d.
+Arrow a =&gt;
+a b c -&gt; a (b, d) (c, d)
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060117"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">Expr -&gt; [Expr] -&gt; [Expr]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(([Expr], Expr) -&gt; ([Expr], Expr))
+-&gt; ([Expr], Expr) -&gt; ([Expr], Expr)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; ([Expr], Expr)
+</span><a href="Plugin.Pl.Common.html#getList"><span class="hs-identifier hs-var">getList</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060116"><span class="hs-identifier hs-var">tl</span></a></span><span>
+</span><span id="line-97"></span><span class="annot"><a href="Plugin.Pl.Common.html#getList"><span class="hs-identifier hs-var">getList</span></a></span><span> </span><span id="local-6989586621679060115"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060115"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679060115"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span id="local-6989586621679060114"><span class="annot"><a href="Plugin.Pl.Common.html#bt"><span class="hs-identifier hs-type">bt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679060114"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-100"></span><span id="bt"><span class="annot"><span class="annottext">bt :: a
+</span><a href="Plugin.Pl.Common.html#bt"><span class="hs-identifier hs-var hs-var">bt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+forall a. HasCallStack =&gt; a
+</span><span class="hs-identifier hs-var">undefined</span></span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span class="annot"><a href="Plugin.Pl.Common.html#shift"><span class="hs-identifier hs-type">shift</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#minPrec"><span class="hs-identifier hs-type">minPrec</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#maxPrec"><span class="hs-identifier hs-type">maxPrec</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-103"></span><span id="shift"><span class="annot"><span class="annottext">shift :: Int
+</span><a href="Plugin.Pl.Common.html#shift"><span class="hs-identifier hs-var hs-var">shift</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-104"></span><span id="maxPrec"><span class="annot"><span class="annottext">maxPrec :: Int
+</span><a href="Plugin.Pl.Common.html#maxPrec"><span class="hs-identifier hs-var hs-var">maxPrec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="Plugin.Pl.Common.html#shift"><span class="hs-identifier hs-var">shift</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span>
+</span><span id="line-105"></span><span id="minPrec"><span class="annot"><span class="annottext">minPrec :: Int
+</span><a href="Plugin.Pl.Common.html#minPrec"><span class="hs-identifier hs-var hs-var">minPrec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="hs-comment">-- operator precedences are needed both for parsing and prettyprinting</span><span>
+</span><span id="line-108"></span><span class="annot"><a href="Plugin.Pl.Common.html#operators"><span class="hs-identifier hs-type">operators</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Assoc</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-109"></span><span id="operators"><span class="annot"><span class="annottext">operators :: [[(String, (Assoc (), Int))]]
+</span><a href="Plugin.Pl.Common.html#operators"><span class="hs-identifier hs-var hs-var">operators</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">([(String, (Assoc (), Int))] -&gt; [(String, (Assoc (), Int))])
+-&gt; [[(String, (Assoc (), Int))]] -&gt; [[(String, (Assoc (), Int))]]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">(([(String, (Assoc (), Int))] -&gt; [(String, (Assoc (), Int))])
+ -&gt; [[(String, (Assoc (), Int))]] -&gt; [[(String, (Assoc (), Int))]])
+-&gt; ((Int -&gt; Int)
+    -&gt; [(String, (Assoc (), Int))] -&gt; [(String, (Assoc (), Int))])
+-&gt; (Int -&gt; Int)
+-&gt; [[(String, (Assoc (), Int))]]
+-&gt; [[(String, (Assoc (), Int))]]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">((String, (Assoc (), Int)) -&gt; (String, (Assoc (), Int)))
+-&gt; [(String, (Assoc (), Int))] -&gt; [(String, (Assoc (), Int))]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">(((String, (Assoc (), Int)) -&gt; (String, (Assoc (), Int)))
+ -&gt; [(String, (Assoc (), Int))] -&gt; [(String, (Assoc (), Int))])
+-&gt; ((Int -&gt; Int)
+    -&gt; (String, (Assoc (), Int)) -&gt; (String, (Assoc (), Int)))
+-&gt; (Int -&gt; Int)
+-&gt; [(String, (Assoc (), Int))]
+-&gt; [(String, (Assoc (), Int))]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">((Assoc (), Int) -&gt; (Assoc (), Int))
+-&gt; (String, (Assoc (), Int)) -&gt; (String, (Assoc (), Int))
+forall (a :: * -&gt; * -&gt; *) b c d.
+Arrow a =&gt;
+a b c -&gt; a (d, b) (d, c)
+</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">(((Assoc (), Int) -&gt; (Assoc (), Int))
+ -&gt; (String, (Assoc (), Int)) -&gt; (String, (Assoc (), Int)))
+-&gt; ((Int -&gt; Int) -&gt; (Assoc (), Int) -&gt; (Assoc (), Int))
+-&gt; (Int -&gt; Int)
+-&gt; (String, (Assoc (), Int))
+-&gt; (String, (Assoc (), Int))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; (Assoc (), Int) -&gt; (Assoc (), Int)
+forall (a :: * -&gt; * -&gt; *) b c d.
+Arrow a =&gt;
+a b c -&gt; a (d, b) (d, c)
+</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Int)
+ -&gt; [[(String, (Assoc (), Int))]] -&gt; [[(String, (Assoc (), Int))]])
+-&gt; (Int -&gt; Int)
+-&gt; [[(String, (Assoc (), Int))]]
+-&gt; [[(String, (Assoc (), Int))]]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><a href="Plugin.Pl.Common.html#shift"><span class="hs-identifier hs-var">shift</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;.&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;!!&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocLeft</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-111"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060107"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679060107"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060107"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;^&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;^^&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;**&quot;</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-112"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060106"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocLeft</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">7</span></span><span>
+</span><span id="line-113"></span><span>     </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679060106"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060106"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;*&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;/&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`quot`&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`rem`&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`div`&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`mod`&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;:%&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;%&quot;</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-114"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060105"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocLeft</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">6</span></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679060105"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060105"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;+&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;-&quot;</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-115"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060104"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">5</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679060104"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060104"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;:&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;++&quot;</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-116"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060103"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocNone</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">4</span></span><span>
+</span><span id="line-117"></span><span>     </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679060103"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060103"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;==&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;/=&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&lt;&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&lt;=&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&gt;=&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&gt;&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`elem`&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`notElem`&quot;</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-118"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&amp;&amp;&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-119"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;||&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-120"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&gt;&gt;&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocLeft</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&gt;&gt;=&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocLeft</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;=&lt;&lt;&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span>
+</span><span id="line-121"></span><span>   </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Assoc () -&gt; Int -&gt; (String, (Assoc (), Int))
+forall a a b. a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var">inf</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060101"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocRight</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679060101"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060101"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;$&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;$!&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`seq`&quot;</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-122"></span><span>  </span><span class="hs-special">]</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-123"></span><span>  </span><span id="local-6989586621679060110"><span class="annot"><span class="annottext">inf :: a -&gt; a -&gt; b -&gt; (a, (a, b))
+</span><a href="#local-6989586621679060110"><span class="hs-identifier hs-var hs-var">inf</span></a></span></span><span> </span><span id="local-6989586621679060100"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060100"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679060099"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060099"><span class="hs-identifier hs-var">assoc</span></a></span></span><span> </span><span id="local-6989586621679060098"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679060098"><span class="hs-identifier hs-var">fx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060100"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060099"><span class="hs-identifier hs-var">assoc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679060098"><span class="hs-identifier hs-var">fx</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-124"></span><span>
+</span><span id="line-125"></span><span class="annot"><a href="Plugin.Pl.Common.html#reservedOps"><span class="hs-identifier hs-type">reservedOps</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
+</span><span id="line-126"></span><span id="reservedOps"><span class="annot"><span class="annottext">reservedOps :: [String]
+</span><a href="Plugin.Pl.Common.html#reservedOps"><span class="hs-identifier hs-var hs-var">reservedOps</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;-&gt;&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;..&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;=&quot;</span></span><span class="hs-special">]</span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="annot"><a href="Plugin.Pl.Common.html#opFM"><span class="hs-identifier hs-type">opFM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">M.Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Assoc</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span id="opFM"><span class="annot"><span class="annottext">opFM :: Map String (Assoc (), Int)
+</span><a href="Plugin.Pl.Common.html#opFM"><span class="hs-identifier hs-var hs-var">opFM</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(String, (Assoc (), Int))] -&gt; Map String (Assoc (), Int)
+forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
+</span><span class="hs-identifier hs-var">M.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(String, (Assoc (), Int))] -&gt; Map String (Assoc (), Int))
+-&gt; [(String, (Assoc (), Int))] -&gt; Map String (Assoc (), Int)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[[(String, (Assoc (), Int))]] -&gt; [(String, (Assoc (), Int))]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">[[(String, (Assoc (), Int))]]
+</span><a href="Plugin.Pl.Common.html#operators"><span class="hs-identifier hs-var">operators</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="annot"><a href="Plugin.Pl.Common.html#lookupOp"><span class="hs-identifier hs-type">lookupOp</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Assoc</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span id="lookupOp"><span class="annot"><span class="annottext">lookupOp :: String -&gt; Maybe (Assoc (), Int)
+</span><a href="Plugin.Pl.Common.html#lookupOp"><span class="hs-identifier hs-var hs-var">lookupOp</span></a></span></span><span> </span><span id="local-6989586621679060094"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060094"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Map String (Assoc (), Int) -&gt; Maybe (Assoc (), Int)
+forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">M.lookup</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060094"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Map String (Assoc (), Int)
+</span><a href="Plugin.Pl.Common.html#opFM"><span class="hs-identifier hs-var">opFM</span></a></span><span>
+</span><span id="line-133"></span><span>
+</span><span id="line-134"></span><span class="annot"><a href="Plugin.Pl.Common.html#lookupFix"><span class="hs-identifier hs-type">lookupFix</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Assoc</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-135"></span><span id="lookupFix"><span class="annot"><span class="annottext">lookupFix :: String -&gt; (Assoc (), Int)
+</span><a href="Plugin.Pl.Common.html#lookupFix"><span class="hs-identifier hs-var hs-var">lookupFix</span></a></span></span><span> </span><span id="local-6989586621679060092"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060092"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe (Assoc (), Int)
+</span><a href="Plugin.Pl.Common.html#lookupOp"><span class="hs-identifier hs-var">lookupOp</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (Assoc (), Int))
+-&gt; String -&gt; Maybe (Assoc (), Int)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060092"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-136"></span><span>  </span><span class="annot"><span class="annottext">Maybe (Assoc (), Int)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assoc ()
+forall l. l -&gt; Assoc l
+</span><span class="hs-identifier hs-var">AssocLeft</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="Plugin.Pl.Common.html#shift"><span class="hs-identifier hs-var">shift</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-137"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679060091"><span class="annot"><span class="annottext">(Assoc (), Int)
+</span><a href="#local-6989586621679060091"><span class="hs-identifier hs-var">x</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Assoc (), Int)
+</span><a href="#local-6989586621679060091"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="hs-comment">-- This was previously generalized to Monad, but now the right type is MonadFail,</span><span>
+</span><span id="line-140"></span><span class="hs-comment">-- but different versions of GHC need different imports / constraints, but we only</span><span>
+</span><span id="line-141"></span><span class="hs-comment">-- actually use it with Maybe anyway.</span><span>
+</span><span id="line-142"></span><span id="local-6989586621679060090"><span class="annot"><a href="Plugin.Pl.Common.html#readM"><span class="hs-identifier hs-type">readM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><a href="#local-6989586621679060090"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679060090"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-143"></span><span id="readM"><span class="annot"><span class="annottext">readM :: String -&gt; Maybe a
+</span><a href="Plugin.Pl.Common.html#readM"><span class="hs-identifier hs-var hs-var">readM</span></a></span></span><span> </span><span id="local-6989586621679060089"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060089"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060088"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679060088"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060088"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679060087"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060087"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReadS a
+forall a. Read a =&gt; ReadS a
+</span><span class="hs-identifier hs-var">reads</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060089"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReadS String
+</span><span class="hs-identifier hs-var">lex</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679060087"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-144"></span><span>            </span><span class="hs-special">[</span><span id="local-6989586621679060084"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060084"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679060084"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-145"></span><span>            </span><span class="hs-special">[</span><span class="hs-special">]</span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe a
+forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
+</span><span class="hs-identifier hs-var">fail</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;readM: No parse.&quot;</span></span><span>
+</span><span id="line-146"></span><span>            </span><span class="annot"><span class="annottext">[a]
+</span><span class="hs-identifier">_</span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe a
+forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
+</span><span class="hs-identifier hs-var">fail</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;readM: Ambiguous parse.&quot;</span></span><span>
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span></pre></body></html>

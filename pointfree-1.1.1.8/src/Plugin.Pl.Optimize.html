@@ -1,0 +1,557 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE ImplicitParams #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plugin.Pl.Optimize</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-3"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Optimize.html#optimize"><span class="hs-identifier">optimize</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html"><span class="hs-identifier">Plugin.Pl.Common</span></a></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plugin.Pl.Rules.html"><span class="hs-identifier">Plugin.Pl.Rules</span></a></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plugin.Pl.PrettyPrinter.html"><span class="hs-identifier">Plugin.Pl.PrettyPrinter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.PrettyPrinter.html#prettyExpr"><span class="hs-identifier">prettyExpr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">nub</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span id="local-6989586621679061684"><span class="annot"><a href="Plugin.Pl.Optimize.html#cut"><span class="hs-identifier hs-type">cut</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679061684"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679061684"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-13"></span><span id="cut"><span class="annot"><span class="annottext">cut :: [a] -&gt; [a]
+</span><a href="Plugin.Pl.Optimize.html#cut"><span class="hs-identifier hs-var hs-var">cut</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span id="local-6989586621679061676"><span id="local-6989586621679061677"><span class="annot"><a href="Plugin.Pl.Optimize.html#toMonadPlus"><span class="hs-identifier hs-type">toMonadPlus</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadPlus</span></span><span> </span><span class="annot"><a href="#local-6989586621679061677"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679061676"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679061677"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679061676"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-16"></span><span id="toMonadPlus"><span class="annot"><span class="annottext">toMonadPlus :: Maybe a -&gt; m a
+</span><a href="Plugin.Pl.Optimize.html#toMonadPlus"><span class="hs-identifier hs-var hs-var">toMonadPlus</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m a
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a
+</span><span class="hs-identifier hs-var">mzero</span></span><span>
+</span><span id="line-17"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#toMonadPlus"><span class="hs-identifier hs-var">toMonadPlus</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679061668"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679061668"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; m a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679061668"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">type</span><span> </span><span id="Size"><span class="annot"><a href="Plugin.Pl.Optimize.html#Size"><span class="hs-identifier hs-var">Size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- This seems to be a better size for our purposes,</span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- despite being &quot;a little&quot; slower because of the wasteful uglyprinting</span><span>
+</span><span id="line-22"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#sizeExpr%27"><span class="hs-identifier hs-type">sizeExpr'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Optimize.html#Size"><span class="hs-identifier hs-type">Size</span></a></span><span> </span><span>
+</span><span id="line-23"></span><span id="sizeExpr%27"><span class="annot"><span class="annottext">sizeExpr' :: Expr -&gt; Size
+</span><a href="Plugin.Pl.Optimize.html#sizeExpr%27"><span class="hs-identifier hs-var hs-var">sizeExpr'</span></a></span></span><span> </span><span id="local-6989586621679061666"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061666"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">100</span></span><span> </span><span class="annot"><span class="annottext">Size -&gt; Size -&gt; Size
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Size
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; Int) -&gt; [Char] -&gt; Int
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; [Char]
+</span><a href="Plugin.Pl.PrettyPrinter.html#prettyExpr"><span class="hs-identifier hs-var">prettyExpr</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061666"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Size -&gt; Size -&gt; Size
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Size
+</span><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061666"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-comment">-- hackish thing to favor some expressions if the length is the same:</span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-comment">-- (+ x) --&gt; (x +)</span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-comment">-- x &gt;&gt;= f --&gt; f =&lt;&lt; x</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-comment">-- f $ g x --&gt; f (g x)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="annot"><a href="#local-6989586621679061662"><span class="hs-identifier hs-type">adjust</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Optimize.html#Size"><span class="hs-identifier hs-type">Size</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span id="local-6989586621679061662"><span class="annot"><span class="annottext">adjust :: Expr -&gt; Size
+</span><a href="#local-6989586621679061662"><span class="hs-identifier hs-var hs-var">adjust</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679061660"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- Just n &lt;- readM str = log (n*n+1) / 4</span><span>
+</span><span id="line-30"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;uncurry&quot;</span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">400</span></span><span>
+</span><span id="line-31"></span><span class="hs-comment">--                     | str == &quot;s&quot;          = 500</span><span>
+</span><span id="line-32"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;flip&quot;</span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">10</span></span><span>
+</span><span id="line-33"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;&gt;&gt;=&quot;</span></span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">5</span></span><span>
+</span><span id="line-34"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;$&quot;</span></span><span>          </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-35"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;subtract&quot;</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-36"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;ap&quot;</span></span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">200</span></span><span>
+</span><span id="line-37"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;liftM2&quot;</span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">101</span></span><span>
+</span><span id="line-38"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;return&quot;</span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">200</span></span><span>
+</span><span id="line-39"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;zipWith&quot;</span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">400</span></span><span>
+</span><span id="line-40"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;const&quot;</span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-comment">-- -200</span><span>
+</span><span id="line-41"></span><span>                     </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679061660"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;fmap&quot;</span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">100</span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="annot"><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#Lambda"><span class="hs-identifier hs-type">Lambda</span></a></span><span> </span><span class="annot"><span class="annottext">Pattern
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679061658"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061658"><span class="hs-identifier hs-var">e'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Size
+</span><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061658"><span class="hs-identifier hs-var">e'</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span class="annot"><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Common.html#App"><span class="hs-identifier hs-type">App</span></a></span><span> </span><span id="local-6989586621679061656"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061656"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span id="local-6989586621679061655"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061655"><span class="hs-identifier hs-var">e2</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Size
+</span><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061656"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Size -&gt; Size -&gt; Size
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Size
+</span><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061655"><span class="hs-identifier hs-var">e2</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span class="annot"><a href="#local-6989586621679061662"><span class="hs-identifier hs-var">adjust</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Size
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#optimize"><span class="hs-identifier hs-type">optimize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-47"></span><span id="optimize"><span class="annot"><span class="annottext">optimize :: Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#optimize"><span class="hs-identifier hs-var hs-var">optimize</span></a></span></span><span> </span><span id="local-6989586621679061654"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061654"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061653"><span class="hs-identifier hs-var">result</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><a href="#local-6989586621679061653"><span class="hs-identifier hs-type">result</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679061653"><span class="annot"><span class="annottext">result :: [Expr]
+</span><a href="#local-6989586621679061653"><span class="hs-identifier hs-var hs-var">result</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Maybe (Size, Expr) -&gt; Expr) -&gt; [Maybe (Size, Expr)] -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Expr
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((Size, Expr) -&gt; Expr)
+-&gt; (Maybe (Size, Expr) -&gt; (Size, Expr))
+-&gt; Maybe (Size, Expr)
+-&gt; Expr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Size, Expr) -&gt; (Size, Expr)
+forall a. HasCallStack =&gt; Maybe a -&gt; a
+</span><span class="hs-identifier hs-var">fromJust</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Maybe (Size, Expr)] -&gt; [Expr])
+-&gt; (Maybe (Size, Expr) -&gt; [Maybe (Size, Expr)])
+-&gt; Maybe (Size, Expr)
+-&gt; [Expr]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (Size, Expr) -&gt; Bool)
+-&gt; [Maybe (Size, Expr)] -&gt; [Maybe (Size, Expr)]
+forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">takeWhile</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Size, Expr) -&gt; Bool
+forall a. Maybe a -&gt; Bool
+</span><span class="hs-identifier hs-var">isJust</span></span><span> </span><span class="annot"><span class="annottext">([Maybe (Size, Expr)] -&gt; [Maybe (Size, Expr)])
+-&gt; (Maybe (Size, Expr) -&gt; [Maybe (Size, Expr)])
+-&gt; Maybe (Size, Expr)
+-&gt; [Maybe (Size, Expr)]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span>
+</span><span id="line-50"></span><span>    </span><span class="annot"><span class="annottext">(Maybe (Size, Expr) -&gt; Maybe (Size, Expr))
+-&gt; Maybe (Size, Expr) -&gt; [Maybe (Size, Expr)]
+forall a. (a -&gt; a) -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">iterate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((Size, Expr) -&gt; Maybe (Size, Expr))
+-&gt; Maybe (Size, Expr) -&gt; Maybe (Size, Expr)
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">(=&lt;&lt;)</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Maybe (Size, Expr)
+</span><a href="#local-6989586621679061646"><span class="hs-identifier hs-var">simpleStep</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Maybe (Size, Expr) -&gt; [Expr]) -&gt; Maybe (Size, Expr) -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Maybe (Size, Expr)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr -&gt; Size
+</span><a href="Plugin.Pl.Optimize.html#sizeExpr%27"><span class="hs-identifier hs-var">sizeExpr'</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061654"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061654"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span>  </span><span class="annot"><a href="#local-6989586621679061646"><span class="hs-identifier hs-type">simpleStep</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Optimize.html#Size"><span class="hs-identifier hs-type">Size</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Optimize.html#Size"><span class="hs-identifier hs-type">Size</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>  </span><span id="local-6989586621679061646"><span class="annot"><span class="annottext">simpleStep :: (Size, Expr) -&gt; Maybe (Size, Expr)
+</span><a href="#local-6989586621679061646"><span class="hs-identifier hs-var hs-var">simpleStep</span></a></span></span><span> </span><span id="local-6989586621679061645"><span class="annot"><span class="annottext">(Size, Expr)
+</span><a href="#local-6989586621679061645"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span>
+</span><span id="line-54"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679061644"><span class="annot"><span class="annottext">chn :: [Expr]
+</span><a href="#local-6989586621679061644"><span class="hs-identifier hs-var hs-var">chn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="">?first</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">True</span><span> </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; Expr -&gt; [Expr]
+Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#step"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Expr
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr)
+</span><a href="#local-6989586621679061645"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>        </span><span id="local-6989586621679061642"><span class="annot"><span class="annottext">chnn :: [Expr]
+</span><a href="#local-6989586621679061642"><span class="hs-identifier hs-var hs-var">chnn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="">?first</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">False</span><span> </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; Expr -&gt; [Expr]
+Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#step"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061644"><span class="hs-identifier hs-var">chn</span></a></span><span>
+</span><span id="line-56"></span><span>        </span><span id="local-6989586621679061641"><span class="annot"><span class="annottext">new :: [(Size, Expr)]
+</span><a href="#local-6989586621679061641"><span class="hs-identifier hs-var hs-var">new</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Size, Expr) -&gt; Bool) -&gt; [(Size, Expr)] -&gt; [(Size, Expr)]
+forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679061640"><span class="annot"><span class="annottext">Size
+</span><a href="#local-6989586621679061640"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Expr
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Size
+</span><a href="#local-6989586621679061640"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Size -&gt; Size -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Size
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr)
+</span><a href="#local-6989586621679061645"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(Size, Expr)] -&gt; [(Size, Expr)])
+-&gt; ([Expr] -&gt; [(Size, Expr)]) -&gt; [Expr] -&gt; [(Size, Expr)]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; (Size, Expr)) -&gt; [Expr] -&gt; [(Size, Expr)]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr -&gt; Size
+</span><a href="Plugin.Pl.Optimize.html#sizeExpr%27"><span class="hs-identifier hs-var">sizeExpr'</span></a></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; Size) -&gt; (Expr -&gt; Expr) -&gt; Expr -&gt; (Size, Expr)
+forall (a :: * -&gt; * -&gt; *) b c c'.
+Arrow a =&gt;
+a b c -&gt; a b c' -&gt; a b (c, c')
+</span><span class="hs-operator hs-var">&amp;&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Expr
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Expr] -&gt; [(Size, Expr)]) -&gt; [Expr] -&gt; [(Size, Expr)]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-57"></span><span>                </span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Expr
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr)
+</span><a href="#local-6989586621679061645"><span class="hs-identifier hs-var">t</span></a></span><span class="annot"><span class="annottext">Expr -&gt; [Expr] -&gt; [Expr]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061644"><span class="hs-identifier hs-var">chn</span></a></span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr] -&gt; [Expr]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061642"><span class="hs-identifier hs-var">chnn</span></a></span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[(Size, Expr)]
+</span><a href="#local-6989586621679061641"><span class="hs-identifier hs-var">new</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-59"></span><span>      </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Size, Expr)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-60"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679061636"><span class="annot"><span class="annottext">(Size, Expr)
+</span><a href="#local-6989586621679061636"><span class="hs-identifier hs-var">new'</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[(Size, Expr)]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Size, Expr) -&gt; Maybe (Size, Expr)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Size, Expr)
+</span><a href="#local-6989586621679061636"><span class="hs-identifier hs-var">new'</span></a></span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#step"><span class="hs-identifier hs-type">step</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="">?first</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-63"></span><span id="step"><span class="annot"><span class="annottext">step :: Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#step"><span class="hs-identifier hs-var hs-var">step</span></a></span></span><span> </span><span id="local-6989586621679061635"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061635"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr]
+forall a. Eq a =&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">nub</span></span><span> </span><span class="annot"><span class="annottext">([Expr] -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="Plugin.Pl.Rules.html#rules"><span class="hs-identifier hs-var">rules</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061635"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-64"></span><span> </span><span>
+</span><span id="line-65"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-type">rewrite</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="">?first</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Rules.html#RewriteRule"><span class="hs-identifier hs-type">RewriteRule</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-66"></span><span id="rewrite"><span class="annot"><span class="annottext">rewrite :: RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var hs-var">rewrite</span></a></span></span><span> </span><span id="local-6989586621679061632"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061632"><span class="hs-identifier hs-var">rl</span></a></span></span><span> </span><span id="local-6989586621679061631"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061632"><span class="hs-identifier hs-var">rl</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-67"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#Up"><span class="hs-identifier hs-type">Up</span></a></span><span> </span><span id="local-6989586621679061629"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061629"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679061628"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061628"><span class="hs-identifier hs-var">r2</span></a></span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679061627"><span class="annot"><span class="annottext">e' :: [Expr]
+</span><a href="#local-6989586621679061627"><span class="hs-identifier hs-var hs-var">e'</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr]
+forall a. [a] -&gt; [a]
+</span><a href="Plugin.Pl.Optimize.html#cut"><span class="hs-identifier hs-var">cut</span></a></span><span> </span><span class="annot"><span class="annottext">([Expr] -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061629"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-68"></span><span>                        </span><span id="local-6989586621679061626"><span class="annot"><span class="annottext">e'' :: [Expr]
+</span><a href="#local-6989586621679061626"><span class="hs-identifier hs-var hs-var">e''</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061628"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061627"><span class="hs-identifier hs-var">e'</span></a></span><span>
+</span><span id="line-69"></span><span>                    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061626"><span class="hs-identifier hs-var">e''</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061627"><span class="hs-identifier hs-var">e'</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061626"><span class="hs-identifier hs-var">e''</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#OrElse"><span class="hs-identifier hs-type">OrElse</span></a></span><span> </span><span id="local-6989586621679061623"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061623"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679061622"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061622"><span class="hs-identifier hs-var">r2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679061621"><span class="annot"><span class="annottext">e' :: [Expr]
+</span><a href="#local-6989586621679061621"><span class="hs-identifier hs-var hs-var">e'</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061623"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-71"></span><span>                    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061621"><span class="hs-identifier hs-var">e'</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061622"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061621"><span class="hs-identifier hs-var">e'</span></a></span><span> </span><span>
+</span><span id="line-72"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#Then"><span class="hs-identifier hs-type">Then</span></a></span><span> </span><span id="local-6989586621679061619"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061619"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679061618"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061618"><span class="hs-identifier hs-var">r2</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061618"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr]
+forall a. Eq a =&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">nub</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061619"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#Opt"><span class="hs-identifier hs-type">Opt</span></a></span><span>  </span><span id="local-6989586621679061616"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061616"><span class="hs-identifier hs-var">r</span></a></span></span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span class="annot"><span class="annottext">Expr -&gt; [Expr] -&gt; [Expr]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061616"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#If"><span class="hs-identifier hs-type">If</span></a></span><span>   </span><span id="local-6989586621679061614"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061614"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span id="local-6989586621679061613"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061613"><span class="hs-identifier hs-var">r</span></a></span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061614"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">[Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a
+</span><span class="hs-identifier hs-var">mzero</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061613"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#Hard"><span class="hs-identifier hs-type">Hard</span></a></span><span> </span><span id="local-6989586621679061611"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061611"><span class="hs-identifier hs-var">r</span></a></span></span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">?first::Bool
+Bool
+</span><a href="#local-6989586621679061610"><span class="hs-var">?first</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061611"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a
+</span><span class="hs-identifier hs-var">mzero</span></span><span>
+</span><span id="line-76"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#Or"><span class="hs-identifier hs-type">Or</span></a></span><span> </span><span id="local-6989586621679061608"><span class="annot"><span class="annottext">[RewriteRule]
+</span><a href="#local-6989586621679061608"><span class="hs-identifier hs-var">rs</span></a></span></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679061607"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061607"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061607"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(RewriteRule -&gt; [Expr]) -&gt; [RewriteRule] -&gt; [Expr]
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">[RewriteRule]
+</span><a href="#local-6989586621679061608"><span class="hs-identifier hs-var">rs</span></a></span><span>
+</span><span id="line-77"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#RR"><span class="hs-identifier hs-type">RR</span></a></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var">rewDeep</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061632"><span class="hs-identifier hs-var">rl</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-78"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#CRR"><span class="hs-identifier hs-type">CRR</span></a></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var">rewDeep</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061632"><span class="hs-identifier hs-var">rl</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Rules.html#Down"><span class="hs-identifier hs-type">Down</span></a></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span>      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var">rewDeep</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061632"><span class="hs-identifier hs-var">rl</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061631"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-80"></span><span>    </span><span>
+</span><span id="line-81"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span class="hs-comment">-- rew = ...; rewDeep = ...</span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-type">rewDeep</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="">?first</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Rules.html#RewriteRule"><span class="hs-identifier hs-type">RewriteRule</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-84"></span><span id="rewDeep"><span class="annot"><span class="annottext">rewDeep :: RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var hs-var">rewDeep</span></a></span></span><span> </span><span id="local-6989586621679061602"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061602"><span class="hs-identifier hs-var">rule</span></a></span></span><span> </span><span id="local-6989586621679061601"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061601"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061602"><span class="hs-identifier hs-var">rule</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061601"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr] -&gt; [Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m a -&gt; m a
+</span><span class="hs-operator hs-var">`mplus`</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061601"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-85"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Common.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span class="annot"><span class="annottext">Fixity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a
+</span><span class="hs-identifier hs-var">mzero</span></span><span>
+</span><span id="line-86"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Common.html#Lambda"><span class="hs-identifier hs-type">Lambda</span></a></span><span> </span><span class="annot"><span class="annottext">Pattern
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Expr]
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;lambda: optimizer only works for closed expressions&quot;</span></span><span>
+</span><span id="line-87"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Common.html#Let"><span class="hs-identifier hs-type">Let</span></a></span><span> </span><span class="annot"><span class="annottext">[Decl]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Expr]
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;let: optimizer only works for closed expressions&quot;</span></span><span>
+</span><span id="line-88"></span><span>    </span><span class="annot"><a href="Plugin.Pl.Common.html#App"><span class="hs-identifier hs-type">App</span></a></span><span> </span><span id="local-6989586621679061596"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061596"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span id="local-6989586621679061595"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061595"><span class="hs-identifier hs-var">e2</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr -&gt; Expr -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#App"><span class="hs-operator hs-var">`App`</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061595"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; Expr) -&gt; [Expr] -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-operator hs-var">`map`</span></span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var">rewDeep</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061602"><span class="hs-identifier hs-var">rule</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061596"><span class="hs-identifier hs-var">e1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr] -&gt; [Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m a -&gt; m a
+</span><span class="hs-operator hs-var">`mplus`</span></span><span>
+</span><span id="line-89"></span><span>                  </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061596"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Expr -&gt; Expr
+</span><a href="Plugin.Pl.Common.html#App"><span class="hs-operator hs-var">`App`</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; Expr) -&gt; [Expr] -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-operator hs-var">`map`</span></span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var">rewDeep</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061602"><span class="hs-identifier hs-var">rule</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061595"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-type">rew</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="">?first</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Rules.html#RewriteRule"><span class="hs-identifier hs-type">RewriteRule</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plugin.Pl.Common.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-92"></span><span id="rew"><span class="annot"><span class="annottext">rew :: RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var hs-var">rew</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#RR"><span class="hs-identifier hs-type">RR</span></a></span><span> </span><span id="local-6989586621679061594"><span class="annot"><span class="annottext">Rewrite
+</span><a href="#local-6989586621679061594"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679061593"><span class="annot"><span class="annottext">Rewrite
+</span><a href="#local-6989586621679061593"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061592"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061592"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Expr -&gt; [Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; Maybe a -&gt; m a
+</span><a href="Plugin.Pl.Optimize.html#toMonadPlus"><span class="hs-identifier hs-var">toMonadPlus</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Expr -&gt; [Expr]) -&gt; Maybe Expr -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Rewrite -&gt; Rewrite -&gt; Expr -&gt; Maybe Expr
+</span><a href="Plugin.Pl.Rules.html#fire"><span class="hs-identifier hs-var">fire</span></a></span><span> </span><span class="annot"><span class="annottext">Rewrite
+</span><a href="#local-6989586621679061594"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Rewrite
+</span><a href="#local-6989586621679061593"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061592"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span>
+</span><span id="line-93"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#CRR"><span class="hs-identifier hs-type">CRR</span></a></span><span> </span><span id="local-6989586621679061590"><span class="annot"><span class="annottext">Expr -&gt; Maybe Expr
+</span><a href="#local-6989586621679061590"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061589"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061589"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Expr -&gt; [Expr]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; Maybe a -&gt; m a
+</span><a href="Plugin.Pl.Optimize.html#toMonadPlus"><span class="hs-identifier hs-var">toMonadPlus</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Expr -&gt; [Expr]) -&gt; Maybe Expr -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Expr -&gt; Maybe Expr
+</span><a href="#local-6989586621679061590"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061589"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-94"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#Or"><span class="hs-identifier hs-type">Or</span></a></span><span> </span><span id="local-6989586621679061588"><span class="annot"><span class="annottext">[RewriteRule]
+</span><a href="#local-6989586621679061588"><span class="hs-identifier hs-var">rs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061587"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061587"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679061586"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061586"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061586"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061587"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(RewriteRule -&gt; [Expr]) -&gt; [RewriteRule] -&gt; [Expr]
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">[RewriteRule]
+</span><a href="#local-6989586621679061588"><span class="hs-identifier hs-var">rs</span></a></span><span>
+</span><span id="line-95"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#Down"><span class="hs-identifier hs-type">Down</span></a></span><span> </span><span id="local-6989586621679061585"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061585"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679061584"><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061584"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061583"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061583"><span class="hs-identifier hs-var">e</span></a></span></span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061582"><span class="hs-identifier hs-var">e''</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061581"><span class="hs-identifier hs-var">e'</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061582"><span class="hs-identifier hs-var">e''</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-97"></span><span>    </span><span id="local-6989586621679061581"><span class="annot"><span class="annottext">e' :: [Expr]
+</span><a href="#local-6989586621679061581"><span class="hs-identifier hs-var hs-var">e'</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Expr] -&gt; [Expr]
+forall a. [a] -&gt; [a]
+</span><a href="Plugin.Pl.Optimize.html#cut"><span class="hs-identifier hs-var">cut</span></a></span><span> </span><span class="annot"><span class="annottext">([Expr] -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061585"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061583"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679061582"><span class="annot"><span class="annottext">e'' :: [Expr]
+</span><a href="#local-6989586621679061582"><span class="hs-identifier hs-var hs-var">e''</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewDeep"><span class="hs-identifier hs-var">rewDeep</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061584"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">(Expr -&gt; [Expr]) -&gt; [Expr] -&gt; [Expr]
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">[Expr]
+</span><a href="#local-6989586621679061581"><span class="hs-identifier hs-var">e'</span></a></span><span>
+</span><span id="line-99"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span id="local-6989586621679061580"><span class="annot"><span class="annottext">r :: RewriteRule
+</span><a href="#local-6989586621679061580"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#Then"><span class="hs-identifier hs-type">Then</span></a></span><span>   </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061579"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061579"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061580"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061579"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-100"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span id="local-6989586621679061578"><span class="annot"><span class="annottext">r :: RewriteRule
+</span><a href="#local-6989586621679061578"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#OrElse"><span class="hs-identifier hs-type">OrElse</span></a></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061577"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061577"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061578"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061577"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-101"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span id="local-6989586621679061576"><span class="annot"><span class="annottext">r :: RewriteRule
+</span><a href="#local-6989586621679061576"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#Up"><span class="hs-identifier hs-type">Up</span></a></span><span>     </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061575"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061575"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061576"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061575"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-102"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span id="local-6989586621679061574"><span class="annot"><span class="annottext">r :: RewriteRule
+</span><a href="#local-6989586621679061574"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#Opt"><span class="hs-identifier hs-type">Opt</span></a></span><span>    </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061573"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061573"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061574"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061573"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-103"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span id="local-6989586621679061572"><span class="annot"><span class="annottext">r :: RewriteRule
+</span><a href="#local-6989586621679061572"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#If"><span class="hs-identifier hs-type">If</span></a></span><span>     </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061571"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061571"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061572"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061571"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-104"></span><span class="annot"><a href="Plugin.Pl.Optimize.html#rew"><span class="hs-identifier hs-var">rew</span></a></span><span> </span><span id="local-6989586621679061570"><span class="annot"><span class="annottext">r :: RewriteRule
+</span><a href="#local-6989586621679061570"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plugin.Pl.Rules.html#Hard"><span class="hs-identifier hs-type">Hard</span></a></span><span>   </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061569"><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061569"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?first::Bool) =&gt; RewriteRule -&gt; Expr -&gt; [Expr]
+RewriteRule -&gt; Expr -&gt; [Expr]
+</span><a href="Plugin.Pl.Optimize.html#rewrite"><span class="hs-identifier hs-var">rewrite</span></a></span><span> </span><span class="annot"><span class="annottext">RewriteRule
+</span><a href="#local-6989586621679061570"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Expr
+</span><a href="#local-6989586621679061569"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-105"></span></pre></body></html>

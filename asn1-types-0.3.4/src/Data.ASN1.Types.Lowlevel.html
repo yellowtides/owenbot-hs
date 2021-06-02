@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24maxtag_DTFDvU257crHoB0ymigEBy"><span id="%24tag2con_DTFDvU257crHoB0ymigEBy"><span id="%24con2tag_DTFDvU257crHoB0ymigEBy"></span></span></span><span class="hs-comment">-- |</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24maxtag_8iDZU3hYmb8BU1DZ9ovNA4"><span id="%24tag2con_8iDZU3hYmb8BU1DZ9ovNA4"><span id="%24con2tag_8iDZU3hYmb8BU1DZ9ovNA4"></span></span></span><span class="hs-comment">-- |</span><span>
 </span><span id="line-2"></span><span class="hs-comment">-- Module      : Data.ASN1.Types.Lowlevel</span><span>
 </span><span id="line-3"></span><span class="hs-comment">-- License     : BSD-style</span><span>
 </span><span id="line-4"></span><span class="hs-comment">-- Maintainer  : Vincent Hanquez &lt;vincent@snarc.org&gt;</span><span>
@@ -24,7 +24,7 @@
 </span><span id="line-24"></span><span>               </span><span class="hs-glyph">|</span><span> </span><span id="Application"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#Application"><span class="hs-identifier hs-var">Application</span></a></span></span><span>
 </span><span id="line-25"></span><span>               </span><span class="hs-glyph">|</span><span> </span><span id="Context"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#Context"><span class="hs-identifier hs-var">Context</span></a></span></span><span>
 </span><span id="line-26"></span><span>               </span><span class="hs-glyph">|</span><span> </span><span id="Private"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#Private"><span class="hs-identifier hs-var">Private</span></a></span></span><span>
-</span><span id="line-27"></span><span>               </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061293"><span id="local-6989586621679061295"><span id="local-6989586621679061297"><span class="annot"><span class="annottext">Int -&gt; ASN1Class -&gt; ShowS
+</span><span id="line-27"></span><span>               </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041397"><span id="local-6989586621679041399"><span id="local-6989586621679041401"><span class="annot"><span class="annottext">Int -&gt; ASN1Class -&gt; ShowS
 [ASN1Class] -&gt; ShowS
 ASN1Class -&gt; String
 (Int -&gt; ASN1Class -&gt; ShowS)
@@ -39,7 +39,7 @@ show :: ASN1Class -&gt; String
 $cshow :: ASN1Class -&gt; String
 showsPrec :: Int -&gt; ASN1Class -&gt; ShowS
 $cshowsPrec :: Int -&gt; ASN1Class -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061288"><span id="local-6989586621679061290"><span class="annot"><span class="annottext">ASN1Class -&gt; ASN1Class -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041392"><span id="local-6989586621679041394"><span class="annot"><span class="annottext">ASN1Class -&gt; ASN1Class -&gt; Bool
 (ASN1Class -&gt; ASN1Class -&gt; Bool)
 -&gt; (ASN1Class -&gt; ASN1Class -&gt; Bool) -&gt; Eq ASN1Class
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -47,9 +47,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: ASN1Class -&gt; ASN1Class -&gt; Bool
 == :: ASN1Class -&gt; ASN1Class -&gt; Bool
 $c== :: ASN1Class -&gt; ASN1Class -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061272"><span id="local-6989586621679061274"><span id="local-6989586621679061276"><span id="local-6989586621679061278"><span id="local-6989586621679061280"><span id="local-6989586621679061282"><span id="local-6989586621679061284"><span class="annot"><span class="annottext">Eq ASN1Class
-Eq ASN1Class =&gt;
-(ASN1Class -&gt; ASN1Class -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041376"><span id="local-6989586621679041378"><span id="local-6989586621679041380"><span id="local-6989586621679041382"><span id="local-6989586621679041384"><span id="local-6989586621679041386"><span id="local-6989586621679041388"><span class="annot"><span class="annottext">Eq ASN1Class
+Eq ASN1Class
+-&gt; (ASN1Class -&gt; ASN1Class -&gt; Ordering)
 -&gt; (ASN1Class -&gt; ASN1Class -&gt; Bool)
 -&gt; (ASN1Class -&gt; ASN1Class -&gt; Bool)
 -&gt; (ASN1Class -&gt; ASN1Class -&gt; Bool)
@@ -61,8 +61,8 @@ ASN1Class -&gt; ASN1Class -&gt; Bool
 ASN1Class -&gt; ASN1Class -&gt; Ordering
 ASN1Class -&gt; ASN1Class -&gt; ASN1Class
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -85,7 +85,7 @@ $c&lt; :: ASN1Class -&gt; ASN1Class -&gt; Bool
 compare :: ASN1Class -&gt; ASN1Class -&gt; Ordering
 $ccompare :: ASN1Class -&gt; ASN1Class -&gt; Ordering
 $cp1Ord :: Eq ASN1Class
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061255"><span id="local-6989586621679061257"><span id="local-6989586621679061259"><span id="local-6989586621679061261"><span id="local-6989586621679061263"><span id="local-6989586621679061265"><span id="local-6989586621679061267"><span id="local-6989586621679061269"><span class="annot"><span class="annottext">Int -&gt; ASN1Class
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041359"><span id="local-6989586621679041361"><span id="local-6989586621679041363"><span id="local-6989586621679041365"><span id="local-6989586621679041367"><span id="local-6989586621679041369"><span id="local-6989586621679041371"><span id="local-6989586621679041373"><span class="annot"><span class="annottext">Int -&gt; ASN1Class
 ASN1Class -&gt; Int
 ASN1Class -&gt; [ASN1Class]
 ASN1Class -&gt; ASN1Class
@@ -135,7 +135,7 @@ $csucc :: ASN1Class -&gt; ASN1Class
 </span><span id="line-33"></span><span class="hs-keyword">data</span><span> </span><span id="ASN1Length"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ASN1Length"><span class="hs-identifier hs-var">ASN1Length</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="LenShort"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#LenShort"><span class="hs-identifier hs-var">LenShort</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>      </span><span class="hs-comment">-- ^ Short form with only one byte. length has to be &lt; 127.</span><span>
 </span><span id="line-34"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span id="LenLong"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#LenLong"><span class="hs-identifier hs-var">LenLong</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>   </span><span class="hs-comment">-- ^ Long form of N bytes</span><span>
 </span><span id="line-35"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span id="LenIndefinite"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#LenIndefinite"><span class="hs-identifier hs-var">LenIndefinite</span></a></span></span><span>     </span><span class="hs-comment">-- ^ Length is indefinite expect an EOC in the stream to finish the type</span><span>
-</span><span id="line-36"></span><span>                </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061245"><span id="local-6989586621679061247"><span id="local-6989586621679061249"><span class="annot"><span class="annottext">Int -&gt; ASN1Length -&gt; ShowS
+</span><span id="line-36"></span><span>                </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041349"><span id="local-6989586621679041351"><span id="local-6989586621679041353"><span class="annot"><span class="annottext">Int -&gt; ASN1Length -&gt; ShowS
 [ASN1Length] -&gt; ShowS
 ASN1Length -&gt; String
 (Int -&gt; ASN1Length -&gt; ShowS)
@@ -150,7 +150,7 @@ show :: ASN1Length -&gt; String
 $cshow :: ASN1Length -&gt; String
 showsPrec :: Int -&gt; ASN1Length -&gt; ShowS
 $cshowsPrec :: Int -&gt; ASN1Length -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061241"><span id="local-6989586621679061243"><span class="annot"><span class="annottext">ASN1Length -&gt; ASN1Length -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041345"><span id="local-6989586621679041347"><span class="annot"><span class="annottext">ASN1Length -&gt; ASN1Length -&gt; Bool
 (ASN1Length -&gt; ASN1Length -&gt; Bool)
 -&gt; (ASN1Length -&gt; ASN1Length -&gt; Bool) -&gt; Eq ASN1Length
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -162,7 +162,7 @@ $c== :: ASN1Length -&gt; ASN1Length -&gt; Bool
 </span><span id="line-37"></span><span>
 </span><span id="line-38"></span><span class="hs-comment">-- | ASN1 Header with the class, tag, constructed flag and length.</span><span>
 </span><span id="line-39"></span><span class="hs-keyword">data</span><span> </span><span id="ASN1Header"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ASN1Header"><span class="hs-identifier hs-var">ASN1Header</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ASN1Header"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ASN1Header"><span class="hs-identifier hs-var">ASN1Header</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ASN1Class"><span class="hs-identifier hs-type">ASN1Class</span></a></span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ASN1Tag"><span class="hs-identifier hs-type">ASN1Tag</span></a></span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ASN1Length"><span class="hs-identifier hs-type">ASN1Length</span></a></span><span>
-</span><span id="line-40"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061234"><span id="local-6989586621679061236"><span id="local-6989586621679061238"><span class="annot"><span class="annottext">Int -&gt; ASN1Header -&gt; ShowS
+</span><span id="line-40"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041338"><span id="local-6989586621679041340"><span id="local-6989586621679041342"><span class="annot"><span class="annottext">Int -&gt; ASN1Header -&gt; ShowS
 [ASN1Header] -&gt; ShowS
 ASN1Header -&gt; String
 (Int -&gt; ASN1Header -&gt; ShowS)
@@ -177,7 +177,7 @@ show :: ASN1Header -&gt; String
 $cshow :: ASN1Header -&gt; String
 showsPrec :: Int -&gt; ASN1Header -&gt; ShowS
 $cshowsPrec :: Int -&gt; ASN1Header -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061230"><span id="local-6989586621679061232"><span class="annot"><span class="annottext">ASN1Header -&gt; ASN1Header -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041334"><span id="local-6989586621679041336"><span class="annot"><span class="annottext">ASN1Header -&gt; ASN1Header -&gt; Bool
 (ASN1Header -&gt; ASN1Header -&gt; Bool)
 -&gt; (ASN1Header -&gt; ASN1Header -&gt; Bool) -&gt; Eq ASN1Header
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -192,7 +192,7 @@ $c== :: ASN1Header -&gt; ASN1Header -&gt; Bool
 </span><span id="line-44"></span><span>               </span><span class="hs-glyph">|</span><span> </span><span id="Primitive"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#Primitive"><span class="hs-identifier hs-var">Primitive</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-comment">-- ^ Primitive</span><span>
 </span><span id="line-45"></span><span>               </span><span class="hs-glyph">|</span><span> </span><span id="ConstructionBegin"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ConstructionBegin"><span class="hs-identifier hs-var">ConstructionBegin</span></a></span></span><span>     </span><span class="hs-comment">-- ^ Constructed value start</span><span>
 </span><span id="line-46"></span><span>               </span><span class="hs-glyph">|</span><span> </span><span id="ConstructionEnd"><span class="annot"><a href="Data.ASN1.Types.Lowlevel.html#ConstructionEnd"><span class="hs-identifier hs-var">ConstructionEnd</span></a></span></span><span>       </span><span class="hs-comment">-- ^ Constructed value end</span><span>
-</span><span id="line-47"></span><span>               </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061220"><span id="local-6989586621679061222"><span id="local-6989586621679061224"><span class="annot"><span class="annottext">Int -&gt; ASN1Event -&gt; ShowS
+</span><span id="line-47"></span><span>               </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041324"><span id="local-6989586621679041326"><span id="local-6989586621679041328"><span class="annot"><span class="annottext">Int -&gt; ASN1Event -&gt; ShowS
 [ASN1Event] -&gt; ShowS
 ASN1Event -&gt; String
 (Int -&gt; ASN1Event -&gt; ShowS)
@@ -207,7 +207,7 @@ show :: ASN1Event -&gt; String
 $cshow :: ASN1Event -&gt; String
 showsPrec :: Int -&gt; ASN1Event -&gt; ShowS
 $cshowsPrec :: Int -&gt; ASN1Event -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061216"><span id="local-6989586621679061218"><span class="annot"><span class="annottext">ASN1Event -&gt; ASN1Event -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041320"><span id="local-6989586621679041322"><span class="annot"><span class="annottext">ASN1Event -&gt; ASN1Event -&gt; Bool
 (ASN1Event -&gt; ASN1Event -&gt; Bool)
 -&gt; (ASN1Event -&gt; ASN1Event -&gt; Bool) -&gt; Eq ASN1Event
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a

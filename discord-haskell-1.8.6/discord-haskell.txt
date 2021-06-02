@@ -106,36 +106,36 @@ EmbedField :: Text -> Text -> Maybe Bool -> EmbedField
 [embedFieldName] :: EmbedField -> Text
 [embedFieldValue] :: EmbedField -> Text
 [embedFieldInline] :: EmbedField -> Maybe Bool
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.CreateEmbed
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.CreateEmbed
-instance GHC.Show.Show Discord.Internal.Types.Embed.CreateEmbed
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.Embed
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.Embed
-instance GHC.Show.Show Discord.Internal.Types.Embed.Embed
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedField
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedField
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedField
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedFooter
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedFooter
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedFooter
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedAuthor
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedAuthor
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedAuthor
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedProvider
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedProvider
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedProvider
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedImage
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedImage
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedImage
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedVideo
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedVideo
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedVideo
-instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedThumbnail
-instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedThumbnail
-instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedThumbnail
 instance GHC.Classes.Ord Discord.Internal.Types.Embed.CreateEmbedImage
 instance GHC.Classes.Eq Discord.Internal.Types.Embed.CreateEmbedImage
 instance GHC.Show.Show Discord.Internal.Types.Embed.CreateEmbedImage
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedThumbnail
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedThumbnail
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedThumbnail
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedVideo
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedVideo
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedVideo
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedImage
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedImage
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedImage
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedProvider
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedProvider
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedProvider
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedAuthor
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedAuthor
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedAuthor
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedFooter
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedFooter
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedFooter
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.EmbedField
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.EmbedField
+instance GHC.Show.Show Discord.Internal.Types.Embed.EmbedField
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.Embed
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.Embed
+instance GHC.Show.Show Discord.Internal.Types.Embed.Embed
+instance GHC.Classes.Ord Discord.Internal.Types.Embed.CreateEmbed
+instance GHC.Classes.Eq Discord.Internal.Types.Embed.CreateEmbed
+instance GHC.Show.Show Discord.Internal.Types.Embed.CreateEmbed
 instance Data.Default.Class.Default Discord.Internal.Types.Embed.CreateEmbed
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Types.Embed.Embed
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Embed.Embed
@@ -186,6 +186,9 @@ snowflakeCreationDate :: Snowflake -> UTCTime
 
 -- | Default timestamp
 epochTime :: UTCTime
+instance GHC.Classes.Ord Discord.Internal.Types.Prelude.Auth
+instance GHC.Classes.Eq Discord.Internal.Types.Prelude.Auth
+instance GHC.Show.Show Discord.Internal.Types.Prelude.Auth
 instance Data.Bits.Bits Discord.Internal.Types.Prelude.Snowflake
 instance GHC.Real.Real Discord.Internal.Types.Prelude.Snowflake
 instance GHC.Enum.Enum Discord.Internal.Types.Prelude.Snowflake
@@ -193,9 +196,6 @@ instance GHC.Real.Integral Discord.Internal.Types.Prelude.Snowflake
 instance GHC.Num.Num Discord.Internal.Types.Prelude.Snowflake
 instance GHC.Classes.Eq Discord.Internal.Types.Prelude.Snowflake
 instance GHC.Classes.Ord Discord.Internal.Types.Prelude.Snowflake
-instance GHC.Classes.Ord Discord.Internal.Types.Prelude.Auth
-instance GHC.Classes.Eq Discord.Internal.Types.Prelude.Auth
-instance GHC.Show.Show Discord.Internal.Types.Prelude.Auth
 instance GHC.Show.Show Discord.Internal.Types.Prelude.Snowflake
 instance GHC.Read.Read Discord.Internal.Types.Prelude.Snowflake
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Types.Prelude.Snowflake
@@ -251,15 +251,15 @@ ConnectionObject :: Text -> Text -> Text -> Bool -> [IntegrationId] -> Bool -> B
 [connectionObjectFriendSyncOn] :: ConnectionObject -> Bool
 [connectionObjectShownInPresenceUpdates] :: ConnectionObject -> Bool
 [connectionObjectVisibleToOthers] :: ConnectionObject -> Bool
-instance GHC.Classes.Ord Discord.Internal.Types.User.ConnectionObject
-instance GHC.Classes.Eq Discord.Internal.Types.User.ConnectionObject
-instance GHC.Show.Show Discord.Internal.Types.User.ConnectionObject
-instance GHC.Classes.Ord Discord.Internal.Types.User.Webhook
-instance GHC.Classes.Eq Discord.Internal.Types.User.Webhook
-instance GHC.Show.Show Discord.Internal.Types.User.Webhook
 instance GHC.Classes.Ord Discord.Internal.Types.User.User
 instance GHC.Classes.Eq Discord.Internal.Types.User.User
 instance GHC.Show.Show Discord.Internal.Types.User.User
+instance GHC.Classes.Ord Discord.Internal.Types.User.Webhook
+instance GHC.Classes.Eq Discord.Internal.Types.User.Webhook
+instance GHC.Show.Show Discord.Internal.Types.User.Webhook
+instance GHC.Classes.Ord Discord.Internal.Types.User.ConnectionObject
+instance GHC.Classes.Eq Discord.Internal.Types.User.ConnectionObject
+instance GHC.Show.Show Discord.Internal.Types.User.ConnectionObject
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.User.ConnectionObject
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.User.Webhook
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.User.User
@@ -569,30 +569,30 @@ MessageReference :: Maybe MessageId -> Maybe ChannelId -> Maybe GuildId -> Bool 
 
 -- | Whether to not send if reference not exist
 [failIfNotExists] :: MessageReference -> Bool
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.Message
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.Message
-instance GHC.Show.Show Discord.Internal.Types.Channel.Message
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.MessageReference
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.MessageReference
-instance GHC.Show.Show Discord.Internal.Types.Channel.MessageReference
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.Nonce
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.Nonce
-instance GHC.Show.Show Discord.Internal.Types.Channel.Nonce
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.Attachment
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.Attachment
-instance GHC.Show.Show Discord.Internal.Types.Channel.Attachment
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.MessageReaction
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.MessageReaction
-instance GHC.Show.Show Discord.Internal.Types.Channel.MessageReaction
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.Emoji
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.Emoji
-instance GHC.Show.Show Discord.Internal.Types.Channel.Emoji
-instance GHC.Classes.Ord Discord.Internal.Types.Channel.Channel
-instance GHC.Classes.Eq Discord.Internal.Types.Channel.Channel
-instance GHC.Show.Show Discord.Internal.Types.Channel.Channel
 instance GHC.Classes.Ord Discord.Internal.Types.Channel.Overwrite
 instance GHC.Classes.Eq Discord.Internal.Types.Channel.Overwrite
 instance GHC.Show.Show Discord.Internal.Types.Channel.Overwrite
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.Channel
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.Channel
+instance GHC.Show.Show Discord.Internal.Types.Channel.Channel
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.Emoji
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.Emoji
+instance GHC.Show.Show Discord.Internal.Types.Channel.Emoji
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.MessageReaction
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.MessageReaction
+instance GHC.Show.Show Discord.Internal.Types.Channel.MessageReaction
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.Attachment
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.Attachment
+instance GHC.Show.Show Discord.Internal.Types.Channel.Attachment
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.Nonce
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.Nonce
+instance GHC.Show.Show Discord.Internal.Types.Channel.Nonce
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.MessageReference
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.MessageReference
+instance GHC.Show.Show Discord.Internal.Types.Channel.MessageReference
+instance GHC.Classes.Ord Discord.Internal.Types.Channel.Message
+instance GHC.Classes.Eq Discord.Internal.Types.Channel.Message
+instance GHC.Show.Show Discord.Internal.Types.Channel.Message
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Channel.Message
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Channel.MessageReference
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Types.Channel.MessageReference
@@ -852,45 +852,45 @@ GuildEmbed :: Bool -> ChannelId -> GuildEmbed
 
 -- | The embed channel id
 [embedChannel] :: GuildEmbed -> ChannelId
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildEmbed
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildEmbed
-instance GHC.Show.Show Discord.Internal.Types.Guild.GuildEmbed
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.Integration
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.Integration
-instance GHC.Show.Show Discord.Internal.Types.Guild.Integration
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.IntegrationAccount
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.IntegrationAccount
-instance GHC.Show.Show Discord.Internal.Types.Guild.IntegrationAccount
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.InviteMeta
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.InviteMeta
-instance GHC.Show.Show Discord.Internal.Types.Guild.InviteMeta
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.Invite
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.Invite
-instance GHC.Show.Show Discord.Internal.Types.Guild.Invite
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildBan
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildBan
-instance GHC.Show.Show Discord.Internal.Types.Guild.GuildBan
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.VoiceRegion
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.VoiceRegion
-instance GHC.Show.Show Discord.Internal.Types.Guild.VoiceRegion
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.Guild
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.Guild
-instance GHC.Show.Show Discord.Internal.Types.Guild.Guild
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.Role
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.Role
-instance GHC.Show.Show Discord.Internal.Types.Guild.Role
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.PartialGuild
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.PartialGuild
-instance GHC.Show.Show Discord.Internal.Types.Guild.PartialGuild
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildInfo
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildInfo
-instance GHC.Show.Show Discord.Internal.Types.Guild.GuildInfo
-instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildUnavailable
-instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildUnavailable
-instance GHC.Show.Show Discord.Internal.Types.Guild.GuildUnavailable
 instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildMember
 instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildMember
 instance GHC.Show.Show Discord.Internal.Types.Guild.GuildMember
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildUnavailable
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildUnavailable
+instance GHC.Show.Show Discord.Internal.Types.Guild.GuildUnavailable
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildInfo
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildInfo
+instance GHC.Show.Show Discord.Internal.Types.Guild.GuildInfo
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.PartialGuild
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.PartialGuild
+instance GHC.Show.Show Discord.Internal.Types.Guild.PartialGuild
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.Role
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.Role
+instance GHC.Show.Show Discord.Internal.Types.Guild.Role
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.Guild
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.Guild
+instance GHC.Show.Show Discord.Internal.Types.Guild.Guild
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.VoiceRegion
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.VoiceRegion
+instance GHC.Show.Show Discord.Internal.Types.Guild.VoiceRegion
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildBan
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildBan
+instance GHC.Show.Show Discord.Internal.Types.Guild.GuildBan
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.Invite
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.Invite
+instance GHC.Show.Show Discord.Internal.Types.Guild.Invite
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.InviteMeta
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.InviteMeta
+instance GHC.Show.Show Discord.Internal.Types.Guild.InviteMeta
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.IntegrationAccount
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.IntegrationAccount
+instance GHC.Show.Show Discord.Internal.Types.Guild.IntegrationAccount
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.Integration
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.Integration
+instance GHC.Show.Show Discord.Internal.Types.Guild.Integration
+instance GHC.Classes.Ord Discord.Internal.Types.Guild.GuildEmbed
+instance GHC.Classes.Eq Discord.Internal.Types.Guild.GuildEmbed
+instance GHC.Show.Show Discord.Internal.Types.Guild.GuildEmbed
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Guild.GuildEmbed
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Types.Guild.GuildEmbed
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Guild.Integration
@@ -976,20 +976,20 @@ TypingInfo :: UserId -> ChannelId -> UTCTime -> TypingInfo
 -- | Convert ToJSON value to FromJSON value
 reparse :: (ToJSON a, FromJSON b) => a -> Parser b
 eventParse :: Text -> Object -> Parser Event
-instance GHC.Classes.Eq Discord.Internal.Types.Events.Event
-instance GHC.Show.Show Discord.Internal.Types.Events.Event
-instance GHC.Classes.Ord Discord.Internal.Types.Events.TypingInfo
-instance GHC.Classes.Eq Discord.Internal.Types.Events.TypingInfo
-instance GHC.Show.Show Discord.Internal.Types.Events.TypingInfo
-instance GHC.Classes.Ord Discord.Internal.Types.Events.PresenceInfo
-instance GHC.Classes.Eq Discord.Internal.Types.Events.PresenceInfo
-instance GHC.Show.Show Discord.Internal.Types.Events.PresenceInfo
-instance GHC.Classes.Ord Discord.Internal.Types.Events.ReactionRemoveInfo
-instance GHC.Classes.Eq Discord.Internal.Types.Events.ReactionRemoveInfo
-instance GHC.Show.Show Discord.Internal.Types.Events.ReactionRemoveInfo
 instance GHC.Classes.Ord Discord.Internal.Types.Events.ReactionInfo
 instance GHC.Classes.Eq Discord.Internal.Types.Events.ReactionInfo
 instance GHC.Show.Show Discord.Internal.Types.Events.ReactionInfo
+instance GHC.Classes.Ord Discord.Internal.Types.Events.ReactionRemoveInfo
+instance GHC.Classes.Eq Discord.Internal.Types.Events.ReactionRemoveInfo
+instance GHC.Show.Show Discord.Internal.Types.Events.ReactionRemoveInfo
+instance GHC.Classes.Ord Discord.Internal.Types.Events.PresenceInfo
+instance GHC.Classes.Eq Discord.Internal.Types.Events.PresenceInfo
+instance GHC.Show.Show Discord.Internal.Types.Events.PresenceInfo
+instance GHC.Classes.Ord Discord.Internal.Types.Events.TypingInfo
+instance GHC.Classes.Eq Discord.Internal.Types.Events.TypingInfo
+instance GHC.Show.Show Discord.Internal.Types.Events.TypingInfo
+instance GHC.Classes.Eq Discord.Internal.Types.Events.Event
+instance GHC.Show.Show Discord.Internal.Types.Events.Event
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Events.TypingInfo
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Events.PresenceInfo
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Events.ReactionRemoveInfo
@@ -1050,30 +1050,30 @@ UpdateStatusAwayFromKeyboard :: UpdateStatusType
 UpdateStatusInvisibleOffline :: UpdateStatusType
 UpdateStatusOffline :: UpdateStatusType
 statusString :: UpdateStatusType -> Text
-instance GHC.Classes.Ord Discord.Internal.Types.Gateway.GatewaySendable
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.GatewaySendable
-instance GHC.Show.Show Discord.Internal.Types.Gateway.GatewaySendable
-instance GHC.Classes.Ord Discord.Internal.Types.Gateway.UpdateStatusOpts
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.UpdateStatusOpts
-instance GHC.Show.Show Discord.Internal.Types.Gateway.UpdateStatusOpts
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.GatewayReceivable
+instance GHC.Show.Show Discord.Internal.Types.Gateway.GatewayReceivable
+instance GHC.Classes.Ord Discord.Internal.Types.Gateway.RequestGuildMembersOpts
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.RequestGuildMembersOpts
+instance GHC.Show.Show Discord.Internal.Types.Gateway.RequestGuildMembersOpts
+instance GHC.Classes.Ord Discord.Internal.Types.Gateway.UpdateStatusVoiceOpts
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.UpdateStatusVoiceOpts
+instance GHC.Show.Show Discord.Internal.Types.Gateway.UpdateStatusVoiceOpts
+instance GHC.Classes.Ord Discord.Internal.Types.Gateway.ActivityType
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.ActivityType
+instance GHC.Show.Show Discord.Internal.Types.Gateway.ActivityType
+instance GHC.Classes.Ord Discord.Internal.Types.Gateway.Activity
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.Activity
+instance GHC.Show.Show Discord.Internal.Types.Gateway.Activity
 instance GHC.Enum.Enum Discord.Internal.Types.Gateway.UpdateStatusType
 instance GHC.Classes.Ord Discord.Internal.Types.Gateway.UpdateStatusType
 instance GHC.Classes.Eq Discord.Internal.Types.Gateway.UpdateStatusType
 instance GHC.Show.Show Discord.Internal.Types.Gateway.UpdateStatusType
-instance GHC.Classes.Ord Discord.Internal.Types.Gateway.Activity
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.Activity
-instance GHC.Show.Show Discord.Internal.Types.Gateway.Activity
-instance GHC.Classes.Ord Discord.Internal.Types.Gateway.ActivityType
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.ActivityType
-instance GHC.Show.Show Discord.Internal.Types.Gateway.ActivityType
-instance GHC.Classes.Ord Discord.Internal.Types.Gateway.UpdateStatusVoiceOpts
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.UpdateStatusVoiceOpts
-instance GHC.Show.Show Discord.Internal.Types.Gateway.UpdateStatusVoiceOpts
-instance GHC.Classes.Ord Discord.Internal.Types.Gateway.RequestGuildMembersOpts
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.RequestGuildMembersOpts
-instance GHC.Show.Show Discord.Internal.Types.Gateway.RequestGuildMembersOpts
-instance GHC.Classes.Eq Discord.Internal.Types.Gateway.GatewayReceivable
-instance GHC.Show.Show Discord.Internal.Types.Gateway.GatewayReceivable
+instance GHC.Classes.Ord Discord.Internal.Types.Gateway.UpdateStatusOpts
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.UpdateStatusOpts
+instance GHC.Show.Show Discord.Internal.Types.Gateway.UpdateStatusOpts
+instance GHC.Classes.Ord Discord.Internal.Types.Gateway.GatewaySendable
+instance GHC.Classes.Eq Discord.Internal.Types.Gateway.GatewaySendable
+instance GHC.Show.Show Discord.Internal.Types.Gateway.GatewaySendable
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Types.Gateway.GatewaySendable
 instance Data.Aeson.Types.FromJSON.FromJSON Discord.Internal.Types.Gateway.GatewayReceivable
 
@@ -1165,12 +1165,12 @@ data WebhookRequest a
 [DeleteWebhook] :: WebhookId -> WebhookRequest ()
 [DeleteWebhookWithToken] :: WebhookId -> Text -> WebhookRequest ()
 [ExecuteWebhookWithToken] :: WebhookId -> Text -> ExecuteWebhookWithTokenOpts -> WebhookRequest ()
-instance GHC.Classes.Ord Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
-instance GHC.Show.Show Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
 instance GHC.Classes.Ord Discord.Internal.Rest.Webhook.WebhookContent
 instance GHC.Classes.Eq Discord.Internal.Rest.Webhook.WebhookContent
 instance GHC.Show.Show Discord.Internal.Rest.Webhook.WebhookContent
+instance GHC.Classes.Ord Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
+instance GHC.Show.Show Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
 instance Discord.Internal.Rest.Prelude.Request (Discord.Internal.Rest.Webhook.WebhookRequest a)
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Rest.Webhook.ExecuteWebhookWithTokenOpts
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Rest.Webhook.CreateWebhookOpts
@@ -1259,8 +1259,8 @@ data RestCallInternalException
 RestCallInternalErrorCode :: Int -> ByteString -> ByteString -> RestCallInternalException
 RestCallInternalNoParse :: String -> ByteString -> RestCallInternalException
 RestCallInternalHttpException :: HttpException -> RestCallInternalException
-instance GHC.Show.Show Discord.Internal.Rest.HTTP.RequestResponse
 instance GHC.Show.Show Discord.Internal.Rest.HTTP.RestCallInternalException
+instance GHC.Show.Show Discord.Internal.Rest.HTTP.RequestResponse
 
 
 -- | Provides actions for Channel API interactions
@@ -1483,33 +1483,33 @@ ModifyGuildIntegrationOpts :: Integer -> Integer -> Bool -> ModifyGuildIntegrati
 [modifyGuildIntegrationOptsExpireBehavior] :: ModifyGuildIntegrationOpts -> Integer
 [modifyGuildIntegrationOptsExpireGraceSeconds] :: ModifyGuildIntegrationOpts -> Integer
 [modifyGuildIntegrationOptsEmoticonsEnabled] :: ModifyGuildIntegrationOpts -> Bool
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildChannelOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildChannelOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildChannelOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.AddGuildMemberOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.AddGuildMemberOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.AddGuildMemberOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildRoleOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildRoleOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildRoleOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildBanOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildBanOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildBanOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildIntegrationOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildIntegrationOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildIntegrationOpts
-instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildIntegrationOpts
-instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildIntegrationOpts
-instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildIntegrationOpts
 instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildOpts
 instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildOpts
 instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildIntegrationOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildIntegrationOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildIntegrationOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildIntegrationOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildIntegrationOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildIntegrationOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildBanOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildBanOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildBanOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildRoleOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildRoleOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildRoleOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.AddGuildMemberOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.AddGuildMemberOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.AddGuildMemberOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.CreateGuildChannelOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.CreateGuildChannelOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.CreateGuildChannelOpts
+instance GHC.Classes.Ord Discord.Internal.Rest.Guild.ModifyGuildOpts
+instance GHC.Classes.Eq Discord.Internal.Rest.Guild.ModifyGuildOpts
+instance GHC.Show.Show Discord.Internal.Rest.Guild.ModifyGuildOpts
 instance Discord.Internal.Rest.Prelude.Request (Discord.Internal.Rest.Guild.GuildRequest a)
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Rest.Guild.ModifyGuildOpts
 instance Data.Aeson.Types.ToJSON.ToJSON Discord.Internal.Rest.Guild.ModifyGuildMemberOpts
@@ -1787,8 +1787,8 @@ Sendables :: Chan GatewaySendable -> Chan GatewaySendable -> IORef Bool -> IORef
 -- | Log
 [sendlog] :: Sendables -> Chan Text
 sendableLoop :: Connection -> Sendables -> IO ()
-instance GHC.Show.Show Discord.Internal.Gateway.EventLoop.ConnLoopState
 instance GHC.Show.Show Discord.Internal.Gateway.EventLoop.GatewayException
+instance GHC.Show.Show Discord.Internal.Gateway.EventLoop.ConnLoopState
 
 
 -- | Query info about connected Guilds and Channels

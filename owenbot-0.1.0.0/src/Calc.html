@@ -20,30 +20,35 @@
 </span><a href="Calc.html#calctextbookRE"><span class="hs-identifier hs-var hs-var">calctextbookRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="TemplateRE.html#textbookRE"><span class="hs-identifier hs-var">textbookRE</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;calc&quot;</span></span><span>
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;calc&quot;</span></span><span>
 </span><span id="line-18"></span><span>
 </span><span id="line-19"></span><span class="annot"><a href="Calc.html#url"><span class="hs-identifier hs-type">url</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-20"></span><span id="url"><span class="annot"><span class="annottext">url :: Text
-</span><a href="Calc.html#url"><span class="hs-identifier hs-var hs-var">url</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea&quot;</span></span><span>
+</span><a href="Calc.html#url"><span class="hs-identifier hs-var hs-var">url</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea&quot;</span></span><span>
 </span><span id="line-21"></span><span>
 </span><span id="line-22"></span><span class="annot"><a href="Calc.html#sendTextbook"><span class="hs-identifier hs-type">sendTextbook</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-23"></span><span id="sendTextbook"><span class="annot"><span class="annottext">sendTextbook :: Message -&gt; DiscordHandler ()
-</span><a href="Calc.html#sendTextbook"><span class="hs-identifier hs-var hs-var">sendTextbook</span></a></span></span><span> </span><span id="local-6989586621679187316"><span class="annot"><span class="annottext">m :: Message
-</span><a href="#local-6989586621679187316"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="Calc.html#sendTextbook"><span class="hs-identifier hs-var hs-var">sendTextbook</span></a></span></span><span> </span><span id="local-6989586621679166170"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679166170"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
 -&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 </span><a href="Utils.html#newCommand"><span class="hs-identifier hs-var">newCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679187316"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166170"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Calc.html#calctextbookRE"><span class="hs-identifier hs-var">calctextbookRE</span></a></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-24"></span><span>    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679187316"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166170"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>        </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="hs-string">&quot;The textbook can be found here:\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;The textbook can be found here:\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Calc.html#url"><span class="hs-identifier hs-var">url</span></a></span><span>

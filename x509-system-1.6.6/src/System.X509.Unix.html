@@ -28,15 +28,20 @@
 </span><span id="line-28"></span><span class="annot"><a href="System.X509.Unix.html#defaultSystemPaths"><span class="hs-identifier hs-type">defaultSystemPaths</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">]</span><span>
 </span><span id="line-29"></span><span id="defaultSystemPaths"><span class="annot"><span class="annottext">defaultSystemPaths :: [FilePath]
 </span><a href="System.X509.Unix.html#defaultSystemPaths"><span class="hs-identifier hs-var hs-var">defaultSystemPaths</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-30"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="hs-string">&quot;/etc/ssl/certs/&quot;</span></span><span>                 </span><span class="hs-comment">-- linux</span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;/system/etc/security/cacerts/&quot;</span></span><span>   </span><span class="hs-comment">-- android</span><span>
-</span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;/usr/local/share/certs/&quot;</span></span><span>         </span><span class="hs-comment">-- freebsd</span><span>
-</span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;/etc/ssl/cert.pem&quot;</span></span><span>               </span><span class="hs-comment">-- openbsd</span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;/etc/ssl/certs/&quot;</span></span><span>                 </span><span class="hs-comment">-- linux</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;/system/etc/security/cacerts/&quot;</span></span><span>   </span><span class="hs-comment">-- android</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;/usr/local/share/certs/&quot;</span></span><span>         </span><span class="hs-comment">-- freebsd</span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;/etc/ssl/cert.pem&quot;</span></span><span>               </span><span class="hs-comment">-- openbsd</span><span>
 </span><span id="line-34"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="annot"><a href="System.X509.Unix.html#envPathOverride"><span class="hs-identifier hs-type">envPathOverride</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-37"></span><span id="envPathOverride"><span class="annot"><span class="annottext">envPathOverride :: FilePath
-</span><a href="System.X509.Unix.html#envPathOverride"><span class="hs-identifier hs-var hs-var">envPathOverride</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;SYSTEM_CERTIFICATE_PATH&quot;</span></span><span>
+</span><a href="System.X509.Unix.html#envPathOverride"><span class="hs-identifier hs-var hs-var">envPathOverride</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;SYSTEM_CERTIFICATE_PATH&quot;</span></span><span>
 </span><span id="line-38"></span><span>
 </span><span id="line-39"></span><span class="annot"><a href="System.X509.Unix.html#getSystemCertificateStore"><span class="hs-identifier hs-type">getSystemCertificateStore</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CertificateStore</span></span><span>
 </span><span id="line-40"></span><span id="getSystemCertificateStore"><span class="annot"><span class="annottext">getSystemCertificateStore :: IO CertificateStore
@@ -76,11 +81,12 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO FilePath
 </span><span class="hs-identifier hs-var">getEnv</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><a href="System.X509.Unix.html#envPathOverride"><span class="hs-identifier hs-var">envPathOverride</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IOException -&gt; IO [FilePath]
-</span><a href="#local-6989586621679049293"><span class="hs-identifier hs-var">inDefault</span></a></span><span>
+</span><a href="#local-6989586621679036938"><span class="hs-identifier hs-var">inDefault</span></a></span><span>
 </span><span id="line-44"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-45"></span><span>        </span><span class="annot"><a href="#local-6989586621679049293"><span class="hs-identifier hs-type">inDefault</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">E.IOException</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">]</span><span>
-</span><span id="line-46"></span><span>        </span><span id="local-6989586621679049293"><span class="annot"><span class="annottext">inDefault :: IOException -&gt; IO [FilePath]
-</span><a href="#local-6989586621679049293"><span class="hs-identifier hs-var hs-var">inDefault</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO [FilePath]
+</span><span id="line-45"></span><span>        </span><span class="annot"><a href="#local-6989586621679036938"><span class="hs-identifier hs-type">inDefault</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">E.IOException</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">]</span><span>
+</span><span id="line-46"></span><span>        </span><span id="local-6989586621679036938"><span class="annot"><span class="annottext">inDefault :: IOException -&gt; IO [FilePath]
+</span><a href="#local-6989586621679036938"><span class="hs-identifier hs-var hs-var">inDefault</span></a></span></span><span> </span><span class="annot"><span class="annottext">IOException
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO [FilePath]
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">[FilePath]
 </span><a href="System.X509.Unix.html#defaultSystemPaths"><span class="hs-identifier hs-var">defaultSystemPaths</span></a></span><span>

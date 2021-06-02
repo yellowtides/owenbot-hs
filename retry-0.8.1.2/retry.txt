@@ -317,13 +317,13 @@ simulatePolicy :: Monad m => Int -> RetryPolicyM m -> m [(Int, Maybe Int)]
 -- | Run given policy up to N iterations and pretty print results on the
 --   console.
 simulatePolicyPP :: Int -> RetryPolicyM IO -> IO ()
-instance GHC.Generics.Generic Control.Retry.RetryStatus
-instance GHC.Classes.Eq Control.Retry.RetryStatus
-instance GHC.Show.Show Control.Retry.RetryStatus
-instance GHC.Read.Read Control.Retry.RetryStatus
 instance GHC.Generics.Generic Control.Retry.RetryAction
 instance GHC.Classes.Eq Control.Retry.RetryAction
 instance GHC.Show.Show Control.Retry.RetryAction
 instance GHC.Read.Read Control.Retry.RetryAction
+instance GHC.Generics.Generic Control.Retry.RetryStatus
+instance GHC.Classes.Eq Control.Retry.RetryStatus
+instance GHC.Show.Show Control.Retry.RetryStatus
+instance GHC.Read.Read Control.Retry.RetryStatus
 instance GHC.Base.Monad m => GHC.Base.Semigroup (Control.Retry.RetryPolicyM m)
 instance GHC.Base.Monad m => GHC.Base.Monoid (Control.Retry.RetryPolicyM m)

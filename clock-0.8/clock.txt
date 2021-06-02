@@ -158,14 +158,14 @@ diffTimeSpec :: TimeSpec -> TimeSpec -> TimeSpec
 -- | <i>Deprecated: Use toNanoSecs instead! Replaced timeSpecAsNanoSecs
 --   with the same signature TimeSpec -&gt; Integer</i>
 timeSpecAsNanoSecs :: TimeSpec -> Integer
-instance GHC.Show.Show System.Clock.TimeSpec
-instance GHC.Read.Read System.Clock.TimeSpec
-instance GHC.Generics.Generic System.Clock.TimeSpec
 instance GHC.Show.Show System.Clock.Clock
 instance GHC.Read.Read System.Clock.Clock
 instance GHC.Generics.Generic System.Clock.Clock
 instance GHC.Enum.Enum System.Clock.Clock
 instance GHC.Classes.Eq System.Clock.Clock
+instance GHC.Show.Show System.Clock.TimeSpec
+instance GHC.Read.Read System.Clock.TimeSpec
+instance GHC.Generics.Generic System.Clock.TimeSpec
 instance Foreign.Storable.Storable System.Clock.TimeSpec
 instance GHC.Num.Num System.Clock.TimeSpec
 instance GHC.Classes.Eq System.Clock.TimeSpec

@@ -17,20 +17,20 @@
 </span><span id="line-17"></span><span>
 </span><span id="line-18"></span><span class="annot"><a href="Network.Socket.Handle.html#socketToHandle"><span class="hs-identifier hs-type">socketToHandle</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.Socket.Types.html#Socket"><span class="hs-identifier hs-type">Socket</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IOMode</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Handle</span></span><span>
 </span><span id="line-19"></span><span id="socketToHandle"><span class="annot"><span class="annottext">socketToHandle :: Socket -&gt; IOMode -&gt; IO Handle
-</span><a href="Network.Socket.Handle.html#socketToHandle"><span class="hs-identifier hs-var hs-var">socketToHandle</span></a></span></span><span> </span><span id="local-6989586621679078279"><span class="annot"><span class="annottext">s :: Socket
-</span><a href="#local-6989586621679078279"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679078278"><span class="annot"><span class="annottext">mode :: IOMode
-</span><a href="#local-6989586621679078278"><span class="hs-identifier hs-var">mode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Socket -&gt; (CInt -&gt; IO Handle) -&gt; (CInt -&gt; IO Handle) -&gt; IO Handle
+</span><a href="Network.Socket.Handle.html#socketToHandle"><span class="hs-identifier hs-var hs-var">socketToHandle</span></a></span></span><span> </span><span id="local-6989586621679053640"><span class="annot"><span class="annottext">Socket
+</span><a href="#local-6989586621679053640"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679053639"><span class="annot"><span class="annottext">IOMode
+</span><a href="#local-6989586621679053639"><span class="hs-identifier hs-var">mode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Socket -&gt; (CInt -&gt; IO Handle) -&gt; (CInt -&gt; IO Handle) -&gt; IO Handle
 forall a. Socket -&gt; (CInt -&gt; IO a) -&gt; (CInt -&gt; IO a) -&gt; IO a
 </span><a href="Network.Socket.Types.html#invalidateSocket"><span class="hs-identifier hs-var">invalidateSocket</span></a></span><span> </span><span class="annot"><span class="annottext">Socket
-</span><a href="#local-6989586621679078279"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; IO Handle
+</span><a href="#local-6989586621679053640"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; IO Handle
 forall p a. p -&gt; IO a
-</span><a href="#local-6989586621679078276"><span class="hs-identifier hs-var">err</span></a></span><span> </span><span class="annot"><span class="annottext">((CInt -&gt; IO Handle) -&gt; IO Handle)
+</span><a href="#local-6989586621679053637"><span class="hs-identifier hs-var">err</span></a></span><span> </span><span class="annot"><span class="annottext">((CInt -&gt; IO Handle) -&gt; IO Handle)
 -&gt; (CInt -&gt; IO Handle) -&gt; IO Handle
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679078275"><span class="annot"><span class="annottext">oldfd :: CInt
-</span><a href="#local-6989586621679078275"><span class="hs-identifier hs-var">oldfd</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-20"></span><span>    </span><span id="local-6989586621679078274"><span class="annot"><span class="annottext">Handle
-</span><a href="#local-6989586621679078274"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">CInt
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679053636"><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679053636"><span class="hs-identifier hs-var">oldfd</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-20"></span><span>    </span><span id="local-6989586621679053635"><span class="annot"><span class="annottext">Handle
+</span><a href="#local-6989586621679053635"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">CInt
 -&gt; Maybe IODeviceType
 -&gt; Bool
 -&gt; FilePath
@@ -38,32 +38,34 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; Bool
 -&gt; IO Handle
 </span><span class="hs-identifier hs-var">fdToHandle'</span></span><span> </span><span class="annot"><span class="annottext">CInt
-</span><a href="#local-6989586621679078275"><span class="hs-identifier hs-var">oldfd</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IODeviceType -&gt; Maybe IODeviceType
+</span><a href="#local-6989586621679053636"><span class="hs-identifier hs-var">oldfd</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IODeviceType -&gt; Maybe IODeviceType
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">IODeviceType
 </span><span class="hs-identifier hs-var">GHC.IO.Device.Stream</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Socket -&gt; FilePath
 forall a. Show a =&gt; a -&gt; FilePath
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Socket
-</span><a href="#local-6989586621679078279"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IOMode
-</span><a href="#local-6989586621679078278"><span class="hs-identifier hs-var">mode</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679053640"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IOMode
+</span><a href="#local-6989586621679053639"><span class="hs-identifier hs-var">mode</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span class="hs-comment">{-bin-}</span><span>
 </span><span id="line-21"></span><span>    </span><span class="annot"><span class="annottext">Handle -&gt; BufferMode -&gt; IO ()
 </span><span class="hs-identifier hs-var">hSetBuffering</span></span><span> </span><span class="annot"><span class="annottext">Handle
-</span><a href="#local-6989586621679078274"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">BufferMode
+</span><a href="#local-6989586621679053635"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">BufferMode
 </span><span class="hs-identifier hs-var">NoBuffering</span></span><span>
 </span><span id="line-22"></span><span>    </span><span class="annot"><span class="annottext">Handle -&gt; IO Handle
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Handle
-</span><a href="#local-6989586621679078274"><span class="hs-identifier hs-var">h</span></a></span><span>
+</span><a href="#local-6989586621679053635"><span class="hs-identifier hs-var">h</span></a></span><span>
 </span><span id="line-23"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-24"></span><span>    </span><span id="local-6989586621679078276"><span class="annot"><span class="annottext">err :: p -&gt; IO a
-</span><a href="#local-6989586621679078276"><span class="hs-identifier hs-var hs-var">err</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IOError -&gt; IO a
+</span><span id="line-24"></span><span>    </span><span id="local-6989586621679053637"><span class="annot"><span class="annottext">err :: p -&gt; IO a
+</span><a href="#local-6989586621679053637"><span class="hs-identifier hs-var hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">p
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IOError -&gt; IO a
 forall a. IOError -&gt; IO a
 </span><span class="hs-identifier hs-var">ioError</span></span><span> </span><span class="annot"><span class="annottext">(IOError -&gt; IO a) -&gt; IOError -&gt; IO a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IOError
 </span><span class="hs-identifier hs-var">userError</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IOError) -&gt; FilePath -&gt; IOError
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="hs-string">&quot;socketToHandle: socket is no longer valid&quot;</span></span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;socketToHandle: socket is no longer valid&quot;</span></span><span>
 </span><span id="line-25"></span></pre></body></html>

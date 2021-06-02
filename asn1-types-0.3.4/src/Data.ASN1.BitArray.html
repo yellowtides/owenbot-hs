@@ -28,7 +28,7 @@
 </span><span id="line-28"></span><span>
 </span><span id="line-29"></span><span class="hs-comment">-- | throwed in case of out of bounds in the bitarray.</span><span>
 </span><span id="line-30"></span><span class="hs-keyword">data</span><span> </span><span id="BitArrayOutOfBound"><span class="annot"><a href="Data.ASN1.BitArray.html#BitArrayOutOfBound"><span class="hs-identifier hs-var">BitArrayOutOfBound</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="BitArrayOutOfBound"><span class="annot"><a href="Data.ASN1.BitArray.html#BitArrayOutOfBound"><span class="hs-identifier hs-var">BitArrayOutOfBound</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061164"><span id="local-6989586621679061166"><span id="local-6989586621679061168"><span class="annot"><span class="annottext">Int -&gt; BitArrayOutOfBound -&gt; ShowS
+</span><span id="line-31"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041268"><span id="local-6989586621679041270"><span id="local-6989586621679041272"><span class="annot"><span class="annottext">Int -&gt; BitArrayOutOfBound -&gt; ShowS
 [BitArrayOutOfBound] -&gt; ShowS
 BitArrayOutOfBound -&gt; String
 (Int -&gt; BitArrayOutOfBound -&gt; ShowS)
@@ -43,7 +43,7 @@ show :: BitArrayOutOfBound -&gt; String
 $cshow :: BitArrayOutOfBound -&gt; String
 showsPrec :: Int -&gt; BitArrayOutOfBound -&gt; ShowS
 $cshowsPrec :: Int -&gt; BitArrayOutOfBound -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061159"><span id="local-6989586621679061161"><span class="annot"><span class="annottext">BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041263"><span id="local-6989586621679041265"><span class="annot"><span class="annottext">BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool
 (BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool)
 -&gt; (BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool)
 -&gt; Eq BitArrayOutOfBound
@@ -53,13 +53,13 @@ $c/= :: BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool
 == :: BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool
 $c== :: BitArrayOutOfBound -&gt; BitArrayOutOfBound -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
-</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679061150"><span id="local-6989586621679061152"><span id="local-6989586621679061154"><span class="annot"><span class="hs-identifier hs-type">Exception</span></span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArrayOutOfBound"><span class="hs-identifier hs-type">BitArrayOutOfBound</span></a></span></span></span></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679041254"><span id="local-6989586621679041256"><span id="local-6989586621679041258"><span class="annot"><span class="hs-identifier hs-type">Exception</span></span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArrayOutOfBound"><span class="hs-identifier hs-type">BitArrayOutOfBound</span></a></span></span></span></span><span>
 </span><span id="line-33"></span><span>
 </span><span id="line-34"></span><span class="hs-comment">-- | represent a bitarray / bitmap</span><span>
 </span><span id="line-35"></span><span class="hs-comment">--</span><span>
 </span><span id="line-36"></span><span class="hs-comment">-- the memory representation start at bit 0</span><span>
 </span><span id="line-37"></span><span class="hs-keyword">data</span><span> </span><span id="BitArray"><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-var">BitArray</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="BitArray"><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-var">BitArray</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
-</span><span id="line-38"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061142"><span id="local-6989586621679061144"><span id="local-6989586621679061146"><span class="annot"><span class="annottext">Int -&gt; BitArray -&gt; ShowS
+</span><span id="line-38"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041246"><span id="local-6989586621679041248"><span id="local-6989586621679041250"><span class="annot"><span class="annottext">Int -&gt; BitArray -&gt; ShowS
 [BitArray] -&gt; ShowS
 BitArray -&gt; String
 (Int -&gt; BitArray -&gt; ShowS)
@@ -72,7 +72,7 @@ show :: BitArray -&gt; String
 $cshow :: BitArray -&gt; String
 showsPrec :: Int -&gt; BitArray -&gt; ShowS
 $cshowsPrec :: Int -&gt; BitArray -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679061138"><span id="local-6989586621679061140"><span class="annot"><span class="annottext">BitArray -&gt; BitArray -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679041242"><span id="local-6989586621679041244"><span class="annot"><span class="annottext">BitArray -&gt; BitArray -&gt; Bool
 (BitArray -&gt; BitArray -&gt; Bool)
 -&gt; (BitArray -&gt; BitArray -&gt; Bool) -&gt; Eq BitArray
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -85,122 +85,127 @@ $c== :: BitArray -&gt; BitArray -&gt; Bool
 </span><span id="line-40"></span><span class="hs-comment">-- | returns the length of bits in this bitarray</span><span>
 </span><span id="line-41"></span><span class="annot"><a href="Data.ASN1.BitArray.html#bitArrayLength"><span class="hs-identifier hs-type">bitArrayLength</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span>
 </span><span id="line-42"></span><span id="bitArrayLength"><span class="annot"><span class="annottext">bitArrayLength :: BitArray -&gt; Word64
-</span><a href="Data.ASN1.BitArray.html#bitArrayLength"><span class="hs-identifier hs-var hs-var">bitArrayLength</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span id="local-6989586621679061137"><span class="annot"><span class="annottext">l :: Word64
-</span><a href="#local-6989586621679061137"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061137"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><a href="Data.ASN1.BitArray.html#bitArrayLength"><span class="hs-identifier hs-var hs-var">bitArrayLength</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span id="local-6989586621679041241"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041241"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041241"><span class="hs-identifier hs-var">l</span></a></span><span>
 </span><span id="line-43"></span><span>
-</span><span id="line-44"></span><span id="local-6989586621679061190"><span class="annot"><a href="Data.ASN1.BitArray.html#bitArrayOutOfBound"><span class="hs-identifier hs-type">bitArrayOutOfBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679061190"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-44"></span><span id="local-6989586621679041294"><span class="annot"><a href="Data.ASN1.BitArray.html#bitArrayOutOfBound"><span class="hs-identifier hs-type">bitArrayOutOfBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679041294"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-45"></span><span id="bitArrayOutOfBound"><span class="annot"><span class="annottext">bitArrayOutOfBound :: Word64 -&gt; a
-</span><a href="Data.ASN1.BitArray.html#bitArrayOutOfBound"><span class="hs-identifier hs-var hs-var">bitArrayOutOfBound</span></a></span></span><span> </span><span id="local-6989586621679061135"><span class="annot"><span class="annottext">n :: Word64
-</span><a href="#local-6989586621679061135"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BitArrayOutOfBound -&gt; a
+</span><a href="Data.ASN1.BitArray.html#bitArrayOutOfBound"><span class="hs-identifier hs-var hs-var">bitArrayOutOfBound</span></a></span></span><span> </span><span id="local-6989586621679041239"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041239"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BitArrayOutOfBound -&gt; a
 forall a e. Exception e =&gt; e -&gt; a
 </span><span class="hs-identifier hs-var">throw</span></span><span> </span><span class="annot"><span class="annottext">(BitArrayOutOfBound -&gt; a) -&gt; BitArrayOutOfBound -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; BitArrayOutOfBound
 </span><a href="Data.ASN1.BitArray.html#BitArrayOutOfBound"><span class="hs-identifier hs-var">BitArrayOutOfBound</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061135"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679041239"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-46"></span><span>
 </span><span id="line-47"></span><span class="hs-comment">-- | get the nth bits</span><span>
 </span><span id="line-48"></span><span class="annot"><a href="Data.ASN1.BitArray.html#bitArrayGetBit"><span class="hs-identifier hs-type">bitArrayGetBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-49"></span><span id="bitArrayGetBit"><span class="annot"><span class="annottext">bitArrayGetBit :: BitArray -&gt; Word64 -&gt; Bool
-</span><a href="Data.ASN1.BitArray.html#bitArrayGetBit"><span class="hs-identifier hs-var hs-var">bitArrayGetBit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span id="local-6989586621679061134"><span class="annot"><span class="annottext">l :: Word64
-</span><a href="#local-6989586621679061134"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679061133"><span class="annot"><span class="annottext">d :: ByteString
-</span><a href="#local-6989586621679061133"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061132"><span class="annot"><span class="annottext">n :: Word64
-</span><a href="#local-6989586621679061132"><span class="hs-identifier hs-var">n</span></a></span></span><span>
+</span><a href="Data.ASN1.BitArray.html#bitArrayGetBit"><span class="hs-identifier hs-var hs-var">bitArrayGetBit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span id="local-6989586621679041238"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041238"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679041237"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041237"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679041236"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041236"><span class="hs-identifier hs-var">n</span></a></span></span><span>
 </span><span id="line-50"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061132"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
+</span><a href="#local-6989586621679041236"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061134"><span class="hs-identifier hs-var">l</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Bool
+</span><a href="#local-6989586621679041238"><span class="hs-identifier hs-var">l</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Bool
 forall a. Word64 -&gt; a
 </span><a href="Data.ASN1.BitArray.html#bitArrayOutOfBound"><span class="hs-identifier hs-var">bitArrayOutOfBound</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061132"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679041236"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-51"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; Int -&gt; Bool) -&gt; Int -&gt; Word8 -&gt; Bool
 forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 </span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Bool
 forall a. Bits a =&gt; a -&gt; Int -&gt; Bool
-</span><span class="hs-identifier hs-var">testBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">7</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-identifier hs-var">testBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">7</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Word64 -&gt; Int
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061129"><span class="hs-identifier hs-var">bitn</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; Bool) -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621679041233"><span class="hs-identifier hs-var">bitn</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; Bool) -&gt; Word8 -&gt; Bool
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int -&gt; Word8
 </span><span class="hs-identifier hs-var">B.index</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061133"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word64 -&gt; Int
+</span><a href="#local-6989586621679041237"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word64 -&gt; Int
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061127"><span class="hs-identifier hs-var">offset</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-52"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061127"><span class="annot"><span class="annottext">offset :: Word64
-</span><a href="#local-6989586621679061127"><span class="hs-identifier hs-var">offset</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061129"><span class="annot"><span class="annottext">bitn :: Word64
-</span><a href="#local-6989586621679061129"><span class="hs-identifier hs-var">bitn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061132"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; (Word64, Word64)
+</span><a href="#local-6989586621679041231"><span class="hs-identifier hs-var">offset</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041231"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041231"><span class="hs-identifier hs-var">offset</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041233"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041233"><span class="hs-identifier hs-var">bitn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041236"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; (Word64, Word64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span>
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><span class="hs-number">8</span></span><span>
 </span><span id="line-53"></span><span>
 </span><span id="line-54"></span><span class="hs-comment">-- | set the nth bit to the value specified</span><span>
 </span><span id="line-55"></span><span class="annot"><a href="Data.ASN1.BitArray.html#bitArraySetBitValue"><span class="hs-identifier hs-type">bitArraySetBitValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span>
 </span><span id="line-56"></span><span id="bitArraySetBitValue"><span class="annot"><span class="annottext">bitArraySetBitValue :: BitArray -&gt; Word64 -&gt; Bool -&gt; BitArray
-</span><a href="Data.ASN1.BitArray.html#bitArraySetBitValue"><span class="hs-identifier hs-var hs-var">bitArraySetBitValue</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span id="local-6989586621679061125"><span class="annot"><span class="annottext">l :: Word64
-</span><a href="#local-6989586621679061125"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679061124"><span class="annot"><span class="annottext">d :: ByteString
-</span><a href="#local-6989586621679061124"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679061123"><span class="annot"><span class="annottext">n :: Word64
-</span><a href="#local-6989586621679061123"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679061122"><span class="annot"><span class="annottext">v :: Bool
-</span><a href="#local-6989586621679061122"><span class="hs-identifier hs-var">v</span></a></span></span><span>
+</span><a href="Data.ASN1.BitArray.html#bitArraySetBitValue"><span class="hs-identifier hs-var hs-var">bitArraySetBitValue</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span id="local-6989586621679041229"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041229"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679041228"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041228"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679041227"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041227"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679041226"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679041226"><span class="hs-identifier hs-var">v</span></a></span></span><span>
 </span><span id="line-57"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061123"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
+</span><a href="#local-6989586621679041227"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061125"><span class="hs-identifier hs-var">l</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; BitArray
+</span><a href="#local-6989586621679041229"><span class="hs-identifier hs-var">l</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; BitArray
 forall a. Word64 -&gt; a
 </span><a href="Data.ASN1.BitArray.html#bitArrayOutOfBound"><span class="hs-identifier hs-var">bitArrayOutOfBound</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061123"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679041227"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-58"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-59"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061121"><span class="annot"><span class="annottext">before :: ByteString
-</span><a href="#local-6989586621679061121"><span class="hs-identifier hs-var">before</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679061120"><span class="annot"><span class="annottext">after :: ByteString
-</span><a href="#local-6989586621679061120"><span class="hs-identifier hs-var">after</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span id="line-59"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041225"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041225"><span class="hs-identifier hs-var">before</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679041224"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041224"><span class="hs-identifier hs-var">after</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; (ByteString, ByteString)
 </span><span class="hs-identifier hs-var">B.splitAt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word64 -&gt; Int
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061118"><span class="hs-identifier hs-var">offset</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061124"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="hs-keyword">in</span><span>
+</span><a href="#local-6989586621679041222"><span class="hs-identifier hs-var">offset</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041228"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="hs-keyword">in</span><span>
 </span><span id="line-60"></span><span>        </span><span class="hs-comment">-- array bound check before prevent fromJust from failing.</span><span>
-</span><span id="line-61"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679061117"><span class="annot"><span class="annottext">w :: Word8
-</span><a href="#local-6989586621679061117"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679061116"><span class="annot"><span class="annottext">remaining :: ByteString
-</span><a href="#local-6989586621679061116"><span class="hs-identifier hs-var">remaining</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Word8, ByteString) -&gt; (Word8, ByteString)
+</span><span id="line-61"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041221"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679041221"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679041220"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041220"><span class="hs-identifier hs-var">remaining</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Word8, ByteString) -&gt; (Word8, ByteString)
 forall a. HasCallStack =&gt; Maybe a -&gt; a
 </span><span class="hs-identifier hs-var">fromJust</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (Word8, ByteString) -&gt; (Word8, ByteString))
 -&gt; Maybe (Word8, ByteString) -&gt; (Word8, ByteString)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe (Word8, ByteString)
 </span><span class="hs-identifier hs-var">B.uncons</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061120"><span class="hs-identifier hs-var">after</span></a></span><span> </span><span class="hs-keyword">in</span><span>
+</span><a href="#local-6989586621679041224"><span class="hs-identifier hs-var">after</span></a></span><span> </span><span class="hs-keyword">in</span><span>
 </span><span id="line-62"></span><span>        </span><span class="annot"><span class="annottext">Word64 -&gt; ByteString -&gt; BitArray
 </span><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-var">BitArray</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061125"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061121"><span class="hs-identifier hs-var">before</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679041229"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041225"><span class="hs-identifier hs-var">before</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
 </span><span class="hs-operator hs-var">`B.append`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Word8
-</span><a href="#local-6989586621679061112"><span class="hs-identifier hs-var">setter</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621679061117"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">7</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679041216"><span class="hs-identifier hs-var">setter</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679041221"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">7</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Word64 -&gt; Int
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061111"><span class="hs-identifier hs-var">bitn</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679041215"><span class="hs-identifier hs-var">bitn</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; ByteString -&gt; ByteString
 </span><span class="hs-operator hs-var">`B.cons`</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061116"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679041220"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-63"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-64"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679061118"><span class="annot"><span class="annottext">offset :: Word64
-</span><a href="#local-6989586621679061118"><span class="hs-identifier hs-var">offset</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679061111"><span class="annot"><span class="annottext">bitn :: Word64
-</span><a href="#local-6989586621679061111"><span class="hs-identifier hs-var">bitn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061123"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; (Word64, Word64)
+</span><span id="line-64"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679041222"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041222"><span class="hs-identifier hs-var">offset</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041215"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041215"><span class="hs-identifier hs-var">bitn</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041227"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; (Word64, Word64)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
-</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span>
-</span><span id="line-65"></span><span>        </span><span id="local-6989586621679061112"><span class="annot"><span class="annottext">setter :: Word8 -&gt; Int -&gt; Word8
-</span><a href="#local-6989586621679061112"><span class="hs-identifier hs-var hs-var">setter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679061122"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Word8
+</span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><span class="hs-number">8</span></span><span>
+</span><span id="line-65"></span><span>        </span><span id="local-6989586621679041216"><span class="annot"><span class="annottext">setter :: Word8 -&gt; Int -&gt; Word8
+</span><a href="#local-6989586621679041216"><span class="hs-identifier hs-var hs-var">setter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679041226"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Word8
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">setBit</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Word8
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
@@ -209,50 +214,52 @@ forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span id="line-67"></span><span class="hs-comment">-- | set the nth bits</span><span>
 </span><span id="line-68"></span><span class="annot"><a href="Data.ASN1.BitArray.html#bitArraySetBit"><span class="hs-identifier hs-type">bitArraySetBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span>
 </span><span id="line-69"></span><span id="bitArraySetBit"><span class="annot"><span class="annottext">bitArraySetBit :: BitArray -&gt; Word64 -&gt; BitArray
-</span><a href="Data.ASN1.BitArray.html#bitArraySetBit"><span class="hs-identifier hs-var hs-var">bitArraySetBit</span></a></span></span><span> </span><span id="local-6989586621679061107"><span class="annot"><span class="annottext">bitarray :: BitArray
-</span><a href="#local-6989586621679061107"><span class="hs-identifier hs-var">bitarray</span></a></span></span><span> </span><span id="local-6989586621679061106"><span class="annot"><span class="annottext">n :: Word64
-</span><a href="#local-6989586621679061106"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BitArray -&gt; Word64 -&gt; Bool -&gt; BitArray
+</span><a href="Data.ASN1.BitArray.html#bitArraySetBit"><span class="hs-identifier hs-var hs-var">bitArraySetBit</span></a></span></span><span> </span><span id="local-6989586621679041211"><span class="annot"><span class="annottext">BitArray
+</span><a href="#local-6989586621679041211"><span class="hs-identifier hs-var">bitarray</span></a></span></span><span> </span><span id="local-6989586621679041210"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041210"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BitArray -&gt; Word64 -&gt; Bool -&gt; BitArray
 </span><a href="Data.ASN1.BitArray.html#bitArraySetBitValue"><span class="hs-identifier hs-var">bitArraySetBitValue</span></a></span><span> </span><span class="annot"><span class="annottext">BitArray
-</span><a href="#local-6989586621679061107"><span class="hs-identifier hs-var">bitarray</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061106"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679041211"><span class="hs-identifier hs-var">bitarray</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041210"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span>
 </span><span id="line-70"></span><span>
 </span><span id="line-71"></span><span class="hs-comment">-- | clear the nth bits</span><span>
 </span><span id="line-72"></span><span class="annot"><a href="Data.ASN1.BitArray.html#bitArrayClearBit"><span class="hs-identifier hs-type">bitArrayClearBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span>
 </span><span id="line-73"></span><span id="bitArrayClearBit"><span class="annot"><span class="annottext">bitArrayClearBit :: BitArray -&gt; Word64 -&gt; BitArray
-</span><a href="Data.ASN1.BitArray.html#bitArrayClearBit"><span class="hs-identifier hs-var hs-var">bitArrayClearBit</span></a></span></span><span> </span><span id="local-6989586621679061105"><span class="annot"><span class="annottext">bitarray :: BitArray
-</span><a href="#local-6989586621679061105"><span class="hs-identifier hs-var">bitarray</span></a></span></span><span> </span><span id="local-6989586621679061104"><span class="annot"><span class="annottext">n :: Word64
-</span><a href="#local-6989586621679061104"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BitArray -&gt; Word64 -&gt; Bool -&gt; BitArray
+</span><a href="Data.ASN1.BitArray.html#bitArrayClearBit"><span class="hs-identifier hs-var hs-var">bitArrayClearBit</span></a></span></span><span> </span><span id="local-6989586621679041209"><span class="annot"><span class="annottext">BitArray
+</span><a href="#local-6989586621679041209"><span class="hs-identifier hs-var">bitarray</span></a></span></span><span> </span><span id="local-6989586621679041208"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041208"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BitArray -&gt; Word64 -&gt; Bool -&gt; BitArray
 </span><a href="Data.ASN1.BitArray.html#bitArraySetBitValue"><span class="hs-identifier hs-var">bitArraySetBitValue</span></a></span><span> </span><span class="annot"><span class="annottext">BitArray
-</span><a href="#local-6989586621679061105"><span class="hs-identifier hs-var">bitarray</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621679061104"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679041209"><span class="hs-identifier hs-var">bitarray</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679041208"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
 </span><span id="line-74"></span><span>
 </span><span id="line-75"></span><span class="hs-comment">-- | get padded bytestring of the bitarray</span><span>
 </span><span id="line-76"></span><span class="annot"><a href="Data.ASN1.BitArray.html#bitArrayGetData"><span class="hs-identifier hs-type">bitArrayGetData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
 </span><span id="line-77"></span><span id="bitArrayGetData"><span class="annot"><span class="annottext">bitArrayGetData :: BitArray -&gt; ByteString
-</span><a href="Data.ASN1.BitArray.html#bitArrayGetData"><span class="hs-identifier hs-var hs-var">bitArrayGetData</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679061103"><span class="annot"><span class="annottext">d :: ByteString
-</span><a href="#local-6989586621679061103"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061103"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><a href="Data.ASN1.BitArray.html#bitArrayGetData"><span class="hs-identifier hs-var hs-var">bitArrayGetData</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679041207"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041207"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041207"><span class="hs-identifier hs-var">d</span></a></span><span>
 </span><span id="line-78"></span><span>
 </span><span id="line-79"></span><span class="hs-comment">-- | number of bit to skip at the end (padding)</span><span>
 </span><span id="line-80"></span><span class="annot"><a href="Data.ASN1.BitArray.html#toBitArray"><span class="hs-identifier hs-type">toBitArray</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-type">BitArray</span></a></span><span>
 </span><span id="line-81"></span><span id="toBitArray"><span class="annot"><span class="annottext">toBitArray :: ByteString -&gt; Int -&gt; BitArray
-</span><a href="Data.ASN1.BitArray.html#toBitArray"><span class="hs-identifier hs-var hs-var">toBitArray</span></a></span></span><span> </span><span id="local-6989586621679061102"><span class="annot"><span class="annottext">l :: ByteString
-</span><a href="#local-6989586621679061102"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679061101"><span class="annot"><span class="annottext">toSkip :: Int
-</span><a href="#local-6989586621679061101"><span class="hs-identifier hs-var">toSkip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.ASN1.BitArray.html#toBitArray"><span class="hs-identifier hs-var hs-var">toBitArray</span></a></span></span><span> </span><span id="local-6989586621679041206"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041206"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679041205"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679041205"><span class="hs-identifier hs-var">toSkip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-82"></span><span>    </span><span class="annot"><span class="annottext">Word64 -&gt; ByteString -&gt; BitArray
 </span><a href="Data.ASN1.BitArray.html#BitArray"><span class="hs-identifier hs-var">BitArray</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word64
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int
 </span><span class="hs-identifier hs-var">B.length</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061102"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679041206"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679061101"><span class="hs-identifier hs-var">toSkip</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679061102"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><a href="#local-6989586621679041205"><span class="hs-identifier hs-var">toSkip</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679041206"><span class="hs-identifier hs-var">l</span></a></span><span>
 </span><span id="line-83"></span></pre></body></html>

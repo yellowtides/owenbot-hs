@@ -1004,8 +1004,8 @@ data PopperRes
 PRDone :: PopperRes
 PRNext :: !ByteString -> PopperRes
 PRError :: !ZlibException -> PopperRes
-instance GHC.Show.Show Data.Streaming.Zlib.PopperRes
 instance GHC.Show.Show Data.Streaming.Zlib.ZlibException
+instance GHC.Show.Show Data.Streaming.Zlib.PopperRes
 instance GHC.Exception.Type.Exception Data.Streaming.Zlib.ZlibException
 
 
@@ -1049,12 +1049,12 @@ decodeUtf32BE :: ByteString -> DecodeResult
 data DecodeResult
 DecodeResultSuccess :: !Text -> !ByteString -> DecodeResult -> DecodeResult
 DecodeResultFailure :: !Text -> !ByteString -> DecodeResult
-instance Foreign.Storable.Storable Data.Streaming.Text.DecoderState
-instance GHC.Num.Num Data.Streaming.Text.DecoderState
-instance GHC.Show.Show Data.Streaming.Text.DecoderState
-instance GHC.Classes.Eq Data.Streaming.Text.DecoderState
+instance GHC.Show.Show Data.Streaming.Text.S
 instance Foreign.Storable.Storable Data.Streaming.Text.CodePoint
 instance GHC.Num.Num Data.Streaming.Text.CodePoint
 instance GHC.Show.Show Data.Streaming.Text.CodePoint
 instance GHC.Classes.Eq Data.Streaming.Text.CodePoint
-instance GHC.Show.Show Data.Streaming.Text.S
+instance Foreign.Storable.Storable Data.Streaming.Text.DecoderState
+instance GHC.Num.Num Data.Streaming.Text.DecoderState
+instance GHC.Show.Show Data.Streaming.Text.DecoderState
+instance GHC.Classes.Eq Data.Streaming.Text.DecoderState

@@ -29,7 +29,7 @@
 </span><a href="Data.X509.ExtensionRaw.html#extRawCritical"><span class="hs-identifier hs-var hs-var">extRawCritical</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>   </span><span class="hs-comment">-- ^ if this extension is critical</span><span>
 </span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="extRawContent"><span class="annot"><span class="annottext">ExtensionRaw -&gt; ByteString
 </span><a href="Data.X509.ExtensionRaw.html#extRawContent"><span class="hs-identifier hs-var hs-var">extRawContent</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span> </span><span class="hs-comment">-- ^ undecoded content</span><span>
-</span><span id="line-29"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679103142"><span id="local-6989586621679103144"><span id="local-6989586621679103146"><span class="annot"><span class="annottext">Int -&gt; ExtensionRaw -&gt; ShowS
+</span><span id="line-29"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679068256"><span id="local-6989586621679068258"><span id="local-6989586621679068260"><span class="annot"><span class="annottext">Int -&gt; ExtensionRaw -&gt; ShowS
 [ExtensionRaw] -&gt; ShowS
 ExtensionRaw -&gt; String
 (Int -&gt; ExtensionRaw -&gt; ShowS)
@@ -44,7 +44,7 @@ show :: ExtensionRaw -&gt; String
 $cshow :: ExtensionRaw -&gt; String
 showsPrec :: Int -&gt; ExtensionRaw -&gt; ShowS
 $cshowsPrec :: Int -&gt; ExtensionRaw -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679103137"><span id="local-6989586621679103139"><span class="annot"><span class="annottext">ExtensionRaw -&gt; ExtensionRaw -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679068251"><span id="local-6989586621679068253"><span class="annot"><span class="annottext">ExtensionRaw -&gt; ExtensionRaw -&gt; Bool
 (ExtensionRaw -&gt; ExtensionRaw -&gt; Bool)
 -&gt; (ExtensionRaw -&gt; ExtensionRaw -&gt; Bool) -&gt; Eq ExtensionRaw
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -56,44 +56,47 @@ $c== :: ExtensionRaw -&gt; ExtensionRaw -&gt; Bool
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="annot"><a href="Data.X509.ExtensionRaw.html#tryExtRawASN1"><span class="hs-identifier hs-type">tryExtRawASN1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ASN1</span></span><span class="hs-special">]</span><span>
 </span><span id="line-32"></span><span id="tryExtRawASN1"><span class="annot"><span class="annottext">tryExtRawASN1 :: ExtensionRaw -&gt; Either String [ASN1]
-</span><a href="Data.X509.ExtensionRaw.html#tryExtRawASN1"><span class="hs-identifier hs-var hs-var">tryExtRawASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span id="local-6989586621679103135"><span class="annot"><span class="annottext">oid :: OID
-</span><a href="#local-6989586621679103135"><span class="hs-identifier hs-var">oid</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679103134"><span class="annot"><span class="annottext">content :: ByteString
-</span><a href="#local-6989586621679103134"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.X509.ExtensionRaw.html#tryExtRawASN1"><span class="hs-identifier hs-var hs-var">tryExtRawASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span id="local-6989586621679068249"><span class="annot"><span class="annottext">OID
+</span><a href="#local-6989586621679068249"><span class="hs-identifier hs-var">oid</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679068248"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679068248"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">BER -&gt; ByteString -&gt; Either ASN1Error [ASN1]
 forall a.
 ASN1Decoding a =&gt;
 a -&gt; ByteString -&gt; Either ASN1Error [ASN1]
 </span><span class="hs-identifier hs-var">decodeASN1'</span></span><span> </span><span class="annot"><span class="annottext">BER
 </span><span class="hs-identifier hs-var">BER</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679103134"><span class="hs-identifier hs-var">content</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-34"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679103131"><span class="annot"><span class="annottext">err :: ASN1Error
-</span><a href="#local-6989586621679103131"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String [ASN1]
+</span><a href="#local-6989586621679068248"><span class="hs-identifier hs-var">content</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-34"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679068245"><span class="annot"><span class="annottext">ASN1Error
+</span><a href="#local-6989586621679068245"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String [ASN1]
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Either String [ASN1]) -&gt; String -&gt; Either String [ASN1]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="hs-string">&quot;fromASN1: X509.ExtensionRaw: OID=&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: X509.ExtensionRaw: OID=&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">OID -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">OID
-</span><a href="#local-6989586621679103135"><span class="hs-identifier hs-var">oid</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679068249"><span class="hs-identifier hs-var">oid</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
-</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;: cannot decode data: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;: cannot decode data: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">ASN1Error -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ASN1Error
-</span><a href="#local-6989586621679103131"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-35"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679103129"><span class="annot"><span class="annottext">r :: [ASN1]
-</span><a href="#local-6989586621679103129"><span class="hs-identifier hs-var">r</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; Either String [ASN1]
+</span><a href="#local-6989586621679068245"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-35"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679068243"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068243"><span class="hs-identifier hs-var">r</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; Either String [ASN1]
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103129"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><a href="#local-6989586621679068243"><span class="hs-identifier hs-var">r</span></a></span><span>
 </span><span id="line-36"></span><span>
 </span><span id="line-37"></span><span class="annot"><a href="Data.X509.ExtensionRaw.html#extRawASN1"><span class="hs-identifier hs-type">extRawASN1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ASN1</span></span><span class="hs-special">]</span><span>
 </span><span id="line-38"></span><span id="extRawASN1"><span class="annot"><span class="annottext">extRawASN1 :: ExtensionRaw -&gt; [ASN1]
-</span><a href="Data.X509.ExtensionRaw.html#extRawASN1"><span class="hs-identifier hs-var hs-var">extRawASN1</span></a></span></span><span> </span><span id="local-6989586621679103128"><span class="annot"><span class="annottext">extRaw :: ExtensionRaw
-</span><a href="#local-6989586621679103128"><span class="hs-identifier hs-var">extRaw</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; [ASN1])
+</span><a href="Data.X509.ExtensionRaw.html#extRawASN1"><span class="hs-identifier hs-var hs-var">extRawASN1</span></a></span></span><span> </span><span id="local-6989586621679068242"><span class="annot"><span class="annottext">ExtensionRaw
+</span><a href="#local-6989586621679068242"><span class="hs-identifier hs-var">extRaw</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; [ASN1])
 -&gt; ([ASN1] -&gt; [ASN1]) -&gt; Either String [ASN1] -&gt; [ASN1]
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [ASN1]
@@ -104,12 +107,12 @@ forall a. a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ExtensionRaw -&gt; Either String [ASN1]
 </span><a href="Data.X509.ExtensionRaw.html#tryExtRawASN1"><span class="hs-identifier hs-var">tryExtRawASN1</span></a></span><span> </span><span class="annot"><span class="annottext">ExtensionRaw
-</span><a href="#local-6989586621679103128"><span class="hs-identifier hs-var">extRaw</span></a></span><span>
+</span><a href="#local-6989586621679068242"><span class="hs-identifier hs-var">extRaw</span></a></span><span>
 </span><span id="line-39"></span><span class="hs-pragma">{-# DEPRECATED</span><span> </span><span class="hs-pragma">extRawASN1</span><span> </span><span class="hs-pragma">&quot;use tryExtRawASN1 instead&quot;</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-40"></span><span>
 </span><span id="line-41"></span><span class="hs-comment">-- | a Set of 'ExtensionRaw'</span><span>
 </span><span id="line-42"></span><span class="hs-keyword">newtype</span><span> </span><span id="Extensions"><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-var">Extensions</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Extensions"><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-var">Extensions</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679103118"><span id="local-6989586621679103120"><span id="local-6989586621679103122"><span class="annot"><span class="annottext">Int -&gt; Extensions -&gt; ShowS
+</span><span id="line-43"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679068232"><span id="local-6989586621679068234"><span id="local-6989586621679068236"><span class="annot"><span class="annottext">Int -&gt; Extensions -&gt; ShowS
 [Extensions] -&gt; ShowS
 Extensions -&gt; String
 (Int -&gt; Extensions -&gt; ShowS)
@@ -124,7 +127,7 @@ show :: Extensions -&gt; String
 $cshow :: Extensions -&gt; String
 showsPrec :: Int -&gt; Extensions -&gt; ShowS
 $cshowsPrec :: Int -&gt; Extensions -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679103114"><span id="local-6989586621679103116"><span class="annot"><span class="annottext">Extensions -&gt; Extensions -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679068228"><span id="local-6989586621679068230"><span class="annot"><span class="annottext">Extensions -&gt; Extensions -&gt; Bool
 (Extensions -&gt; Extensions -&gt; Bool)
 -&gt; (Extensions -&gt; Extensions -&gt; Bool) -&gt; Eq Extensions
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -135,29 +138,31 @@ $c== :: Extensions -&gt; Extensions -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-44"></span><span>
 </span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-type">Extensions</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-46"></span><span>    </span><span id="local-6989586621679103110"><span class="annot"><span class="annottext">toASN1 :: Extensions -&gt; [ASN1] -&gt; [ASN1]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-type">Extensions</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679103108"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679103108"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103108"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-47"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toASN1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-type">Extensions</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679103107"><span class="annot"><span class="annottext">exts :: [ExtensionRaw]
-</span><a href="#local-6989586621679103107"><span class="hs-identifier hs-var">exts</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679103106"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679103106"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679068224"><span class="annot"><span class="annottext">toASN1 :: Extensions -&gt; [ASN1] -&gt; [ASN1]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-type">Extensions</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe [ExtensionRaw]
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679068222"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068222"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068222"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-47"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">toASN1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#Extensions"><span class="hs-identifier hs-type">Extensions</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679068221"><span class="annot"><span class="annottext">[ExtensionRaw]
+</span><a href="#local-6989586621679068221"><span class="hs-identifier hs-var">exts</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679068220"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068220"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-48"></span><span>        </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; [ASN1] -&gt; [ASN1]
 </span><a href="Data.X509.Internal.html#asn1Container"><span class="hs-identifier hs-var">asn1Container</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ASN1Class -&gt; Int -&gt; ASN1ConstructionType
 </span><span class="hs-identifier hs-var">Container</span></span><span> </span><span class="annot"><span class="annottext">ASN1Class
-</span><span class="hs-identifier hs-var">Context</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; [ASN1] -&gt; [ASN1]
+</span><span class="hs-identifier hs-var">Context</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; [ASN1] -&gt; [ASN1]
 </span><a href="Data.X509.Internal.html#asn1Container"><span class="hs-identifier hs-var">asn1Container</span></a></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
 </span><span class="hs-identifier hs-var">Sequence</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ExtensionRaw -&gt; [ASN1]) -&gt; [ExtensionRaw] -&gt; [ASN1]
 forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
 </span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="annot"><span class="annottext">ExtensionRaw -&gt; [ASN1]
 </span><a href="Data.X509.ExtensionRaw.html#encodeExt"><span class="hs-identifier hs-var">encodeExt</span></a></span><span> </span><span class="annot"><span class="annottext">[ExtensionRaw]
-</span><a href="#local-6989586621679103107"><span class="hs-identifier hs-var">exts</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
+</span><a href="#local-6989586621679068221"><span class="hs-identifier hs-var">exts</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103106"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-49"></span><span>    </span><span id="local-6989586621679103099"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (Extensions, [ASN1])
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></span></span><span> </span><span id="local-6989586621679103097"><span class="annot"><span class="annottext">s :: [ASN1]
-</span><a href="#local-6989586621679103097"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParseASN1 Extensions
+</span><a href="#local-6989586621679068220"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679068213"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (Extensions, [ASN1])
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></span></span><span> </span><span id="local-6989586621679068211"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068211"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParseASN1 Extensions
 -&gt; [ASN1] -&gt; Either String (Extensions, [ASN1])
 forall a. ParseASN1 a -&gt; [ASN1] -&gt; Either String (a, [ASN1])
 </span><span class="hs-identifier hs-var">runParseASN1State</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe [ExtensionRaw] -&gt; Extensions
@@ -165,16 +170,17 @@ forall a. ParseASN1 a -&gt; [ASN1] -&gt; Either String (a, [ASN1])
 -&gt; ParseASN1 (Maybe [ExtensionRaw]) -&gt; ParseASN1 Extensions
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParseASN1 (Maybe [ExtensionRaw])
-</span><a href="#local-6989586621679103094"><span class="hs-identifier hs-var">parseExtensions</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103097"><span class="hs-identifier hs-var">s</span></a></span><span>
-</span><span id="line-50"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679103094"><span class="annot"><span class="annottext">parseExtensions :: ParseASN1 (Maybe [ExtensionRaw])
-</span><a href="#local-6989586621679103094"><span class="hs-identifier hs-var hs-var">parseExtensions</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><a href="#local-6989586621679068208"><span class="hs-identifier hs-var">parseExtensions</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068211"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-50"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679068208"><span class="annot"><span class="annottext">parseExtensions :: ParseASN1 (Maybe [ExtensionRaw])
+</span><a href="#local-6989586621679068208"><span class="hs-identifier hs-var hs-var">parseExtensions</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
 -&gt; ParseASN1 [ExtensionRaw] -&gt; ParseASN1 (Maybe [ExtensionRaw])
 forall a.
 ASN1ConstructionType -&gt; ParseASN1 a -&gt; ParseASN1 (Maybe a)
 </span><span class="hs-identifier hs-var">onNextContainerMaybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ASN1Class -&gt; Int -&gt; ASN1ConstructionType
 </span><span class="hs-identifier hs-var">Container</span></span><span> </span><span class="annot"><span class="annottext">ASN1Class
-</span><span class="hs-identifier hs-var">Context</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ParseASN1 [ExtensionRaw] -&gt; ParseASN1 (Maybe [ExtensionRaw]))
+</span><span class="hs-identifier hs-var">Context</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ParseASN1 [ExtensionRaw] -&gt; ParseASN1 (Maybe [ExtensionRaw]))
 -&gt; ParseASN1 [ExtensionRaw] -&gt; ParseASN1 (Maybe [ExtensionRaw])
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
@@ -189,79 +195,85 @@ forall a. ASN1Object a =&gt; ParseASN1 a
 </span><span class="hs-identifier hs-var">getObject</span></span><span class="hs-special">)</span><span>
 </span><span id="line-52"></span><span>
 </span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-54"></span><span>    </span><span id="local-6989586621679103087"><span class="annot"><span class="annottext">toASN1 :: ExtensionRaw -&gt; [ASN1] -&gt; [ASN1]
-</span><a href="#local-6989586621679103087"><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></a></span></span><span> </span><span id="local-6989586621679103086"><span class="annot"><span class="annottext">extraw :: ExtensionRaw
-</span><a href="#local-6989586621679103086"><span class="hs-identifier hs-var">extraw</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679103085"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679103085"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ExtensionRaw -&gt; [ASN1]
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679068201"><span class="annot"><span class="annottext">toASN1 :: ExtensionRaw -&gt; [ASN1] -&gt; [ASN1]
+</span><a href="#local-6989586621679068201"><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></a></span></span><span> </span><span id="local-6989586621679068200"><span class="annot"><span class="annottext">ExtensionRaw
+</span><a href="#local-6989586621679068200"><span class="hs-identifier hs-var">extraw</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679068199"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068199"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ExtensionRaw -&gt; [ASN1]
 </span><a href="Data.X509.ExtensionRaw.html#encodeExt"><span class="hs-identifier hs-var">encodeExt</span></a></span><span> </span><span class="annot"><span class="annottext">ExtensionRaw
-</span><a href="#local-6989586621679103086"><span class="hs-identifier hs-var">extraw</span></a></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
+</span><a href="#local-6989586621679068200"><span class="hs-identifier hs-var">extraw</span></a></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103085"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-55"></span><span>    </span><span id="local-6989586621679103084"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (ExtensionRaw, [ASN1])
-</span><a href="#local-6989586621679103084"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">OID</span></span><span> </span><span id="local-6989586621679103081"><span class="annot"><span class="annottext">oid :: OID
-</span><a href="#local-6989586621679103081"><span class="hs-identifier hs-var">oid</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679103080"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679103080"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679068199"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621679068198"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (ExtensionRaw, [ASN1])
+</span><a href="#local-6989586621679068198"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">OID</span></span><span> </span><span id="local-6989586621679068195"><span class="annot"><span class="annottext">OID
+</span><a href="#local-6989586621679068195"><span class="hs-identifier hs-var">oid</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679068194"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068194"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-56"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103080"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-57"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Boolean</span></span><span> </span><span id="local-6989586621679103078"><span class="annot"><span class="annottext">b :: Bool
-</span><a href="#local-6989586621679103078"><span class="hs-identifier hs-var">b</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679103076"><span class="annot"><span class="annottext">obj :: ByteString
-</span><a href="#local-6989586621679103076"><span class="hs-identifier hs-var">obj</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679103074"><span class="annot"><span class="annottext">xs2 :: [ASN1]
-</span><a href="#local-6989586621679103074"><span class="hs-identifier hs-var">xs2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(ExtensionRaw, [ASN1]) -&gt; Either String (ExtensionRaw, [ASN1])
+</span><a href="#local-6989586621679068194"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-57"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Boolean</span></span><span> </span><span id="local-6989586621679068192"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679068192"><span class="hs-identifier hs-var">b</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679068190"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679068190"><span class="hs-identifier hs-var">obj</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679068188"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068188"><span class="hs-identifier hs-var">xs2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(ExtensionRaw, [ASN1]) -&gt; Either String (ExtensionRaw, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">OID -&gt; Bool -&gt; ByteString -&gt; ExtensionRaw
 </span><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-var">ExtensionRaw</span></a></span><span> </span><span class="annot"><span class="annottext">OID
-</span><a href="#local-6989586621679103081"><span class="hs-identifier hs-var">oid</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679103078"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679103076"><span class="hs-identifier hs-var">obj</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103074"><span class="hs-identifier hs-var">xs2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-58"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679103073"><span class="annot"><span class="annottext">obj :: ByteString
-</span><a href="#local-6989586621679103073"><span class="hs-identifier hs-var">obj</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679103072"><span class="annot"><span class="annottext">xs2 :: [ASN1]
-</span><a href="#local-6989586621679103072"><span class="hs-identifier hs-var">xs2</span></a></span></span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(ExtensionRaw, [ASN1]) -&gt; Either String (ExtensionRaw, [ASN1])
+</span><a href="#local-6989586621679068195"><span class="hs-identifier hs-var">oid</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679068192"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679068190"><span class="hs-identifier hs-var">obj</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068188"><span class="hs-identifier hs-var">xs2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679068187"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679068187"><span class="hs-identifier hs-var">obj</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679068186"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068186"><span class="hs-identifier hs-var">xs2</span></a></span></span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(ExtensionRaw, [ASN1]) -&gt; Either String (ExtensionRaw, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">OID -&gt; Bool -&gt; ByteString -&gt; ExtensionRaw
 </span><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-var">ExtensionRaw</span></a></span><span> </span><span class="annot"><span class="annottext">OID
-</span><a href="#local-6989586621679103081"><span class="hs-identifier hs-var">oid</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679068195"><span class="hs-identifier hs-var">oid</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679103073"><span class="hs-identifier hs-var">obj</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103072"><span class="hs-identifier hs-var">xs2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-59"></span><span>            </span><span class="hs-identifier">_</span><span>                                          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String (ExtensionRaw, [ASN1])
+</span><a href="#local-6989586621679068187"><span class="hs-identifier hs-var">obj</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068186"><span class="hs-identifier hs-var">xs2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>            </span><span class="annot"><span class="annottext">[ASN1]
+</span><span class="hs-identifier">_</span></span><span>                                          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String (ExtensionRaw, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;fromASN1: X509.ExtensionRaw: unknown format:&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: X509.ExtensionRaw: unknown format:&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103080"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-60"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span id="local-6989586621679103071"><span class="annot"><span class="annottext">l :: [ASN1]
-</span><a href="#local-6989586621679103071"><span class="hs-identifier hs-var">l</span></a></span></span><span>                                      </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679068194"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span id="local-6989586621679068185"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679068185"><span class="hs-identifier hs-var">l</span></a></span></span><span>                                      </span><span class="hs-glyph">=</span><span>
 </span><span id="line-61"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; Either String (ExtensionRaw, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;fromASN1: X509.ExtensionRaw: unknown format:&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: X509.ExtensionRaw: unknown format:&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679103071"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679068185"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-62"></span><span>
 </span><span id="line-63"></span><span class="annot"><a href="Data.X509.ExtensionRaw.html#encodeExt"><span class="hs-identifier hs-type">encodeExt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ASN1</span></span><span class="hs-special">]</span><span>
 </span><span id="line-64"></span><span id="encodeExt"><span class="annot"><span class="annottext">encodeExt :: ExtensionRaw -&gt; [ASN1]
-</span><a href="Data.X509.ExtensionRaw.html#encodeExt"><span class="hs-identifier hs-var hs-var">encodeExt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span id="local-6989586621679103070"><span class="annot"><span class="annottext">oid :: OID
-</span><a href="#local-6989586621679103070"><span class="hs-identifier hs-var">oid</span></a></span></span><span> </span><span id="local-6989586621679103069"><span class="annot"><span class="annottext">critical :: Bool
-</span><a href="#local-6989586621679103069"><span class="hs-identifier hs-var">critical</span></a></span></span><span> </span><span id="local-6989586621679103068"><span class="annot"><span class="annottext">content :: ByteString
-</span><a href="#local-6989586621679103068"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Data.X509.ExtensionRaw.html#encodeExt"><span class="hs-identifier hs-var hs-var">encodeExt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.X509.ExtensionRaw.html#ExtensionRaw"><span class="hs-identifier hs-type">ExtensionRaw</span></a></span><span> </span><span id="local-6989586621679068184"><span class="annot"><span class="annottext">OID
+</span><a href="#local-6989586621679068184"><span class="hs-identifier hs-var">oid</span></a></span></span><span> </span><span id="local-6989586621679068183"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679068183"><span class="hs-identifier hs-var">critical</span></a></span></span><span> </span><span id="local-6989586621679068182"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679068182"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-65"></span><span>    </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; [ASN1] -&gt; [ASN1]
 </span><a href="Data.X509.Internal.html#asn1Container"><span class="hs-identifier hs-var">asn1Container</span></a></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
 </span><span class="hs-identifier hs-var">Sequence</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">OID -&gt; ASN1
 </span><span class="hs-identifier hs-var">OID</span></span><span> </span><span class="annot"><span class="annottext">OID
-</span><a href="#local-6989586621679103070"><span class="hs-identifier hs-var">oid</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
+</span><a href="#local-6989586621679068184"><span class="hs-identifier hs-var">oid</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">(</span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679103069"><span class="hs-identifier hs-var">critical</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Bool -&gt; ASN1
+</span><a href="#local-6989586621679068183"><span class="hs-identifier hs-var">critical</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Bool -&gt; ASN1
 </span><span class="hs-identifier hs-var">Boolean</span></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; [ASN1] -&gt; [ASN1]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString -&gt; ASN1
 </span><span class="hs-identifier hs-var">OctetString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679103068"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679068182"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-66"></span></pre></body></html>

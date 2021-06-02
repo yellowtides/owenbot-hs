@@ -508,8 +508,8 @@ instance Data.Serialize.Serialize e => Data.Serialize.Serialize (Data.Sequence.I
 instance Data.Serialize.Serialize GHC.Types.Double
 instance Data.Serialize.Serialize GHC.Types.Float
 instance Data.Serialize.Serialize e => Data.Serialize.Serialize (Data.Tree.Tree e)
-instance (Data.Serialize.Serialize i, GHC.Arr.Ix i, Data.Serialize.Serialize e) => Data.Serialize.Serialize (GHC.Arr.Array i e)
-instance (Data.Serialize.Serialize i, GHC.Arr.Ix i, Data.Serialize.Serialize e, Data.Array.Base.IArray Data.Array.Base.UArray e) => Data.Serialize.Serialize (Data.Array.Base.UArray i e)
+instance (Data.Serialize.Serialize i, GHC.Ix.Ix i, Data.Serialize.Serialize e) => Data.Serialize.Serialize (GHC.Arr.Array i e)
+instance (Data.Serialize.Serialize i, GHC.Ix.Ix i, Data.Serialize.Serialize e, Data.Array.Base.IArray Data.Array.Base.UArray e) => Data.Serialize.Serialize (Data.Array.Base.UArray i e)
 instance Data.Serialize.Serialize a => Data.Serialize.GSerializePut (GHC.Generics.K1 i a)
 instance Data.Serialize.Serialize a => Data.Serialize.GSerializeGet (GHC.Generics.K1 i a)
 instance Data.Serialize.GSerializeGet a => Data.Serialize.GSerializeGet (GHC.Generics.M1 i c a)

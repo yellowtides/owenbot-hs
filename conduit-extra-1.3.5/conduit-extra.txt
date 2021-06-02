@@ -65,11 +65,11 @@ PositionRange :: {-# UNPACK #-} !Position -> {-# UNPACK #-} !Position -> Positio
 
 -- | A class of types which may be consumed by an Attoparsec parser.
 class AttoparsecInput a
-instance GHC.Classes.Ord Data.Conduit.Attoparsec.PositionRange
-instance GHC.Classes.Eq Data.Conduit.Attoparsec.PositionRange
-instance GHC.Show.Show Data.Conduit.Attoparsec.ParseError
 instance GHC.Classes.Ord Data.Conduit.Attoparsec.Position
 instance GHC.Classes.Eq Data.Conduit.Attoparsec.Position
+instance GHC.Show.Show Data.Conduit.Attoparsec.ParseError
+instance GHC.Classes.Ord Data.Conduit.Attoparsec.PositionRange
+instance GHC.Classes.Eq Data.Conduit.Attoparsec.PositionRange
 instance Data.Conduit.Attoparsec.AttoparsecInput Data.ByteString.Internal.ByteString
 instance Data.Conduit.Attoparsec.AttoparsecInput Data.Text.Internal.Text
 instance GHC.Show.Show Data.Conduit.Attoparsec.PositionRange

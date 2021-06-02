@@ -548,28 +548,28 @@ showQT :: QT -> String
 indent :: [String] -> String
 showDT :: DT -> String
 seeDTrans :: DTrans -> String
-instance GHC.Show.Show Text.Regex.TDFA.Common.WinEmpty
-instance GHC.Show.Show Text.Regex.TDFA.Common.DFA
-instance GHC.Classes.Eq Text.Regex.TDFA.Common.Action
-instance GHC.Show.Show Text.Regex.TDFA.Common.Action
-instance GHC.Show.Show Text.Regex.TDFA.Common.Orbits
-instance GHC.Classes.Eq Text.Regex.TDFA.Common.TagUpdate
-instance GHC.Show.Show Text.Regex.TDFA.Common.TagUpdate
-instance GHC.Classes.Eq Text.Regex.TDFA.Common.TagTask
-instance GHC.Show.Show Text.Regex.TDFA.Common.TagTask
+instance GHC.Classes.Ord Text.Regex.TDFA.Common.DoPa
+instance GHC.Classes.Eq Text.Regex.TDFA.Common.DoPa
+instance GHC.Show.Show Text.Regex.TDFA.Common.CompOption
+instance GHC.Read.Read Text.Regex.TDFA.Common.CompOption
+instance GHC.Show.Show Text.Regex.TDFA.Common.ExecOption
+instance GHC.Read.Read Text.Regex.TDFA.Common.ExecOption
+instance GHC.Show.Show Text.Regex.TDFA.Common.OP
+instance GHC.Classes.Eq Text.Regex.TDFA.Common.OP
+instance GHC.Show.Show Text.Regex.TDFA.Common.GroupInfo
 instance GHC.Enum.Enum Text.Regex.TDFA.Common.WhichTest
 instance GHC.Classes.Ord Text.Regex.TDFA.Common.WhichTest
 instance GHC.Classes.Eq Text.Regex.TDFA.Common.WhichTest
 instance GHC.Show.Show Text.Regex.TDFA.Common.WhichTest
-instance GHC.Show.Show Text.Regex.TDFA.Common.GroupInfo
-instance GHC.Show.Show Text.Regex.TDFA.Common.OP
-instance GHC.Classes.Eq Text.Regex.TDFA.Common.OP
-instance GHC.Show.Show Text.Regex.TDFA.Common.ExecOption
-instance GHC.Read.Read Text.Regex.TDFA.Common.ExecOption
-instance GHC.Show.Show Text.Regex.TDFA.Common.CompOption
-instance GHC.Read.Read Text.Regex.TDFA.Common.CompOption
-instance GHC.Classes.Ord Text.Regex.TDFA.Common.DoPa
-instance GHC.Classes.Eq Text.Regex.TDFA.Common.DoPa
+instance GHC.Classes.Eq Text.Regex.TDFA.Common.TagTask
+instance GHC.Show.Show Text.Regex.TDFA.Common.TagTask
+instance GHC.Classes.Eq Text.Regex.TDFA.Common.TagUpdate
+instance GHC.Show.Show Text.Regex.TDFA.Common.TagUpdate
+instance GHC.Show.Show Text.Regex.TDFA.Common.Orbits
+instance GHC.Classes.Eq Text.Regex.TDFA.Common.Action
+instance GHC.Show.Show Text.Regex.TDFA.Common.Action
+instance GHC.Show.Show Text.Regex.TDFA.Common.DFA
+instance GHC.Show.Show Text.Regex.TDFA.Common.WinEmpty
 instance Text.Regex.Base.RegexLike.RegexOptions Text.Regex.TDFA.Common.Regex Text.Regex.TDFA.Common.CompOption Text.Regex.TDFA.Common.ExecOption
 instance GHC.Show.Show Text.Regex.TDFA.Common.DT
 instance GHC.Show.Show Text.Regex.TDFA.Common.Instructions
@@ -713,15 +713,15 @@ simplify' :: Pattern -> Pattern
 
 -- | Apply a Pattern transfomation function depth first
 dfsPattern :: (Pattern -> Pattern) -> Pattern -> Pattern
-instance GHC.Show.Show Text.Regex.TDFA.Pattern.Pattern
-instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.Pattern
-instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSet
-instance GHC.Classes.Ord Text.Regex.TDFA.Pattern.PatternSetEquivalenceClass
-instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSetEquivalenceClass
-instance GHC.Classes.Ord Text.Regex.TDFA.Pattern.PatternSetCollatingElement
-instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSetCollatingElement
 instance GHC.Classes.Ord Text.Regex.TDFA.Pattern.PatternSetCharacterClass
 instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSetCharacterClass
+instance GHC.Classes.Ord Text.Regex.TDFA.Pattern.PatternSetCollatingElement
+instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSetCollatingElement
+instance GHC.Classes.Ord Text.Regex.TDFA.Pattern.PatternSetEquivalenceClass
+instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSetEquivalenceClass
+instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.PatternSet
+instance GHC.Show.Show Text.Regex.TDFA.Pattern.Pattern
+instance GHC.Classes.Eq Text.Regex.TDFA.Pattern.Pattern
 instance GHC.Show.Show Text.Regex.TDFA.Pattern.PatternSet
 instance GHC.Show.Show Text.Regex.TDFA.Pattern.PatternSetEquivalenceClass
 instance GHC.Show.Show Text.Regex.TDFA.Pattern.PatternSetCollatingElement
@@ -819,13 +819,13 @@ patternToQ :: CompOption -> (Pattern, (GroupIndex, DoPa)) -> (Q, Array Tag OP, A
 cleanNullView :: NullView -> NullView
 cannotAccept :: Q -> Bool
 mustAccept :: Q -> Bool
+instance GHC.Classes.Eq Text.Regex.TDFA.CorePattern.SetTestInfo
+instance GHC.Show.Show Text.Regex.TDFA.CorePattern.HandleTag
+instance GHC.Show.Show Text.Regex.TDFA.CorePattern.Wanted
+instance GHC.Classes.Eq Text.Regex.TDFA.CorePattern.Wanted
 instance GHC.Classes.Eq Text.Regex.TDFA.CorePattern.P
 instance GHC.Show.Show Text.Regex.TDFA.CorePattern.P
 instance GHC.Classes.Eq Text.Regex.TDFA.CorePattern.Q
-instance GHC.Show.Show Text.Regex.TDFA.CorePattern.Wanted
-instance GHC.Classes.Eq Text.Regex.TDFA.CorePattern.Wanted
-instance GHC.Show.Show Text.Regex.TDFA.CorePattern.HandleTag
-instance GHC.Classes.Eq Text.Regex.TDFA.CorePattern.SetTestInfo
 instance GHC.Show.Show Text.Regex.TDFA.CorePattern.Q
 instance GHC.Base.Semigroup Text.Regex.TDFA.CorePattern.SetTestInfo
 instance GHC.Base.Monoid Text.Regex.TDFA.CorePattern.SetTestInfo

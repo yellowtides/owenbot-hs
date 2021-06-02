@@ -48,7 +48,8 @@
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Char
 forall a. HasCallStack =&gt; [Char] -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;head: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Char, ShortText) -&gt; Char
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;head: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Char, ShortText) -&gt; Char
 forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (Char, ShortText) -&gt; Char)
 -&gt; (ShortText -&gt; Maybe (Char, ShortText)) -&gt; ShortText -&gt; Char
@@ -74,7 +75,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; ShortText
 forall a. HasCallStack =&gt; [Char] -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;tail: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Char, ShortText) -&gt; ShortText
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;tail: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Char, ShortText) -&gt; ShortText
 forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (Char, ShortText) -&gt; ShortText)
 -&gt; (ShortText -&gt; Maybe (Char, ShortText)) -&gt; ShortText -&gt; ShortText
@@ -100,7 +102,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; ShortText
 forall a. HasCallStack =&gt; [Char] -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;init: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ShortText, Char) -&gt; ShortText
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;init: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ShortText, Char) -&gt; ShortText
 forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (ShortText, Char) -&gt; ShortText)
 -&gt; (ShortText -&gt; Maybe (ShortText, Char)) -&gt; ShortText -&gt; ShortText
@@ -125,7 +128,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Char
 forall a. HasCallStack =&gt; [Char] -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;last: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ShortText, Char) -&gt; Char
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;last: empty ShortText&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ShortText, Char) -&gt; Char
 forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (ShortText, Char) -&gt; Char)
 -&gt; (ShortText -&gt; Maybe (ShortText, Char)) -&gt; ShortText -&gt; Char
@@ -145,18 +149,20 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-93"></span><span class="hs-comment">-- @since 0.1.2</span><span>
 </span><span id="line-94"></span><span class="annot"><a href="Data.Text.Short.Partial.html#index"><span class="hs-identifier hs-type">index</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Text.Short.Internal.html#ShortText"><span class="hs-identifier hs-type">ShortText</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span>
 </span><span id="line-95"></span><span id="index"><span class="annot"><span class="annottext">index :: ShortText -&gt; Int -&gt; Char
-</span><a href="Data.Text.Short.Partial.html#index"><span class="hs-identifier hs-var hs-var">index</span></a></span></span><span> </span><span id="local-6989586621679091827"><span class="annot"><span class="annottext">st :: ShortText
-</span><a href="#local-6989586621679091827"><span class="hs-identifier hs-var">st</span></a></span></span><span> </span><span id="local-6989586621679091826"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621679091826"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ShortText -&gt; Int -&gt; Maybe Char
+</span><a href="Data.Text.Short.Partial.html#index"><span class="hs-identifier hs-var hs-var">index</span></a></span></span><span> </span><span id="local-6989586621679058101"><span class="annot"><span class="annottext">ShortText
+</span><a href="#local-6989586621679058101"><span class="hs-identifier hs-var">st</span></a></span></span><span> </span><span id="local-6989586621679058100"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ShortText -&gt; Int -&gt; Maybe Char
 </span><a href="Data.Text.Short.Internal.html#indexMaybe"><span class="hs-identifier hs-var">indexMaybe</span></a></span><span> </span><span class="annot"><span class="annottext">ShortText
-</span><a href="#local-6989586621679091827"><span class="hs-identifier hs-var">st</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679091826"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-96"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Char
+</span><a href="#local-6989586621679058101"><span class="hs-identifier hs-var">st</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-96"></span><span>               </span><span class="annot"><span class="annottext">Maybe Char
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Char
 forall a. HasCallStack =&gt; [Char] -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;index: not within ShortText&quot;</span></span><span>
-</span><span id="line-97"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679091824"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679091824"><span class="hs-identifier hs-var">c</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679091824"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;index: not within ShortText&quot;</span></span><span>
+</span><span id="line-97"></span><span>               </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679058098"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679058098"><span class="hs-identifier hs-var">c</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679058098"><span class="hs-identifier hs-var">c</span></a></span><span>
 </span><span id="line-98"></span><span>
 </span><span id="line-99"></span><span class="hs-comment">-- $setup</span><span>
 </span><span id="line-100"></span><span class="hs-comment">-- &gt;&gt;&gt; :set -XOverloadedStrings</span><span>

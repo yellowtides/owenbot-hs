@@ -47,33 +47,35 @@
 </span><span id="line-47"></span><span class="hs-keyword">data</span><span> </span><span id="ScrubbedBytes"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-var">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ScrubbedBytes"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-var">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MutableByteArray#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span class="hs-special">)</span><span>
 </span><span id="line-48"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-49"></span><span>
-</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679097209"><span id="local-6989586621679097212"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-51"></span><span>    </span><span id="local-6989586621679097207"><span class="annot"><span class="annottext">show :: ScrubbedBytes -&gt; String
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&lt;scrubbed-bytes&gt;&quot;</span></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679069578"><span id="local-6989586621679069581"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621679069576"><span class="annot"><span class="annottext">show :: ScrubbedBytes -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&lt;scrubbed-bytes&gt;&quot;</span></span><span>
 </span><span id="line-52"></span><span>
-</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679097203"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-54"></span><span>    </span><span id="local-6989586621679097201"><span class="annot"><span class="annottext">== :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; Bool
+</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679069572"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679069570"><span class="annot"><span class="annottext">== :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; Bool
 </span><span class="hs-operator hs-var hs-var hs-var hs-var">(==)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; ScrubbedBytes -&gt; Bool
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesEq"><span class="hs-identifier hs-var">scrubbedBytesEq</span></a></span><span>
-</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679097186"><span id="local-6989586621679097188"><span id="local-6989586621679097190"><span id="local-6989586621679097192"><span id="local-6989586621679097194"><span id="local-6989586621679097196"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-56"></span><span>    </span><span id="local-6989586621679097184"><span class="annot"><span class="annottext">compare :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; Ordering
+</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679069555"><span id="local-6989586621679069557"><span id="local-6989586621679069559"><span id="local-6989586621679069561"><span id="local-6989586621679069563"><span id="local-6989586621679069565"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-56"></span><span>    </span><span id="local-6989586621679069553"><span class="annot"><span class="annottext">compare :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; Ordering
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; ScrubbedBytes -&gt; Ordering
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesCompare"><span class="hs-identifier hs-var">scrubbedBytesCompare</span></a></span><span class="hs-cpp">
 #if MIN_VERSION_base(4,9,0)
-</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679097178"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-59"></span><span>    </span><span id="local-6989586621679097176"><span class="annot"><span class="annottext">b1 :: ScrubbedBytes
-</span><a href="#local-6989586621679097176"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span id="local-6989586621679097175"><span class="annot"><span class="annottext">&lt;&gt; :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; ScrubbedBytes
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679097174"><span class="annot"><span class="annottext">b2 :: ScrubbedBytes
-</span><a href="#local-6989586621679097174"><span class="hs-identifier hs-var">b2</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO ScrubbedBytes -&gt; ScrubbedBytes
+</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679069547"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-59"></span><span>    </span><span id="local-6989586621679069545"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069545"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span id="local-6989586621679069544"><span class="annot"><span class="annottext">&lt;&gt; :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; ScrubbedBytes
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679069543"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069543"><span class="hs-identifier hs-var">b2</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO ScrubbedBytes -&gt; ScrubbedBytes
 forall a. IO a -&gt; a
 </span><a href="Data.Memory.Internal.Compat.html#unsafeDoIO"><span class="hs-identifier hs-var">unsafeDoIO</span></a></span><span> </span><span class="annot"><span class="annottext">(IO ScrubbedBytes -&gt; ScrubbedBytes)
 -&gt; IO ScrubbedBytes -&gt; ScrubbedBytes
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; ScrubbedBytes -&gt; IO ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAppend"><span class="hs-identifier hs-var">scrubbedBytesAppend</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097176"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097174"><span class="hs-identifier hs-var">b2</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span id="local-6989586621679097172"><span class="annot"><span class="annottext">sconcat :: NonEmpty ScrubbedBytes -&gt; ScrubbedBytes
+</span><a href="#local-6989586621679069545"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069543"><span class="hs-identifier hs-var">b2</span></a></span><span>
+</span><span id="line-60"></span><span>    </span><span id="local-6989586621679069541"><span class="annot"><span class="annottext">sconcat :: NonEmpty ScrubbedBytes -&gt; ScrubbedBytes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">sconcat</span></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO ScrubbedBytes -&gt; ScrubbedBytes
 forall a. IO a -&gt; a
 </span><a href="Data.Memory.Internal.Compat.html#unsafeDoIO"><span class="hs-identifier hs-var">unsafeDoIO</span></a></span><span> </span><span class="annot"><span class="annottext">(IO ScrubbedBytes -&gt; ScrubbedBytes)
@@ -91,66 +93,68 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span class="hs-cpp">
 #endif
-</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679097163"><span id="local-6989586621679097165"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-63"></span><span>    </span><span id="local-6989586621679097161"><span class="annot"><span class="annottext">mempty :: ScrubbedBytes
+</span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679069532"><span id="local-6989586621679069534"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-63"></span><span>    </span><span id="local-6989586621679069530"><span class="annot"><span class="annottext">mempty :: ScrubbedBytes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO ScrubbedBytes -&gt; ScrubbedBytes
 forall a. IO a -&gt; a
 </span><a href="Data.Memory.Internal.Compat.html#unsafeDoIO"><span class="hs-identifier hs-var">unsafeDoIO</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; IO ScrubbedBytes
-</span><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-var">newScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-cpp">
+</span><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-var">newScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-cpp">
 #if !(MIN_VERSION_base(4,11,0))
 </span><span>    </span><span class="hs-identifier">mappend</span><span> </span><span class="hs-identifier">b1</span><span> </span><span class="hs-identifier">b2</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">unsafeDoIO</span><span> </span><span class="hs-operator">$</span><span> </span><span class="hs-identifier">scrubbedBytesAppend</span><span> </span><span class="hs-identifier">b1</span><span> </span><span class="hs-identifier">b2</span><span>
 </span><span id="line-66"></span><span>    </span><span class="hs-identifier">mconcat</span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">unsafeDoIO</span><span> </span><span class="hs-operator">.</span><span> </span><span class="hs-identifier">scrubbedBytesConcat</span><span class="hs-cpp">
 #endif
 </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679097157"><span class="annot"><span class="annottext">rnf :: ScrubbedBytes -&gt; ()
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">rnf</span></span></span><span> </span><span id="local-6989586621679097155"><span class="annot"><span class="annottext">b :: ScrubbedBytes
-</span><a href="#local-6989586621679097155"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097155"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679069526"><span class="annot"><span class="annottext">rnf :: ScrubbedBytes -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">rnf</span></span></span><span> </span><span id="local-6989586621679069524"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069524"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069524"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-cpp">
 #ifdef MIN_VERSION_basement
 </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NormalForm</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-72"></span><span>    </span><span id="local-6989586621679097152"><span class="annot"><span class="annottext">toNormalForm :: ScrubbedBytes -&gt; ()
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toNormalForm</span></span></span><span> </span><span id="local-6989586621679097150"><span class="annot"><span class="annottext">b :: ScrubbedBytes
-</span><a href="#local-6989586621679097150"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097150"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; () -&gt; ()
-forall a b. a -&gt; b -&gt; b
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679069521"><span class="annot"><span class="annottext">toNormalForm :: ScrubbedBytes -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toNormalForm</span></span></span><span> </span><span id="local-6989586621679069519"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069519"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069519"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; () -&gt; ()
 </span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-cpp">
 #endif
 </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IsString</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-75"></span><span>    </span><span id="local-6989586621679097147"><span class="annot"><span class="annottext">fromString :: String -&gt; ScrubbedBytes
+</span><span id="line-75"></span><span>    </span><span id="local-6989586621679069516"><span class="annot"><span class="annottext">fromString :: String -&gt; ScrubbedBytes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromString</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedFromChar8"><span class="hs-identifier hs-var">scrubbedFromChar8</span></a></span><span>
 </span><span id="line-76"></span><span>
-</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679097142"><span class="annot"><a href="Data.ByteArray.Types.html#ByteArrayAccess"><span class="hs-identifier hs-type">ByteArrayAccess</span></a></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-78"></span><span>    </span><span id="local-6989586621679097140"><span class="annot"><span class="annottext">length :: ScrubbedBytes -&gt; Int
+</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679069511"><span class="annot"><a href="Data.ByteArray.Types.html#ByteArrayAccess"><span class="hs-identifier hs-type">ByteArrayAccess</span></a></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-78"></span><span>    </span><span id="local-6989586621679069509"><span class="annot"><span class="annottext">length :: ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.Types.html#length"><span class="hs-identifier hs-var hs-var hs-var hs-var">length</span></a></span></span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span>
-</span><span id="line-79"></span><span>    </span><span id="local-6989586621679097137"><span class="annot"><span class="annottext">withByteArray :: ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679069506"><span class="annot"><span class="annottext">withByteArray :: ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.Types.html#withByteArray"><span class="hs-identifier hs-var hs-var hs-var hs-var">withByteArray</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span>
 </span><span id="line-80"></span><span>
 </span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.ByteArray.Types.html#ByteArray"><span class="hs-identifier hs-type">ByteArray</span></a></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679097128"><span class="annot"><span class="annottext">allocRet :: Int -&gt; (Ptr p -&gt; IO a) -&gt; IO (a, ScrubbedBytes)
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679069497"><span class="annot"><span class="annottext">allocRet :: Int -&gt; (Ptr p -&gt; IO a) -&gt; IO (a, ScrubbedBytes)
 </span><a href="Data.ByteArray.Types.html#allocRet"><span class="hs-identifier hs-var hs-var hs-var hs-var">allocRet</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Ptr p -&gt; IO a) -&gt; IO (a, ScrubbedBytes)
 forall p a. Int -&gt; (Ptr p -&gt; IO a) -&gt; IO (a, ScrubbedBytes)
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAllocRet"><span class="hs-identifier hs-var">scrubbedBytesAllocRet</span></a></span><span>
 </span><span id="line-83"></span><span>
 </span><span id="line-84"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-type">newScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span>
 </span><span id="line-85"></span><span id="newScrubbedBytes"><span class="annot"><span class="annottext">newScrubbedBytes :: Int -&gt; IO ScrubbedBytes
-</span><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-var hs-var">newScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">I#</span></span><span> </span><span id="local-6989586621679097125"><span class="annot"><span class="annottext">sz :: Int#
-</span><a href="#local-6989586621679097125"><span class="hs-identifier hs-var">sz</span></a></span></span><span class="hs-special">)</span><span>
+</span><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-var hs-var">newScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">I#</span></span><span> </span><span id="local-6989586621679069494"><span class="annot"><span class="annottext">Int#
+</span><a href="#local-6989586621679069494"><span class="hs-identifier hs-var">sz</span></a></span></span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Bool
 </span><a href="Data.Memory.Internal.CompatPrim.html#booleanPrim"><span class="hs-identifier hs-var">booleanPrim</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097125"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
-</span><span class="hs-operator hs-var">&lt;#</span></span><span> </span><span class="annot"><span class="hs-number">0#</span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ScrubbedBytes
+</span><a href="#local-6989586621679069494"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
+</span><span class="hs-operator hs-var">&lt;#</span></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">0#</span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ScrubbedBytes
 forall a. HasCallStack =&gt; String -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="hs-string">&quot;ScrubbedBytes: size must be &gt;= 0&quot;</span></span><span>
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;ScrubbedBytes: size must be &gt;= 0&quot;</span></span><span>
 </span><span id="line-87"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Bool
 </span><a href="Data.Memory.Internal.CompatPrim.html#booleanPrim"><span class="hs-identifier hs-var">booleanPrim</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097125"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
-</span><span class="hs-operator hs-var">==#</span></span><span> </span><span class="annot"><span class="hs-number">0#</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(State# RealWorld -&gt; (# State# RealWorld, ScrubbedBytes #))
+</span><a href="#local-6989586621679069494"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
+</span><span class="hs-operator hs-var">==#</span></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">0#</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(State# RealWorld -&gt; (# State# RealWorld, ScrubbedBytes #))
 -&gt; IO ScrubbedBytes
 forall a. (State# RealWorld -&gt; (# State# RealWorld, a #)) -&gt; IO a
 </span><span class="hs-identifier hs-var">IO</span></span><span> </span><span class="annot"><span class="annottext">((State# RealWorld -&gt; (# State# RealWorld, ScrubbedBytes #))
@@ -158,22 +162,24 @@ forall a. (State# RealWorld -&gt; (# State# RealWorld, a #)) -&gt; IO a
 -&gt; (State# RealWorld -&gt; (# State# RealWorld, ScrubbedBytes #))
 -&gt; IO ScrubbedBytes
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097122"><span class="annot"><span class="annottext">s :: State# RealWorld
-</span><a href="#local-6989586621679097122"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069491"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069491"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-88"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Int#
 -&gt; Int#
 -&gt; State# RealWorld
 -&gt; (# State# RealWorld, MutableByteArray# RealWorld #)
 forall d.
 Int# -&gt; Int# -&gt; State# d -&gt; (# State# d, MutableByteArray# d #)
-</span><span class="hs-identifier hs-var">newAlignedPinnedByteArray#</span></span><span> </span><span class="annot"><span class="hs-number">0#</span></span><span> </span><span class="annot"><span class="hs-number">8#</span></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097122"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-89"></span><span>            </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679097121"><span class="annot"><span class="annottext">s2 :: State# RealWorld
-</span><a href="#local-6989586621679097121"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679097120"><span class="annot"><span class="annottext">mba :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097120"><span class="hs-identifier hs-var">mba</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097121"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; ScrubbedBytes
+</span><span class="hs-identifier hs-var">newAlignedPinnedByteArray#</span></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">0#</span></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">8#</span></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069491"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-89"></span><span>            </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679069490"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069490"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679069489"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069489"><span class="hs-identifier hs-var">mba</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069490"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-var">ScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097120"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="hs-special">#)</span><span>
+</span><a href="#local-6989586621679069489"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-90"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>               </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(State# RealWorld -&gt; (# State# RealWorld, ScrubbedBytes #))
 -&gt; IO ScrubbedBytes
@@ -183,8 +189,8 @@ forall a. (State# RealWorld -&gt; (# State# RealWorld, a #)) -&gt; IO a
 -&gt; (State# RealWorld -&gt; (# State# RealWorld, ScrubbedBytes #))
 -&gt; IO ScrubbedBytes
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097119"><span class="annot"><span class="annottext">s :: State# RealWorld
-</span><a href="#local-6989586621679097119"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069488"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069488"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-91"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Int#
 -&gt; Int#
 -&gt; State# RealWorld
@@ -192,22 +198,23 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall d.
 Int# -&gt; Int# -&gt; State# d -&gt; (# State# d, MutableByteArray# d #)
 </span><span class="hs-identifier hs-var">newAlignedPinnedByteArray#</span></span><span> </span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097125"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="hs-number">8#</span></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097119"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-92"></span><span>            </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679097118"><span class="annot"><span class="annottext">s1 :: State# RealWorld
-</span><a href="#local-6989586621679097118"><span class="hs-identifier hs-var">s1</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679097117"><span class="annot"><span class="annottext">mbarr :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097117"><span class="hs-identifier hs-var">mbarr</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-93"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679097116"><span class="annot"><span class="annottext">scrubber :: State# RealWorld -&gt; State# RealWorld
-</span><a href="#local-6989586621679097116"><span class="hs-identifier hs-var hs-var">scrubber</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int# -&gt; Addr# -&gt; State# RealWorld -&gt; State# RealWorld
+</span><a href="#local-6989586621679069494"><span class="hs-identifier hs-var">sz</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">8#</span></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069488"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-92"></span><span>            </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679069487"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069487"><span class="hs-identifier hs-var">s1</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679069486"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069486"><span class="hs-identifier hs-var">mbarr</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-93"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679069485"><span class="annot"><span class="annottext">scrubber :: State# RealWorld -&gt; State# RealWorld
+</span><a href="#local-6989586621679069485"><span class="hs-identifier hs-var hs-var">scrubber</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int# -&gt; Addr# -&gt; State# RealWorld -&gt; State# RealWorld
 </span><a href="Data.Memory.Internal.Scrubber.html#getScrubber"><span class="hs-identifier hs-var">getScrubber</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097125"><span class="hs-identifier hs-var">sz</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteArray# -&gt; Addr#
+</span><a href="#local-6989586621679069494"><span class="hs-identifier hs-var">sz</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteArray# -&gt; Addr#
 </span><span class="hs-identifier hs-var">byteArrayContents#</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; ByteArray#
 </span><span class="hs-identifier hs-var">unsafeCoerce#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097117"><span class="hs-identifier hs-var">mbarr</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-94"></span><span>                    </span><span class="hs-glyph">!</span><span id="local-6989586621679097115"><span class="annot"><span class="annottext">mba :: ScrubbedBytes
-</span><a href="#local-6989586621679097115"><span class="hs-identifier hs-var hs-var">mba</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; ScrubbedBytes
+</span><a href="#local-6989586621679069486"><span class="hs-identifier hs-var">mbarr</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-94"></span><span>                    </span><span class="hs-glyph">!</span><span id="local-6989586621679069484"><span class="annot"><span class="annottext">mba :: ScrubbedBytes
+</span><a href="#local-6989586621679069484"><span class="hs-identifier hs-var hs-var">mba</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-var">ScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097117"><span class="hs-identifier hs-var">mbarr</span></a></span><span>
+</span><a href="#local-6989586621679069486"><span class="hs-identifier hs-var">mbarr</span></a></span><span>
 </span><span id="line-95"></span><span>                 </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
 -&gt; ()
 -&gt; (State# RealWorld -&gt; (# State# RealWorld, () #))
@@ -220,37 +227,39 @@ a
 -&gt; State# RealWorld
 -&gt; (# State# RealWorld, Weak# b #)
 </span><span class="hs-identifier hs-var">mkWeak#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097117"><span class="hs-identifier hs-var">mbarr</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(State# RealWorld -&gt; State# RealWorld)
+</span><a href="#local-6989586621679069486"><span class="hs-identifier hs-var">mbarr</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(State# RealWorld -&gt; State# RealWorld)
 -&gt; ScrubbedBytes -&gt; State# RealWorld -&gt; (# State# RealWorld, () #)
-</span><a href="#local-6989586621679097114"><span class="hs-identifier hs-var">finalize</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld -&gt; State# RealWorld
-</span><a href="#local-6989586621679097116"><span class="hs-identifier hs-var">scrubber</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097115"><span class="hs-identifier hs-var">mba</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097118"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-96"></span><span>                    </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679097113"><span class="annot"><span class="annottext">s2 :: State# RealWorld
-</span><a href="#local-6989586621679097113"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097113"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097115"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="hs-special">#)</span><span>
+</span><a href="#local-6989586621679069483"><span class="hs-identifier hs-var">finalize</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld -&gt; State# RealWorld
+</span><a href="#local-6989586621679069485"><span class="hs-identifier hs-var">scrubber</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069484"><span class="hs-identifier hs-var">mba</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069487"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-96"></span><span>                    </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679069482"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069482"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Weak# ()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069482"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069484"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-97"></span><span>  </span><span class="hs-keyword">where</span><span class="hs-cpp">
 #if __GLASGOW_HASKELL__ &gt;= 800
-</span><span>    </span><span class="annot"><a href="#local-6989586621679097114"><span class="hs-identifier hs-type">finalize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span>
-</span><span id="line-100"></span><span>    </span><span id="local-6989586621679097114"><span class="annot"><span class="annottext">finalize :: (State# RealWorld -&gt; State# RealWorld)
+</span><span>    </span><span class="annot"><a href="#local-6989586621679069483"><span class="hs-identifier hs-type">finalize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State#</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RealWorld</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span>
+</span><span id="line-100"></span><span>    </span><span id="local-6989586621679069483"><span class="annot"><span class="annottext">finalize :: (State# RealWorld -&gt; State# RealWorld)
 -&gt; ScrubbedBytes -&gt; State# RealWorld -&gt; (# State# RealWorld, () #)
-</span><a href="#local-6989586621679097114"><span class="hs-identifier hs-var hs-var">finalize</span></a></span></span><span> </span><span id="local-6989586621679097112"><span class="annot"><span class="annottext">scrubber :: State# RealWorld -&gt; State# RealWorld
-</span><a href="#local-6989586621679097112"><span class="hs-identifier hs-var">scrubber</span></a></span></span><span> </span><span id="local-6989586621679097111"><span class="annot"><span class="annottext">mba :: ScrubbedBytes
-</span><a href="#local-6989586621679097111"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097110"><span class="annot"><span class="annottext">s1 :: State# RealWorld
-</span><a href="#local-6989586621679097110"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679069483"><span class="hs-identifier hs-var hs-var">finalize</span></a></span></span><span> </span><span id="local-6989586621679069481"><span class="annot"><span class="annottext">State# RealWorld -&gt; State# RealWorld
+</span><a href="#local-6989586621679069481"><span class="hs-identifier hs-var">scrubber</span></a></span></span><span> </span><span id="local-6989586621679069480"><span class="annot"><span class="annottext">mba :: ScrubbedBytes
+</span><a href="#local-6989586621679069480"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069479"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069479"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-101"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">State# RealWorld -&gt; State# RealWorld
-</span><a href="#local-6989586621679097112"><span class="hs-identifier hs-var">scrubber</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097110"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-102"></span><span>            </span><span id="local-6989586621679097109"><span class="annot"><span class="annottext">s2 :: State# RealWorld
-</span><a href="#local-6989586621679097109"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; State# RealWorld -&gt; State# RealWorld
+</span><a href="#local-6989586621679069481"><span class="hs-identifier hs-var">scrubber</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069479"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-102"></span><span>            </span><span id="local-6989586621679069478"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069478"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; State# RealWorld -&gt; State# RealWorld
 forall a. a -&gt; State# RealWorld -&gt; State# RealWorld
 </span><span class="hs-identifier hs-var">touch#</span></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097111"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097109"><span class="hs-identifier hs-var">s2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-103"></span><span>                    </span><span id="local-6989586621679097108"><span class="annot"><span class="annottext">s3 :: State# RealWorld
-</span><a href="#local-6989586621679097108"><span class="hs-identifier hs-var">s3</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097108"><span class="hs-identifier hs-var">s3</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span class="hs-cpp">
+</span><a href="#local-6989586621679069480"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069478"><span class="hs-identifier hs-var">s2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-103"></span><span>                    </span><span id="local-6989586621679069477"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069477"><span class="hs-identifier hs-var">s3</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069477"><span class="hs-identifier hs-var">s3</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span class="hs-cpp">
 #else
 </span><span>    </span><span class="hs-identifier">finalize</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-identifier">State#</span><span> </span><span class="hs-identifier">RealWorld</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">State#</span><span> </span><span class="hs-identifier">RealWorld</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">ScrubbedBytes</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">IO</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-106"></span><span>    </span><span class="hs-identifier">finalize</span><span> </span><span class="hs-identifier">scrubber</span><span> </span><span class="hs-identifier">mba</span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="hs-identifier">ScrubbedBytes</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">IO</span><span> </span><span class="hs-operator">$</span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">s1</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
@@ -259,58 +268,58 @@ forall a. a -&gt; State# RealWorld -&gt; State# RealWorld
 </span><span id="line-109"></span><span>                    </span><span class="hs-identifier">s3</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="hs-identifier">s3</span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span class="hs-cpp">
 #endif
 </span><span>
-</span><span id="line-112"></span><span id="local-6989586621679097106"><span id="local-6989586621679097107"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAllocRet"><span class="hs-identifier hs-type">scrubbedBytesAllocRet</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679097107"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679097106"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679097106"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-112"></span><span id="local-6989586621679069475"><span id="local-6989586621679069476"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAllocRet"><span class="hs-identifier hs-type">scrubbedBytesAllocRet</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679069476"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679069475"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679069475"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-113"></span><span id="scrubbedBytesAllocRet"><span class="annot"><span class="annottext">scrubbedBytesAllocRet :: Int -&gt; (Ptr p -&gt; IO a) -&gt; IO (a, ScrubbedBytes)
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAllocRet"><span class="hs-identifier hs-var hs-var">scrubbedBytesAllocRet</span></a></span></span><span> </span><span id="local-6989586621679097105"><span class="annot"><span class="annottext">sz :: Int
-</span><a href="#local-6989586621679097105"><span class="hs-identifier hs-var">sz</span></a></span></span><span> </span><span id="local-6989586621679097104"><span class="annot"><span class="annottext">f :: Ptr p -&gt; IO a
-</span><a href="#local-6989586621679097104"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-114"></span><span>    </span><span id="local-6989586621679097103"><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097103"><span class="hs-identifier hs-var">ba</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO ScrubbedBytes
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAllocRet"><span class="hs-identifier hs-var hs-var">scrubbedBytesAllocRet</span></a></span></span><span> </span><span id="local-6989586621679069474"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069474"><span class="hs-identifier hs-var">sz</span></a></span></span><span> </span><span id="local-6989586621679069473"><span class="annot"><span class="annottext">Ptr p -&gt; IO a
+</span><a href="#local-6989586621679069473"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-114"></span><span>    </span><span id="local-6989586621679069472"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069472"><span class="hs-identifier hs-var">ba</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-var">newScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097105"><span class="hs-identifier hs-var">sz</span></a></span><span>
-</span><span id="line-115"></span><span>    </span><span id="local-6989586621679097102"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679097102"><span class="hs-identifier hs-var">r</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
+</span><a href="#local-6989586621679069474"><span class="hs-identifier hs-var">sz</span></a></span><span>
+</span><span id="line-115"></span><span>    </span><span id="local-6989586621679069471"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679069471"><span class="hs-identifier hs-var">r</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097103"><span class="hs-identifier hs-var">ba</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr p -&gt; IO a
-</span><a href="#local-6989586621679097104"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><a href="#local-6989586621679069472"><span class="hs-identifier hs-var">ba</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr p -&gt; IO a
+</span><a href="#local-6989586621679069473"><span class="hs-identifier hs-var">f</span></a></span><span>
 </span><span id="line-116"></span><span>    </span><span class="annot"><span class="annottext">(a, ScrubbedBytes) -&gt; IO (a, ScrubbedBytes)
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679097102"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097103"><span class="hs-identifier hs-var">ba</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069471"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069472"><span class="hs-identifier hs-var">ba</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-117"></span><span>
-</span><span id="line-118"></span><span id="local-6989586621679097237"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-type">scrubbedBytesAlloc</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679097237"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span>
+</span><span id="line-118"></span><span id="local-6989586621679069606"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-type">scrubbedBytesAlloc</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679069606"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span></span><span>
 </span><span id="line-119"></span><span id="scrubbedBytesAlloc"><span class="annot"><span class="annottext">scrubbedBytesAlloc :: Int -&gt; (Ptr p -&gt; IO ()) -&gt; IO ScrubbedBytes
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-var hs-var">scrubbedBytesAlloc</span></a></span></span><span> </span><span id="local-6989586621679097100"><span class="annot"><span class="annottext">sz :: Int
-</span><a href="#local-6989586621679097100"><span class="hs-identifier hs-var">sz</span></a></span></span><span> </span><span id="local-6989586621679097099"><span class="annot"><span class="annottext">f :: Ptr p -&gt; IO ()
-</span><a href="#local-6989586621679097099"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-120"></span><span>    </span><span id="local-6989586621679097098"><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097098"><span class="hs-identifier hs-var">ba</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO ScrubbedBytes
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-var hs-var">scrubbedBytesAlloc</span></a></span></span><span> </span><span id="local-6989586621679069469"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069469"><span class="hs-identifier hs-var">sz</span></a></span></span><span> </span><span id="local-6989586621679069468"><span class="annot"><span class="annottext">Ptr p -&gt; IO ()
+</span><a href="#local-6989586621679069468"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-120"></span><span>    </span><span id="local-6989586621679069467"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069467"><span class="hs-identifier hs-var">ba</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#newScrubbedBytes"><span class="hs-identifier hs-var">newScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097100"><span class="hs-identifier hs-var">sz</span></a></span><span>
+</span><a href="#local-6989586621679069469"><span class="hs-identifier hs-var">sz</span></a></span><span>
 </span><span id="line-121"></span><span>    </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr p -&gt; IO ()) -&gt; IO ()
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097098"><span class="hs-identifier hs-var">ba</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr p -&gt; IO ()
-</span><a href="#local-6989586621679097099"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><a href="#local-6989586621679069467"><span class="hs-identifier hs-var">ba</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr p -&gt; IO ()
+</span><a href="#local-6989586621679069468"><span class="hs-identifier hs-var">f</span></a></span><span>
 </span><span id="line-122"></span><span>    </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; IO ScrubbedBytes
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097098"><span class="hs-identifier hs-var">ba</span></a></span><span>
+</span><a href="#local-6989586621679069467"><span class="hs-identifier hs-var">ba</span></a></span><span>
 </span><span id="line-123"></span><span>
 </span><span id="line-124"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesConcat"><span class="hs-identifier hs-type">scrubbedBytesConcat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span>
 </span><span id="line-125"></span><span id="scrubbedBytesConcat"><span class="annot"><span class="annottext">scrubbedBytesConcat :: [ScrubbedBytes] -&gt; IO ScrubbedBytes
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesConcat"><span class="hs-identifier hs-var hs-var">scrubbedBytesConcat</span></a></span></span><span> </span><span id="local-6989586621679097097"><span class="annot"><span class="annottext">l :: [ScrubbedBytes]
-</span><a href="#local-6989586621679097097"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesConcat"><span class="hs-identifier hs-var hs-var">scrubbedBytesConcat</span></a></span></span><span> </span><span id="local-6989586621679069466"><span class="annot"><span class="annottext">[ScrubbedBytes]
+</span><a href="#local-6989586621679069466"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes
 forall p. Int -&gt; (Ptr p -&gt; IO ()) -&gt; IO ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-var">scrubbedBytesAlloc</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097096"><span class="hs-identifier hs-var">retLen</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[ScrubbedBytes] -&gt; Ptr Word8 -&gt; IO ()
-</span><a href="#local-6989586621679097095"><span class="hs-identifier hs-var">copy</span></a></span><span> </span><span class="annot"><span class="annottext">[ScrubbedBytes]
-</span><a href="#local-6989586621679097097"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069465"><span class="hs-identifier hs-var">retLen</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[ScrubbedBytes] -&gt; Ptr Word8 -&gt; IO ()
+</span><a href="#local-6989586621679069464"><span class="hs-identifier hs-var">copy</span></a></span><span> </span><span class="annot"><span class="annottext">[ScrubbedBytes]
+</span><a href="#local-6989586621679069466"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-126"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-127"></span><span>    </span><span id="local-6989586621679097096"><span class="annot"><span class="annottext">retLen :: Int
-</span><a href="#local-6989586621679097096"><span class="hs-identifier hs-var hs-var">retLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
+</span><span id="line-127"></span><span>    </span><span id="local-6989586621679069465"><span class="annot"><span class="annottext">retLen :: Int
+</span><a href="#local-6989586621679069465"><span class="hs-identifier hs-var hs-var">retLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
 forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">sum</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Int) -&gt; [Int] -&gt; Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -318,152 +327,153 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[ScrubbedBytes]
-</span><a href="#local-6989586621679097097"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><a href="#local-6989586621679069466"><span class="hs-identifier hs-var">l</span></a></span><span>
 </span><span id="line-128"></span><span>
-</span><span id="line-129"></span><span>    </span><span id="local-6989586621679097095"><span class="annot"><span class="annottext">copy :: [ScrubbedBytes] -&gt; Ptr Word8 -&gt; IO ()
-</span><a href="#local-6989586621679097095"><span class="hs-identifier hs-var hs-var">copy</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="hs-identifier">_</span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+</span><span id="line-129"></span><span>    </span><span id="local-6989586621679069464"><span class="annot"><span class="annottext">copy :: [ScrubbedBytes] -&gt; Ptr Word8 -&gt; IO ()
+</span><a href="#local-6989586621679069464"><span class="hs-identifier hs-var hs-var">copy</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="annot"><span class="annottext">Ptr Word8
+</span><span class="hs-identifier">_</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-130"></span><span>    </span><span class="annot"><a href="#local-6989586621679097095"><span class="hs-identifier hs-var">copy</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679097093"><span class="annot"><span class="annottext">x :: ScrubbedBytes
-</span><a href="#local-6989586621679097093"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679097092"><span class="annot"><span class="annottext">xs :: [ScrubbedBytes]
-</span><a href="#local-6989586621679097092"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679097091"><span class="annot"><span class="annottext">dst :: Ptr Word8
-</span><a href="#local-6989586621679097091"><span class="hs-identifier hs-var">dst</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-130"></span><span>    </span><span class="annot"><a href="#local-6989586621679069464"><span class="hs-identifier hs-var">copy</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679069462"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069462"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679069461"><span class="annot"><span class="annottext">[ScrubbedBytes]
+</span><a href="#local-6989586621679069461"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679069460"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069460"><span class="hs-identifier hs-var">dst</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-131"></span><span>        </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097093"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ()) -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
+</span><a href="#local-6989586621679069462"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ()) -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097090"><span class="annot"><span class="annottext">src :: Ptr Word8
-</span><a href="#local-6989586621679097090"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO ()
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069459"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069459"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO ()
 </span><a href="Data.Memory.PtrMethods.html#memCopy"><span class="hs-identifier hs-var">memCopy</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097091"><span class="hs-identifier hs-var">dst</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097090"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097089"><span class="hs-identifier hs-var">chunkLen</span></a></span><span>
+</span><a href="#local-6989586621679069460"><span class="hs-identifier hs-var">dst</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069459"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069458"><span class="hs-identifier hs-var">chunkLen</span></a></span><span>
 </span><span id="line-132"></span><span>        </span><span class="annot"><span class="annottext">[ScrubbedBytes] -&gt; Ptr Word8 -&gt; IO ()
-</span><a href="#local-6989586621679097095"><span class="hs-identifier hs-var">copy</span></a></span><span> </span><span class="annot"><span class="annottext">[ScrubbedBytes]
-</span><a href="#local-6989586621679097092"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097091"><span class="hs-identifier hs-var">dst</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Int -&gt; Ptr Word8
+</span><a href="#local-6989586621679069464"><span class="hs-identifier hs-var">copy</span></a></span><span> </span><span class="annot"><span class="annottext">[ScrubbedBytes]
+</span><a href="#local-6989586621679069461"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069460"><span class="hs-identifier hs-var">dst</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Int -&gt; Ptr Word8
 forall a b. Ptr a -&gt; Int -&gt; Ptr b
 </span><span class="hs-operator hs-var">`plusPtr`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097089"><span class="hs-identifier hs-var">chunkLen</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069458"><span class="hs-identifier hs-var">chunkLen</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-133"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-134"></span><span>        </span><span id="local-6989586621679097089"><span class="annot"><span class="annottext">chunkLen :: Int
-</span><a href="#local-6989586621679097089"><span class="hs-identifier hs-var hs-var">chunkLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><span id="line-134"></span><span>        </span><span id="local-6989586621679069458"><span class="annot"><span class="annottext">chunkLen :: Int
+</span><a href="#local-6989586621679069458"><span class="hs-identifier hs-var hs-var">chunkLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097093"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679069462"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-135"></span><span>
 </span><span id="line-136"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAppend"><span class="hs-identifier hs-type">scrubbedBytesAppend</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span>
 </span><span id="line-137"></span><span id="scrubbedBytesAppend"><span class="annot"><span class="annottext">scrubbedBytesAppend :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; IO ScrubbedBytes
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAppend"><span class="hs-identifier hs-var hs-var">scrubbedBytesAppend</span></a></span></span><span> </span><span id="local-6989586621679097087"><span class="annot"><span class="annottext">b1 :: ScrubbedBytes
-</span><a href="#local-6989586621679097087"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span id="local-6989586621679097086"><span class="annot"><span class="annottext">b2 :: ScrubbedBytes
-</span><a href="#local-6989586621679097086"><span class="hs-identifier hs-var">b2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAppend"><span class="hs-identifier hs-var hs-var">scrubbedBytesAppend</span></a></span></span><span> </span><span id="local-6989586621679069456"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069456"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span id="local-6989586621679069455"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069455"><span class="hs-identifier hs-var">b2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes
 forall p. Int -&gt; (Ptr p -&gt; IO ()) -&gt; IO ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-var">scrubbedBytesAlloc</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097085"><span class="hs-identifier hs-var">retLen</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes)
+</span><a href="#local-6989586621679069454"><span class="hs-identifier hs-var">retLen</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes)
 -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097084"><span class="annot"><span class="annottext">dst :: Ptr Word8
-</span><a href="#local-6989586621679097084"><span class="hs-identifier hs-var">dst</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069453"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069453"><span class="hs-identifier hs-var">dst</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-138"></span><span>    </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097087"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ()) -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
+</span><a href="#local-6989586621679069456"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ()) -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097083"><span class="annot"><span class="annottext">s1 :: Ptr Word8
-</span><a href="#local-6989586621679097083"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO ()
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069452"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069452"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO ()
 </span><a href="Data.Memory.PtrMethods.html#memCopy"><span class="hs-identifier hs-var">memCopy</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097084"><span class="hs-identifier hs-var">dst</span></a></span><span>                  </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097083"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097082"><span class="hs-identifier hs-var">len1</span></a></span><span>
+</span><a href="#local-6989586621679069453"><span class="hs-identifier hs-var">dst</span></a></span><span>                  </span><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069452"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069451"><span class="hs-identifier hs-var">len1</span></a></span><span>
 </span><span id="line-139"></span><span>    </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097086"><span class="hs-identifier hs-var">b2</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ()) -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
+</span><a href="#local-6989586621679069455"><span class="hs-identifier hs-var">b2</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO ()) -&gt; IO ()) -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097081"><span class="annot"><span class="annottext">s2 :: Ptr Word8
-</span><a href="#local-6989586621679097081"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO ()
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069450"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069450"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO ()
 </span><a href="Data.Memory.PtrMethods.html#memCopy"><span class="hs-identifier hs-var">memCopy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097084"><span class="hs-identifier hs-var">dst</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Int -&gt; Ptr Word8
+</span><a href="#local-6989586621679069453"><span class="hs-identifier hs-var">dst</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Int -&gt; Ptr Word8
 forall a b. Ptr a -&gt; Int -&gt; Ptr b
 </span><span class="hs-operator hs-var">`plusPtr`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097082"><span class="hs-identifier hs-var">len1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097081"><span class="hs-identifier hs-var">s2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097080"><span class="hs-identifier hs-var">len2</span></a></span><span>
+</span><a href="#local-6989586621679069451"><span class="hs-identifier hs-var">len1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069450"><span class="hs-identifier hs-var">s2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069449"><span class="hs-identifier hs-var">len2</span></a></span><span>
 </span><span id="line-140"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-141"></span><span>    </span><span id="local-6989586621679097082"><span class="annot"><span class="annottext">len1 :: Int
-</span><a href="#local-6989586621679097082"><span class="hs-identifier hs-var hs-var">len1</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><span id="line-141"></span><span>    </span><span id="local-6989586621679069451"><span class="annot"><span class="annottext">len1 :: Int
+</span><a href="#local-6989586621679069451"><span class="hs-identifier hs-var hs-var">len1</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097087"><span class="hs-identifier hs-var">b1</span></a></span><span>
-</span><span id="line-142"></span><span>    </span><span id="local-6989586621679097080"><span class="annot"><span class="annottext">len2 :: Int
-</span><a href="#local-6989586621679097080"><span class="hs-identifier hs-var hs-var">len2</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><a href="#local-6989586621679069456"><span class="hs-identifier hs-var">b1</span></a></span><span>
+</span><span id="line-142"></span><span>    </span><span id="local-6989586621679069449"><span class="annot"><span class="annottext">len2 :: Int
+</span><a href="#local-6989586621679069449"><span class="hs-identifier hs-var hs-var">len2</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097086"><span class="hs-identifier hs-var">b2</span></a></span><span>
-</span><span id="line-143"></span><span>    </span><span id="local-6989586621679097085"><span class="annot"><span class="annottext">retLen :: Int
-</span><a href="#local-6989586621679097085"><span class="hs-identifier hs-var hs-var">retLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097082"><span class="hs-identifier hs-var">len1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679069455"><span class="hs-identifier hs-var">b2</span></a></span><span>
+</span><span id="line-143"></span><span>    </span><span id="local-6989586621679069454"><span class="annot"><span class="annottext">retLen :: Int
+</span><a href="#local-6989586621679069454"><span class="hs-identifier hs-var hs-var">retLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069451"><span class="hs-identifier hs-var">len1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097080"><span class="hs-identifier hs-var">len2</span></a></span><span>
+</span><a href="#local-6989586621679069449"><span class="hs-identifier hs-var">len2</span></a></span><span>
 </span><span id="line-144"></span><span>
 </span><span id="line-145"></span><span>
 </span><span id="line-146"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-type">sizeofScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-147"></span><span id="sizeofScrubbedBytes"><span class="annot"><span class="annottext">sizeofScrubbedBytes :: ScrubbedBytes -&gt; Int
-</span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var hs-var">sizeofScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679097078"><span class="annot"><span class="annottext">mba :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097078"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int
+</span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var hs-var">sizeofScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679069447"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069447"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int
 </span><span class="hs-identifier hs-var">I#</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; Int#
 forall d. MutableByteArray# d -&gt; Int#
 </span><span class="hs-identifier hs-var">sizeofMutableByteArray#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097078"><span class="hs-identifier hs-var">mba</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069447"><span class="hs-identifier hs-var">mba</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-148"></span><span>
-</span><span id="line-149"></span><span id="local-6989586621679097076"><span id="local-6989586621679097077"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-type">withPtr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679097077"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679097076"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679097076"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-149"></span><span id="local-6989586621679069445"><span id="local-6989586621679069446"><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-type">withPtr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><a href="#local-6989586621679069446"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679069445"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679069445"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-150"></span><span id="withPtr"><span class="annot"><span class="annottext">withPtr :: ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
-</span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var hs-var">withPtr</span></a></span></span><span> </span><span id="local-6989586621679097075"><span class="annot"><span class="annottext">b :: ScrubbedBytes
-</span><a href="#local-6989586621679097075"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679097074"><span class="annot"><span class="annottext">mba :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097074"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679097073"><span class="annot"><span class="annottext">f :: Ptr p -&gt; IO a
-</span><a href="#local-6989586621679097073"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-151"></span><span>    </span><span id="local-6989586621679097072"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679097072"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr p -&gt; IO a
-</span><a href="#local-6989586621679097073"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Addr# -&gt; Ptr p
+</span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var hs-var">withPtr</span></a></span></span><span> </span><span id="local-6989586621679069444"><span class="annot"><span class="annottext">b :: ScrubbedBytes
+</span><a href="#local-6989586621679069444"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679069443"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069443"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679069442"><span class="annot"><span class="annottext">Ptr p -&gt; IO a
+</span><a href="#local-6989586621679069442"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-151"></span><span>    </span><span id="local-6989586621679069441"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679069441"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr p -&gt; IO a
+</span><a href="#local-6989586621679069442"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Addr# -&gt; Ptr p
 forall a. Addr# -&gt; Ptr a
 </span><span class="hs-identifier hs-var">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteArray# -&gt; Addr#
 </span><span class="hs-identifier hs-var">byteArrayContents#</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; ByteArray#
 </span><span class="hs-identifier hs-var">unsafeCoerce#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097074"><span class="hs-identifier hs-var">mba</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069443"><span class="hs-identifier hs-var">mba</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-152"></span><span>    </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; IO ()
 </span><a href="Data.ByteArray.ScrubbedBytes.html#touchScrubbedBytes"><span class="hs-identifier hs-var">touchScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097075"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679069444"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-153"></span><span>    </span><span class="annot"><span class="annottext">a -&gt; IO a
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679097072"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="#local-6989586621679069441"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-154"></span><span>
 </span><span id="line-155"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#touchScrubbedBytes"><span class="hs-identifier hs-type">touchScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-156"></span><span id="touchScrubbedBytes"><span class="annot"><span class="annottext">touchScrubbedBytes :: ScrubbedBytes -&gt; IO ()
-</span><a href="Data.ByteArray.ScrubbedBytes.html#touchScrubbedBytes"><span class="hs-identifier hs-var hs-var">touchScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679097069"><span class="annot"><span class="annottext">mba :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097069"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(State# RealWorld -&gt; (# State# RealWorld, () #)) -&gt; IO ()
+</span><a href="Data.ByteArray.ScrubbedBytes.html#touchScrubbedBytes"><span class="hs-identifier hs-var hs-var">touchScrubbedBytes</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679069438"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069438"><span class="hs-identifier hs-var">mba</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(State# RealWorld -&gt; (# State# RealWorld, () #)) -&gt; IO ()
 forall a. (State# RealWorld -&gt; (# State# RealWorld, a #)) -&gt; IO a
 </span><span class="hs-identifier hs-var">IO</span></span><span> </span><span class="annot"><span class="annottext">((State# RealWorld -&gt; (# State# RealWorld, () #)) -&gt; IO ())
 -&gt; (State# RealWorld -&gt; (# State# RealWorld, () #)) -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097068"><span class="annot"><span class="annottext">s :: State# RealWorld
-</span><a href="#local-6989586621679097068"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; State# RealWorld -&gt; State# RealWorld
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069437"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069437"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld -&gt; State# RealWorld -&gt; State# RealWorld
 forall a. a -&gt; State# RealWorld -&gt; State# RealWorld
 </span><span class="hs-identifier hs-var">touch#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097069"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097068"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span id="local-6989586621679097067"><span class="annot"><span class="annottext">s' :: State# RealWorld
-</span><a href="#local-6989586621679097067"><span class="hs-identifier hs-var">s'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097067"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span>
+</span><a href="#local-6989586621679069438"><span class="hs-identifier hs-var">mba</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069437"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span id="local-6989586621679069436"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069436"><span class="hs-identifier hs-var">s'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069436"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-157"></span><span>
 </span><span id="line-158"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesEq"><span class="hs-identifier hs-type">scrubbedBytesEq</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-159"></span><span id="scrubbedBytesEq"><span class="annot"><span class="annottext">scrubbedBytesEq :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; Bool
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesEq"><span class="hs-identifier hs-var hs-var">scrubbedBytesEq</span></a></span></span><span> </span><span id="local-6989586621679097066"><span class="annot"><span class="annottext">a :: ScrubbedBytes
-</span><a href="#local-6989586621679097066"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679097065"><span class="annot"><span class="annottext">b :: ScrubbedBytes
-</span><a href="#local-6989586621679097065"><span class="hs-identifier hs-var">b</span></a></span></span><span>
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesEq"><span class="hs-identifier hs-var hs-var">scrubbedBytesEq</span></a></span></span><span> </span><span id="local-6989586621679069435"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069435"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679069434"><span class="annot"><span class="annottext">ScrubbedBytes
+</span><a href="#local-6989586621679069434"><span class="hs-identifier hs-var">b</span></a></span></span><span>
 </span><span id="line-160"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097064"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679069433"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097062"><span class="hs-identifier hs-var">l2</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679069431"><span class="hs-identifier hs-var">l2</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
 </span><span id="line-161"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Bool -&gt; Bool
@@ -473,39 +483,39 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr Word8 -&gt; IO Bool) -&gt; IO Bool
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097066"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO Bool) -&gt; IO Bool)
+</span><a href="#local-6989586621679069435"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO Bool) -&gt; IO Bool)
 -&gt; (Ptr Word8 -&gt; IO Bool) -&gt; IO Bool
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097061"><span class="annot"><span class="annottext">p1 :: Ptr Word8
-</span><a href="#local-6989586621679097061"><span class="hs-identifier hs-var">p1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr Word8 -&gt; IO Bool) -&gt; IO Bool
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069430"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069430"><span class="hs-identifier hs-var">p1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; (Ptr Word8 -&gt; IO Bool) -&gt; IO Bool
 forall p a. ScrubbedBytes -&gt; (Ptr p -&gt; IO a) -&gt; IO a
 </span><a href="Data.ByteArray.ScrubbedBytes.html#withPtr"><span class="hs-identifier hs-var">withPtr</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097065"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO Bool) -&gt; IO Bool)
+</span><a href="#local-6989586621679069434"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">((Ptr Word8 -&gt; IO Bool) -&gt; IO Bool)
 -&gt; (Ptr Word8 -&gt; IO Bool) -&gt; IO Bool
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097060"><span class="annot"><span class="annottext">p2 :: Ptr Word8
-</span><a href="#local-6989586621679097060"><span class="hs-identifier hs-var">p2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO Bool
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069429"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069429"><span class="hs-identifier hs-var">p2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Ptr Word8 -&gt; Int -&gt; IO Bool
 </span><a href="Data.Memory.PtrMethods.html#memConstEqual"><span class="hs-identifier hs-var">memConstEqual</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097061"><span class="hs-identifier hs-var">p1</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097060"><span class="hs-identifier hs-var">p2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097064"><span class="hs-identifier hs-var">l1</span></a></span><span>
+</span><a href="#local-6989586621679069430"><span class="hs-identifier hs-var">p1</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069429"><span class="hs-identifier hs-var">p2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069433"><span class="hs-identifier hs-var">l1</span></a></span><span>
 </span><span id="line-162"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-163"></span><span>        </span><span id="local-6989586621679097064"><span class="annot"><span class="annottext">l1 :: Int
-</span><a href="#local-6989586621679097064"><span class="hs-identifier hs-var hs-var">l1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><span id="line-163"></span><span>        </span><span id="local-6989586621679069433"><span class="annot"><span class="annottext">l1 :: Int
+</span><a href="#local-6989586621679069433"><span class="hs-identifier hs-var hs-var">l1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097066"><span class="hs-identifier hs-var">a</span></a></span><span>
-</span><span id="line-164"></span><span>        </span><span id="local-6989586621679097062"><span class="annot"><span class="annottext">l2 :: Int
-</span><a href="#local-6989586621679097062"><span class="hs-identifier hs-var hs-var">l2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><a href="#local-6989586621679069435"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-164"></span><span>        </span><span id="local-6989586621679069431"><span class="annot"><span class="annottext">l2 :: Int
+</span><a href="#local-6989586621679069431"><span class="hs-identifier hs-var hs-var">l2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097065"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679069434"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-165"></span><span>
 </span><span id="line-166"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesCompare"><span class="hs-identifier hs-type">scrubbedBytesCompare</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ordering</span></span><span>
 </span><span id="line-167"></span><span id="scrubbedBytesCompare"><span class="annot"><span class="annottext">scrubbedBytesCompare :: ScrubbedBytes -&gt; ScrubbedBytes -&gt; Ordering
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesCompare"><span class="hs-identifier hs-var hs-var">scrubbedBytesCompare</span></a></span></span><span> </span><span id="local-6989586621679097059"><span class="annot"><span class="annottext">b1 :: ScrubbedBytes
-</span><a href="#local-6989586621679097059"><span class="hs-identifier hs-var">b1</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679097058"><span class="annot"><span class="annottext">m1 :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097058"><span class="hs-identifier hs-var">m1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679097057"><span class="annot"><span class="annottext">b2 :: ScrubbedBytes
-</span><a href="#local-6989586621679097057"><span class="hs-identifier hs-var">b2</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679097056"><span class="annot"><span class="annottext">m2 :: MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097056"><span class="hs-identifier hs-var">m2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Ordering -&gt; Ordering
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesCompare"><span class="hs-identifier hs-var hs-var">scrubbedBytesCompare</span></a></span></span><span> </span><span id="local-6989586621679069428"><span class="annot"><span class="annottext">b1 :: ScrubbedBytes
+</span><a href="#local-6989586621679069428"><span class="hs-identifier hs-var">b1</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679069427"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069427"><span class="hs-identifier hs-var">m1</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679069426"><span class="annot"><span class="annottext">b2 :: ScrubbedBytes
+</span><a href="#local-6989586621679069426"><span class="hs-identifier hs-var">b2</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span> </span><span id="local-6989586621679069425"><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069425"><span class="hs-identifier hs-var">m2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Ordering -&gt; Ordering
 forall a. IO a -&gt; a
 </span><a href="Data.Memory.Internal.Compat.html#unsafeDoIO"><span class="hs-identifier hs-var">unsafeDoIO</span></a></span><span> </span><span class="annot"><span class="annottext">(IO Ordering -&gt; Ordering) -&gt; IO Ordering -&gt; Ordering
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -517,52 +527,53 @@ forall a. (State# RealWorld -&gt; (# State# RealWorld, a #)) -&gt; IO a
 -&gt; (State# RealWorld -&gt; (# State# RealWorld, Ordering #))
 -&gt; IO Ordering
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679097055"><span class="annot"><span class="annottext">s :: State# RealWorld
-</span><a href="#local-6989586621679097055"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; State# RealWorld -&gt; (# State# RealWorld, Ordering #)
-</span><a href="#local-6989586621679097054"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="hs-number">0#</span></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097055"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679069424"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069424"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; State# RealWorld -&gt; (# State# RealWorld, Ordering #)
+</span><a href="#local-6989586621679069423"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">0#</span></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069424"><span class="hs-identifier hs-var">s</span></a></span><span>
 </span><span id="line-168"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-169"></span><span>    </span><span class="hs-glyph">!</span><span id="local-6989586621679097053"><span class="annot"><span class="annottext">l1 :: Int
-</span><a href="#local-6989586621679097053"><span class="hs-identifier hs-var hs-var">l1</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><span id="line-169"></span><span>    </span><span class="hs-glyph">!</span><span id="local-6989586621679069422"><span class="annot"><span class="annottext">l1 :: Int
+</span><a href="#local-6989586621679069422"><span class="hs-identifier hs-var hs-var">l1</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097059"><span class="hs-identifier hs-var">b1</span></a></span><span>
-</span><span id="line-170"></span><span>    </span><span class="hs-glyph">!</span><span id="local-6989586621679097052"><span class="annot"><span class="annottext">l2 :: Int
-</span><a href="#local-6989586621679097052"><span class="hs-identifier hs-var hs-var">l2</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
+</span><a href="#local-6989586621679069428"><span class="hs-identifier hs-var">b1</span></a></span><span>
+</span><span id="line-170"></span><span>    </span><span class="hs-glyph">!</span><span id="local-6989586621679069421"><span class="annot"><span class="annottext">l2 :: Int
+</span><a href="#local-6989586621679069421"><span class="hs-identifier hs-var hs-var">l2</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes -&gt; Int
 </span><a href="Data.ByteArray.ScrubbedBytes.html#sizeofScrubbedBytes"><span class="hs-identifier hs-var">sizeofScrubbedBytes</span></a></span><span> </span><span class="annot"><span class="annottext">ScrubbedBytes
-</span><a href="#local-6989586621679097057"><span class="hs-identifier hs-var">b2</span></a></span><span>
-</span><span id="line-171"></span><span>    </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">I#</span></span><span> </span><span id="local-6989586621679097051"><span class="annot"><span class="annottext">len :: Int#
-</span><a href="#local-6989586621679097051"><span class="hs-identifier hs-var">len</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679069426"><span class="hs-identifier hs-var">b2</span></a></span><span>
+</span><span id="line-171"></span><span>    </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">I#</span></span><span> </span><span id="local-6989586621679069420"><span class="annot"><span class="annottext">Int#
+</span><a href="#local-6989586621679069420"><span class="hs-identifier hs-var">len</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Ord a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">min</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097053"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097052"><span class="hs-identifier hs-var">l2</span></a></span><span>
+</span><a href="#local-6989586621679069422"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679069421"><span class="hs-identifier hs-var">l2</span></a></span><span>
 </span><span id="line-172"></span><span>
-</span><span id="line-173"></span><span>    </span><span id="local-6989586621679097054"><span class="annot"><span class="annottext">loop :: Int# -&gt; State# RealWorld -&gt; (# State# RealWorld, Ordering #)
-</span><a href="#local-6989586621679097054"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span id="local-6989586621679097049"><span class="annot"><span class="annottext">i :: Int#
-</span><a href="#local-6989586621679097049"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679097048"><span class="annot"><span class="annottext">s1 :: State# RealWorld
-</span><a href="#local-6989586621679097048"><span class="hs-identifier hs-var">s1</span></a></span></span><span>
+</span><span id="line-173"></span><span>    </span><span id="local-6989586621679069423"><span class="annot"><span class="annottext">loop :: Int# -&gt; State# RealWorld -&gt; (# State# RealWorld, Ordering #)
+</span><a href="#local-6989586621679069423"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span id="local-6989586621679069418"><span class="annot"><span class="annottext">Int#
+</span><a href="#local-6989586621679069418"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679069417"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069417"><span class="hs-identifier hs-var">s1</span></a></span></span><span>
 </span><span id="line-174"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Bool
 </span><a href="Data.Memory.Internal.CompatPrim.html#booleanPrim"><span class="hs-identifier hs-var">booleanPrim</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097049"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
+</span><a href="#local-6989586621679069418"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
 </span><span class="hs-operator hs-var">==#</span></span><span> </span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097051"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679069420"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-175"></span><span>            </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097053"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679069422"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097052"><span class="hs-identifier hs-var">l2</span></a></span><span>
+</span><a href="#local-6989586621679069421"><span class="hs-identifier hs-var">l2</span></a></span><span>
 </span><span id="line-176"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097048"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679069417"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
 </span><span class="hs-identifier hs-var">EQ</span></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-177"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097053"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679069422"><span class="hs-identifier hs-var">l1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097052"><span class="hs-identifier hs-var">l2</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097048"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679069421"><span class="hs-identifier hs-var">l2</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069417"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
 </span><span class="hs-identifier hs-var">GT</span></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-178"></span><span>                                </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097048"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679069417"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
 </span><span class="hs-identifier hs-var">LT</span></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-179"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>               </span><span class="hs-glyph">=</span><span>
@@ -571,47 +582,48 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 forall d.
 MutableByteArray# d -&gt; Int# -&gt; State# d -&gt; (# State# d, Word# #)
 </span><span class="hs-identifier hs-var">readWord8Array#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097058"><span class="hs-identifier hs-var">m1</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097049"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097048"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-181"></span><span>                </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679097046"><span class="annot"><span class="annottext">s2 :: State# RealWorld
-</span><a href="#local-6989586621679097046"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679097045"><span class="annot"><span class="annottext">e1 :: Word#
-</span><a href="#local-6989586621679097045"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
+</span><a href="#local-6989586621679069427"><span class="hs-identifier hs-var">m1</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><a href="#local-6989586621679069418"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069417"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-181"></span><span>                </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679069415"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069415"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679069414"><span class="annot"><span class="annottext">Word#
+</span><a href="#local-6989586621679069414"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
 -&gt; Int# -&gt; State# RealWorld -&gt; (# State# RealWorld, Word# #)
 forall d.
 MutableByteArray# d -&gt; Int# -&gt; State# d -&gt; (# State# d, Word# #)
 </span><span class="hs-identifier hs-var">readWord8Array#</span></span><span> </span><span class="annot"><span class="annottext">MutableByteArray# RealWorld
-</span><a href="#local-6989586621679097056"><span class="hs-identifier hs-var">m2</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097049"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097046"><span class="hs-identifier hs-var">s2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-182"></span><span>                    </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679097044"><span class="annot"><span class="annottext">s3 :: State# RealWorld
-</span><a href="#local-6989586621679097044"><span class="hs-identifier hs-var">s3</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679097043"><span class="annot"><span class="annottext">e2 :: Word#
-</span><a href="#local-6989586621679097043"><span class="hs-identifier hs-var">e2</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679069425"><span class="hs-identifier hs-var">m2</span></a></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><a href="#local-6989586621679069418"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069415"><span class="hs-identifier hs-var">s2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-182"></span><span>                    </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621679069413"><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069413"><span class="hs-identifier hs-var">s3</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679069412"><span class="annot"><span class="annottext">Word#
+</span><a href="#local-6989586621679069412"><span class="hs-identifier hs-var">e2</span></a></span></span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-183"></span><span>                        </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Bool
 </span><a href="Data.Memory.Internal.CompatPrim.html#booleanPrim"><span class="hs-identifier hs-var">booleanPrim</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word# -&gt; Word# -&gt; Int#
 </span><span class="hs-identifier hs-var">eqWord#</span></span><span> </span><span class="annot"><span class="annottext">Word#
-</span><a href="#local-6989586621679097045"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Word#
-</span><a href="#local-6989586621679097043"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069414"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Word#
+</span><a href="#local-6989586621679069412"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-184"></span><span>                            </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; State# RealWorld -&gt; (# State# RealWorld, Ordering #)
-</span><a href="#local-6989586621679097054"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int#
-</span><a href="#local-6989586621679097049"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
-</span><span class="hs-operator hs-var">+#</span></span><span> </span><span class="annot"><span class="hs-number">1#</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097044"><span class="hs-identifier hs-var">s3</span></a></span><span>
+</span><a href="#local-6989586621679069423"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int#
+</span><a href="#local-6989586621679069418"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Int# -&gt; Int#
+</span><span class="hs-operator hs-var">+#</span></span><span> </span><span class="annot"><span class="annottext">Int#
+</span><span class="hs-number">1#</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069413"><span class="hs-identifier hs-var">s3</span></a></span><span>
 </span><span id="line-185"></span><span>                            </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Bool
 </span><a href="Data.Memory.Internal.CompatPrim.html#booleanPrim"><span class="hs-identifier hs-var">booleanPrim</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word# -&gt; Word# -&gt; Int#
 </span><span class="hs-identifier hs-var">ltWord#</span></span><span> </span><span class="annot"><span class="annottext">Word#
-</span><a href="#local-6989586621679097045"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Word#
-</span><a href="#local-6989586621679097043"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097044"><span class="hs-identifier hs-var">s3</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679069414"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">Word#
+</span><a href="#local-6989586621679069412"><span class="hs-identifier hs-var">e2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
+</span><a href="#local-6989586621679069413"><span class="hs-identifier hs-var">s3</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
 </span><span class="hs-identifier hs-var">LT</span></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-186"></span><span>                                                                </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(#</span><span> </span><span class="annot"><span class="annottext">State# RealWorld
-</span><a href="#local-6989586621679097044"><span class="hs-identifier hs-var">s3</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679069413"><span class="hs-identifier hs-var">s3</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ordering
 </span><span class="hs-identifier hs-var">GT</span></span><span> </span><span class="hs-special">#)</span><span>
 </span><span id="line-187"></span><span>
 </span><span id="line-188"></span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedFromChar8"><span class="hs-identifier hs-type">scrubbedFromChar8</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.ByteArray.ScrubbedBytes.html#ScrubbedBytes"><span class="hs-identifier hs-type">ScrubbedBytes</span></a></span><span>
 </span><span id="line-189"></span><span id="scrubbedFromChar8"><span class="annot"><span class="annottext">scrubbedFromChar8 :: String -&gt; ScrubbedBytes
-</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedFromChar8"><span class="hs-identifier hs-var hs-var">scrubbedFromChar8</span></a></span></span><span> </span><span id="local-6989586621679097042"><span class="annot"><span class="annottext">l :: String
-</span><a href="#local-6989586621679097042"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO ScrubbedBytes -&gt; ScrubbedBytes
+</span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedFromChar8"><span class="hs-identifier hs-var hs-var">scrubbedFromChar8</span></a></span></span><span> </span><span id="local-6989586621679069411"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679069411"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO ScrubbedBytes -&gt; ScrubbedBytes
 forall a. IO a -&gt; a
 </span><a href="Data.Memory.Internal.Compat.html#unsafeDoIO"><span class="hs-identifier hs-var">unsafeDoIO</span></a></span><span> </span><span class="annot"><span class="annottext">(IO ScrubbedBytes -&gt; ScrubbedBytes)
 -&gt; IO ScrubbedBytes -&gt; ScrubbedBytes
@@ -619,39 +631,41 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Ptr Word8 -&gt; IO ()) -&gt; IO ScrubbedBytes
 forall p. Int -&gt; (Ptr p -&gt; IO ()) -&gt; IO ScrubbedBytes
 </span><a href="Data.ByteArray.ScrubbedBytes.html#scrubbedBytesAlloc"><span class="hs-identifier hs-var">scrubbedBytesAlloc</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679097041"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Ptr Word8 -&gt; IO ()
-</span><a href="#local-6989586621679097040"><span class="hs-identifier hs-var">fill</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679097042"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679069410"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Ptr Word8 -&gt; IO ()
+</span><a href="#local-6989586621679069409"><span class="hs-identifier hs-var">fill</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679069411"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-190"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-191"></span><span>    </span><span id="local-6989586621679097041"><span class="annot"><span class="annottext">len :: Int
-</span><a href="#local-6989586621679097041"><span class="hs-identifier hs-var hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int
+</span><span id="line-191"></span><span>    </span><span id="local-6989586621679069410"><span class="annot"><span class="annottext">len :: Int
+</span><a href="#local-6989586621679069410"><span class="hs-identifier hs-var hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">Prelude.length</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679097042"><span class="hs-identifier hs-var">l</span></a></span><span>
-</span><span id="line-192"></span><span>    </span><span class="annot"><a href="#local-6989586621679097040"><span class="hs-identifier hs-type">fill</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-193"></span><span>    </span><span id="local-6989586621679097040"><span class="annot"><span class="annottext">fill :: String -&gt; Ptr Word8 -&gt; IO ()
-</span><a href="#local-6989586621679097040"><span class="hs-identifier hs-var hs-var">fill</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="hs-identifier">_</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+</span><a href="#local-6989586621679069411"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-192"></span><span>    </span><span class="annot"><a href="#local-6989586621679069409"><span class="hs-identifier hs-type">fill</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-193"></span><span>    </span><span id="local-6989586621679069409"><span class="annot"><span class="annottext">fill :: String -&gt; Ptr Word8 -&gt; IO ()
+</span><a href="#local-6989586621679069409"><span class="hs-identifier hs-var hs-var">fill</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="annot"><span class="annottext">Ptr Word8
+</span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-194"></span><span>    </span><span class="annot"><a href="#local-6989586621679097040"><span class="hs-identifier hs-var">fill</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679097038"><span class="annot"><span class="annottext">x :: Char
-</span><a href="#local-6989586621679097038"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679097037"><span class="annot"><span class="annottext">xs :: String
-</span><a href="#local-6989586621679097037"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679097036"><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097036"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Word8 -&gt; IO ()
+</span><span id="line-194"></span><span>    </span><span class="annot"><a href="#local-6989586621679069409"><span class="hs-identifier hs-var">fill</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679069407"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679069407"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679069406"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679069406"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679069405"><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069405"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Word8 -&gt; IO ()
 forall a. Storable a =&gt; Ptr a -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">poke</span></span><span> </span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097036"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word8
+</span><a href="#local-6989586621679069405"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word8
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Word8) -&gt; Int -&gt; Word8
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
 forall a. Enum a =&gt; a -&gt; Int
 </span><span class="hs-identifier hs-var">fromEnum</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679097038"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO () -&gt; IO ()
+</span><a href="#local-6989586621679069407"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO () -&gt; IO ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Ptr Word8 -&gt; IO ()
-</span><a href="#local-6989586621679097040"><span class="hs-identifier hs-var">fill</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679097037"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word8
-</span><a href="#local-6989586621679097036"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Int -&gt; Ptr Word8
+</span><a href="#local-6989586621679069409"><span class="hs-identifier hs-var">fill</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679069406"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr Word8
+</span><a href="#local-6989586621679069405"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr Word8 -&gt; Int -&gt; Ptr Word8
 forall a b. Ptr a -&gt; Int -&gt; Ptr b
-</span><span class="hs-operator hs-var">`plusPtr`</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span class="hs-operator hs-var">`plusPtr`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-195"></span></pre></body></html>

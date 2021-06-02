@@ -30,7 +30,7 @@
 </span><a href="Crypto.Types.PubKey.ECDSA.html#sign_r"><span class="hs-identifier hs-var hs-var">sign_r</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ ECDSA r</span><span>
 </span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="sign_s"><span class="annot"><span class="annottext">Signature -&gt; Integer
 </span><a href="Crypto.Types.PubKey.ECDSA.html#sign_s"><span class="hs-identifier hs-var hs-var">sign_s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-comment">-- ^ ECDSA s</span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679070080"><span id="local-6989586621679070082"><span id="local-6989586621679070084"><span class="annot"><span class="annottext">Int -&gt; Signature -&gt; ShowS
+</span><span id="line-31"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679053065"><span id="local-6989586621679053067"><span id="local-6989586621679053069"><span class="annot"><span class="annottext">Int -&gt; Signature -&gt; ShowS
 [Signature] -&gt; ShowS
 Signature -&gt; String
 (Int -&gt; Signature -&gt; ShowS)
@@ -45,7 +45,7 @@ show :: Signature -&gt; String
 $cshow :: Signature -&gt; String
 showsPrec :: Int -&gt; Signature -&gt; ShowS
 $cshowsPrec :: Int -&gt; Signature -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070071"><span id="local-6989586621679070073"><span id="local-6989586621679070075"><span id="local-6989586621679070077"><span class="annot"><span class="annottext">ReadPrec [Signature]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053056"><span id="local-6989586621679053058"><span id="local-6989586621679053060"><span id="local-6989586621679053062"><span class="annot"><span class="annottext">ReadPrec [Signature]
 ReadPrec Signature
 Int -&gt; ReadS Signature
 ReadS [Signature]
@@ -65,7 +65,7 @@ readList :: ReadS [Signature]
 $creadList :: ReadS [Signature]
 readsPrec :: Int -&gt; ReadS Signature
 $creadsPrec :: Int -&gt; ReadS Signature
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070066"><span id="local-6989586621679070068"><span class="annot"><span class="annottext">Signature -&gt; Signature -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053051"><span id="local-6989586621679053053"><span class="annot"><span class="annottext">Signature -&gt; Signature -&gt; Bool
 (Signature -&gt; Signature -&gt; Bool)
 -&gt; (Signature -&gt; Signature -&gt; Bool) -&gt; Eq Signature
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -73,13 +73,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: Signature -&gt; Signature -&gt; Bool
 == :: Signature -&gt; Signature -&gt; Bool
 $c== :: Signature -&gt; Signature -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cSignature"><span id="%24tSignature"><span id="local-6989586621679070036"><span id="local-6989586621679070038"><span id="local-6989586621679070040"><span id="local-6989586621679070042"><span id="local-6989586621679070044"><span id="local-6989586621679070046"><span id="local-6989586621679070048"><span id="local-6989586621679070050"><span id="local-6989586621679070052"><span id="local-6989586621679070054"><span id="local-6989586621679070056"><span id="local-6989586621679070058"><span id="local-6989586621679070060"><span id="local-6989586621679070062"><span class="annot"><span class="annottext">Typeable Signature
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cSignature"><span id="%24tSignature"><span id="local-6989586621679053021"><span id="local-6989586621679053023"><span id="local-6989586621679053025"><span id="local-6989586621679053027"><span id="local-6989586621679053029"><span id="local-6989586621679053031"><span id="local-6989586621679053033"><span id="local-6989586621679053035"><span id="local-6989586621679053037"><span id="local-6989586621679053039"><span id="local-6989586621679053041"><span id="local-6989586621679053043"><span id="local-6989586621679053045"><span id="local-6989586621679053047"><span class="annot"><span class="annottext">Typeable Signature
 DataType
 Constr
-Typeable Signature =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; Signature -&gt; c Signature)
+Typeable Signature
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; Signature -&gt; c Signature)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c Signature)
@@ -119,10 +119,10 @@ Signature -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c Signature
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -238,7 +238,7 @@ $cp1Data :: Typeable Signature
 </span><a href="Crypto.Types.PubKey.ECDSA.html#private_curve"><span class="hs-identifier hs-var hs-var">private_curve</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#Curve"><span class="hs-identifier hs-type">Curve</span></a></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="private_d"><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.ECDSA.html#private_d"><span class="hs-identifier hs-var hs-var">private_d</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#PrivateNumber"><span class="hs-identifier hs-type">PrivateNumber</span></a></span><span>
-</span><span id="line-37"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679070024"><span id="local-6989586621679070026"><span id="local-6989586621679070028"><span class="annot"><span class="annottext">Int -&gt; PrivateKey -&gt; ShowS
+</span><span id="line-37"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679053009"><span id="local-6989586621679053011"><span id="local-6989586621679053013"><span class="annot"><span class="annottext">Int -&gt; PrivateKey -&gt; ShowS
 [PrivateKey] -&gt; ShowS
 PrivateKey -&gt; String
 (Int -&gt; PrivateKey -&gt; ShowS)
@@ -253,7 +253,7 @@ show :: PrivateKey -&gt; String
 $cshow :: PrivateKey -&gt; String
 showsPrec :: Int -&gt; PrivateKey -&gt; ShowS
 $cshowsPrec :: Int -&gt; PrivateKey -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070016"><span id="local-6989586621679070018"><span id="local-6989586621679070020"><span id="local-6989586621679070022"><span class="annot"><span class="annottext">ReadPrec [PrivateKey]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053001"><span id="local-6989586621679053003"><span id="local-6989586621679053005"><span id="local-6989586621679053007"><span class="annot"><span class="annottext">ReadPrec [PrivateKey]
 ReadPrec PrivateKey
 Int -&gt; ReadS PrivateKey
 ReadS [PrivateKey]
@@ -273,7 +273,7 @@ readList :: ReadS [PrivateKey]
 $creadList :: ReadS [PrivateKey]
 readsPrec :: Int -&gt; ReadS PrivateKey
 $creadsPrec :: Int -&gt; ReadS PrivateKey
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070012"><span id="local-6989586621679070014"><span class="annot"><span class="annottext">PrivateKey -&gt; PrivateKey -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679052997"><span id="local-6989586621679052999"><span class="annot"><span class="annottext">PrivateKey -&gt; PrivateKey -&gt; Bool
 (PrivateKey -&gt; PrivateKey -&gt; Bool)
 -&gt; (PrivateKey -&gt; PrivateKey -&gt; Bool) -&gt; Eq PrivateKey
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -281,13 +281,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: PrivateKey -&gt; PrivateKey -&gt; Bool
 == :: PrivateKey -&gt; PrivateKey -&gt; Bool
 $c== :: PrivateKey -&gt; PrivateKey -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPrivateKey"><span id="%24tPrivateKey"><span id="local-6989586621679069983"><span id="local-6989586621679069985"><span id="local-6989586621679069987"><span id="local-6989586621679069989"><span id="local-6989586621679069991"><span id="local-6989586621679069993"><span id="local-6989586621679069995"><span id="local-6989586621679069997"><span id="local-6989586621679069999"><span id="local-6989586621679070001"><span id="local-6989586621679070003"><span id="local-6989586621679070005"><span id="local-6989586621679070007"><span id="local-6989586621679070009"><span class="annot"><span class="annottext">Typeable PrivateKey
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPrivateKey"><span id="%24tPrivateKey"><span id="local-6989586621679052968"><span id="local-6989586621679052970"><span id="local-6989586621679052972"><span id="local-6989586621679052974"><span id="local-6989586621679052976"><span id="local-6989586621679052978"><span id="local-6989586621679052980"><span id="local-6989586621679052982"><span id="local-6989586621679052984"><span id="local-6989586621679052986"><span id="local-6989586621679052988"><span id="local-6989586621679052990"><span id="local-6989586621679052992"><span id="local-6989586621679052994"><span class="annot"><span class="annottext">Typeable PrivateKey
 DataType
 Constr
-Typeable PrivateKey =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; PrivateKey -&gt; c PrivateKey)
+Typeable PrivateKey
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; PrivateKey -&gt; c PrivateKey)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PrivateKey)
@@ -328,10 +328,10 @@ PrivateKey -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PrivateKey
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -447,7 +447,7 @@ $cp1Data :: Typeable PrivateKey
 </span><a href="Crypto.Types.PubKey.ECDSA.html#public_curve"><span class="hs-identifier hs-var hs-var">public_curve</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#Curve"><span class="hs-identifier hs-type">Curve</span></a></span><span>
 </span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="public_q"><span class="annot"><span class="annottext">PublicKey -&gt; PublicPoint
 </span><a href="Crypto.Types.PubKey.ECDSA.html#public_q"><span class="hs-identifier hs-var hs-var">public_q</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#PublicPoint"><span class="hs-identifier hs-type">PublicPoint</span></a></span><span>
-</span><span id="line-43"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679069972"><span id="local-6989586621679069974"><span id="local-6989586621679069976"><span class="annot"><span class="annottext">Int -&gt; PublicKey -&gt; ShowS
+</span><span id="line-43"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679052957"><span id="local-6989586621679052959"><span id="local-6989586621679052961"><span class="annot"><span class="annottext">Int -&gt; PublicKey -&gt; ShowS
 [PublicKey] -&gt; ShowS
 PublicKey -&gt; String
 (Int -&gt; PublicKey -&gt; ShowS)
@@ -462,7 +462,7 @@ show :: PublicKey -&gt; String
 $cshow :: PublicKey -&gt; String
 showsPrec :: Int -&gt; PublicKey -&gt; ShowS
 $cshowsPrec :: Int -&gt; PublicKey -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679069964"><span id="local-6989586621679069966"><span id="local-6989586621679069968"><span id="local-6989586621679069970"><span class="annot"><span class="annottext">ReadPrec [PublicKey]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679052949"><span id="local-6989586621679052951"><span id="local-6989586621679052953"><span id="local-6989586621679052955"><span class="annot"><span class="annottext">ReadPrec [PublicKey]
 ReadPrec PublicKey
 Int -&gt; ReadS PublicKey
 ReadS [PublicKey]
@@ -482,7 +482,7 @@ readList :: ReadS [PublicKey]
 $creadList :: ReadS [PublicKey]
 readsPrec :: Int -&gt; ReadS PublicKey
 $creadsPrec :: Int -&gt; ReadS PublicKey
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679069960"><span id="local-6989586621679069962"><span class="annot"><span class="annottext">PublicKey -&gt; PublicKey -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679052945"><span id="local-6989586621679052947"><span class="annot"><span class="annottext">PublicKey -&gt; PublicKey -&gt; Bool
 (PublicKey -&gt; PublicKey -&gt; Bool)
 -&gt; (PublicKey -&gt; PublicKey -&gt; Bool) -&gt; Eq PublicKey
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -490,13 +490,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: PublicKey -&gt; PublicKey -&gt; Bool
 == :: PublicKey -&gt; PublicKey -&gt; Bool
 $c== :: PublicKey -&gt; PublicKey -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPublicKey"><span id="%24tPublicKey"><span id="local-6989586621679069931"><span id="local-6989586621679069933"><span id="local-6989586621679069935"><span id="local-6989586621679069937"><span id="local-6989586621679069939"><span id="local-6989586621679069941"><span id="local-6989586621679069943"><span id="local-6989586621679069945"><span id="local-6989586621679069947"><span id="local-6989586621679069949"><span id="local-6989586621679069951"><span id="local-6989586621679069953"><span id="local-6989586621679069955"><span id="local-6989586621679069957"><span class="annot"><span class="annottext">Typeable PublicKey
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPublicKey"><span id="%24tPublicKey"><span id="local-6989586621679052916"><span id="local-6989586621679052918"><span id="local-6989586621679052920"><span id="local-6989586621679052922"><span id="local-6989586621679052924"><span id="local-6989586621679052926"><span id="local-6989586621679052928"><span id="local-6989586621679052930"><span id="local-6989586621679052932"><span id="local-6989586621679052934"><span id="local-6989586621679052936"><span id="local-6989586621679052938"><span id="local-6989586621679052940"><span id="local-6989586621679052942"><span class="annot"><span class="annottext">Typeable PublicKey
 DataType
 Constr
-Typeable PublicKey =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; PublicKey -&gt; c PublicKey)
+Typeable PublicKey
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; PublicKey -&gt; c PublicKey)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PublicKey)
@@ -536,10 +536,10 @@ PublicKey -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PublicKey
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -651,7 +651,7 @@ $cp1Data :: Typeable PublicKey
 </span><span id="line-44"></span><span>
 </span><span id="line-45"></span><span class="hs-comment">-- | ECDSA Key Pair.</span><span>
 </span><span id="line-46"></span><span class="hs-keyword">data</span><span> </span><span id="KeyPair"><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-var">KeyPair</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="KeyPair"><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-var">KeyPair</span></a></span></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#Curve"><span class="hs-identifier hs-type">Curve</span></a></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#PublicPoint"><span class="hs-identifier hs-type">PublicPoint</span></a></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECC.html#PrivateNumber"><span class="hs-identifier hs-type">PrivateNumber</span></a></span><span>
-</span><span id="line-47"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679069922"><span id="local-6989586621679069924"><span id="local-6989586621679069926"><span class="annot"><span class="annottext">Int -&gt; KeyPair -&gt; ShowS
+</span><span id="line-47"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679052907"><span id="local-6989586621679052909"><span id="local-6989586621679052911"><span class="annot"><span class="annottext">Int -&gt; KeyPair -&gt; ShowS
 [KeyPair] -&gt; ShowS
 KeyPair -&gt; String
 (Int -&gt; KeyPair -&gt; ShowS)
@@ -664,7 +664,7 @@ show :: KeyPair -&gt; String
 $cshow :: KeyPair -&gt; String
 showsPrec :: Int -&gt; KeyPair -&gt; ShowS
 $cshowsPrec :: Int -&gt; KeyPair -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679069914"><span id="local-6989586621679069916"><span id="local-6989586621679069918"><span id="local-6989586621679069920"><span class="annot"><span class="annottext">ReadPrec [KeyPair]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679052899"><span id="local-6989586621679052901"><span id="local-6989586621679052903"><span id="local-6989586621679052905"><span class="annot"><span class="annottext">ReadPrec [KeyPair]
 ReadPrec KeyPair
 Int -&gt; ReadS KeyPair
 ReadS [KeyPair]
@@ -684,7 +684,7 @@ readList :: ReadS [KeyPair]
 $creadList :: ReadS [KeyPair]
 readsPrec :: Int -&gt; ReadS KeyPair
 $creadsPrec :: Int -&gt; ReadS KeyPair
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679069910"><span id="local-6989586621679069912"><span class="annot"><span class="annottext">KeyPair -&gt; KeyPair -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679052895"><span id="local-6989586621679052897"><span class="annot"><span class="annottext">KeyPair -&gt; KeyPair -&gt; Bool
 (KeyPair -&gt; KeyPair -&gt; Bool)
 -&gt; (KeyPair -&gt; KeyPair -&gt; Bool) -&gt; Eq KeyPair
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -692,13 +692,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: KeyPair -&gt; KeyPair -&gt; Bool
 == :: KeyPair -&gt; KeyPair -&gt; Bool
 $c== :: KeyPair -&gt; KeyPair -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cKeyPair"><span id="%24tKeyPair"><span id="local-6989586621679069881"><span id="local-6989586621679069883"><span id="local-6989586621679069885"><span id="local-6989586621679069887"><span id="local-6989586621679069889"><span id="local-6989586621679069891"><span id="local-6989586621679069893"><span id="local-6989586621679069895"><span id="local-6989586621679069897"><span id="local-6989586621679069899"><span id="local-6989586621679069901"><span id="local-6989586621679069903"><span id="local-6989586621679069905"><span id="local-6989586621679069907"><span class="annot"><span class="annottext">Typeable KeyPair
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cKeyPair"><span id="%24tKeyPair"><span id="local-6989586621679052866"><span id="local-6989586621679052868"><span id="local-6989586621679052870"><span id="local-6989586621679052872"><span id="local-6989586621679052874"><span id="local-6989586621679052876"><span id="local-6989586621679052878"><span id="local-6989586621679052880"><span id="local-6989586621679052882"><span id="local-6989586621679052884"><span id="local-6989586621679052886"><span id="local-6989586621679052888"><span id="local-6989586621679052890"><span id="local-6989586621679052892"><span class="annot"><span class="annottext">Typeable KeyPair
 DataType
 Constr
-Typeable KeyPair =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; KeyPair -&gt; c KeyPair)
+Typeable KeyPair
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; KeyPair -&gt; c KeyPair)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c KeyPair)
@@ -737,10 +737,10 @@ KeyPair -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c KeyPair
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -853,20 +853,22 @@ $cp1Data :: Typeable KeyPair
 </span><span id="line-49"></span><span class="hs-comment">-- | Public key of a ECDSA Key pair.</span><span>
 </span><span id="line-50"></span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#toPublicKey"><span class="hs-identifier hs-type">toPublicKey</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#PublicKey"><span class="hs-identifier hs-type">PublicKey</span></a></span><span>
 </span><span id="line-51"></span><span id="toPublicKey"><span class="annot"><span class="annottext">toPublicKey :: KeyPair -&gt; PublicKey
-</span><a href="Crypto.Types.PubKey.ECDSA.html#toPublicKey"><span class="hs-identifier hs-var hs-var">toPublicKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679069878"><span class="annot"><span class="annottext">curve :: Curve
-</span><a href="#local-6989586621679069878"><span class="hs-identifier hs-var">curve</span></a></span></span><span> </span><span id="local-6989586621679069877"><span class="annot"><span class="annottext">pub :: PublicPoint
-</span><a href="#local-6989586621679069877"><span class="hs-identifier hs-var">pub</span></a></span></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Curve -&gt; PublicPoint -&gt; PublicKey
+</span><a href="Crypto.Types.PubKey.ECDSA.html#toPublicKey"><span class="hs-identifier hs-var hs-var">toPublicKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679052863"><span class="annot"><span class="annottext">Curve
+</span><a href="#local-6989586621679052863"><span class="hs-identifier hs-var">curve</span></a></span></span><span> </span><span id="local-6989586621679052862"><span class="annot"><span class="annottext">PublicPoint
+</span><a href="#local-6989586621679052862"><span class="hs-identifier hs-var">pub</span></a></span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Curve -&gt; PublicPoint -&gt; PublicKey
 </span><a href="Crypto.Types.PubKey.ECDSA.html#PublicKey"><span class="hs-identifier hs-var">PublicKey</span></a></span><span> </span><span class="annot"><span class="annottext">Curve
-</span><a href="#local-6989586621679069878"><span class="hs-identifier hs-var">curve</span></a></span><span> </span><span class="annot"><span class="annottext">PublicPoint
-</span><a href="#local-6989586621679069877"><span class="hs-identifier hs-var">pub</span></a></span><span>
+</span><a href="#local-6989586621679052863"><span class="hs-identifier hs-var">curve</span></a></span><span> </span><span class="annot"><span class="annottext">PublicPoint
+</span><a href="#local-6989586621679052862"><span class="hs-identifier hs-var">pub</span></a></span><span>
 </span><span id="line-52"></span><span>
 </span><span id="line-53"></span><span class="hs-comment">-- | Private key of a ECDSA Key pair.</span><span>
 </span><span id="line-54"></span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#toPrivateKey"><span class="hs-identifier hs-type">toPrivateKey</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#PrivateKey"><span class="hs-identifier hs-type">PrivateKey</span></a></span><span>
 </span><span id="line-55"></span><span id="toPrivateKey"><span class="annot"><span class="annottext">toPrivateKey :: KeyPair -&gt; PrivateKey
-</span><a href="Crypto.Types.PubKey.ECDSA.html#toPrivateKey"><span class="hs-identifier hs-var hs-var">toPrivateKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679069876"><span class="annot"><span class="annottext">curve :: Curve
-</span><a href="#local-6989586621679069876"><span class="hs-identifier hs-var">curve</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span id="local-6989586621679069875"><span class="annot"><span class="annottext">priv :: Integer
-</span><a href="#local-6989586621679069875"><span class="hs-identifier hs-var">priv</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Curve -&gt; Integer -&gt; PrivateKey
+</span><a href="Crypto.Types.PubKey.ECDSA.html#toPrivateKey"><span class="hs-identifier hs-var hs-var">toPrivateKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.ECDSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679052861"><span class="annot"><span class="annottext">Curve
+</span><a href="#local-6989586621679052861"><span class="hs-identifier hs-var">curve</span></a></span></span><span> </span><span class="annot"><span class="annottext">PublicPoint
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679052860"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679052860"><span class="hs-identifier hs-var">priv</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Curve -&gt; Integer -&gt; PrivateKey
 </span><a href="Crypto.Types.PubKey.ECDSA.html#PrivateKey"><span class="hs-identifier hs-var">PrivateKey</span></a></span><span> </span><span class="annot"><span class="annottext">Curve
-</span><a href="#local-6989586621679069876"><span class="hs-identifier hs-var">curve</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679069875"><span class="hs-identifier hs-var">priv</span></a></span><span>
+</span><a href="#local-6989586621679052861"><span class="hs-identifier hs-var">curve</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679052860"><span class="hs-identifier hs-var">priv</span></a></span><span>
 </span><span id="line-56"></span></pre></body></html>

@@ -2,48 +2,66 @@
 </span><span id="line-2"></span><span>
 </span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Helpme</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Helpme.html#receivers"><span class="hs-identifier">receivers</span></a></span><span> </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-4"></span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord.Types</span></span><span>      </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Message</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">messageAuthor</span></span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-6"></span><span>                                    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">User</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">userId</span></span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-7"></span><span>                                    </span><span class="hs-special">)</span><span>
-</span><span id="line-8"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord</span></span><span>            </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">DiscordHandler</span></span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text.IO</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">TIO</span></span><span>
-</span><span id="line-10"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">UnliftIO</span></span><span>           </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">liftIO</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord.Types</span></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord</span></span><span>            </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">DiscordHandler</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text.IO</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">TIO</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">UnliftIO</span></span><span>           </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">liftIO</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec</span></span><span>
 </span><span id="line-11"></span><span>
 </span><span id="line-12"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Owoifier.html"><span class="hs-identifier">Owoifier</span></a></span><span>           </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Owoifier.html#owoify"><span class="hs-identifier">owoify</span></a></span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Utils.html"><span class="hs-identifier">Utils</span></a></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Utils.html#sendMessageDM"><span class="hs-identifier">sendMessageDM</span></a></span><span>
-</span><span id="line-14"></span><span>                                    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Utils.html#newCommand"><span class="hs-identifier">newCommand</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Utils.html"><span class="hs-identifier">Utils</span></a></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Utils.html#sendMessageDM"><span class="hs-identifier">sendMessageDM</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Command.html"><span class="hs-identifier">Command</span></a></span><span>
 </span><span id="line-15"></span><span>
 </span><span id="line-16"></span><span class="annot"><a href="Helpme.html#receivers"><span class="hs-identifier hs-type">receivers</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
 </span><span id="line-17"></span><span id="receivers"><span class="annot"><span class="annottext">receivers :: [Message -&gt; DiscordHandler ()]
 </span><a href="Helpme.html#receivers"><span class="hs-identifier hs-var hs-var">receivers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Message -&gt; DiscordHandler ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; m ()
 </span><a href="Helpme.html#sendHelpDM"><span class="hs-identifier hs-var">sendHelpDM</span></a></span><span> </span><span class="hs-special">]</span><span>
 </span><span id="line-18"></span><span>
-</span><span id="line-19"></span><span class="annot"><a href="Helpme.html#sendHelpDM"><span class="hs-identifier hs-type">sendHelpDM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span id="sendHelpDM"><span class="annot"><span class="annottext">sendHelpDM :: Message -&gt; DiscordHandler ()
-</span><a href="Helpme.html#sendHelpDM"><span class="hs-identifier hs-var hs-var">sendHelpDM</span></a></span></span><span> </span><span id="local-6989586621679187126"><span class="annot"><span class="annottext">m :: Message
-</span><a href="#local-6989586621679187126"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
--&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
-</span><a href="Utils.html#newCommand"><span class="hs-identifier hs-var">newCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679187126"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;helpme&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
--&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
+</span><span id="line-19"></span><span id="local-6989586621679165869"><span class="annot"><a href="Helpme.html#sendHelpDM"><span class="hs-identifier hs-type">sendHelpDM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679165869"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679165869"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679165869"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-20"></span><span id="sendHelpDM"><span class="annot"><span class="annottext">sendHelpDM :: Message -&gt; m ()
+</span><a href="Helpme.html#sendHelpDM"><span class="hs-identifier hs-var hs-var">sendHelpDM</span></a></span></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command m -&gt; Message -&gt; m ()
+forall (m :: * -&gt; *).
+MonadDiscord m =&gt;
+Command m -&gt; Message -&gt; m ()
+</span><a href="Command.Command.html#runCommand"><span class="hs-identifier hs-var">runCommand</span></a></span><span>
+</span><span id="line-22"></span><span>    </span><span class="annot"><span class="annottext">(Command m -&gt; Message -&gt; m ())
+-&gt; ((Message -&gt; m ()) -&gt; Command m)
+-&gt; (Message -&gt; m ())
+-&gt; Message
+-&gt; m ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; (Message -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;helpme&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; m ()) -&gt; Message -&gt; m ())
+-&gt; (Message -&gt; m ()) -&gt; Message -&gt; m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-21"></span><span>    </span><span class="annot"><span class="annottext">IO Text -&gt; ReaderT DiscordHandle IO Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165836"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165836"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-23"></span><span>        </span><span class="annot"><span class="annottext">IO Text -&gt; m Text
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; IO Text
-</span><span class="hs-identifier hs-var">TIO.readFile</span></span><span> </span><span class="annot"><span class="hs-string">&quot;./src/assets/help.txt&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-22"></span><span>        </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO Text
--&gt; (Text -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
+</span><span class="hs-identifier hs-var">TIO.readFile</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;./src/assets/help.txt&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>            </span><span class="annot"><span class="annottext">m Text -&gt; (Text -&gt; m ()) -&gt; m ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
-</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Text -&gt; DiscordHandler ()
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; UserId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageDM"><span class="hs-identifier hs-var">sendMessageDM</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">userId</span></span><span> </span><span class="annot"><span class="annottext">(User -&gt; UserId) -&gt; User -&gt; UserId
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Message -&gt; User
 </span><span class="hs-identifier hs-var hs-var">messageAuthor</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679187126"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
--&gt; (Text -&gt; Text) -&gt; Text -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165836"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; m ()) -&gt; (Text -&gt; Text) -&gt; Text -&gt; m ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span>
-</span><span id="line-23"></span></pre></body></html>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span></pre></body></html>

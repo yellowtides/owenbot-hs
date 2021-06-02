@@ -1,0 +1,1283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable, DeriveGeneric #-}</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-----------------------------------------------------------------------------</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- |</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- Module      :  Language.Haskell.Exts.SrcLoc</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- Copyright   :  (c) Niklas Broberg 2009</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- License     :  BSD-style (see the file LICENSE.txt)</span><span>
+</span><span id="line-7"></span><span class="hs-comment">--</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Maintainer  :  Niklas Broberg, d00nibro@chalmers.se</span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- Stability   :  stable</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- Portability :  portable</span><span>
+</span><span id="line-11"></span><span class="hs-comment">--</span><span>
+</span><span id="line-12"></span><span class="hs-comment">-- This module defines various data types representing source location</span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- information, of varying degree of preciseness.</span><span>
+</span><span id="line-14"></span><span class="hs-comment">--</span><span>
+</span><span id="line-15"></span><span class="hs-comment">-----------------------------------------------------------------------------</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Language.Haskell.Exts.SrcLoc</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Data</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Generics</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#showInt"><span class="hs-identifier hs-type">showInt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-22"></span><span id="showInt"><span class="annot"><span class="annottext">showInt :: Int -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#showInt"><span class="hs-identifier hs-var hs-var">showInt</span></a></span></span><span> </span><span id="local-6989586621679387597"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387597"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387597"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;(&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387597"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;)&quot;</span></span><span>
+</span><span id="line-23"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#showInt"><span class="hs-identifier hs-var">showInt</span></a></span><span> </span><span id="local-6989586621679387594"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387594"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387594"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-comment">-- | A single position in the source.</span><span>
+</span><span id="line-26"></span><span id="local-6989586621679387592"><span id="local-6989586621679387593"></span></span><span class="hs-keyword">data</span><span> </span><span id="SrcLoc"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-var">SrcLoc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcLoc"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-var">SrcLoc</span></a></span></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="srcFilename"><span class="annot"><span class="annottext">SrcLoc -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcFilename"><span class="hs-identifier hs-var hs-var">srcFilename</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcLine"><span class="annot"><span class="annottext">SrcLoc -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcLine"><span class="hs-identifier hs-var hs-var">srcLine</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcColumn"><span class="annot"><span class="annottext">SrcLoc -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcColumn"><span class="hs-identifier hs-var hs-var">srcColumn</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387584"><span id="local-6989586621679387586"><span class="annot"><span class="annottext">SrcLoc -&gt; SrcLoc -&gt; Bool
+(SrcLoc -&gt; SrcLoc -&gt; Bool)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; Bool) -&gt; Eq SrcLoc
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: SrcLoc -&gt; SrcLoc -&gt; Bool
+$c/= :: SrcLoc -&gt; SrcLoc -&gt; Bool
+== :: SrcLoc -&gt; SrcLoc -&gt; Bool
+$c== :: SrcLoc -&gt; SrcLoc -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679387568"><span id="local-6989586621679387570"><span id="local-6989586621679387572"><span id="local-6989586621679387574"><span id="local-6989586621679387576"><span id="local-6989586621679387578"><span id="local-6989586621679387580"><span class="annot"><span class="annottext">Eq SrcLoc
+Eq SrcLoc
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; Ordering)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; Bool)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; Bool)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; Bool)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; Bool)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; SrcLoc)
+-&gt; (SrcLoc -&gt; SrcLoc -&gt; SrcLoc)
+-&gt; Ord SrcLoc
+SrcLoc -&gt; SrcLoc -&gt; Bool
+SrcLoc -&gt; SrcLoc -&gt; Ordering
+SrcLoc -&gt; SrcLoc -&gt; SrcLoc
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: SrcLoc -&gt; SrcLoc -&gt; SrcLoc
+$cmin :: SrcLoc -&gt; SrcLoc -&gt; SrcLoc
+max :: SrcLoc -&gt; SrcLoc -&gt; SrcLoc
+$cmax :: SrcLoc -&gt; SrcLoc -&gt; SrcLoc
+&gt;= :: SrcLoc -&gt; SrcLoc -&gt; Bool
+$c&gt;= :: SrcLoc -&gt; SrcLoc -&gt; Bool
+&gt; :: SrcLoc -&gt; SrcLoc -&gt; Bool
+$c&gt; :: SrcLoc -&gt; SrcLoc -&gt; Bool
+&lt;= :: SrcLoc -&gt; SrcLoc -&gt; Bool
+$c&lt;= :: SrcLoc -&gt; SrcLoc -&gt; Bool
+&lt; :: SrcLoc -&gt; SrcLoc -&gt; Bool
+$c&lt; :: SrcLoc -&gt; SrcLoc -&gt; Bool
+compare :: SrcLoc -&gt; SrcLoc -&gt; Ordering
+$ccompare :: SrcLoc -&gt; SrcLoc -&gt; Ordering
+$cp1Ord :: Eq SrcLoc
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">,</span><span id="%24cSrcLoc"><span id="%24tSrcLoc"><span id="local-6989586621679387538"><span id="local-6989586621679387540"><span id="local-6989586621679387542"><span id="local-6989586621679387544"><span id="local-6989586621679387546"><span id="local-6989586621679387548"><span id="local-6989586621679387550"><span id="local-6989586621679387552"><span id="local-6989586621679387554"><span id="local-6989586621679387556"><span id="local-6989586621679387558"><span id="local-6989586621679387560"><span id="local-6989586621679387562"><span id="local-6989586621679387564"><span class="annot"><span class="annottext">Typeable SrcLoc
+DataType
+Constr
+Typeable SrcLoc
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; SrcLoc -&gt; c SrcLoc)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcLoc)
+-&gt; (SrcLoc -&gt; Constr)
+-&gt; (SrcLoc -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcLoc))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcLoc))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; SrcLoc -&gt; SrcLoc)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc)
+-&gt; Data SrcLoc
+SrcLoc -&gt; DataType
+SrcLoc -&gt; Constr
+(forall b. Data b =&gt; b -&gt; b) -&gt; SrcLoc -&gt; SrcLoc
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcLoc -&gt; c SrcLoc
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcLoc
+forall a.
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
+-&gt; (a -&gt; Constr)
+-&gt; (a -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c a))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c a))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; a -&gt; a)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; Data a
+forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; u
+forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; [u]
+forall r r'.
+(r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r
+forall r r'.
+(r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcLoc
+forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcLoc -&gt; c SrcLoc
+forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcLoc)
+forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcLoc)
+$cSrcLoc :: Constr
+$tSrcLoc :: DataType
+gmapMo :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+$cgmapMo :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+gmapMp :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+$cgmapMp :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+gmapM :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+$cgmapM :: forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcLoc -&gt; m SrcLoc
+gmapQi :: Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; u
+$cgmapQi :: forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; u
+gmapQ :: (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; [u]
+$cgmapQ :: forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcLoc -&gt; [u]
+gmapQr :: (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r
+$cgmapQr :: forall r r'.
+(r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r
+gmapQl :: (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r
+$cgmapQl :: forall r r'.
+(r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcLoc -&gt; r
+gmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; SrcLoc -&gt; SrcLoc
+$cgmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; SrcLoc -&gt; SrcLoc
+dataCast2 :: (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcLoc)
+$cdataCast2 :: forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcLoc)
+dataCast1 :: (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcLoc)
+$cdataCast1 :: forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcLoc)
+dataTypeOf :: SrcLoc -&gt; DataType
+$cdataTypeOf :: SrcLoc -&gt; DataType
+toConstr :: SrcLoc -&gt; Constr
+$ctoConstr :: SrcLoc -&gt; Constr
+gunfold :: (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcLoc
+$cgunfold :: forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcLoc
+gfoldl :: (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcLoc -&gt; c SrcLoc
+$cgfoldl :: forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcLoc -&gt; c SrcLoc
+$cp1Data :: Typeable SrcLoc
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(forall x. SrcLoc -&gt; Rep SrcLoc x)
+-&gt; (forall x. Rep SrcLoc x -&gt; SrcLoc) -&gt; Generic SrcLoc
+forall x. Rep SrcLoc x -&gt; SrcLoc
+forall x. SrcLoc -&gt; Rep SrcLoc x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep SrcLoc x -&gt; SrcLoc
+$cfrom :: forall x. SrcLoc -&gt; Rep SrcLoc x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387527"><span id="local-6989586621679387529"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679387525"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcLoc -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></span></span><span> </span><span id="local-6989586621679387523"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387523"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span id="local-6989586621679387522"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387522"><span class="hs-identifier hs-var">fn</span></a></span></span><span> </span><span id="local-6989586621679387521"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387521"><span class="hs-identifier hs-var">sl</span></a></span></span><span> </span><span id="local-6989586621679387520"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387520"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; (String -&gt; String) -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">showParen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387523"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">11</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((String -&gt; String) -&gt; String -&gt; String)
+-&gt; (String -&gt; String) -&gt; String -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-36"></span><span>      </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">showString</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; String) -&gt; String -&gt; String -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;SrcLoc &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387522"><span class="hs-identifier hs-var">fn</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><span class="hs-identifier hs-var">unwords</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Int -&gt; String) -&gt; [Int] -&gt; [String]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#showInt"><span class="hs-identifier hs-var">showInt</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387521"><span class="hs-identifier hs-var">sl</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387520"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#noLoc"><span class="hs-identifier hs-type">noLoc</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span>
+</span><span id="line-39"></span><span id="noLoc"><span class="annot"><span class="annottext">noLoc :: SrcLoc
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noLoc"><span class="hs-identifier hs-var hs-var">noLoc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Int -&gt; SrcLoc
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-var">SrcLoc</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- | A portion of the source, spanning one or more lines and zero or more columns.</span><span>
+</span><span id="line-42"></span><span id="local-6989586621679387514"><span id="local-6989586621679387515"></span></span><span class="hs-keyword">data</span><span> </span><span id="SrcSpan"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcSpan"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span></span><span>
+</span><span id="line-43"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="srcSpanFilename"><span class="annot"><span class="annottext">SrcSpan -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanFilename"><span class="hs-identifier hs-var hs-var">srcSpanFilename</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-44"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcSpanStartLine"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartLine"><span class="hs-identifier hs-var hs-var">srcSpanStartLine</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcSpanStartColumn"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartColumn"><span class="hs-identifier hs-var hs-var">srcSpanStartColumn</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcSpanEndLine"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEndLine"><span class="hs-identifier hs-var hs-var">srcSpanEndLine</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcSpanEndColumn"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEndColumn"><span class="hs-identifier hs-var hs-var">srcSpanEndColumn</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387504"><span id="local-6989586621679387506"><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpan -&gt; Bool
+(SrcSpan -&gt; SrcSpan -&gt; Bool)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool) -&gt; Eq SrcSpan
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: SrcSpan -&gt; SrcSpan -&gt; Bool
+$c/= :: SrcSpan -&gt; SrcSpan -&gt; Bool
+== :: SrcSpan -&gt; SrcSpan -&gt; Bool
+$c== :: SrcSpan -&gt; SrcSpan -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679387489"><span id="local-6989586621679387491"><span id="local-6989586621679387493"><span id="local-6989586621679387495"><span id="local-6989586621679387497"><span id="local-6989586621679387499"><span id="local-6989586621679387501"><span class="annot"><span class="annottext">Eq SrcSpan
+Eq SrcSpan
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; Ordering)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; SrcSpan)
+-&gt; (SrcSpan -&gt; SrcSpan -&gt; SrcSpan)
+-&gt; Ord SrcSpan
+SrcSpan -&gt; SrcSpan -&gt; Bool
+SrcSpan -&gt; SrcSpan -&gt; Ordering
+SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+$cmin :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+max :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+$cmax :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+&gt;= :: SrcSpan -&gt; SrcSpan -&gt; Bool
+$c&gt;= :: SrcSpan -&gt; SrcSpan -&gt; Bool
+&gt; :: SrcSpan -&gt; SrcSpan -&gt; Bool
+$c&gt; :: SrcSpan -&gt; SrcSpan -&gt; Bool
+&lt;= :: SrcSpan -&gt; SrcSpan -&gt; Bool
+$c&lt;= :: SrcSpan -&gt; SrcSpan -&gt; Bool
+&lt; :: SrcSpan -&gt; SrcSpan -&gt; Bool
+$c&lt; :: SrcSpan -&gt; SrcSpan -&gt; Bool
+compare :: SrcSpan -&gt; SrcSpan -&gt; Ordering
+$ccompare :: SrcSpan -&gt; SrcSpan -&gt; Ordering
+$cp1Ord :: Eq SrcSpan
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">,</span><span id="%24cSrcSpan"><span id="%24tSrcSpan"><span id="local-6989586621679387460"><span id="local-6989586621679387462"><span id="local-6989586621679387464"><span id="local-6989586621679387466"><span id="local-6989586621679387468"><span id="local-6989586621679387470"><span id="local-6989586621679387472"><span id="local-6989586621679387474"><span id="local-6989586621679387476"><span id="local-6989586621679387478"><span id="local-6989586621679387480"><span id="local-6989586621679387482"><span id="local-6989586621679387484"><span id="local-6989586621679387486"><span class="annot"><span class="annottext">Typeable SrcSpan
+DataType
+Constr
+Typeable SrcSpan
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; SrcSpan -&gt; c SrcSpan)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpan)
+-&gt; (SrcSpan -&gt; Constr)
+-&gt; (SrcSpan -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpan))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcSpan))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpan -&gt; SrcSpan)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan)
+-&gt; Data SrcSpan
+SrcSpan -&gt; DataType
+SrcSpan -&gt; Constr
+(forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpan -&gt; SrcSpan
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpan -&gt; c SrcSpan
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpan
+forall a.
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
+-&gt; (a -&gt; Constr)
+-&gt; (a -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c a))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c a))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; a -&gt; a)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; Data a
+forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; u
+forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; [u]
+forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r
+forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpan
+forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpan -&gt; c SrcSpan
+forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpan)
+forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcSpan)
+$cSrcSpan :: Constr
+$tSrcSpan :: DataType
+gmapMo :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+$cgmapMo :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+gmapMp :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+$cgmapMp :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+gmapM :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+$cgmapM :: forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpan -&gt; m SrcSpan
+gmapQi :: Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; u
+$cgmapQi :: forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; u
+gmapQ :: (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; [u]
+$cgmapQ :: forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpan -&gt; [u]
+gmapQr :: (r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r
+$cgmapQr :: forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r
+gmapQl :: (r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r
+$cgmapQl :: forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpan -&gt; r
+gmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpan -&gt; SrcSpan
+$cgmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpan -&gt; SrcSpan
+dataCast2 :: (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcSpan)
+$cdataCast2 :: forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c SrcSpan)
+dataCast1 :: (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpan)
+$cdataCast1 :: forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpan)
+dataTypeOf :: SrcSpan -&gt; DataType
+$cdataTypeOf :: SrcSpan -&gt; DataType
+toConstr :: SrcSpan -&gt; Constr
+$ctoConstr :: SrcSpan -&gt; Constr
+gunfold :: (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpan
+$cgunfold :: forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpan
+gfoldl :: (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpan -&gt; c SrcSpan
+$cgfoldl :: forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpan -&gt; c SrcSpan
+$cp1Data :: Typeable SrcSpan
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(forall x. SrcSpan -&gt; Rep SrcSpan x)
+-&gt; (forall x. Rep SrcSpan x -&gt; SrcSpan) -&gt; Generic SrcSpan
+forall x. Rep SrcSpan x -&gt; SrcSpan
+forall x. SrcSpan -&gt; Rep SrcSpan x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep SrcSpan x -&gt; SrcSpan
+$cfrom :: forall x. SrcSpan -&gt; Rep SrcSpan x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387451"><span id="local-6989586621679387453"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679387450"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcSpan -&gt; String -&gt; String
+</span><a href="#local-6989586621679387450"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span id="local-6989586621679387449"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387449"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span id="local-6989586621679387448"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387448"><span class="hs-identifier hs-var">fn</span></a></span></span><span> </span><span id="local-6989586621679387447"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387447"><span class="hs-identifier hs-var">sl</span></a></span></span><span> </span><span id="local-6989586621679387446"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387446"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679387445"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387445"><span class="hs-identifier hs-var">el</span></a></span></span><span> </span><span id="local-6989586621679387444"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387444"><span class="hs-identifier hs-var">ec</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-53"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; (String -&gt; String) -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">showParen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387449"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">11</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((String -&gt; String) -&gt; String -&gt; String)
+-&gt; (String -&gt; String) -&gt; String -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-54"></span><span>      </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">showString</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; String) -&gt; String -&gt; String -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;SrcSpan &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387448"><span class="hs-identifier hs-var">fn</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><span class="hs-identifier hs-var">unwords</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Int -&gt; String) -&gt; [Int] -&gt; [String]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#showInt"><span class="hs-identifier hs-var">showInt</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387447"><span class="hs-identifier hs-var">sl</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387446"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387445"><span class="hs-identifier hs-var">el</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387444"><span class="hs-identifier hs-var">ec</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- | Returns 'srcSpanStartLine' and 'srcSpanStartColumn' in a pair.</span><span>
+</span><span id="line-58"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStart"><span class="hs-identifier hs-type">srcSpanStart</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span id="srcSpanStart"><span class="annot"><span class="annottext">srcSpanStart :: SrcSpan -&gt; (Int, Int)
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStart"><span class="hs-identifier hs-var hs-var">srcSpanStart</span></a></span></span><span> </span><span id="local-6989586621679387442"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387442"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartLine"><span class="hs-identifier hs-var hs-var">srcSpanStartLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387442"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartColumn"><span class="hs-identifier hs-var hs-var">srcSpanStartColumn</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387442"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-comment">-- | Returns 'srcSpanEndLine' and 'srcSpanEndColumn' in a pair.</span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEnd"><span class="hs-identifier hs-type">srcSpanEnd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span id="srcSpanEnd"><span class="annot"><span class="annottext">srcSpanEnd :: SrcSpan -&gt; (Int, Int)
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEnd"><span class="hs-identifier hs-var hs-var">srcSpanEnd</span></a></span></span><span> </span><span id="local-6989586621679387440"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387440"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEndLine"><span class="hs-identifier hs-var hs-var">srcSpanEndLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387440"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEndColumn"><span class="hs-identifier hs-var hs-var">srcSpanEndColumn</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387440"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="hs-comment">-- | Combine two locations in the source to denote a span.</span><span>
+</span><span id="line-67"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#mkSrcSpan"><span class="hs-identifier hs-type">mkSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span>
+</span><span id="line-68"></span><span id="mkSrcSpan"><span class="annot"><span class="annottext">mkSrcSpan :: SrcLoc -&gt; SrcLoc -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mkSrcSpan"><span class="hs-identifier hs-var hs-var">mkSrcSpan</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span id="local-6989586621679387438"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387438"><span class="hs-identifier hs-var">fn</span></a></span></span><span> </span><span id="local-6989586621679387437"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387437"><span class="hs-identifier hs-var">sl</span></a></span></span><span> </span><span id="local-6989586621679387436"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387436"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679387435"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387435"><span class="hs-identifier hs-var">el</span></a></span></span><span> </span><span id="local-6989586621679387434"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387434"><span class="hs-identifier hs-var">ec</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Int -&gt; Int -&gt; Int -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387438"><span class="hs-identifier hs-var">fn</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387437"><span class="hs-identifier hs-var">sl</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387436"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387435"><span class="hs-identifier hs-var">el</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387434"><span class="hs-identifier hs-var">ec</span></a></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-comment">-- | Merge two source spans into a single span from the start of the first</span><span>
+</span><span id="line-71"></span><span class="hs-comment">--   to the end of the second. Assumes that the two spans relate to the</span><span>
+</span><span id="line-72"></span><span class="hs-comment">--   same source file.</span><span>
+</span><span id="line-73"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#mergeSrcSpan"><span class="hs-identifier hs-type">mergeSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span>
+</span><span id="line-74"></span><span id="mergeSrcSpan"><span class="annot"><span class="annottext">mergeSrcSpan :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mergeSrcSpan"><span class="hs-identifier hs-var hs-var">mergeSrcSpan</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span id="local-6989586621679387432"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387432"><span class="hs-identifier hs-var">fn</span></a></span></span><span> </span><span id="local-6989586621679387431"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387431"><span class="hs-identifier hs-var">sl1</span></a></span></span><span> </span><span id="local-6989586621679387430"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387430"><span class="hs-identifier hs-var">sc1</span></a></span></span><span> </span><span id="local-6989586621679387429"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387429"><span class="hs-identifier hs-var">el1</span></a></span></span><span> </span><span id="local-6989586621679387428"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387428"><span class="hs-identifier hs-var">ec1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679387427"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387427"><span class="hs-identifier hs-var">sl2</span></a></span></span><span> </span><span id="local-6989586621679387426"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387426"><span class="hs-identifier hs-var">sc2</span></a></span></span><span> </span><span id="local-6989586621679387425"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387425"><span class="hs-identifier hs-var">el2</span></a></span></span><span> </span><span id="local-6989586621679387424"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387424"><span class="hs-identifier hs-var">ec2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387423"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387423"><span class="hs-identifier hs-var">sl</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679387422"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387422"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; (Int, Int) -&gt; (Int, Int)
+forall a. Ord a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">min</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387431"><span class="hs-identifier hs-var">sl1</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387430"><span class="hs-identifier hs-var">sc1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387427"><span class="hs-identifier hs-var">sl2</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387426"><span class="hs-identifier hs-var">sc2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679387420"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387420"><span class="hs-identifier hs-var">el</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679387419"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387419"><span class="hs-identifier hs-var">ec</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; (Int, Int) -&gt; (Int, Int)
+forall a. Ord a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">max</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387429"><span class="hs-identifier hs-var">el1</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387428"><span class="hs-identifier hs-var">ec1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387425"><span class="hs-identifier hs-var">el2</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387424"><span class="hs-identifier hs-var">ec2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>     </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Int -&gt; Int -&gt; Int -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679387432"><span class="hs-identifier hs-var">fn</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387423"><span class="hs-identifier hs-var">sl</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387422"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387420"><span class="hs-identifier hs-var">el</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387419"><span class="hs-identifier hs-var">ec</span></a></span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="hs-comment">-- | Test if a given span starts and ends at the same location.</span><span>
+</span><span id="line-80"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#isNullSpan"><span class="hs-identifier hs-type">isNullSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-81"></span><span id="isNullSpan"><span class="annot"><span class="annottext">isNullSpan :: SrcSpan -&gt; Bool
+</span><a href="Language.Haskell.Exts.SrcLoc.html#isNullSpan"><span class="hs-identifier hs-var hs-var">isNullSpan</span></a></span></span><span> </span><span id="local-6989586621679387416"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387416"><span class="hs-identifier hs-var">ss</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; (Int, Int)
+</span><a href="Language.Haskell.Exts.SrcLoc.html#spanSize"><span class="hs-identifier hs-var">spanSize</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387416"><span class="hs-identifier hs-var">ss</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; (Int, Int) -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span class="hs-comment">{- isNullSpan ss = srcSpanStartLine ss == srcSpanEndLine ss &amp;&amp;
+                    srcSpanStartColumn ss &gt;= srcSpanEndColumn ss
+-}</span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#spanSize"><span class="hs-identifier hs-type">spanSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-87"></span><span id="spanSize"><span class="annot"><span class="annottext">spanSize :: SrcSpan -&gt; (Int, Int)
+</span><a href="Language.Haskell.Exts.SrcLoc.html#spanSize"><span class="hs-identifier hs-var hs-var">spanSize</span></a></span></span><span> </span><span id="local-6989586621679387414"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387414"><span class="hs-identifier hs-var">ss</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEndLine"><span class="hs-identifier hs-var hs-var">srcSpanEndLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387414"><span class="hs-identifier hs-var">ss</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartLine"><span class="hs-identifier hs-var hs-var">srcSpanStartLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387414"><span class="hs-identifier hs-var">ss</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Ord a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">max</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanEndColumn"><span class="hs-identifier hs-var hs-var">srcSpanEndColumn</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387414"><span class="hs-identifier hs-var">ss</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartColumn"><span class="hs-identifier hs-var hs-var">srcSpanStartColumn</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387414"><span class="hs-identifier hs-var">ss</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="hs-comment">-- | An entity located in the source.</span><span>
+</span><span id="line-90"></span><span id="local-6989586621679387412"><span id="local-6989586621679387413"></span></span><span class="hs-keyword">data</span><span> </span><span id="Loc"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#Loc"><span class="hs-identifier hs-var">Loc</span></a></span></span><span> </span><span id="local-6989586621679387411"><span class="annot"><a href="#local-6989586621679387411"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Loc"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#Loc"><span class="hs-identifier hs-var">Loc</span></a></span></span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="loc"><span class="annot"><span class="annottext">Loc a -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#loc"><span class="hs-identifier hs-var hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span>
+</span><span id="line-92"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="unLoc"><span class="annot"><span class="annottext">Loc a -&gt; a
+</span><a href="Language.Haskell.Exts.SrcLoc.html#unLoc"><span class="hs-identifier hs-var hs-var">unLoc</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679387411"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-93"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387404"><span id="local-6989586621679387406"><span class="annot"><span class="annottext">Loc a -&gt; Loc a -&gt; Bool
+(Loc a -&gt; Loc a -&gt; Bool) -&gt; (Loc a -&gt; Loc a -&gt; Bool) -&gt; Eq (Loc a)
+forall a. Eq a =&gt; Loc a -&gt; Loc a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Loc a -&gt; Loc a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Loc a -&gt; Loc a -&gt; Bool
+== :: Loc a -&gt; Loc a -&gt; Bool
+$c== :: forall a. Eq a =&gt; Loc a -&gt; Loc a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679387389"><span id="local-6989586621679387391"><span id="local-6989586621679387393"><span id="local-6989586621679387395"><span id="local-6989586621679387397"><span id="local-6989586621679387399"><span id="local-6989586621679387401"><span class="annot"><span class="annottext">Eq (Loc a)
+Eq (Loc a)
+-&gt; (Loc a -&gt; Loc a -&gt; Ordering)
+-&gt; (Loc a -&gt; Loc a -&gt; Bool)
+-&gt; (Loc a -&gt; Loc a -&gt; Bool)
+-&gt; (Loc a -&gt; Loc a -&gt; Bool)
+-&gt; (Loc a -&gt; Loc a -&gt; Bool)
+-&gt; (Loc a -&gt; Loc a -&gt; Loc a)
+-&gt; (Loc a -&gt; Loc a -&gt; Loc a)
+-&gt; Ord (Loc a)
+Loc a -&gt; Loc a -&gt; Bool
+Loc a -&gt; Loc a -&gt; Ordering
+Loc a -&gt; Loc a -&gt; Loc a
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Loc a)
+forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Bool
+forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Ordering
+forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Loc a
+min :: Loc a -&gt; Loc a -&gt; Loc a
+$cmin :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Loc a
+max :: Loc a -&gt; Loc a -&gt; Loc a
+$cmax :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Loc a
+&gt;= :: Loc a -&gt; Loc a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Bool
+&gt; :: Loc a -&gt; Loc a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Bool
+&lt;= :: Loc a -&gt; Loc a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Bool
+&lt; :: Loc a -&gt; Loc a -&gt; Bool
+$c&lt; :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Bool
+compare :: Loc a -&gt; Loc a -&gt; Ordering
+$ccompare :: forall a. Ord a =&gt; Loc a -&gt; Loc a -&gt; Ordering
+$cp1Ord :: forall a. Ord a =&gt; Eq (Loc a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679387383"><span id="local-6989586621679387385"><span id="local-6989586621679387387"><span class="annot"><span class="annottext">Int -&gt; Loc a -&gt; String -&gt; String
+[Loc a] -&gt; String -&gt; String
+Loc a -&gt; String
+(Int -&gt; Loc a -&gt; String -&gt; String)
+-&gt; (Loc a -&gt; String)
+-&gt; ([Loc a] -&gt; String -&gt; String)
+-&gt; Show (Loc a)
+forall a. Show a =&gt; Int -&gt; Loc a -&gt; String -&gt; String
+forall a. Show a =&gt; [Loc a] -&gt; String -&gt; String
+forall a. Show a =&gt; Loc a -&gt; String
+forall a.
+(Int -&gt; a -&gt; String -&gt; String)
+-&gt; (a -&gt; String) -&gt; ([a] -&gt; String -&gt; String) -&gt; Show a
+showList :: [Loc a] -&gt; String -&gt; String
+$cshowList :: forall a. Show a =&gt; [Loc a] -&gt; String -&gt; String
+show :: Loc a -&gt; String
+$cshow :: forall a. Show a =&gt; Loc a -&gt; String
+showsPrec :: Int -&gt; Loc a -&gt; String -&gt; String
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Loc a -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(forall x. Loc a -&gt; Rep (Loc a) x)
+-&gt; (forall x. Rep (Loc a) x -&gt; Loc a) -&gt; Generic (Loc a)
+forall x. Rep (Loc a) x -&gt; Loc a
+forall x. Loc a -&gt; Rep (Loc a) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall a x. Rep (Loc a) x -&gt; Loc a
+forall a x. Loc a -&gt; Rep (Loc a) x
+$cto :: forall a x. Rep (Loc a) x -&gt; Loc a
+$cfrom :: forall a x. Loc a -&gt; Rep (Loc a) x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span class="hs-comment">-- | A portion of the source, extended with information on the position of entities within the span.</span><span>
+</span><span id="line-98"></span><span id="local-6989586621679387379"><span id="local-6989586621679387380"></span></span><span class="hs-keyword">data</span><span> </span><span id="SrcSpanInfo"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcSpanInfo"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span></span><span>
+</span><span id="line-99"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="srcInfoSpan"><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span>
+</span><span id="line-100"></span><span class="hs-comment">--    , explLayout     :: Bool</span><span>
+</span><span id="line-101"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="srcInfoPoints"><span class="annot"><span class="annottext">SrcSpanInfo -&gt; [SrcSpan]
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoPoints"><span class="hs-identifier hs-var hs-var">srcInfoPoints</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span class="hs-special">]</span><span>    </span><span class="hs-comment">-- Marks the location of specific entities inside the span</span><span>
+</span><span id="line-102"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-103"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387372"><span id="local-6989586621679387374"><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+(SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool) -&gt; Eq SrcSpanInfo
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+$c/= :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+== :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+$c== :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679387357"><span id="local-6989586621679387359"><span id="local-6989586621679387361"><span id="local-6989586621679387363"><span id="local-6989586621679387365"><span id="local-6989586621679387367"><span id="local-6989586621679387369"><span class="annot"><span class="annottext">Eq SrcSpanInfo
+Eq SrcSpanInfo
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; Ordering)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo)
+-&gt; (SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo)
+-&gt; Ord SrcSpanInfo
+SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+SrcSpanInfo -&gt; SrcSpanInfo -&gt; Ordering
+SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+$cmin :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+max :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+$cmax :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+&gt;= :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+$c&gt;= :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+&gt; :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+$c&gt; :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+&lt;= :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+$c&lt;= :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+&lt; :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+$c&lt; :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Bool
+compare :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Ordering
+$ccompare :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; Ordering
+$cp1Ord :: Eq SrcSpanInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">,</span><span id="%24cSrcSpanInfo"><span id="%24tSrcSpanInfo"><span id="local-6989586621679387328"><span id="local-6989586621679387330"><span id="local-6989586621679387332"><span id="local-6989586621679387334"><span id="local-6989586621679387336"><span id="local-6989586621679387338"><span id="local-6989586621679387340"><span id="local-6989586621679387342"><span id="local-6989586621679387344"><span id="local-6989586621679387346"><span id="local-6989586621679387348"><span id="local-6989586621679387350"><span id="local-6989586621679387352"><span id="local-6989586621679387354"><span class="annot"><span class="annottext">Typeable SrcSpanInfo
+DataType
+Constr
+Typeable SrcSpanInfo
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; SrcSpanInfo -&gt; c SrcSpanInfo)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpanInfo)
+-&gt; (SrcSpanInfo -&gt; Constr)
+-&gt; (SrcSpanInfo -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpanInfo))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e))
+    -&gt; Maybe (c SrcSpanInfo))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpanInfo -&gt; SrcSpanInfo)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r)
+    -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; [u])
+-&gt; (forall u.
+    Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo)
+-&gt; Data SrcSpanInfo
+SrcSpanInfo -&gt; DataType
+SrcSpanInfo -&gt; Constr
+(forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpanInfo -&gt; c SrcSpanInfo
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpanInfo
+forall a.
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+-&gt; (forall (c :: * -&gt; *).
+    (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+    -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
+-&gt; (a -&gt; Constr)
+-&gt; (a -&gt; DataType)
+-&gt; (forall (t :: * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c a))
+-&gt; (forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+    Typeable t =&gt;
+    (forall d e. (Data d, Data e) =&gt; c (t d e)) -&gt; Maybe (c a))
+-&gt; ((forall b. Data b =&gt; b -&gt; b) -&gt; a -&gt; a)
+-&gt; (forall r r'.
+    (r -&gt; r' -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall r r'.
+    (r' -&gt; r -&gt; r) -&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; a -&gt; r)
+-&gt; (forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; [u])
+-&gt; (forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; a -&gt; u)
+-&gt; (forall (m :: * -&gt; *).
+    Monad m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; (forall (m :: * -&gt; *).
+    MonadPlus m =&gt;
+    (forall d. Data d =&gt; d -&gt; m d) -&gt; a -&gt; m a)
+-&gt; Data a
+forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; u
+forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; [u]
+forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r
+forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpanInfo
+forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpanInfo -&gt; c SrcSpanInfo
+forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpanInfo)
+forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e))
+-&gt; Maybe (c SrcSpanInfo)
+$cSrcSpanInfo :: Constr
+$tSrcSpanInfo :: DataType
+gmapMo :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+$cgmapMo :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+gmapMp :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+$cgmapMp :: forall (m :: * -&gt; *).
+MonadPlus m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+gmapM :: (forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+$cgmapM :: forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall d. Data d =&gt; d -&gt; m d) -&gt; SrcSpanInfo -&gt; m SrcSpanInfo
+gmapQi :: Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; u
+$cgmapQi :: forall u. Int -&gt; (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; u
+gmapQ :: (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; [u]
+$cgmapQ :: forall u. (forall d. Data d =&gt; d -&gt; u) -&gt; SrcSpanInfo -&gt; [u]
+gmapQr :: (r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r
+$cgmapQr :: forall r r'.
+(r' -&gt; r -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r
+gmapQl :: (r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r
+$cgmapQl :: forall r r'.
+(r -&gt; r' -&gt; r)
+-&gt; r -&gt; (forall d. Data d =&gt; d -&gt; r') -&gt; SrcSpanInfo -&gt; r
+gmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+$cgmapT :: (forall b. Data b =&gt; b -&gt; b) -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+dataCast2 :: (forall d e. (Data d, Data e) =&gt; c (t d e))
+-&gt; Maybe (c SrcSpanInfo)
+$cdataCast2 :: forall (t :: * -&gt; * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d e. (Data d, Data e) =&gt; c (t d e))
+-&gt; Maybe (c SrcSpanInfo)
+dataCast1 :: (forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpanInfo)
+$cdataCast1 :: forall (t :: * -&gt; *) (c :: * -&gt; *).
+Typeable t =&gt;
+(forall d. Data d =&gt; c (t d)) -&gt; Maybe (c SrcSpanInfo)
+dataTypeOf :: SrcSpanInfo -&gt; DataType
+$cdataTypeOf :: SrcSpanInfo -&gt; DataType
+toConstr :: SrcSpanInfo -&gt; Constr
+$ctoConstr :: SrcSpanInfo -&gt; Constr
+gunfold :: (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpanInfo
+$cgunfold :: forall (c :: * -&gt; *).
+(forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
+-&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c SrcSpanInfo
+gfoldl :: (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpanInfo -&gt; c SrcSpanInfo
+$cgfoldl :: forall (c :: * -&gt; *).
+(forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+-&gt; (forall g. g -&gt; c g) -&gt; SrcSpanInfo -&gt; c SrcSpanInfo
+$cp1Data :: Typeable SrcSpanInfo
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">(forall x. SrcSpanInfo -&gt; Rep SrcSpanInfo x)
+-&gt; (forall x. Rep SrcSpanInfo x -&gt; SrcSpanInfo)
+-&gt; Generic SrcSpanInfo
+forall x. Rep SrcSpanInfo x -&gt; SrcSpanInfo
+forall x. SrcSpanInfo -&gt; Rep SrcSpanInfo x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep SrcSpanInfo x -&gt; SrcSpanInfo
+$cfrom :: forall x. SrcSpanInfo -&gt; Rep SrcSpanInfo x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span class="hs-comment">-- Identical output to the derived show instance for GHC 7.10 and earlier.</span><span>
+</span><span id="line-106"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387319"><span id="local-6989586621679387321"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-107"></span><span>  </span><span id="local-6989586621679387318"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcSpanInfo -&gt; String -&gt; String
+</span><a href="#local-6989586621679387318"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span id="local-6989586621679387317"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387317"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span id="local-6989586621679387316"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387316"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679387315"><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387315"><span class="hs-identifier hs-var">pts</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; (String -&gt; String) -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">showParen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679387317"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">11</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((String -&gt; String) -&gt; String -&gt; String)
+-&gt; (String -&gt; String -&gt; String) -&gt; String -&gt; String -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><span class="hs-identifier hs-var">showString</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; String) -&gt; String -&gt; String -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-108"></span><span>    </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;SrcSpanInfo {srcInfoSpan = &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387316"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;, srcInfoPoints = &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[SrcSpan] -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387315"><span class="hs-identifier hs-var">pts</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;}&quot;</span></span><span>
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span class="hs-comment">-- | Generate a 'SrcSpanInfo' with no positional information for entities.</span><span>
+</span><span id="line-111"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#noInfoSpan"><span class="hs-identifier hs-type">noInfoSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-112"></span><span id="noInfoSpan"><span class="annot"><span class="annottext">noInfoSpan :: SrcSpan -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noInfoSpan"><span class="hs-identifier hs-var hs-var">noInfoSpan</span></a></span></span><span> </span><span id="local-6989586621679387312"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387312"><span class="hs-identifier hs-var">ss</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387312"><span class="hs-identifier hs-var">ss</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="hs-comment">-- | A bogus `SrcSpanInfo`, the location is @noLoc@.</span><span>
+</span><span id="line-115"></span><span class="hs-comment">-- `noSrcSpan = noInfoSpan (mkSrcSpan noLoc noLoc)`</span><span>
+</span><span id="line-116"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#noSrcSpan"><span class="hs-identifier hs-type">noSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-117"></span><span id="noSrcSpan"><span class="annot"><span class="annottext">noSrcSpan :: SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noSrcSpan"><span class="hs-identifier hs-var hs-var">noSrcSpan</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noInfoSpan"><span class="hs-identifier hs-var">noInfoSpan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcLoc -&gt; SrcLoc -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mkSrcSpan"><span class="hs-identifier hs-var">mkSrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noLoc"><span class="hs-identifier hs-var">noLoc</span></a></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noLoc"><span class="hs-identifier hs-var">noLoc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="hs-comment">-- | Generate a 'SrcSpanInfo' with the supplied positional information for entities.</span><span>
+</span><span id="line-120"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#infoSpan"><span class="hs-identifier hs-type">infoSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-121"></span><span id="infoSpan"><span class="annot"><span class="annottext">infoSpan :: SrcSpan -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#infoSpan"><span class="hs-identifier hs-var hs-var">infoSpan</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-comment">-- | Combine two 'SrcSpanInfo's into one that spans the combined source area of</span><span>
+</span><span id="line-124"></span><span class="hs-comment">--   the two arguments, leaving positional information blank.</span><span>
+</span><span id="line-125"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#combSpanInfo"><span class="hs-identifier hs-type">combSpanInfo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-126"></span><span id="combSpanInfo"><span class="annot"><span class="annottext">combSpanInfo :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#combSpanInfo"><span class="hs-identifier hs-var hs-var">combSpanInfo</span></a></span></span><span> </span><span id="local-6989586621679387308"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387308"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span id="local-6989586621679387307"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387307"><span class="hs-identifier hs-var">s2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span><span>
+</span><span id="line-127"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mergeSrcSpan"><span class="hs-identifier hs-var">mergeSrcSpan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387308"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387307"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-128"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span class="hs-comment">-- | Like '(&lt;+?&gt;)', but it also concatenates the 'srcInfoPoints'.</span><span>
+</span><span id="line-131"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#combSpanMaybe"><span class="hs-identifier hs-type">combSpanMaybe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-132"></span><span id="combSpanMaybe"><span class="annot"><span class="annottext">combSpanMaybe :: SrcSpanInfo -&gt; Maybe SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#combSpanMaybe"><span class="hs-identifier hs-var hs-var">combSpanMaybe</span></a></span></span><span> </span><span id="local-6989586621679387305"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387305"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387305"><span class="hs-identifier hs-var">s1</span></a></span><span>
+</span><span id="line-133"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#combSpanMaybe"><span class="hs-identifier hs-var">combSpanMaybe</span></a></span><span> </span><span id="local-6989586621679387304"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387304"><span class="hs-identifier hs-var">s1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679387303"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387303"><span class="hs-identifier hs-var">s2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span><span>
+</span><span id="line-134"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mergeSrcSpan"><span class="hs-identifier hs-var">mergeSrcSpan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387304"><span class="hs-identifier hs-var">s1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387303"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-135"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; [SrcSpan]
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoPoints"><span class="hs-identifier hs-var hs-var">srcInfoPoints</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387304"><span class="hs-identifier hs-var">s1</span></a></span><span> </span><span class="annot"><span class="annottext">[SrcSpan] -&gt; [SrcSpan] -&gt; [SrcSpan]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; [SrcSpan]
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoPoints"><span class="hs-identifier hs-var hs-var">srcInfoPoints</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387303"><span class="hs-identifier hs-var">s2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-136"></span><span>
+</span><span id="line-137"></span><span class="hs-comment">-- | Short name for 'combSpanInfo'</span><span>
+</span><span id="line-138"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%2B%3E"><span class="hs-operator hs-type">(&lt;++&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-139"></span><span id="%3C%2B%2B%3E"><span class="annot"><span class="annottext">&lt;++&gt; :: SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%2B%3E"><span class="hs-operator hs-var hs-var">(&lt;++&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#combSpanInfo"><span class="hs-identifier hs-var">combSpanInfo</span></a></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span class="hs-comment">-- | Optionally combine the first argument with the second,</span><span>
+</span><span id="line-142"></span><span class="hs-comment">--   or return it unchanged if the second argument is 'Nothing'.</span><span>
+</span><span id="line-143"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%3F%3E"><span class="hs-operator hs-type">(&lt;+?&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-144"></span><span id="local-6989586621679387300"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387300"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="%3C%2B%3F%3E"><span class="annot"><span class="annottext">&lt;+?&gt; :: SrcSpanInfo -&gt; Maybe SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%3F%3E"><span class="hs-operator hs-var hs-var">&lt;+?&gt;</span></a></span></span><span> </span><span id="local-6989586621679387299"><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><a href="#local-6989586621679387299"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><a href="#local-6989586621679387299"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387300"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679387298"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387298"><span class="hs-identifier hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387300"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%2B%3E"><span class="hs-operator hs-var">&lt;++&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387298"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-145"></span><span>
+</span><span id="line-146"></span><span class="hs-comment">-- | Optionally combine the second argument with the first,</span><span>
+</span><span id="line-147"></span><span class="hs-comment">--   or return it unchanged if the first argument is 'Nothing'.</span><span>
+</span><span id="line-148"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%3F%2B%3E"><span class="hs-operator hs-type">(&lt;?+&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-149"></span><span id="local-6989586621679387296"><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><a href="#local-6989586621679387296"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="%3C%3F%2B%3E"><span class="annot"><span class="annottext">&lt;?+&gt; :: Maybe SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%3F%2B%3E"><span class="hs-operator hs-var hs-var">&lt;?+&gt;</span></a></span></span><span> </span><span id="local-6989586621679387295"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387295"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><a href="#local-6989586621679387296"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">Maybe SrcSpanInfo
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387295"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679387294"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387294"><span class="hs-identifier hs-var">a'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387294"><span class="hs-identifier hs-var">a'</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%2B%3E"><span class="hs-operator hs-var">&lt;++&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387295"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span class="hs-comment">-- | Add more positional information for entities of a span.</span><span>
+</span><span id="line-152"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2A%2A"><span class="hs-operator hs-type">(&lt;**)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-153"></span><span id="local-6989586621679387292"><span class="annot"><span class="annottext">ss :: SrcSpanInfo
+</span><a href="#local-6989586621679387292"><span class="hs-identifier hs-var">ss</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">srcInfoPoints :: SrcSpanInfo -&gt; [SrcSpan]
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoPoints"><span class="hs-identifier hs-var">srcInfoPoints</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621679387291"><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387291"><span class="hs-identifier hs-var">ps</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="%3C%2A%2A"><span class="annot"><span class="annottext">&lt;** :: SrcSpanInfo -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2A%2A"><span class="hs-operator hs-var hs-var">&lt;**</span></a></span></span><span> </span><span id="local-6989586621679387290"><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387290"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387292"><span class="hs-identifier hs-var">ss</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">srcInfoPoints :: [SrcSpan]
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoPoints"><span class="hs-identifier hs-var">srcInfoPoints</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387291"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="annot"><span class="annottext">[SrcSpan] -&gt; [SrcSpan] -&gt; [SrcSpan]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387290"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-154"></span><span>
+</span><span id="line-155"></span><span class="hs-comment">-- | Merge two 'SrcSpan's and lift them to a 'SrcInfoSpan' with</span><span>
+</span><span id="line-156"></span><span class="hs-comment">--   no positional information for entities.</span><span>
+</span><span id="line-157"></span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%5E%5E%3E"><span class="hs-operator hs-type">(&lt;^^&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span>
+</span><span id="line-158"></span><span id="local-6989586621679387288"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387288"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="%3C%5E%5E%3E"><span class="annot"><span class="annottext">&lt;^^&gt; :: SrcSpan -&gt; SrcSpan -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#%3C%5E%5E%3E"><span class="hs-operator hs-var hs-var">&lt;^^&gt;</span></a></span></span><span> </span><span id="local-6989586621679387287"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387287"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#noInfoSpan"><span class="hs-identifier hs-var">noInfoSpan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpan -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mergeSrcSpan"><span class="hs-identifier hs-var">mergeSrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387288"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679387287"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-159"></span><span>
+</span><span id="line-160"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%5E%5E%3E"><span class="hs-operator hs-type">&lt;^^&gt;</span></a></span><span>
+</span><span id="line-161"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%2B%3E"><span class="hs-operator hs-type">&lt;++&gt;</span></a></span><span>
+</span><span id="line-162"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">4</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2A%2A"><span class="hs-operator hs-type">&lt;**</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%2B%3F%3E"><span class="hs-operator hs-type">&lt;+?&gt;</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#%3C%3F%2B%3E"><span class="hs-operator hs-type">&lt;?+&gt;</span></a></span><span>
+</span><span id="line-163"></span><span>
+</span><span id="line-164"></span><span class="hs-comment">-- | A class to work over all kinds of source location information.</span><span>
+</span><span id="line-165"></span><span class="hs-keyword">class</span><span> </span><span id="SrcInfo"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcInfo"><span class="hs-identifier hs-var">SrcInfo</span></a></span></span><span> </span><span id="local-6989586621679387601"><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-166"></span><span>  </span><span id="toSrcInfo"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#toSrcInfo"><span class="hs-identifier hs-type">toSrcInfo</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span><span>
+</span><span id="line-167"></span><span>  </span><span id="fromSrcInfo"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#fromSrcInfo"><span class="hs-identifier hs-type">fromSrcInfo</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span><span>
+</span><span id="line-168"></span><span>  </span><span id="getPointLoc"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#getPointLoc"><span class="hs-identifier hs-type">getPointLoc</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span><span>
+</span><span id="line-169"></span><span>  </span><span id="fileName"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#fileName"><span class="hs-identifier hs-type">fileName</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-170"></span><span>  </span><span id="startLine"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#startLine"><span class="hs-identifier hs-type">startLine</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-171"></span><span>  </span><span id="startColumn"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#startColumn"><span class="hs-identifier hs-type">startColumn</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679387601"><span class="hs-identifier hs-type">si</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-172"></span><span>
+</span><span id="line-173"></span><span>  </span><span id="local-6989586621679387280"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#getPointLoc"><span class="hs-identifier hs-var hs-var">getPointLoc</span></a></span><span> </span><span id="local-6989586621679387279"><span class="annot"><span class="annottext">si
+</span><a href="#local-6989586621679387279"><span class="hs-identifier hs-var">si</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Int -&gt; SrcLoc
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-var">SrcLoc</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">si -&gt; String
+forall si. SrcInfo si =&gt; si -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#fileName"><span class="hs-identifier hs-var">fileName</span></a></span><span> </span><span class="annot"><span class="annottext">si
+</span><a href="#local-6989586621679387279"><span class="hs-identifier hs-var">si</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">si -&gt; Int
+forall si. SrcInfo si =&gt; si -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#startLine"><span class="hs-identifier hs-var">startLine</span></a></span><span> </span><span class="annot"><span class="annottext">si
+</span><a href="#local-6989586621679387279"><span class="hs-identifier hs-var">si</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">si -&gt; Int
+forall si. SrcInfo si =&gt; si -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#startColumn"><span class="hs-identifier hs-var">startColumn</span></a></span><span> </span><span class="annot"><span class="annottext">si
+</span><a href="#local-6989586621679387279"><span class="hs-identifier hs-var">si</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-174"></span><span>
+</span><span id="line-175"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387275"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcInfo"><span class="hs-identifier hs-type">SrcInfo</span></a></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-type">SrcLoc</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-176"></span><span>  </span><span id="local-6989586621679387270"><span class="annot"><span class="annottext">toSrcInfo :: SrcLoc -&gt; [SrcSpan] -&gt; SrcLoc -&gt; SrcLoc
+</span><a href="#local-6989586621679387270"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSrcInfo</span></a></span></span><span> </span><span id="local-6989586621679387269"><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387269"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387269"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-177"></span><span>  </span><span id="local-6989586621679387268"><span class="annot"><span class="annottext">fromSrcInfo :: SrcSpanInfo -&gt; SrcLoc
+</span><a href="#local-6989586621679387268"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSrcInfo</span></a></span></span><span> </span><span id="local-6989586621679387267"><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387267"><span class="hs-identifier hs-var">si</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Int -&gt; Int -&gt; SrcLoc
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcLoc"><span class="hs-identifier hs-var">SrcLoc</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; String
+forall si. SrcInfo si =&gt; si -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#fileName"><span class="hs-identifier hs-var">fileName</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387267"><span class="hs-identifier hs-var">si</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; Int
+forall si. SrcInfo si =&gt; si -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#startLine"><span class="hs-identifier hs-var">startLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387267"><span class="hs-identifier hs-var">si</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; Int
+forall si. SrcInfo si =&gt; si -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#startColumn"><span class="hs-identifier hs-var">startColumn</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo
+</span><a href="#local-6989586621679387267"><span class="hs-identifier hs-var">si</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-178"></span><span>  </span><span id="local-6989586621679387266"><span class="annot"><span class="annottext">fileName :: SrcLoc -&gt; String
+</span><a href="#local-6989586621679387266"><span class="hs-identifier hs-var hs-var hs-var hs-var">fileName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcLoc -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcFilename"><span class="hs-identifier hs-var hs-var">srcFilename</span></a></span><span>
+</span><span id="line-179"></span><span>  </span><span id="local-6989586621679387265"><span class="annot"><span class="annottext">startLine :: SrcLoc -&gt; Int
+</span><a href="#local-6989586621679387265"><span class="hs-identifier hs-var hs-var hs-var hs-var">startLine</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcLoc -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcLine"><span class="hs-identifier hs-var hs-var">srcLine</span></a></span><span>
+</span><span id="line-180"></span><span>  </span><span id="local-6989586621679387264"><span class="annot"><span class="annottext">startColumn :: SrcLoc -&gt; Int
+</span><a href="#local-6989586621679387264"><span class="hs-identifier hs-var hs-var hs-var hs-var">startColumn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcLoc -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcColumn"><span class="hs-identifier hs-var hs-var">srcColumn</span></a></span><span>
+</span><span id="line-181"></span><span>
+</span><span id="line-182"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387260"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcInfo"><span class="hs-identifier hs-type">SrcInfo</span></a></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-183"></span><span>  </span><span id="local-6989586621679387256"><span class="annot"><span class="annottext">toSrcInfo :: SrcLoc -&gt; [SrcSpan] -&gt; SrcLoc -&gt; SrcSpan
+</span><a href="#local-6989586621679387256"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSrcInfo</span></a></span></span><span> </span><span id="local-6989586621679387255"><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387255"><span class="hs-identifier hs-var">st</span></a></span></span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679387254"><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387254"><span class="hs-identifier hs-var">end</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcLoc -&gt; SrcLoc -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mkSrcSpan"><span class="hs-identifier hs-var">mkSrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387255"><span class="hs-identifier hs-var">st</span></a></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387254"><span class="hs-identifier hs-var">end</span></a></span><span>
+</span><span id="line-184"></span><span>  </span><span id="local-6989586621679387253"><span class="annot"><span class="annottext">fromSrcInfo :: SrcSpanInfo -&gt; SrcSpan
+</span><a href="#local-6989586621679387253"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSrcInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span>
+</span><span id="line-185"></span><span>  </span><span id="local-6989586621679387252"><span class="annot"><span class="annottext">fileName :: SrcSpan -&gt; String
+</span><a href="#local-6989586621679387252"><span class="hs-identifier hs-var hs-var hs-var hs-var">fileName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanFilename"><span class="hs-identifier hs-var hs-var">srcSpanFilename</span></a></span><span>
+</span><span id="line-186"></span><span>  </span><span id="local-6989586621679387251"><span class="annot"><span class="annottext">startLine :: SrcSpan -&gt; Int
+</span><a href="#local-6989586621679387251"><span class="hs-identifier hs-var hs-var hs-var hs-var">startLine</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartLine"><span class="hs-identifier hs-var hs-var">srcSpanStartLine</span></a></span><span>
+</span><span id="line-187"></span><span>  </span><span id="local-6989586621679387250"><span class="annot"><span class="annottext">startColumn :: SrcSpan -&gt; Int
+</span><a href="#local-6989586621679387250"><span class="hs-identifier hs-var hs-var hs-var hs-var">startColumn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcSpanStartColumn"><span class="hs-identifier hs-var hs-var">srcSpanStartColumn</span></a></span><span>
+</span><span id="line-188"></span><span>
+</span><span id="line-189"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387246"><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcInfo"><span class="hs-identifier hs-type">SrcInfo</span></a></span><span> </span><span class="annot"><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-type">SrcSpanInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-190"></span><span>  </span><span id="local-6989586621679387242"><span class="annot"><span class="annottext">toSrcInfo :: SrcLoc -&gt; [SrcSpan] -&gt; SrcLoc -&gt; SrcSpanInfo
+</span><a href="#local-6989586621679387242"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSrcInfo</span></a></span></span><span> </span><span id="local-6989586621679387241"><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387241"><span class="hs-identifier hs-var">st</span></a></span></span><span> </span><span id="local-6989586621679387240"><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387240"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span id="local-6989586621679387239"><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387239"><span class="hs-identifier hs-var">end</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; [SrcSpan] -&gt; SrcSpanInfo
+</span><a href="Language.Haskell.Exts.SrcLoc.html#SrcSpanInfo"><span class="hs-identifier hs-var">SrcSpanInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcLoc -&gt; SrcLoc -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#mkSrcSpan"><span class="hs-identifier hs-var">mkSrcSpan</span></a></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387241"><span class="hs-identifier hs-var">st</span></a></span><span> </span><span class="annot"><span class="annottext">SrcLoc
+</span><a href="#local-6989586621679387239"><span class="hs-identifier hs-var">end</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621679387240"><span class="hs-identifier hs-var">pts</span></a></span><span>
+</span><span id="line-191"></span><span>  </span><span id="local-6989586621679387238"><span class="annot"><span class="annottext">fromSrcInfo :: SrcSpanInfo -&gt; SrcSpanInfo
+</span><a href="#local-6989586621679387238"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSrcInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpanInfo
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-192"></span><span>  </span><span id="local-6989586621679387236"><span class="annot"><span class="annottext">fileName :: SrcSpanInfo -&gt; String
+</span><a href="#local-6989586621679387236"><span class="hs-identifier hs-var hs-var hs-var hs-var">fileName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; String
+forall si. SrcInfo si =&gt; si -&gt; String
+</span><a href="Language.Haskell.Exts.SrcLoc.html#fileName"><span class="hs-identifier hs-var">fileName</span></a></span><span> </span><span class="annot"><span class="annottext">(SrcSpan -&gt; String)
+-&gt; (SrcSpanInfo -&gt; SrcSpan) -&gt; SrcSpanInfo -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span>
+</span><span id="line-193"></span><span>  </span><span id="local-6989586621679387235"><span class="annot"><span class="annottext">startLine :: SrcSpanInfo -&gt; Int
+</span><a href="#local-6989586621679387235"><span class="hs-identifier hs-var hs-var hs-var hs-var">startLine</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+forall si. SrcInfo si =&gt; si -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#startLine"><span class="hs-identifier hs-var">startLine</span></a></span><span> </span><span class="annot"><span class="annottext">(SrcSpan -&gt; Int) -&gt; (SrcSpanInfo -&gt; SrcSpan) -&gt; SrcSpanInfo -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span>
+</span><span id="line-194"></span><span>  </span><span id="local-6989586621679387234"><span class="annot"><span class="annottext">startColumn :: SrcSpanInfo -&gt; Int
+</span><a href="#local-6989586621679387234"><span class="hs-identifier hs-var hs-var hs-var hs-var">startColumn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+forall si. SrcInfo si =&gt; si -&gt; Int
+</span><a href="Language.Haskell.Exts.SrcLoc.html#startColumn"><span class="hs-identifier hs-var">startColumn</span></a></span><span> </span><span class="annot"><span class="annottext">(SrcSpan -&gt; Int) -&gt; (SrcSpanInfo -&gt; SrcSpan) -&gt; SrcSpanInfo -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanInfo -&gt; SrcSpan
+</span><a href="Language.Haskell.Exts.SrcLoc.html#srcInfoSpan"><span class="hs-identifier hs-var hs-var">srcInfoSpan</span></a></span><span>
+</span><span id="line-195"></span></pre></body></html>

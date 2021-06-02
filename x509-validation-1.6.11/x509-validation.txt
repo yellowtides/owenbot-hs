@@ -291,9 +291,9 @@ SignaturePubkeyMismatch :: SignatureFailure
 
 -- | unimplemented signature algorithm
 SignatureUnimplemented :: SignatureFailure
-instance GHC.Classes.Eq Data.X509.Validation.ValidationChecks
-instance GHC.Show.Show Data.X509.Validation.ValidationChecks
 instance GHC.Classes.Eq Data.X509.Validation.FailedReason
 instance GHC.Show.Show Data.X509.Validation.FailedReason
+instance GHC.Classes.Eq Data.X509.Validation.ValidationChecks
+instance GHC.Show.Show Data.X509.Validation.ValidationChecks
 instance Data.Default.Class.Default Data.X509.Validation.ValidationHooks
 instance Data.Default.Class.Default Data.X509.Validation.ValidationChecks

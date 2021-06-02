@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_BJnRMy1js4EG30HLzASqkh"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_FCzpXTtvQOwJfsoHIj59be"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
 </span><span id="line-2"></span><span class="hs-comment">-- |Type aliases used throughout the crypto-api modules.</span><span>
 </span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Crypto.Types</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-4"></span><span>
@@ -16,9 +16,9 @@
 </span><span id="line-16"></span><span class="hs-comment">--</span><span>
 </span><span id="line-17"></span><span class="hs-comment">-- 'zeroIV' also exists and is of particular use for starting 'ctr'</span><span>
 </span><span id="line-18"></span><span class="hs-comment">-- mode with a fresh key.</span><span>
-</span><span id="line-19"></span><span class="hs-keyword">data</span><span> </span><span id="IV"><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-var">IV</span></a></span></span><span> </span><span id="local-6989586621679082696"><span class="annot"><a href="#local-6989586621679082696"><span class="hs-identifier hs-type">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="IV"><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-var">IV</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="initializationVector"><span class="annot"><span class="annottext">IV k -&gt; ByteString
+</span><span id="line-19"></span><span class="hs-keyword">data</span><span> </span><span id="IV"><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-var">IV</span></a></span></span><span> </span><span id="local-6989586621679057949"><span class="annot"><a href="#local-6989586621679057949"><span class="hs-identifier hs-type">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="IV"><span class="annot"><a href="Crypto.Types.html#IV"><span class="hs-identifier hs-var">IV</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="initializationVector"><span class="annot"><span class="annottext">IV k -&gt; ByteString
 </span><a href="Crypto.Types.html#initializationVector"><span class="hs-identifier hs-var hs-var">initializationVector</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-pragma">{-# UNPACK</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
-</span><span id="line-20"></span><span>               </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082690"><span id="local-6989586621679082692"><span class="annot"><span class="annottext">IV k -&gt; IV k -&gt; Bool
+</span><span id="line-20"></span><span>               </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679057943"><span id="local-6989586621679057945"><span class="annot"><span class="annottext">IV k -&gt; IV k -&gt; Bool
 (IV k -&gt; IV k -&gt; Bool) -&gt; (IV k -&gt; IV k -&gt; Bool) -&gt; Eq (IV k)
 forall k. IV k -&gt; IV k -&gt; Bool
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -26,9 +26,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: forall k. IV k -&gt; IV k -&gt; Bool
 == :: IV k -&gt; IV k -&gt; Bool
 $c== :: forall k. IV k -&gt; IV k -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082674"><span id="local-6989586621679082676"><span id="local-6989586621679082678"><span id="local-6989586621679082680"><span id="local-6989586621679082682"><span id="local-6989586621679082684"><span id="local-6989586621679082686"><span class="annot"><span class="annottext">Eq (IV k)
-Eq (IV k) =&gt;
-(IV k -&gt; IV k -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679057927"><span id="local-6989586621679057929"><span id="local-6989586621679057931"><span id="local-6989586621679057933"><span id="local-6989586621679057935"><span id="local-6989586621679057937"><span id="local-6989586621679057939"><span class="annot"><span class="annottext">Eq (IV k)
+Eq (IV k)
+-&gt; (IV k -&gt; IV k -&gt; Ordering)
 -&gt; (IV k -&gt; IV k -&gt; Bool)
 -&gt; (IV k -&gt; IV k -&gt; Bool)
 -&gt; (IV k -&gt; IV k -&gt; Bool)
@@ -41,8 +41,8 @@ IV k -&gt; IV k -&gt; Ordering
 IV k -&gt; IV k -&gt; IV k
 forall k. Eq (IV k)
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -68,7 +68,7 @@ $c&lt; :: forall k. IV k -&gt; IV k -&gt; Bool
 compare :: IV k -&gt; IV k -&gt; Ordering
 $ccompare :: forall k. IV k -&gt; IV k -&gt; Ordering
 $cp1Ord :: forall k. Eq (IV k)
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082667"><span id="local-6989586621679082669"><span id="local-6989586621679082671"><span class="annot"><span class="annottext">Int -&gt; IV k -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679057920"><span id="local-6989586621679057922"><span id="local-6989586621679057924"><span class="annot"><span class="annottext">Int -&gt; IV k -&gt; ShowS
 [IV k] -&gt; ShowS
 IV k -&gt; String
 (Int -&gt; IV k -&gt; ShowS)
@@ -96,7 +96,7 @@ $cshowsPrec :: forall k. Int -&gt; IV k -&gt; ShowS
 </span><span id="line-29"></span><span class="hs-keyword">data</span><span> </span><span id="BlockCipherError"><span class="annot"><a href="Crypto.Types.html#BlockCipherError"><span class="hs-identifier hs-var">BlockCipherError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="InputTooLong"><span class="annot"><a href="Crypto.Types.html#InputTooLong"><span class="hs-identifier hs-var">InputTooLong</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-30"></span><span>                      </span><span class="hs-glyph">|</span><span> </span><span id="AuthenticationFailed"><span class="annot"><a href="Crypto.Types.html#AuthenticationFailed"><span class="hs-identifier hs-var">AuthenticationFailed</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-31"></span><span>                      </span><span class="hs-glyph">|</span><span> </span><span id="Other"><span class="annot"><a href="Crypto.Types.html#Other"><span class="hs-identifier hs-var">Other</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-32"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082657"><span id="local-6989586621679082659"><span class="annot"><span class="annottext">BlockCipherError -&gt; BlockCipherError -&gt; Bool
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679057910"><span id="local-6989586621679057912"><span class="annot"><span class="annottext">BlockCipherError -&gt; BlockCipherError -&gt; Bool
 (BlockCipherError -&gt; BlockCipherError -&gt; Bool)
 -&gt; (BlockCipherError -&gt; BlockCipherError -&gt; Bool)
 -&gt; Eq BlockCipherError
@@ -105,9 +105,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: BlockCipherError -&gt; BlockCipherError -&gt; Bool
 == :: BlockCipherError -&gt; BlockCipherError -&gt; Bool
 $c== :: BlockCipherError -&gt; BlockCipherError -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082642"><span id="local-6989586621679082644"><span id="local-6989586621679082646"><span id="local-6989586621679082648"><span id="local-6989586621679082650"><span id="local-6989586621679082652"><span id="local-6989586621679082654"><span class="annot"><span class="annottext">Eq BlockCipherError
-Eq BlockCipherError =&gt;
-(BlockCipherError -&gt; BlockCipherError -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679057895"><span id="local-6989586621679057897"><span id="local-6989586621679057899"><span id="local-6989586621679057901"><span id="local-6989586621679057903"><span id="local-6989586621679057905"><span id="local-6989586621679057907"><span class="annot"><span class="annottext">Eq BlockCipherError
+Eq BlockCipherError
+-&gt; (BlockCipherError -&gt; BlockCipherError -&gt; Ordering)
 -&gt; (BlockCipherError -&gt; BlockCipherError -&gt; Bool)
 -&gt; (BlockCipherError -&gt; BlockCipherError -&gt; Bool)
 -&gt; (BlockCipherError -&gt; BlockCipherError -&gt; Bool)
@@ -119,8 +119,8 @@ BlockCipherError -&gt; BlockCipherError -&gt; Bool
 BlockCipherError -&gt; BlockCipherError -&gt; Ordering
 BlockCipherError -&gt; BlockCipherError -&gt; BlockCipherError
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -143,7 +143,7 @@ $c&lt; :: BlockCipherError -&gt; BlockCipherError -&gt; Bool
 compare :: BlockCipherError -&gt; BlockCipherError -&gt; Ordering
 $ccompare :: BlockCipherError -&gt; BlockCipherError -&gt; Ordering
 $cp1Ord :: Eq BlockCipherError
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082636"><span id="local-6989586621679082638"><span id="local-6989586621679082640"><span class="annot"><span class="annottext">Int -&gt; BlockCipherError -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679057889"><span id="local-6989586621679057891"><span id="local-6989586621679057893"><span class="annot"><span class="annottext">Int -&gt; BlockCipherError -&gt; ShowS
 [BlockCipherError] -&gt; ShowS
 BlockCipherError -&gt; String
 (Int -&gt; BlockCipherError -&gt; ShowS)
@@ -158,7 +158,7 @@ show :: BlockCipherError -&gt; String
 $cshow :: BlockCipherError -&gt; String
 showsPrec :: Int -&gt; BlockCipherError -&gt; ShowS
 $cshowsPrec :: Int -&gt; BlockCipherError -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082628"><span id="local-6989586621679082630"><span id="local-6989586621679082632"><span id="local-6989586621679082634"><span class="annot"><span class="annottext">ReadPrec [BlockCipherError]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679057881"><span id="local-6989586621679057883"><span id="local-6989586621679057885"><span id="local-6989586621679057887"><span class="annot"><span class="annottext">ReadPrec [BlockCipherError]
 ReadPrec BlockCipherError
 Int -&gt; ReadS BlockCipherError
 ReadS [BlockCipherError]
@@ -178,13 +178,13 @@ readList :: ReadS [BlockCipherError]
 $creadList :: ReadS [BlockCipherError]
 readsPrec :: Int -&gt; ReadS BlockCipherError
 $creadsPrec :: Int -&gt; ReadS BlockCipherError
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="%24cOther"><span id="%24cAuthenticationFailed"><span id="%24cInputTooLong"><span id="%24tBlockCipherError"><span id="local-6989586621679082598"><span id="local-6989586621679082600"><span id="local-6989586621679082602"><span id="local-6989586621679082604"><span id="local-6989586621679082606"><span id="local-6989586621679082608"><span id="local-6989586621679082610"><span id="local-6989586621679082612"><span id="local-6989586621679082614"><span id="local-6989586621679082616"><span id="local-6989586621679082618"><span id="local-6989586621679082620"><span id="local-6989586621679082622"><span id="local-6989586621679082624"><span class="annot"><span class="annottext">Typeable BlockCipherError
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="%24cOther"><span id="%24cAuthenticationFailed"><span id="%24cInputTooLong"><span id="%24tBlockCipherError"><span id="local-6989586621679057851"><span id="local-6989586621679057853"><span id="local-6989586621679057855"><span id="local-6989586621679057857"><span id="local-6989586621679057859"><span id="local-6989586621679057861"><span id="local-6989586621679057863"><span id="local-6989586621679057865"><span id="local-6989586621679057867"><span id="local-6989586621679057869"><span id="local-6989586621679057871"><span id="local-6989586621679057873"><span id="local-6989586621679057875"><span id="local-6989586621679057877"><span class="annot"><span class="annottext">Typeable BlockCipherError
 DataType
 Constr
-Typeable BlockCipherError =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; BlockCipherError -&gt; c BlockCipherError)
+Typeable BlockCipherError
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; BlockCipherError -&gt; c BlockCipherError)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c BlockCipherError)
@@ -231,10 +231,10 @@ BlockCipherError -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c BlockCipherError
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -361,6 +361,6 @@ $cgfoldl :: forall (c :: * -&gt; *).
 $cp1Data :: Typeable BlockCipherError
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-33"></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082585"><span id="local-6989586621679082587"><span id="local-6989586621679082589"><span class="annot"><span class="hs-identifier hs-type">X.Exception</span></span><span> </span><span class="annot"><a href="Crypto.Types.html#BlockCipherError"><span class="hs-identifier hs-type">BlockCipherError</span></a></span></span></span></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679057838"><span id="local-6989586621679057840"><span id="local-6989586621679057842"><span class="annot"><span class="hs-identifier hs-type">X.Exception</span></span><span> </span><span class="annot"><a href="Crypto.Types.html#BlockCipherError"><span class="hs-identifier hs-type">BlockCipherError</span></a></span></span></span></span><span>
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span></pre></body></html>

@@ -31,18 +31,19 @@
 </span><span>
 </span><span id="line-32"></span><span class="annot"><a href="Network.Socket.ByteString.Internal.html#mkInvalidRecvArgError"><span class="hs-identifier hs-type">mkInvalidRecvArgError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IOError</span></span><span>
 </span><span id="line-33"></span><span id="mkInvalidRecvArgError"><span class="annot"><span class="annottext">mkInvalidRecvArgError :: String -&gt; IOError
-</span><a href="Network.Socket.ByteString.Internal.html#mkInvalidRecvArgError"><span class="hs-identifier hs-var hs-var">mkInvalidRecvArgError</span></a></span></span><span> </span><span id="local-6989586621679078371"><span class="annot"><span class="annottext">loc :: String
-</span><a href="#local-6989586621679078371"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IOError -&gt; String -&gt; IOError
+</span><a href="Network.Socket.ByteString.Internal.html#mkInvalidRecvArgError"><span class="hs-identifier hs-var hs-var">mkInvalidRecvArgError</span></a></span></span><span> </span><span id="local-6989586621679053732"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679053732"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IOError -&gt; String -&gt; IOError
 </span><span class="hs-identifier hs-var">ioeSetErrorString</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IOErrorType -&gt; String -&gt; Maybe Handle -&gt; Maybe String -&gt; IOError
 </span><span class="hs-identifier hs-var">mkIOError</span></span><span>
 </span><span id="line-34"></span><span>                                    </span><span class="annot"><span class="annottext">IOErrorType
 </span><span class="hs-identifier hs-var">InvalidArgument</span></span><span>
 </span><span id="line-35"></span><span>                                    </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679078371"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Handle
+</span><a href="#local-6989586621679053732"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Handle
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe String
 forall a. Maybe a
-</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-string">&quot;non-positive length&quot;</span></span><span class="hs-cpp">
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;non-positive length&quot;</span></span><span class="hs-cpp">
 
 #if !defined(mingw32_HOST_OS)
 </span><span class="hs-keyword">foreign</span><span> </span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-keyword">ccall</span></span><span> </span><span class="annot"><span class="hs-keyword">unsafe</span></span><span> </span><span class="annot"><span class="hs-string">&quot;writev&quot;</span></span><span>

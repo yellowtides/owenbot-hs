@@ -377,9 +377,9 @@ ByteStringOutputException :: SomeException -> ProcessConfig () () () -> ByteStri
 --   sending signal, <a>stopProcess</a> should be called either way in
 --   order to cleanup resources allocated by the <tt>typed-process</tt>.
 unsafeProcessHandle :: Process stdin stdout stderr -> ProcessHandle
-instance GHC.Show.Show System.Process.Typed.ByteStringOutputException
-instance GHC.Base.Functor (System.Process.Typed.StreamSpec streamType)
 instance GHC.Base.Functor System.Process.Typed.Cleanup
+instance GHC.Base.Functor (System.Process.Typed.StreamSpec streamType)
+instance GHC.Show.Show System.Process.Typed.ByteStringOutputException
 instance GHC.Exception.Type.Exception System.Process.Typed.ByteStringOutputException
 instance GHC.Exception.Type.Exception System.Process.Typed.ExitCodeException
 instance GHC.Show.Show System.Process.Typed.ExitCodeException

@@ -44,9 +44,9 @@
 </span><span id="line-44"></span><span class="hs-comment">-- The 'Header' and 'Record' must be of the same length.</span><span>
 </span><span id="line-45"></span><span class="annot"><a href="Data.Csv.Types.html#toNamedRecord"><span class="hs-identifier hs-type">toNamedRecord</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Csv.Types.html#Header"><span class="hs-identifier hs-type">Header</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Csv.Types.html#Record"><span class="hs-identifier hs-type">Record</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Csv.Types.html#NamedRecord"><span class="hs-identifier hs-type">NamedRecord</span></a></span><span>
 </span><span id="line-46"></span><span id="toNamedRecord"><span class="annot"><span class="annottext">toNamedRecord :: Header -&gt; Header -&gt; NamedRecord
-</span><a href="Data.Csv.Types.html#toNamedRecord"><span class="hs-identifier hs-var hs-var">toNamedRecord</span></a></span></span><span> </span><span id="local-6989586621679122020"><span class="annot"><span class="annottext">hdr :: Header
-</span><a href="#local-6989586621679122020"><span class="hs-identifier hs-var">hdr</span></a></span></span><span> </span><span id="local-6989586621679122019"><span class="annot"><span class="annottext">v :: Header
-</span><a href="#local-6989586621679122019"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Name, Name)] -&gt; NamedRecord
+</span><a href="Data.Csv.Types.html#toNamedRecord"><span class="hs-identifier hs-var hs-var">toNamedRecord</span></a></span></span><span> </span><span id="local-6989586621679078720"><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679078720"><span class="hs-identifier hs-var">hdr</span></a></span></span><span> </span><span id="local-6989586621679078719"><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679078719"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Name, Name)] -&gt; NamedRecord
 forall k v. (Eq k, Hashable k) =&gt; [(k, v)] -&gt; HashMap k v
 </span><span class="hs-identifier hs-var">HM.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Name, Name)] -&gt; NamedRecord)
 -&gt; (Vector (Name, Name) -&gt; [(Name, Name)])
@@ -61,8 +61,8 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Header -&gt; Header -&gt; Vector (Name, Name)
 forall a b. Vector a -&gt; Vector b -&gt; Vector (a, b)
 </span><span class="hs-identifier hs-var">V.zip</span></span><span> </span><span class="annot"><span class="annottext">Header
-</span><a href="#local-6989586621679122020"><span class="hs-identifier hs-var">hdr</span></a></span><span> </span><span class="annot"><span class="annottext">Header
-</span><a href="#local-6989586621679122019"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><a href="#local-6989586621679078720"><span class="hs-identifier hs-var">hdr</span></a></span><span> </span><span class="annot"><span class="annottext">Header
+</span><a href="#local-6989586621679078719"><span class="hs-identifier hs-var">v</span></a></span><span>
 </span><span id="line-47"></span><span>
 </span><span id="line-48"></span><span class="hs-comment">-- | Is the CSV data preceded by a header?</span><span>
 </span><span id="line-49"></span><span class="hs-keyword">data</span><span> </span><span id="HasHeader"><span class="annot"><a href="Data.Csv.Types.html#HasHeader"><span class="hs-identifier hs-var">HasHeader</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="HasHeader"><span class="annot"><a href="Data.Csv.Types.html#HasHeader"><span class="hs-identifier hs-var">HasHeader</span></a></span></span><span>  </span><span class="hs-comment">-- ^ The CSV data is preceded by a header</span><span>

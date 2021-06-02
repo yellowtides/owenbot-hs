@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-|
+Module      : Command.Error
+License     : BSD (see the LICENSE file)
+Description : Error types for commands.
+
+Provides the errors for Commands.
+Its usage is mainly internal, to be used from &quot;Command.Command&quot;.
+
+-}</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Command.Error</span><span>
+</span><span id="line-11"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Command.Error.html#CommandError"><span class="hs-identifier">CommandError</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Exception.Safe</span></span><span>     </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">SomeException</span></span><span>
+</span><span id="line-16"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Exception</span></span><span>
+</span><span id="line-17"></span><span>                                            </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec.Error</span></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">ParseError</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord</span></span><span>                    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">RestCallErrorCode</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- | This represents any error that can arise from an invocation of a command.</span><span>
+</span><span id="line-23"></span><span class="hs-comment">-- Some are thrown by the system (such as ArgumentParseError), however you can </span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- also manually throw them with 'throwM' within any handler.</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">data</span><span> </span><span id="CommandError"><span class="annot"><a href="Command.Error.html#CommandError"><span class="hs-identifier hs-var">CommandError</span></a></span></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="ArgumentParseError"><span class="annot"><a href="Command.Error.html#ArgumentParseError"><span class="hs-identifier hs-var">ArgumentParseError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-comment">-- ^ Indicates the command arguments failed to parse, either because of lack</span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-comment">-- of arguments, incorrect types, or too many arguments.</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="RequirementError"><span class="annot"><a href="Command.Error.html#RequirementError"><span class="hs-identifier hs-var">RequirementError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-comment">-- ^ Indicates that a requirement for this command failed to pass. The</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-comment">-- reason is specified in the text field.</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="ProcessingError"><span class="annot"><a href="Command.Error.html#ProcessingError"><span class="hs-identifier hs-var">ProcessingError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-comment">-- ^ This is a value unused by the system, and is free to be used by the</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-comment">-- handler as they wish.</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="DiscordError"><span class="annot"><a href="Command.Error.html#DiscordError"><span class="hs-identifier hs-var">DiscordError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">RestCallErrorCode</span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-comment">-- ^ Indicates there was a fatal Discord call somewhere in the handler.</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="HaskellError"><span class="annot"><a href="Command.Error.html#HaskellError"><span class="hs-identifier hs-var">HaskellError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SomeException</span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-comment">-- ^ Indicates there was some sort of runtime error. This contains all</span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-comment">-- sorts of errors, however they are guaranteed to be safe synchronous</span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-comment">-- exceptions.</span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679162740"><span id="local-6989586621679162742"><span id="local-6989586621679162744"><span class="annot"><span class="annottext">Int -&gt; CommandError -&gt; ShowS
+[CommandError] -&gt; ShowS
+CommandError -&gt; String
+(Int -&gt; CommandError -&gt; ShowS)
+-&gt; (CommandError -&gt; String)
+-&gt; ([CommandError] -&gt; ShowS)
+-&gt; Show CommandError
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [CommandError] -&gt; ShowS
+$cshowList :: [CommandError] -&gt; ShowS
+show :: CommandError -&gt; String
+$cshow :: CommandError -&gt; String
+showsPrec :: Int -&gt; CommandError -&gt; ShowS
+$cshowsPrec :: Int -&gt; CommandError -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162731"><span id="local-6989586621679162733"><span id="local-6989586621679162735"><span class="annot"><span class="hs-identifier hs-type">Exception</span></span><span> </span><span class="annot"><a href="Command.Error.html#CommandError"><span class="hs-identifier hs-type">CommandError</span></a></span></span></span></span><span>
+</span><span id="line-44"></span></pre></body></html>

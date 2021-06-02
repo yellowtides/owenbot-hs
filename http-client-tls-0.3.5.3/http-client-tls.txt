@@ -76,9 +76,9 @@ getGlobalManager :: IO Manager
 
 -- | Set the current global <a>Manager</a>
 setGlobalManager :: Manager -> IO ()
-instance GHC.Show.Show Network.HTTP.Client.TLS.DigestAuthException
 instance GHC.Classes.Ord Network.HTTP.Client.TLS.DigestAuthExceptionDetails
 instance GHC.Classes.Eq Network.HTTP.Client.TLS.DigestAuthExceptionDetails
 instance GHC.Read.Read Network.HTTP.Client.TLS.DigestAuthExceptionDetails
 instance GHC.Show.Show Network.HTTP.Client.TLS.DigestAuthExceptionDetails
+instance GHC.Show.Show Network.HTTP.Client.TLS.DigestAuthException
 instance GHC.Exception.Type.Exception Network.HTTP.Client.TLS.DigestAuthException

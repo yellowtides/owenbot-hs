@@ -149,67 +149,12 @@ data DateTime
 DateTime :: Date -> TimeOfDay -> DateTime
 [dtDate] :: DateTime -> Date
 [dtTime] :: DateTime -> TimeOfDay
-instance Data.Data.Data Time.Types.DateTime
-instance GHC.Classes.Ord Time.Types.DateTime
-instance GHC.Classes.Eq Time.Types.DateTime
-instance GHC.Read.Read Time.Types.DateTime
-instance GHC.Show.Show Time.Types.DateTime
-instance Data.Data.Data Time.Types.TimeOfDay
-instance GHC.Classes.Ord Time.Types.TimeOfDay
-instance GHC.Classes.Eq Time.Types.TimeOfDay
-instance GHC.Read.Read Time.Types.TimeOfDay
-instance GHC.Show.Show Time.Types.TimeOfDay
-instance Data.Data.Data Time.Types.Date
-instance GHC.Classes.Ord Time.Types.Date
-instance GHC.Classes.Eq Time.Types.Date
-instance GHC.Read.Read Time.Types.Date
-instance GHC.Show.Show Time.Types.Date
-instance Control.DeepSeq.NFData Time.Types.TimezoneOffset
-instance Data.Data.Data Time.Types.TimezoneOffset
-instance GHC.Classes.Ord Time.Types.TimezoneOffset
-instance GHC.Classes.Eq Time.Types.TimezoneOffset
-instance GHC.Enum.Bounded Time.Types.WeekDay
-instance Data.Data.Data Time.Types.WeekDay
-instance GHC.Enum.Enum Time.Types.WeekDay
-instance GHC.Classes.Ord Time.Types.WeekDay
-instance GHC.Classes.Eq Time.Types.WeekDay
-instance GHC.Read.Read Time.Types.WeekDay
-instance GHC.Show.Show Time.Types.WeekDay
-instance GHC.Enum.Bounded Time.Types.Month
-instance Data.Data.Data Time.Types.Month
-instance GHC.Enum.Enum Time.Types.Month
-instance GHC.Classes.Ord Time.Types.Month
-instance GHC.Classes.Eq Time.Types.Month
-instance GHC.Read.Read Time.Types.Month
-instance GHC.Show.Show Time.Types.Month
-instance Data.Data.Data Time.Types.ElapsedP
-instance GHC.Classes.Ord Time.Types.ElapsedP
-instance GHC.Classes.Eq Time.Types.ElapsedP
-instance GHC.Read.Read Time.Types.ElapsedP
-instance Control.DeepSeq.NFData Time.Types.Elapsed
-instance Data.Data.Data Time.Types.Elapsed
-instance GHC.Num.Num Time.Types.Elapsed
-instance GHC.Classes.Ord Time.Types.Elapsed
-instance GHC.Classes.Eq Time.Types.Elapsed
-instance GHC.Read.Read Time.Types.Elapsed
-instance Control.DeepSeq.NFData Time.Types.Hours
-instance Data.Data.Data Time.Types.Hours
-instance GHC.Real.Integral Time.Types.Hours
-instance GHC.Real.Real Time.Types.Hours
-instance GHC.Num.Num Time.Types.Hours
-instance GHC.Enum.Enum Time.Types.Hours
-instance GHC.Classes.Ord Time.Types.Hours
-instance GHC.Classes.Eq Time.Types.Hours
-instance GHC.Read.Read Time.Types.Hours
-instance Control.DeepSeq.NFData Time.Types.Minutes
-instance Data.Data.Data Time.Types.Minutes
-instance GHC.Real.Integral Time.Types.Minutes
-instance GHC.Real.Real Time.Types.Minutes
-instance GHC.Num.Num Time.Types.Minutes
-instance GHC.Enum.Enum Time.Types.Minutes
-instance GHC.Classes.Ord Time.Types.Minutes
-instance GHC.Classes.Eq Time.Types.Minutes
-instance GHC.Read.Read Time.Types.Minutes
+instance Control.DeepSeq.NFData Time.Types.NanoSeconds
+instance Data.Data.Data Time.Types.NanoSeconds
+instance GHC.Num.Num Time.Types.NanoSeconds
+instance GHC.Classes.Ord Time.Types.NanoSeconds
+instance GHC.Classes.Eq Time.Types.NanoSeconds
+instance GHC.Read.Read Time.Types.NanoSeconds
 instance Control.DeepSeq.NFData Time.Types.Seconds
 instance Data.Data.Data Time.Types.Seconds
 instance GHC.Real.Integral Time.Types.Seconds
@@ -219,12 +164,67 @@ instance GHC.Enum.Enum Time.Types.Seconds
 instance GHC.Classes.Ord Time.Types.Seconds
 instance GHC.Classes.Eq Time.Types.Seconds
 instance GHC.Read.Read Time.Types.Seconds
-instance Control.DeepSeq.NFData Time.Types.NanoSeconds
-instance Data.Data.Data Time.Types.NanoSeconds
-instance GHC.Num.Num Time.Types.NanoSeconds
-instance GHC.Classes.Ord Time.Types.NanoSeconds
-instance GHC.Classes.Eq Time.Types.NanoSeconds
-instance GHC.Read.Read Time.Types.NanoSeconds
+instance Control.DeepSeq.NFData Time.Types.Minutes
+instance Data.Data.Data Time.Types.Minutes
+instance GHC.Real.Integral Time.Types.Minutes
+instance GHC.Real.Real Time.Types.Minutes
+instance GHC.Num.Num Time.Types.Minutes
+instance GHC.Enum.Enum Time.Types.Minutes
+instance GHC.Classes.Ord Time.Types.Minutes
+instance GHC.Classes.Eq Time.Types.Minutes
+instance GHC.Read.Read Time.Types.Minutes
+instance Control.DeepSeq.NFData Time.Types.Hours
+instance Data.Data.Data Time.Types.Hours
+instance GHC.Real.Integral Time.Types.Hours
+instance GHC.Real.Real Time.Types.Hours
+instance GHC.Num.Num Time.Types.Hours
+instance GHC.Enum.Enum Time.Types.Hours
+instance GHC.Classes.Ord Time.Types.Hours
+instance GHC.Classes.Eq Time.Types.Hours
+instance GHC.Read.Read Time.Types.Hours
+instance Control.DeepSeq.NFData Time.Types.Elapsed
+instance Data.Data.Data Time.Types.Elapsed
+instance GHC.Num.Num Time.Types.Elapsed
+instance GHC.Classes.Ord Time.Types.Elapsed
+instance GHC.Classes.Eq Time.Types.Elapsed
+instance GHC.Read.Read Time.Types.Elapsed
+instance Data.Data.Data Time.Types.ElapsedP
+instance GHC.Classes.Ord Time.Types.ElapsedP
+instance GHC.Classes.Eq Time.Types.ElapsedP
+instance GHC.Read.Read Time.Types.ElapsedP
+instance GHC.Enum.Bounded Time.Types.Month
+instance Data.Data.Data Time.Types.Month
+instance GHC.Enum.Enum Time.Types.Month
+instance GHC.Classes.Ord Time.Types.Month
+instance GHC.Classes.Eq Time.Types.Month
+instance GHC.Read.Read Time.Types.Month
+instance GHC.Show.Show Time.Types.Month
+instance GHC.Enum.Bounded Time.Types.WeekDay
+instance Data.Data.Data Time.Types.WeekDay
+instance GHC.Enum.Enum Time.Types.WeekDay
+instance GHC.Classes.Ord Time.Types.WeekDay
+instance GHC.Classes.Eq Time.Types.WeekDay
+instance GHC.Read.Read Time.Types.WeekDay
+instance GHC.Show.Show Time.Types.WeekDay
+instance Control.DeepSeq.NFData Time.Types.TimezoneOffset
+instance Data.Data.Data Time.Types.TimezoneOffset
+instance GHC.Classes.Ord Time.Types.TimezoneOffset
+instance GHC.Classes.Eq Time.Types.TimezoneOffset
+instance Data.Data.Data Time.Types.Date
+instance GHC.Classes.Ord Time.Types.Date
+instance GHC.Classes.Eq Time.Types.Date
+instance GHC.Read.Read Time.Types.Date
+instance GHC.Show.Show Time.Types.Date
+instance Data.Data.Data Time.Types.TimeOfDay
+instance GHC.Classes.Ord Time.Types.TimeOfDay
+instance GHC.Classes.Eq Time.Types.TimeOfDay
+instance GHC.Read.Read Time.Types.TimeOfDay
+instance GHC.Show.Show Time.Types.TimeOfDay
+instance Data.Data.Data Time.Types.DateTime
+instance GHC.Classes.Ord Time.Types.DateTime
+instance GHC.Classes.Eq Time.Types.DateTime
+instance GHC.Read.Read Time.Types.DateTime
+instance GHC.Show.Show Time.Types.DateTime
 instance Control.DeepSeq.NFData Time.Types.DateTime
 instance Control.DeepSeq.NFData Time.Types.TimeOfDay
 instance Control.DeepSeq.NFData Time.Types.Date
@@ -293,15 +293,6 @@ UnixEpoch :: UnixEpoch
 -- | Windows Epoch, starting 1st January 1601
 data WindowsEpoch
 WindowsEpoch :: WindowsEpoch
-instance GHC.Classes.Eq Data.Hourglass.Epoch.WindowsEpoch
-instance GHC.Show.Show Data.Hourglass.Epoch.WindowsEpoch
-instance GHC.Classes.Eq Data.Hourglass.Epoch.UnixEpoch
-instance GHC.Show.Show Data.Hourglass.Epoch.UnixEpoch
-instance Data.Data.Data epoch => Data.Data.Data (Data.Hourglass.Epoch.ElapsedSinceP epoch)
-instance GHC.Classes.Ord (Data.Hourglass.Epoch.ElapsedSinceP epoch)
-instance GHC.Classes.Eq (Data.Hourglass.Epoch.ElapsedSinceP epoch)
-instance GHC.Read.Read (Data.Hourglass.Epoch.ElapsedSinceP epoch)
-instance GHC.Show.Show (Data.Hourglass.Epoch.ElapsedSinceP epoch)
 instance Control.DeepSeq.NFData (Data.Hourglass.Epoch.ElapsedSince epoch)
 instance Data.Data.Data epoch => Data.Data.Data (Data.Hourglass.Epoch.ElapsedSince epoch)
 instance GHC.Num.Num (Data.Hourglass.Epoch.ElapsedSince epoch)
@@ -309,6 +300,15 @@ instance GHC.Classes.Ord (Data.Hourglass.Epoch.ElapsedSince epoch)
 instance GHC.Classes.Eq (Data.Hourglass.Epoch.ElapsedSince epoch)
 instance GHC.Read.Read (Data.Hourglass.Epoch.ElapsedSince epoch)
 instance GHC.Show.Show (Data.Hourglass.Epoch.ElapsedSince epoch)
+instance Data.Data.Data epoch => Data.Data.Data (Data.Hourglass.Epoch.ElapsedSinceP epoch)
+instance GHC.Classes.Ord (Data.Hourglass.Epoch.ElapsedSinceP epoch)
+instance GHC.Classes.Eq (Data.Hourglass.Epoch.ElapsedSinceP epoch)
+instance GHC.Read.Read (Data.Hourglass.Epoch.ElapsedSinceP epoch)
+instance GHC.Show.Show (Data.Hourglass.Epoch.ElapsedSinceP epoch)
+instance GHC.Classes.Eq Data.Hourglass.Epoch.UnixEpoch
+instance GHC.Show.Show Data.Hourglass.Epoch.UnixEpoch
+instance GHC.Classes.Eq Data.Hourglass.Epoch.WindowsEpoch
+instance GHC.Show.Show Data.Hourglass.Epoch.WindowsEpoch
 instance Data.Hourglass.Epoch.Epoch Data.Hourglass.Epoch.WindowsEpoch
 instance Data.Hourglass.Epoch.Epoch Data.Hourglass.Epoch.UnixEpoch
 instance Data.Hourglass.Epoch.Epoch epoch => Data.Hourglass.Time.Timeable (Data.Hourglass.Epoch.ElapsedSince epoch)

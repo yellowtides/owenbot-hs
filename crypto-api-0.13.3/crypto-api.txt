@@ -39,14 +39,14 @@ data BlockCipherError
 InputTooLong :: String -> BlockCipherError
 AuthenticationFailed :: String -> BlockCipherError
 Other :: String -> BlockCipherError
+instance GHC.Show.Show (Crypto.Types.IV k)
+instance GHC.Classes.Ord (Crypto.Types.IV k)
+instance GHC.Classes.Eq (Crypto.Types.IV k)
 instance Data.Data.Data Crypto.Types.BlockCipherError
 instance GHC.Read.Read Crypto.Types.BlockCipherError
 instance GHC.Show.Show Crypto.Types.BlockCipherError
 instance GHC.Classes.Ord Crypto.Types.BlockCipherError
 instance GHC.Classes.Eq Crypto.Types.BlockCipherError
-instance GHC.Show.Show (Crypto.Types.IV k)
-instance GHC.Classes.Ord (Crypto.Types.IV k)
-instance GHC.Classes.Eq (Crypto.Types.IV k)
 instance GHC.Exception.Type.Exception Crypto.Types.BlockCipherError
 
 
@@ -265,16 +265,16 @@ throwLeft :: Exception e => Either e a -> a
 --   <li>the handle to the system random is never closed</li>
 --   </ul>
 data SystemRandom
-instance Data.Data.Data Crypto.Random.ReseedInfo
-instance GHC.Read.Read Crypto.Random.ReseedInfo
-instance GHC.Show.Show Crypto.Random.ReseedInfo
-instance GHC.Classes.Ord Crypto.Random.ReseedInfo
-instance GHC.Classes.Eq Crypto.Random.ReseedInfo
 instance Data.Data.Data Crypto.Random.GenError
 instance GHC.Read.Read Crypto.Random.GenError
 instance GHC.Show.Show Crypto.Random.GenError
 instance GHC.Classes.Ord Crypto.Random.GenError
 instance GHC.Classes.Eq Crypto.Random.GenError
+instance Data.Data.Data Crypto.Random.ReseedInfo
+instance GHC.Read.Read Crypto.Random.ReseedInfo
+instance GHC.Show.Show Crypto.Random.ReseedInfo
+instance GHC.Classes.Ord Crypto.Random.ReseedInfo
+instance GHC.Classes.Eq Crypto.Random.ReseedInfo
 instance Crypto.Random.CryptoRandomGen Crypto.Random.SystemRandom
 instance GHC.Exception.Type.Exception Crypto.Random.GenError
 

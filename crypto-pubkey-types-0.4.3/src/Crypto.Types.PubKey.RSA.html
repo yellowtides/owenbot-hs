@@ -31,7 +31,7 @@
 </span><a href="Crypto.Types.PubKey.RSA.html#public_n"><span class="hs-identifier hs-var hs-var">public_n</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>  </span><span class="hs-comment">-- ^ public p*q</span><span>
 </span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="public_e"><span class="annot"><span class="annottext">PublicKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_e"><span class="hs-identifier hs-var hs-var">public_e</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>  </span><span class="hs-comment">-- ^ public exponant e</span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679070446"><span id="local-6989586621679070448"><span id="local-6989586621679070450"><span class="annot"><span class="annottext">Int -&gt; PublicKey -&gt; ShowS
+</span><span id="line-31"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679053429"><span id="local-6989586621679053431"><span id="local-6989586621679053433"><span class="annot"><span class="annottext">Int -&gt; PublicKey -&gt; ShowS
 [PublicKey] -&gt; ShowS
 PublicKey -&gt; String
 (Int -&gt; PublicKey -&gt; ShowS)
@@ -46,7 +46,7 @@ show :: PublicKey -&gt; String
 $cshow :: PublicKey -&gt; String
 showsPrec :: Int -&gt; PublicKey -&gt; ShowS
 $cshowsPrec :: Int -&gt; PublicKey -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070437"><span id="local-6989586621679070439"><span id="local-6989586621679070441"><span id="local-6989586621679070443"><span class="annot"><span class="annottext">ReadPrec [PublicKey]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053420"><span id="local-6989586621679053422"><span id="local-6989586621679053424"><span id="local-6989586621679053426"><span class="annot"><span class="annottext">ReadPrec [PublicKey]
 ReadPrec PublicKey
 Int -&gt; ReadS PublicKey
 ReadS [PublicKey]
@@ -66,7 +66,7 @@ readList :: ReadS [PublicKey]
 $creadList :: ReadS [PublicKey]
 readsPrec :: Int -&gt; ReadS PublicKey
 $creadsPrec :: Int -&gt; ReadS PublicKey
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070432"><span id="local-6989586621679070434"><span class="annot"><span class="annottext">PublicKey -&gt; PublicKey -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053415"><span id="local-6989586621679053417"><span class="annot"><span class="annottext">PublicKey -&gt; PublicKey -&gt; Bool
 (PublicKey -&gt; PublicKey -&gt; Bool)
 -&gt; (PublicKey -&gt; PublicKey -&gt; Bool) -&gt; Eq PublicKey
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -74,13 +74,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: PublicKey -&gt; PublicKey -&gt; Bool
 == :: PublicKey -&gt; PublicKey -&gt; Bool
 $c== :: PublicKey -&gt; PublicKey -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPublicKey"><span id="%24tPublicKey"><span id="local-6989586621679070402"><span id="local-6989586621679070404"><span id="local-6989586621679070406"><span id="local-6989586621679070408"><span id="local-6989586621679070410"><span id="local-6989586621679070412"><span id="local-6989586621679070414"><span id="local-6989586621679070416"><span id="local-6989586621679070418"><span id="local-6989586621679070420"><span id="local-6989586621679070422"><span id="local-6989586621679070424"><span id="local-6989586621679070426"><span id="local-6989586621679070428"><span class="annot"><span class="annottext">Typeable PublicKey
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPublicKey"><span id="%24tPublicKey"><span id="local-6989586621679053385"><span id="local-6989586621679053387"><span id="local-6989586621679053389"><span id="local-6989586621679053391"><span id="local-6989586621679053393"><span id="local-6989586621679053395"><span id="local-6989586621679053397"><span id="local-6989586621679053399"><span id="local-6989586621679053401"><span id="local-6989586621679053403"><span id="local-6989586621679053405"><span id="local-6989586621679053407"><span id="local-6989586621679053409"><span id="local-6989586621679053411"><span class="annot"><span class="annottext">Typeable PublicKey
 DataType
 Constr
-Typeable PublicKey =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; PublicKey -&gt; c PublicKey)
+Typeable PublicKey
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; PublicKey -&gt; c PublicKey)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PublicKey)
@@ -120,10 +120,10 @@ PublicKey -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PublicKey
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -234,10 +234,10 @@ $cp1Data :: Typeable PublicKey
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>
 </span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#PublicKey"><span class="hs-identifier hs-type">PublicKey</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-34"></span><span>    </span><span id="local-6989586621679070395"><span class="annot"><span class="annottext">toASN1 :: PublicKey -&gt; ASN1S
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></span></span><span> </span><span id="local-6989586621679070393"><span class="annot"><span class="annottext">pubKey :: PublicKey
-</span><a href="#local-6989586621679070393"><span class="hs-identifier hs-var">pubKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679070392"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679070392"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; ASN1
+</span><span id="line-34"></span><span>    </span><span id="local-6989586621679053378"><span class="annot"><span class="annottext">toASN1 :: PublicKey -&gt; ASN1S
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></span></span><span> </span><span id="local-6989586621679053376"><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679053376"><span class="hs-identifier hs-var">pubKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679053375"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053375"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; ASN1
 </span><span class="hs-identifier hs-var">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
 </span><span class="hs-identifier hs-var">Sequence</span></span><span>
 </span><span id="line-35"></span><span>                         </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
@@ -245,13 +245,13 @@ forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PublicKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_n"><span class="hs-identifier hs-var hs-var">public_n</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
-</span><a href="#local-6989586621679070393"><span class="hs-identifier hs-var">pubKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053376"><span class="hs-identifier hs-var">pubKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-36"></span><span>                         </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PublicKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_e"><span class="hs-identifier hs-var hs-var">public_e</span></a></span><span> </span><span class="annot"><span class="annottext">PublicKey
-</span><a href="#local-6989586621679070393"><span class="hs-identifier hs-var">pubKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053376"><span class="hs-identifier hs-var">pubKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span>                         </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; ASN1
@@ -260,72 +260,90 @@ forall a. a -&gt; [a] -&gt; [a]
 </span><span id="line-38"></span><span>                         </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070392"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679070387"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (PublicKey, [ASN1])
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070385"><span class="annot"><span class="annottext">smodulus :: Integer
-</span><a href="#local-6989586621679070385"><span class="hs-identifier hs-var">smodulus</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070384"><span class="annot"><span class="annottext">pubexp :: Integer
-</span><a href="#local-6989586621679070384"><span class="hs-identifier hs-var">pubexp</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679070383"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679070383"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679053375"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679053370"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (PublicKey, [ASN1])
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053368"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053368"><span class="hs-identifier hs-var">smodulus</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053367"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053367"><span class="hs-identifier hs-var">pubexp</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679053366"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053366"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-40"></span><span>        </span><span class="annot"><span class="annottext">(PublicKey, [ASN1]) -&gt; Either String (PublicKey, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PublicKey :: Int -&gt; Integer -&gt; Integer -&gt; PublicKey
-</span><a href="Crypto.Types.PubKey.RSA.html#PublicKey"><span class="hs-identifier hs-type hs-type">PublicKey</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">public_size :: Int
+</span><a href="Crypto.Types.PubKey.RSA.html#PublicKey"><span class="hs-identifier hs-type">PublicKey</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">public_size :: Int
 </span><a href="Crypto.Types.PubKey.RSA.html#public_size"><span class="hs-identifier hs-var">public_size</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int -&gt; Int
 forall t t. (Integral t, Num t, Ord t) =&gt; t -&gt; t -&gt; t
-</span><a href="#local-6989586621679070381"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070380"><span class="hs-identifier hs-var">modulus</span></a></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><a href="#local-6989586621679053365"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053364"><span class="hs-identifier hs-var">modulus</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
 </span><span id="line-41"></span><span>                         </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">public_n :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_n"><span class="hs-identifier hs-var">public_n</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070380"><span class="hs-identifier hs-var">modulus</span></a></span><span>
+</span><a href="#local-6989586621679053364"><span class="hs-identifier hs-var">modulus</span></a></span><span>
 </span><span id="line-42"></span><span>                         </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">public_e :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_e"><span class="hs-identifier hs-var">public_e</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070384"><span class="hs-identifier hs-var">pubexp</span></a></span><span>
+</span><a href="#local-6989586621679053367"><span class="hs-identifier hs-var">pubexp</span></a></span><span>
 </span><span id="line-43"></span><span>                         </span><span class="hs-special">}</span><span>
 </span><span id="line-44"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070383"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679070381"><span class="annot"><span class="annottext">calculate_modulus :: t -&gt; t -&gt; t
-</span><a href="#local-6989586621679070381"><span class="hs-identifier hs-var hs-var">calculate_modulus</span></a></span></span><span> </span><span id="local-6989586621679070379"><span class="annot"><span class="annottext">n :: t
-</span><a href="#local-6989586621679070379"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679070378"><span class="annot"><span class="annottext">i :: t
-</span><a href="#local-6989586621679070378"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053366"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679053365"><span class="annot"><span class="annottext">calculate_modulus :: t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053365"><span class="hs-identifier hs-var hs-var">calculate_modulus</span></a></span></span><span> </span><span id="local-6989586621679053363"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053363"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679053362"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053362"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
 forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
 </span><span class="hs-operator hs-var">^</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070378"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053362"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; Bool
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070379"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070378"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
-</span><a href="#local-6989586621679070381"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070379"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070378"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053363"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053362"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053365"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053363"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053362"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>              </span><span class="hs-comment">-- some bad implementation will not serialize ASN.1 integer properly, leading</span><span>
 </span><span id="line-47"></span><span>              </span><span class="hs-comment">-- to negative modulus. if that's the case, we correct it.</span><span>
-</span><span id="line-48"></span><span>              </span><span id="local-6989586621679070380"><span class="annot"><span class="annottext">modulus :: Integer
-</span><a href="#local-6989586621679070380"><span class="hs-identifier hs-var hs-var">modulus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer
+</span><span id="line-48"></span><span>              </span><span id="local-6989586621679053364"><span class="annot"><span class="annottext">modulus :: Integer
+</span><a href="#local-6989586621679053364"><span class="hs-identifier hs-var hs-var">modulus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#toPositive"><span class="hs-identifier hs-var">toPositive</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070385"><span class="hs-identifier hs-var">smodulus</span></a></span><span>
-</span><span id="line-49"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-50"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span class="hs-number">0</span><span>
-</span><span id="line-51"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-52"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OID</span></span><span> </span><span class="hs-special">[</span><span class="hs-number">1</span><span class="hs-special">,</span><span> </span><span class="hs-number">2</span><span class="hs-special">,</span><span> </span><span class="hs-number">840</span><span class="hs-special">,</span><span> </span><span class="hs-number">113549</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">]</span><span>
-</span><span id="line-53"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Null</span></span><span>
-</span><span id="line-54"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-55"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679070369"><span class="annot"><span class="annottext">bs :: ByteString
-</span><a href="#local-6989586621679070369"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
-</span><span id="line-56"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679070368"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679070368"><span class="hs-identifier hs-var">xs</span></a></span></span><span>
-</span><span id="line-57"></span><span>             </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679070367"><span class="annot"><span class="annottext">inner :: Either String (PublicKey, [ASN1])
-</span><a href="#local-6989586621679070367"><span class="hs-identifier hs-var hs-var">inner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ASN1Error -&gt; Either String (PublicKey, [ASN1]))
+</span><a href="#local-6989586621679053368"><span class="hs-identifier hs-var">smodulus</span></a></span><span>
+</span><span id="line-49"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-50"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-51"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-52"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OID</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">840</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">113549</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">]</span><span>
+</span><span id="line-53"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="annottext">ASN1
+</span><span class="hs-identifier hs-var">Null</span></span><span>
+</span><span id="line-54"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-55"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679053353"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679053353"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
+</span><span id="line-56"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679053352"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053352"><span class="hs-identifier hs-var">xs</span></a></span></span><span>
+</span><span id="line-57"></span><span>             </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679053351"><span class="annot"><span class="annottext">inner :: Either String (PublicKey, [ASN1])
+</span><a href="#local-6989586621679053351"><span class="hs-identifier hs-var hs-var">inner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ASN1Error -&gt; Either String (PublicKey, [ASN1]))
 -&gt; ([ASN1] -&gt; Either String (PublicKey, [ASN1]))
 -&gt; Either ASN1Error [ASN1]
 -&gt; Either String (PublicKey, [ASN1])
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">ASN1Error -&gt; Either String (PublicKey, [ASN1])
 forall b. ASN1Error -&gt; Either String b
-</span><a href="#local-6989586621679070365"><span class="hs-identifier hs-var">strError</span></a></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; Either String (PublicKey, [ASN1])
+</span><a href="#local-6989586621679053349"><span class="hs-identifier hs-var">strError</span></a></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; Either String (PublicKey, [ASN1])
 forall a. ASN1Object a =&gt; [ASN1] -&gt; Either String (a, [ASN1])
 </span><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="annot"><span class="annottext">(Either ASN1Error [ASN1] -&gt; Either String (PublicKey, [ASN1]))
 -&gt; Either ASN1Error [ASN1] -&gt; Either String (PublicKey, [ASN1])
@@ -336,15 +354,16 @@ ASN1Decoding a =&gt;
 a -&gt; ByteString -&gt; Either ASN1Error [ASN1]
 </span><span class="hs-identifier hs-var">decodeASN1'</span></span><span> </span><span class="annot"><span class="annottext">BER
 </span><span class="hs-identifier hs-var">BER</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679070369"><span class="hs-identifier hs-var">bs</span></a></span><span>
-</span><span id="line-58"></span><span>                     </span><span id="local-6989586621679070365"><span class="annot"><span class="annottext">strError :: ASN1Error -&gt; Either String b
-</span><a href="#local-6989586621679070365"><span class="hs-identifier hs-var hs-var">strError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String b
+</span><a href="#local-6989586621679053353"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-58"></span><span>                     </span><span id="local-6989586621679053349"><span class="annot"><span class="annottext">strError :: ASN1Error -&gt; Either String b
+</span><a href="#local-6989586621679053349"><span class="hs-identifier hs-var hs-var">strError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String b
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Either String b)
 -&gt; (ASN1Error -&gt; String) -&gt; ASN1Error -&gt; Either String b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span>
-</span><span id="line-59"></span><span>                                </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;fromASN1: RSA.PublicKey: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span id="line-59"></span><span>                                </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: RSA.PublicKey: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ShowS -&gt; (ASN1Error -&gt; String) -&gt; ASN1Error -&gt; String
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -358,17 +377,20 @@ forall a. Show a =&gt; a -&gt; String
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String (PublicKey, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679070362"><span class="annot"><span class="annottext">k :: PublicKey
-</span><a href="#local-6989586621679070362"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(PublicKey, [ASN1]) -&gt; Either String (PublicKey, [ASN1])
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679053346"><span class="annot"><span class="annottext">PublicKey
+</span><a href="#local-6989586621679053346"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(PublicKey, [ASN1]) -&gt; Either String (PublicKey, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PublicKey
-</span><a href="#local-6989586621679070362"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070368"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either String (PublicKey, [ASN1])
-</span><a href="#local-6989586621679070367"><span class="hs-identifier hs-var">inner</span></a></span><span>
-</span><span id="line-61"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679053346"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053352"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either String (PublicKey, [ASN1])
+</span><a href="#local-6989586621679053351"><span class="hs-identifier hs-var">inner</span></a></span><span>
+</span><span id="line-61"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-62"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; Either String (PublicKey, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="hs-string">&quot;fromASN1: RSA.PublicKey: unexpected format&quot;</span></span><span>
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: RSA.PublicKey: unexpected format&quot;</span></span><span>
 </span><span id="line-63"></span><span>
 </span><span id="line-64"></span><span class="hs-comment">-- | Represent a RSA private key.</span><span>
 </span><span id="line-65"></span><span class="hs-comment">-- </span><span>
@@ -395,7 +417,7 @@ forall a b. a -&gt; Either a b
 </span><a href="Crypto.Types.PubKey.RSA.html#private_dQ"><span class="hs-identifier hs-var hs-var">private_dQ</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>   </span><span class="hs-comment">-- ^ d mod (q-1)</span><span>
 </span><span id="line-81"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="private_qinv"><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_qinv"><span class="hs-identifier hs-var hs-var">private_qinv</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>   </span><span class="hs-comment">-- ^ q^(-1) mod p</span><span>
-</span><span id="line-82"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679070348"><span id="local-6989586621679070350"><span id="local-6989586621679070352"><span class="annot"><span class="annottext">Int -&gt; PrivateKey -&gt; ShowS
+</span><span id="line-82"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679053332"><span id="local-6989586621679053334"><span id="local-6989586621679053336"><span class="annot"><span class="annottext">Int -&gt; PrivateKey -&gt; ShowS
 [PrivateKey] -&gt; ShowS
 PrivateKey -&gt; String
 (Int -&gt; PrivateKey -&gt; ShowS)
@@ -410,7 +432,7 @@ show :: PrivateKey -&gt; String
 $cshow :: PrivateKey -&gt; String
 showsPrec :: Int -&gt; PrivateKey -&gt; ShowS
 $cshowsPrec :: Int -&gt; PrivateKey -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070340"><span id="local-6989586621679070342"><span id="local-6989586621679070344"><span id="local-6989586621679070346"><span class="annot"><span class="annottext">ReadPrec [PrivateKey]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053324"><span id="local-6989586621679053326"><span id="local-6989586621679053328"><span id="local-6989586621679053330"><span class="annot"><span class="annottext">ReadPrec [PrivateKey]
 ReadPrec PrivateKey
 Int -&gt; ReadS PrivateKey
 ReadS [PrivateKey]
@@ -430,7 +452,7 @@ readList :: ReadS [PrivateKey]
 $creadList :: ReadS [PrivateKey]
 readsPrec :: Int -&gt; ReadS PrivateKey
 $creadsPrec :: Int -&gt; ReadS PrivateKey
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070336"><span id="local-6989586621679070338"><span class="annot"><span class="annottext">PrivateKey -&gt; PrivateKey -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053320"><span id="local-6989586621679053322"><span class="annot"><span class="annottext">PrivateKey -&gt; PrivateKey -&gt; Bool
 (PrivateKey -&gt; PrivateKey -&gt; Bool)
 -&gt; (PrivateKey -&gt; PrivateKey -&gt; Bool) -&gt; Eq PrivateKey
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -438,13 +460,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: PrivateKey -&gt; PrivateKey -&gt; Bool
 == :: PrivateKey -&gt; PrivateKey -&gt; Bool
 $c== :: PrivateKey -&gt; PrivateKey -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPrivateKey"><span id="%24tPrivateKey"><span id="local-6989586621679070307"><span id="local-6989586621679070309"><span id="local-6989586621679070311"><span id="local-6989586621679070313"><span id="local-6989586621679070315"><span id="local-6989586621679070317"><span id="local-6989586621679070319"><span id="local-6989586621679070321"><span id="local-6989586621679070323"><span id="local-6989586621679070325"><span id="local-6989586621679070327"><span id="local-6989586621679070329"><span id="local-6989586621679070331"><span id="local-6989586621679070333"><span class="annot"><span class="annottext">Typeable PrivateKey
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cPrivateKey"><span id="%24tPrivateKey"><span id="local-6989586621679053291"><span id="local-6989586621679053293"><span id="local-6989586621679053295"><span id="local-6989586621679053297"><span id="local-6989586621679053299"><span id="local-6989586621679053301"><span id="local-6989586621679053303"><span id="local-6989586621679053305"><span id="local-6989586621679053307"><span id="local-6989586621679053309"><span id="local-6989586621679053311"><span id="local-6989586621679053313"><span id="local-6989586621679053315"><span id="local-6989586621679053317"><span class="annot"><span class="annottext">Typeable PrivateKey
 DataType
 Constr
-Typeable PrivateKey =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; PrivateKey -&gt; c PrivateKey)
+Typeable PrivateKey
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; PrivateKey -&gt; c PrivateKey)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PrivateKey)
@@ -485,10 +507,10 @@ PrivateKey -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c PrivateKey
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -626,16 +648,17 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="Crypto.Types.PubKey.RSA.html#private_pub"><span class="hs-identifier hs-var hs-var">private_pub</span></a></span><span>
 </span><span id="line-92"></span><span>
 </span><span id="line-93"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#PrivateKey"><span class="hs-identifier hs-type">PrivateKey</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-94"></span><span>    </span><span id="local-6989586621679070301"><span class="annot"><span class="annottext">toASN1 :: PrivateKey -&gt; ASN1S
-</span><a href="#local-6989586621679070301"><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></a></span></span><span> </span><span id="local-6989586621679070300"><span class="annot"><span class="annottext">privKey :: PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679070299"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679070299"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; ASN1
+</span><span id="line-94"></span><span>    </span><span id="local-6989586621679053285"><span class="annot"><span class="annottext">toASN1 :: PrivateKey -&gt; ASN1S
+</span><a href="#local-6989586621679053285"><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></a></span></span><span> </span><span id="local-6989586621679053284"><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679053283"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053283"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; ASN1
 </span><span class="hs-identifier hs-var">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
 </span><span class="hs-identifier hs-var">Sequence</span></span><span>
 </span><span id="line-95"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
-</span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span>
 </span><span id="line-96"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
@@ -644,7 +667,7 @@ forall a. a -&gt; [a] -&gt; [a]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; PublicKey
 </span><a href="Crypto.Types.PubKey.RSA.html#private_pub"><span class="hs-identifier hs-var hs-var">private_pub</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-97"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
@@ -653,37 +676,37 @@ forall a. a -&gt; [a] -&gt; [a]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; PublicKey
 </span><a href="Crypto.Types.PubKey.RSA.html#private_pub"><span class="hs-identifier hs-var hs-var">private_pub</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-98"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_d"><span class="hs-identifier hs-var hs-var">private_d</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-99"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_p"><span class="hs-identifier hs-var hs-var">private_p</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-100"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_q"><span class="hs-identifier hs-var hs-var">private_q</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-101"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_dP"><span class="hs-identifier hs-var hs-var">private_dP</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-102"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
 </span><span class="hs-identifier hs-var">IntVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_dQ"><span class="hs-identifier hs-var hs-var">private_dQ</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-103"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; ASN1
@@ -693,7 +716,7 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_qinv"><span class="hs-identifier hs-var hs-var">private_qinv</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070300"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679053284"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-104"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType -&gt; ASN1
@@ -702,53 +725,59 @@ forall a. a -&gt; [a] -&gt; [a]
 </span><span id="line-105"></span><span>                          </span><span class="annot"><span class="annottext">ASN1 -&gt; ASN1S
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070299"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-106"></span><span>    </span><span id="local-6989586621679070298"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (PrivateKey, [ASN1])
-</span><a href="#local-6989586621679070298"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-107"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span class="hs-number">0</span><span>
-</span><span id="line-108"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070297"><span class="annot"><span class="annottext">n :: Integer
-</span><a href="#local-6989586621679070297"><span class="hs-identifier hs-var">n</span></a></span></span><span>
-</span><span id="line-109"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070296"><span class="annot"><span class="annottext">e :: Integer
-</span><a href="#local-6989586621679070296"><span class="hs-identifier hs-var">e</span></a></span></span><span>
-</span><span id="line-110"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070295"><span class="annot"><span class="annottext">d :: Integer
-</span><a href="#local-6989586621679070295"><span class="hs-identifier hs-var">d</span></a></span></span><span>
-</span><span id="line-111"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070294"><span class="annot"><span class="annottext">p1 :: Integer
-</span><a href="#local-6989586621679070294"><span class="hs-identifier hs-var">p1</span></a></span></span><span>
-</span><span id="line-112"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070293"><span class="annot"><span class="annottext">p2 :: Integer
-</span><a href="#local-6989586621679070293"><span class="hs-identifier hs-var">p2</span></a></span></span><span>
-</span><span id="line-113"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070292"><span class="annot"><span class="annottext">pexp1 :: Integer
-</span><a href="#local-6989586621679070292"><span class="hs-identifier hs-var">pexp1</span></a></span></span><span>
-</span><span id="line-114"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070291"><span class="annot"><span class="annottext">pexp2 :: Integer
-</span><a href="#local-6989586621679070291"><span class="hs-identifier hs-var">pexp2</span></a></span></span><span>
-</span><span id="line-115"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679070290"><span class="annot"><span class="annottext">pcoef :: Integer
-</span><a href="#local-6989586621679070290"><span class="hs-identifier hs-var">pcoef</span></a></span></span><span>
-</span><span id="line-116"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-117"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679070289"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679070289"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PrivateKey, [ASN1]) -&gt; Either String (PrivateKey, [ASN1])
+</span><a href="#local-6989586621679053283"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-106"></span><span>    </span><span id="local-6989586621679053282"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (PrivateKey, [ASN1])
+</span><a href="#local-6989586621679053282"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-107"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-108"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053281"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053281"><span class="hs-identifier hs-var">n</span></a></span></span><span>
+</span><span id="line-109"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053280"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053280"><span class="hs-identifier hs-var">e</span></a></span></span><span>
+</span><span id="line-110"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053279"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053279"><span class="hs-identifier hs-var">d</span></a></span></span><span>
+</span><span id="line-111"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053278"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053278"><span class="hs-identifier hs-var">p1</span></a></span></span><span>
+</span><span id="line-112"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053277"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053277"><span class="hs-identifier hs-var">p2</span></a></span></span><span>
+</span><span id="line-113"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053276"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053276"><span class="hs-identifier hs-var">pexp1</span></a></span></span><span>
+</span><span id="line-114"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053275"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053275"><span class="hs-identifier hs-var">pexp2</span></a></span></span><span>
+</span><span id="line-115"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span id="local-6989586621679053274"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053274"><span class="hs-identifier hs-var">pcoef</span></a></span></span><span>
+</span><span id="line-116"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-117"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679053273"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053273"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PrivateKey, [ASN1]) -&gt; Either String (PrivateKey, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070288"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070289"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-118"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679070287"><span class="annot"><span class="annottext">calculate_modulus :: t -&gt; t -&gt; t
-</span><a href="#local-6989586621679070287"><span class="hs-identifier hs-var hs-var">calculate_modulus</span></a></span></span><span> </span><span id="local-6989586621679070286"><span class="annot"><span class="annottext">n :: t
-</span><a href="#local-6989586621679070286"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679070285"><span class="annot"><span class="annottext">i :: t
-</span><a href="#local-6989586621679070285"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053272"><span class="hs-identifier hs-var">privKey</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053273"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>        </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679053271"><span class="annot"><span class="annottext">calculate_modulus :: t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053271"><span class="hs-identifier hs-var hs-var">calculate_modulus</span></a></span></span><span> </span><span id="local-6989586621679053270"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053270"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679053269"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053269"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
 forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
 </span><span class="hs-operator hs-var">^</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070285"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053269"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; Bool
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">8</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070286"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070285"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
-</span><a href="#local-6989586621679070287"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070286"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070285"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053270"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053269"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
+</span><a href="#local-6989586621679053271"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053270"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053269"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">t -&gt; t -&gt; t
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
-</span><span id="line-119"></span><span>              </span><span id="local-6989586621679070288"><span class="annot"><span class="annottext">privKey :: PrivateKey
-</span><a href="#local-6989586621679070288"><span class="hs-identifier hs-var hs-var">privKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey :: PublicKey
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>              </span><span id="local-6989586621679053272"><span class="annot"><span class="annottext">privKey :: PrivateKey
+</span><a href="#local-6989586621679053272"><span class="hs-identifier hs-var hs-var">privKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey :: PublicKey
 -&gt; Integer
 -&gt; Integer
 -&gt; Integer
@@ -756,60 +785,73 @@ forall a. Num a =&gt; a -&gt; a -&gt; a
 -&gt; Integer
 -&gt; Integer
 -&gt; PrivateKey
-</span><a href="Crypto.Types.PubKey.RSA.html#PrivateKey"><span class="hs-identifier hs-type hs-type">PrivateKey</span></a></span><span>
+</span><a href="Crypto.Types.PubKey.RSA.html#PrivateKey"><span class="hs-identifier hs-type">PrivateKey</span></a></span><span>
 </span><span id="line-120"></span><span>                        </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">private_pub :: PublicKey
 </span><a href="Crypto.Types.PubKey.RSA.html#private_pub"><span class="hs-identifier hs-var">private_pub</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PublicKey :: Int -&gt; Integer -&gt; Integer -&gt; PublicKey
-</span><a href="Crypto.Types.PubKey.RSA.html#PublicKey"><span class="hs-identifier hs-type hs-type">PublicKey</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">public_size :: Int
+</span><a href="Crypto.Types.PubKey.RSA.html#PublicKey"><span class="hs-identifier hs-type">PublicKey</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">public_size :: Int
 </span><a href="Crypto.Types.PubKey.RSA.html#public_size"><span class="hs-identifier hs-var">public_size</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int -&gt; Int
 forall t t. (Integral t, Num t, Ord t) =&gt; t -&gt; t -&gt; t
-</span><a href="#local-6989586621679070287"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070297"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><a href="#local-6989586621679053271"><span class="hs-identifier hs-var">calculate_modulus</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053281"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
 </span><span id="line-121"></span><span>                                                   </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">public_n :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_n"><span class="hs-identifier hs-var">public_n</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070297"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679053281"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-122"></span><span>                                                   </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">public_e :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#public_e"><span class="hs-identifier hs-var">public_e</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070296"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679053280"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-123"></span><span>                                                   </span><span class="hs-special">}</span><span>
 </span><span id="line-124"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">private_d :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_d"><span class="hs-identifier hs-var">private_d</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070295"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><a href="#local-6989586621679053279"><span class="hs-identifier hs-var">d</span></a></span><span>
 </span><span id="line-125"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">private_p :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_p"><span class="hs-identifier hs-var">private_p</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070294"><span class="hs-identifier hs-var">p1</span></a></span><span>
+</span><a href="#local-6989586621679053278"><span class="hs-identifier hs-var">p1</span></a></span><span>
 </span><span id="line-126"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">private_q :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_q"><span class="hs-identifier hs-var">private_q</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070293"><span class="hs-identifier hs-var">p2</span></a></span><span>
+</span><a href="#local-6989586621679053277"><span class="hs-identifier hs-var">p2</span></a></span><span>
 </span><span id="line-127"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">private_dP :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_dP"><span class="hs-identifier hs-var">private_dP</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070292"><span class="hs-identifier hs-var">pexp1</span></a></span><span>
+</span><a href="#local-6989586621679053276"><span class="hs-identifier hs-var">pexp1</span></a></span><span>
 </span><span id="line-128"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">private_dQ :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_dQ"><span class="hs-identifier hs-var">private_dQ</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070291"><span class="hs-identifier hs-var">pexp2</span></a></span><span>
+</span><a href="#local-6989586621679053275"><span class="hs-identifier hs-var">pexp2</span></a></span><span>
 </span><span id="line-129"></span><span>                        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">private_qinv :: Integer
 </span><a href="Crypto.Types.PubKey.RSA.html#private_qinv"><span class="hs-identifier hs-var">private_qinv</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070290"><span class="hs-identifier hs-var">pcoef</span></a></span><span>
+</span><a href="#local-6989586621679053274"><span class="hs-identifier hs-var">pcoef</span></a></span><span>
 </span><span id="line-130"></span><span>                        </span><span class="hs-special">}</span><span>
 </span><span id="line-131"></span><span>
-</span><span id="line-132"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-133"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span class="hs-number">0</span><span>
-</span><span id="line-134"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-135"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OID</span></span><span> </span><span class="hs-special">[</span><span class="hs-number">1</span><span class="hs-special">,</span><span> </span><span class="hs-number">2</span><span class="hs-special">,</span><span> </span><span class="hs-number">840</span><span class="hs-special">,</span><span> </span><span class="hs-number">113549</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">]</span><span>
-</span><span id="line-136"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Null</span></span><span>
-</span><span id="line-137"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sequence</span></span><span>
-</span><span id="line-138"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679070283"><span class="annot"><span class="annottext">bs :: ByteString
-</span><a href="#local-6989586621679070283"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
-</span><span id="line-139"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679070282"><span class="annot"><span class="annottext">xs :: [ASN1]
-</span><a href="#local-6989586621679070282"><span class="hs-identifier hs-var">xs</span></a></span></span><span>
-</span><span id="line-140"></span><span>             </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679070281"><span class="annot"><span class="annottext">inner :: Either String (PrivateKey, [ASN1])
-</span><a href="#local-6989586621679070281"><span class="hs-identifier hs-var hs-var">inner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ASN1Error -&gt; Either String (PrivateKey, [ASN1]))
+</span><span id="line-132"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-133"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntVal</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-134"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Start</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-135"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OID</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">840</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">113549</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">]</span><span>
+</span><span id="line-136"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="annottext">ASN1
+</span><span class="hs-identifier hs-var">Null</span></span><span>
+</span><span id="line-137"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">End</span></span><span> </span><span class="annot"><span class="annottext">ASN1ConstructionType
+</span><span class="hs-identifier hs-var">Sequence</span></span><span>
+</span><span id="line-138"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">OctetString</span></span><span> </span><span id="local-6989586621679053268"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679053268"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
+</span><span id="line-139"></span><span>             </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679053267"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053267"><span class="hs-identifier hs-var">xs</span></a></span></span><span>
+</span><span id="line-140"></span><span>             </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679053266"><span class="annot"><span class="annottext">inner :: Either String (PrivateKey, [ASN1])
+</span><a href="#local-6989586621679053266"><span class="hs-identifier hs-var hs-var">inner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ASN1Error -&gt; Either String (PrivateKey, [ASN1]))
 -&gt; ([ASN1] -&gt; Either String (PrivateKey, [ASN1]))
 -&gt; Either ASN1Error [ASN1]
 -&gt; Either String (PrivateKey, [ASN1])
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">ASN1Error -&gt; Either String (PrivateKey, [ASN1])
 forall b. ASN1Error -&gt; Either String b
-</span><a href="#local-6989586621679070280"><span class="hs-identifier hs-var">strError</span></a></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; Either String (PrivateKey, [ASN1])
+</span><a href="#local-6989586621679053265"><span class="hs-identifier hs-var">strError</span></a></span><span> </span><span class="annot"><span class="annottext">[ASN1] -&gt; Either String (PrivateKey, [ASN1])
 forall a. ASN1Object a =&gt; [ASN1] -&gt; Either String (a, [ASN1])
 </span><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="annot"><span class="annottext">(Either ASN1Error [ASN1] -&gt; Either String (PrivateKey, [ASN1]))
 -&gt; Either ASN1Error [ASN1] -&gt; Either String (PrivateKey, [ASN1])
@@ -820,15 +862,16 @@ ASN1Decoding a =&gt;
 a -&gt; ByteString -&gt; Either ASN1Error [ASN1]
 </span><span class="hs-identifier hs-var">decodeASN1'</span></span><span> </span><span class="annot"><span class="annottext">BER
 </span><span class="hs-identifier hs-var">BER</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679070283"><span class="hs-identifier hs-var">bs</span></a></span><span>
-</span><span id="line-141"></span><span>                     </span><span id="local-6989586621679070280"><span class="annot"><span class="annottext">strError :: ASN1Error -&gt; Either String b
-</span><a href="#local-6989586621679070280"><span class="hs-identifier hs-var hs-var">strError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String b
+</span><a href="#local-6989586621679053268"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-141"></span><span>                     </span><span id="local-6989586621679053265"><span class="annot"><span class="annottext">strError :: ASN1Error -&gt; Either String b
+</span><a href="#local-6989586621679053265"><span class="hs-identifier hs-var hs-var">strError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String b
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Either String b)
 -&gt; (ASN1Error -&gt; String) -&gt; ASN1Error -&gt; Either String b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span>
-</span><span id="line-142"></span><span>                                </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;fromASN1: RSA.PrivateKey: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span id="line-142"></span><span>                                </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: RSA.PrivateKey: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ShowS -&gt; (ASN1Error -&gt; String) -&gt; ASN1Error -&gt; String
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -842,23 +885,26 @@ forall a. Show a =&gt; a -&gt; String
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String (PrivateKey, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679070279"><span class="annot"><span class="annottext">k :: PrivateKey
-</span><a href="#local-6989586621679070279"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(PrivateKey, [ASN1]) -&gt; Either String (PrivateKey, [ASN1])
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679053264"><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053264"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(PrivateKey, [ASN1]) -&gt; Either String (PrivateKey, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070279"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070282"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either String (PrivateKey, [ASN1])
-</span><a href="#local-6989586621679070281"><span class="hs-identifier hs-var">inner</span></a></span><span>
-</span><span id="line-144"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679053264"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053267"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either String (PrivateKey, [ASN1])
+</span><a href="#local-6989586621679053266"><span class="hs-identifier hs-var">inner</span></a></span><span>
+</span><span id="line-144"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">fromASN1</span></span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-145"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; Either String (PrivateKey, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="hs-string">&quot;fromASN1: RSA.PrivateKey: unexpected format&quot;</span></span><span>
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;fromASN1: RSA.PrivateKey: unexpected format&quot;</span></span><span>
 </span><span id="line-146"></span><span>
 </span><span id="line-147"></span><span class="hs-comment">-- | Represent RSA KeyPair</span><span>
 </span><span id="line-148"></span><span class="hs-comment">--</span><span>
 </span><span id="line-149"></span><span class="hs-comment">-- note the RSA private key contains already an instance of public key for efficiency</span><span>
 </span><span id="line-150"></span><span class="hs-keyword">newtype</span><span> </span><span id="KeyPair"><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-var">KeyPair</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="KeyPair"><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-var">KeyPair</span></a></span></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#PrivateKey"><span class="hs-identifier hs-type">PrivateKey</span></a></span><span>
-</span><span id="line-151"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679070272"><span id="local-6989586621679070274"><span id="local-6989586621679070276"><span class="annot"><span class="annottext">Int -&gt; KeyPair -&gt; ShowS
+</span><span id="line-151"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679053257"><span id="local-6989586621679053259"><span id="local-6989586621679053261"><span class="annot"><span class="annottext">Int -&gt; KeyPair -&gt; ShowS
 [KeyPair] -&gt; ShowS
 KeyPair -&gt; String
 (Int -&gt; KeyPair -&gt; ShowS)
@@ -871,7 +917,7 @@ show :: KeyPair -&gt; String
 $cshow :: KeyPair -&gt; String
 showsPrec :: Int -&gt; KeyPair -&gt; ShowS
 $cshowsPrec :: Int -&gt; KeyPair -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070264"><span id="local-6989586621679070266"><span id="local-6989586621679070268"><span id="local-6989586621679070270"><span class="annot"><span class="annottext">ReadPrec [KeyPair]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053249"><span id="local-6989586621679053251"><span id="local-6989586621679053253"><span id="local-6989586621679053255"><span class="annot"><span class="annottext">ReadPrec [KeyPair]
 ReadPrec KeyPair
 Int -&gt; ReadS KeyPair
 ReadS [KeyPair]
@@ -891,7 +937,7 @@ readList :: ReadS [KeyPair]
 $creadList :: ReadS [KeyPair]
 readsPrec :: Int -&gt; ReadS KeyPair
 $creadsPrec :: Int -&gt; ReadS KeyPair
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679070260"><span id="local-6989586621679070262"><span class="annot"><span class="annottext">KeyPair -&gt; KeyPair -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679053245"><span id="local-6989586621679053247"><span class="annot"><span class="annottext">KeyPair -&gt; KeyPair -&gt; Bool
 (KeyPair -&gt; KeyPair -&gt; Bool)
 -&gt; (KeyPair -&gt; KeyPair -&gt; Bool) -&gt; Eq KeyPair
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -899,13 +945,13 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: KeyPair -&gt; KeyPair -&gt; Bool
 == :: KeyPair -&gt; KeyPair -&gt; Bool
 $c== :: KeyPair -&gt; KeyPair -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cKeyPair"><span id="%24tKeyPair"><span id="local-6989586621679070231"><span id="local-6989586621679070233"><span id="local-6989586621679070235"><span id="local-6989586621679070237"><span id="local-6989586621679070239"><span id="local-6989586621679070241"><span id="local-6989586621679070243"><span id="local-6989586621679070245"><span id="local-6989586621679070247"><span id="local-6989586621679070249"><span id="local-6989586621679070251"><span id="local-6989586621679070253"><span id="local-6989586621679070255"><span id="local-6989586621679070257"><span class="annot"><span class="annottext">Typeable KeyPair
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="%24cKeyPair"><span id="%24tKeyPair"><span id="local-6989586621679053216"><span id="local-6989586621679053218"><span id="local-6989586621679053220"><span id="local-6989586621679053222"><span id="local-6989586621679053224"><span id="local-6989586621679053226"><span id="local-6989586621679053228"><span id="local-6989586621679053230"><span id="local-6989586621679053232"><span id="local-6989586621679053234"><span id="local-6989586621679053236"><span id="local-6989586621679053238"><span id="local-6989586621679053240"><span id="local-6989586621679053242"><span class="annot"><span class="annottext">Typeable KeyPair
 DataType
 Constr
-Typeable KeyPair =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; KeyPair -&gt; c KeyPair)
+Typeable KeyPair
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; KeyPair -&gt; c KeyPair)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c KeyPair)
@@ -944,10 +990,10 @@ KeyPair -&gt; Constr
 (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
 -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c KeyPair
 forall a.
-Typeable a =&gt;
-(forall (c :: * -&gt; *).
- (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
- -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
+Typeable a
+-&gt; (forall (c :: * -&gt; *).
+    (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
+    -&gt; (forall g. g -&gt; c g) -&gt; a -&gt; c a)
 -&gt; (forall (c :: * -&gt; *).
     (forall b r. Data b =&gt; c (b -&gt; r) -&gt; c r)
     -&gt; (forall r. r -&gt; c r) -&gt; Constr -&gt; c a)
@@ -1058,28 +1104,28 @@ $cp1Data :: Typeable KeyPair
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span class="hs-special">)</span><span>
 </span><span id="line-152"></span><span>
 </span><span id="line-153"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ASN1Object</span></span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-154"></span><span>    </span><span id="local-6989586621679070226"><span class="annot"><span class="annottext">toASN1 :: KeyPair -&gt; ASN1S
-</span><a href="#local-6989586621679070226"><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679070225"><span class="annot"><span class="annottext">pkey :: PrivateKey
-</span><a href="#local-6989586621679070225"><span class="hs-identifier hs-var">pkey</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; ASN1S
+</span><span id="line-154"></span><span>    </span><span id="local-6989586621679053211"><span class="annot"><span class="annottext">toASN1 :: KeyPair -&gt; ASN1S
+</span><a href="#local-6989586621679053211"><span class="hs-identifier hs-var hs-var hs-var hs-var">toASN1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679053210"><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053210"><span class="hs-identifier hs-var">pkey</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; ASN1S
 forall a. ASN1Object a =&gt; a -&gt; ASN1S
 </span><span class="hs-identifier hs-var">toASN1</span></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070225"><span class="hs-identifier hs-var">pkey</span></a></span><span>
-</span><span id="line-155"></span><span>    </span><span id="local-6989586621679070224"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (KeyPair, [ASN1])
-</span><a href="#local-6989586621679070224"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Either String (KeyPair, [ASN1]))
+</span><a href="#local-6989586621679053210"><span class="hs-identifier hs-var">pkey</span></a></span><span>
+</span><span id="line-155"></span><span>    </span><span id="local-6989586621679053209"><span class="annot"><span class="annottext">fromASN1 :: [ASN1] -&gt; Either String (KeyPair, [ASN1])
+</span><a href="#local-6989586621679053209"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromASN1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Either String (KeyPair, [ASN1]))
 -&gt; ((PrivateKey, [ASN1]) -&gt; Either String (KeyPair, [ASN1]))
 -&gt; Either String (PrivateKey, [ASN1])
 -&gt; Either String (KeyPair, [ASN1])
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String (KeyPair, [ASN1])
 forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679070223"><span class="annot"><span class="annottext">k :: PrivateKey
-</span><a href="#local-6989586621679070223"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679070222"><span class="annot"><span class="annottext">s :: [ASN1]
-</span><a href="#local-6989586621679070222"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(KeyPair, [ASN1]) -&gt; Either String (KeyPair, [ASN1])
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679053208"><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053208"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679053207"><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053207"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(KeyPair, [ASN1]) -&gt; Either String (KeyPair, [ASN1])
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrivateKey -&gt; KeyPair
 </span><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-var">KeyPair</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070223"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
-</span><a href="#local-6989586621679070222"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either String (PrivateKey, [ASN1])
+</span><a href="#local-6989586621679053208"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ASN1]
+</span><a href="#local-6989586621679053207"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either String (PrivateKey, [ASN1])
  -&gt; Either String (KeyPair, [ASN1]))
 -&gt; ([ASN1] -&gt; Either String (PrivateKey, [ASN1]))
 -&gt; [ASN1]
@@ -1092,71 +1138,76 @@ forall a. ASN1Object a =&gt; [ASN1] -&gt; Either String (a, [ASN1])
 </span><span id="line-157"></span><span class="hs-comment">-- | Public key of a RSA KeyPair</span><span>
 </span><span id="line-158"></span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#toPublicKey"><span class="hs-identifier hs-type">toPublicKey</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#PublicKey"><span class="hs-identifier hs-type">PublicKey</span></a></span><span>
 </span><span id="line-159"></span><span id="toPublicKey"><span class="annot"><span class="annottext">toPublicKey :: KeyPair -&gt; PublicKey
-</span><a href="Crypto.Types.PubKey.RSA.html#toPublicKey"><span class="hs-identifier hs-var hs-var">toPublicKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679070221"><span class="annot"><span class="annottext">priv :: PrivateKey
-</span><a href="#local-6989586621679070221"><span class="hs-identifier hs-var">priv</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; PublicKey
+</span><a href="Crypto.Types.PubKey.RSA.html#toPublicKey"><span class="hs-identifier hs-var hs-var">toPublicKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679053206"><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053206"><span class="hs-identifier hs-var">priv</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey -&gt; PublicKey
 </span><a href="Crypto.Types.PubKey.RSA.html#private_pub"><span class="hs-identifier hs-var hs-var">private_pub</span></a></span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070221"><span class="hs-identifier hs-var">priv</span></a></span><span>
+</span><a href="#local-6989586621679053206"><span class="hs-identifier hs-var">priv</span></a></span><span>
 </span><span id="line-160"></span><span>
 </span><span id="line-161"></span><span class="hs-comment">-- | Private key of a RSA KeyPair</span><span>
 </span><span id="line-162"></span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#toPrivateKey"><span class="hs-identifier hs-type">toPrivateKey</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#PrivateKey"><span class="hs-identifier hs-type">PrivateKey</span></a></span><span>
 </span><span id="line-163"></span><span id="toPrivateKey"><span class="annot"><span class="annottext">toPrivateKey :: KeyPair -&gt; PrivateKey
-</span><a href="Crypto.Types.PubKey.RSA.html#toPrivateKey"><span class="hs-identifier hs-var hs-var">toPrivateKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679070220"><span class="annot"><span class="annottext">priv :: PrivateKey
-</span><a href="#local-6989586621679070220"><span class="hs-identifier hs-var">priv</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey
-</span><a href="#local-6989586621679070220"><span class="hs-identifier hs-var">priv</span></a></span><span>
+</span><a href="Crypto.Types.PubKey.RSA.html#toPrivateKey"><span class="hs-identifier hs-var hs-var">toPrivateKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#KeyPair"><span class="hs-identifier hs-type">KeyPair</span></a></span><span> </span><span id="local-6989586621679053205"><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053205"><span class="hs-identifier hs-var">priv</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PrivateKey
+</span><a href="#local-6989586621679053205"><span class="hs-identifier hs-var">priv</span></a></span><span>
 </span><span id="line-164"></span><span>
 </span><span id="line-165"></span><span class="annot"><a href="Crypto.Types.PubKey.RSA.html#toPositive"><span class="hs-identifier hs-type">toPositive</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
 </span><span id="line-166"></span><span id="toPositive"><span class="annot"><span class="annottext">toPositive :: Integer -&gt; Integer
-</span><a href="Crypto.Types.PubKey.RSA.html#toPositive"><span class="hs-identifier hs-var hs-var">toPositive</span></a></span></span><span> </span><span id="local-6989586621679070219"><span class="annot"><span class="annottext">int :: Integer
-</span><a href="#local-6989586621679070219"><span class="hs-identifier hs-var">int</span></a></span></span><span>
+</span><a href="Crypto.Types.PubKey.RSA.html#toPositive"><span class="hs-identifier hs-var hs-var">toPositive</span></a></span></span><span> </span><span id="local-6989586621679053204"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053204"><span class="hs-identifier hs-var">int</span></a></span></span><span>
 </span><span id="line-167"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070219"><span class="hs-identifier hs-var">int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621679053204"><span class="hs-identifier hs-var">int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Integer
-</span><a href="#local-6989586621679070217"><span class="hs-identifier hs-var">uintOfBytes</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Integer) -&gt; [Word8] -&gt; Integer
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Integer
+</span><a href="#local-6989586621679053202"><span class="hs-identifier hs-var">uintOfBytes</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Integer) -&gt; [Word8] -&gt; Integer
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Word8]
-</span><a href="#local-6989586621679070216"><span class="hs-identifier hs-var">bytesOfInt</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070219"><span class="hs-identifier hs-var">int</span></a></span><span>
+</span><a href="#local-6989586621679053201"><span class="hs-identifier hs-var">bytesOfInt</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053204"><span class="hs-identifier hs-var">int</span></a></span><span>
 </span><span id="line-168"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070219"><span class="hs-identifier hs-var">int</span></a></span><span>
-</span><span id="line-169"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679070217"><span class="annot"><span class="annottext">uintOfBytes :: [Word8] -&gt; Integer
-</span><a href="#local-6989586621679070217"><span class="hs-identifier hs-var hs-var">uintOfBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Word8 -&gt; Integer) -&gt; Integer -&gt; [Word8] -&gt; Integer
+</span><a href="#local-6989586621679053204"><span class="hs-identifier hs-var">int</span></a></span><span>
+</span><span id="line-169"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679053202"><span class="annot"><span class="annottext">uintOfBytes :: [Word8] -&gt; Integer
+</span><a href="#local-6989586621679053202"><span class="hs-identifier hs-var hs-var">uintOfBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Word8 -&gt; Integer) -&gt; Integer -&gt; [Word8] -&gt; Integer
 forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
-</span><span class="hs-identifier hs-var">foldl</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679070214"><span class="annot"><span class="annottext">acc :: Integer
-</span><a href="#local-6989586621679070214"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span id="local-6989586621679070213"><span class="annot"><span class="annottext">n :: Word8
-</span><a href="#local-6989586621679070213"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070214"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int -&gt; Integer
+</span><span class="hs-identifier hs-var">foldl</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679053199"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053199"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span id="local-6989586621679053198"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679053198"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053199"><span class="hs-identifier hs-var">acc</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int -&gt; Integer
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
-</span><span class="hs-operator hs-var">`shiftL`</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><span class="hs-operator hs-var">`shiftL`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621679070213"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
-</span><span id="line-170"></span><span>        </span><span class="annot"><a href="#local-6989586621679070216"><span class="hs-identifier hs-type">bytesOfInt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">]</span><span>
-</span><span id="line-171"></span><span>        </span><span id="local-6989586621679070216"><span class="annot"><span class="annottext">bytesOfInt :: Integer -&gt; [Word8]
-</span><a href="#local-6989586621679070216"><span class="hs-identifier hs-var hs-var">bytesOfInt</span></a></span></span><span> </span><span id="local-6989586621679070212"><span class="annot"><span class="annottext">n :: Integer
-</span><a href="#local-6989586621679070212"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679053198"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-170"></span><span>        </span><span class="annot"><a href="#local-6989586621679053201"><span class="hs-identifier hs-type">bytesOfInt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">]</span><span>
+</span><span id="line-171"></span><span>        </span><span id="local-6989586621679053201"><span class="annot"><span class="annottext">bytesOfInt :: Integer -&gt; [Word8]
+</span><a href="#local-6989586621679053201"><span class="hs-identifier hs-var hs-var">bytesOfInt</span></a></span></span><span> </span><span id="local-6989586621679053197"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679053197"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Int -&gt; Bool
 forall a. Bits a =&gt; a -&gt; Int -&gt; Bool
 </span><span class="hs-identifier hs-var">testBit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Word8] -&gt; Word8
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[Word8]
-</span><a href="#local-6989586621679070210"><span class="hs-identifier hs-var">nints</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">7</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">[Word8]
-</span><a href="#local-6989586621679070210"><span class="hs-identifier hs-var">nints</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="hs-number">0xff</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; [Word8] -&gt; [Word8]
+</span><a href="#local-6989586621679053195"><span class="hs-identifier hs-var">nints</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">7</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679053195"><span class="hs-identifier hs-var">nints</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">0xff</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; [Word8] -&gt; [Word8]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[Word8]
-</span><a href="#local-6989586621679070210"><span class="hs-identifier hs-var">nints</span></a></span><span>
-</span><span id="line-172"></span><span>          </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679070210"><span class="annot"><span class="annottext">nints :: [Word8]
-</span><a href="#local-6989586621679070210"><span class="hs-identifier hs-var hs-var">nints</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; [Word8]
+</span><a href="#local-6989586621679053195"><span class="hs-identifier hs-var">nints</span></a></span><span>
+</span><span id="line-172"></span><span>          </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679053195"><span class="annot"><span class="annottext">nints :: [Word8]
+</span><a href="#local-6989586621679053195"><span class="hs-identifier hs-var hs-var">nints</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; [Word8]
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">reverse</span></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; [Word8]) -&gt; [Word8] -&gt; [Word8]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; [Word8]
 forall a. (Num a, Eq a) =&gt; [a] -&gt; [a]
-</span><a href="#local-6989586621679070208"><span class="hs-identifier hs-var">plusOne</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; [Word8]) -&gt; [Word8] -&gt; [Word8]
+</span><a href="#local-6989586621679053193"><span class="hs-identifier hs-var">plusOne</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; [Word8]) -&gt; [Word8] -&gt; [Word8]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; [Word8]
 forall a. [a] -&gt; [a]
@@ -1170,54 +1221,61 @@ forall a. Bits a =&gt; a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Word8]
 forall t a. (Integral t, Bits a, Bits t, Num a) =&gt; t -&gt; [a]
-</span><a href="#local-6989586621679070207"><span class="hs-identifier hs-var">bytesOfUInt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer
+</span><a href="#local-6989586621679053192"><span class="hs-identifier hs-var">bytesOfUInt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">abs</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679070212"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-173"></span><span>                </span><span id="local-6989586621679070208"><span class="annot"><span class="annottext">plusOne :: [a] -&gt; [a]
-</span><a href="#local-6989586621679070208"><span class="hs-identifier hs-var hs-var">plusOne</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">]</span><span>
-</span><span id="line-174"></span><span>                </span><span class="annot"><a href="#local-6989586621679070208"><span class="hs-identifier hs-var">plusOne</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679070205"><span class="annot"><span class="annottext">x :: a
-</span><a href="#local-6989586621679070205"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679070204"><span class="annot"><span class="annottext">xs :: [a]
-</span><a href="#local-6989586621679070204"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679070205"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
+</span><a href="#local-6989586621679053197"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-173"></span><span>                </span><span id="local-6989586621679053193"><span class="annot"><span class="annottext">plusOne :: [a] -&gt; [a]
+</span><a href="#local-6989586621679053193"><span class="hs-identifier hs-var hs-var">plusOne</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><span class="hs-number">1</span></span><span class="hs-special">]</span><span>
+</span><span id="line-174"></span><span>                </span><span class="annot"><a href="#local-6989586621679053193"><span class="hs-identifier hs-var">plusOne</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679053190"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679053190"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679053189"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679053189"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679053190"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0xff</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-number">0xff</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a]
-</span><a href="#local-6989586621679070208"><span class="hs-identifier hs-var">plusOne</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679070204"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679070205"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679053193"><span class="hs-identifier hs-var">plusOne</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679053189"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679053190"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">a
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679070204"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-175"></span><span>                </span><span id="local-6989586621679070207"><span class="annot"><span class="annottext">bytesOfUInt :: t -&gt; [a]
-</span><a href="#local-6989586621679070207"><span class="hs-identifier hs-var hs-var">bytesOfUInt</span></a></span></span><span> </span><span id="local-6989586621679070203"><span class="annot"><span class="annottext">x :: t
-</span><a href="#local-6989586621679070203"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a]
+</span><a href="#local-6989586621679053189"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-175"></span><span>                </span><span id="local-6989586621679053192"><span class="annot"><span class="annottext">bytesOfUInt :: t -&gt; [a]
+</span><a href="#local-6989586621679053192"><span class="hs-identifier hs-var hs-var">bytesOfUInt</span></a></span></span><span> </span><span id="local-6989586621679053188"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053188"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a]
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">reverse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t -&gt; [a]
 forall t a. (Integral t, Num a, Bits a, Bits t) =&gt; t -&gt; [a]
-</span><a href="#local-6989586621679070202"><span class="hs-identifier hs-var">list</span></a></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070203"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-176"></span><span>                  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679070202"><span class="annot"><span class="annottext">list :: t -&gt; [a]
-</span><a href="#local-6989586621679070202"><span class="hs-identifier hs-var hs-var">list</span></a></span></span><span> </span><span id="local-6989586621679070201"><span class="annot"><span class="annottext">i :: t
-</span><a href="#local-6989586621679070201"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070201"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; Bool
+</span><a href="#local-6989586621679053187"><span class="hs-identifier hs-var">list</span></a></span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053188"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-176"></span><span>                  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679053187"><span class="annot"><span class="annottext">list :: t -&gt; [a]
+</span><a href="#local-6989586621679053187"><span class="hs-identifier hs-var hs-var">list</span></a></span></span><span> </span><span id="local-6989586621679053186"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053186"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053186"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; t -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
-</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="hs-number">0xff</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">t -&gt; a
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">t
+</span><span class="hs-number">0xff</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">t -&gt; a
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070201"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t -&gt; a
+</span><a href="#local-6989586621679053186"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t -&gt; a
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070201"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679053186"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Bits a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">.&amp;.</span></span><span> </span><span class="annot"><span class="hs-number">0xff</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">.&amp;.</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-number">0xff</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">t -&gt; [a]
-</span><a href="#local-6989586621679070202"><span class="hs-identifier hs-var">list</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
-</span><a href="#local-6989586621679070201"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; Int -&gt; t
+</span><a href="#local-6989586621679053187"><span class="hs-identifier hs-var">list</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679053186"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; Int -&gt; t
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
-</span><span class="hs-operator hs-var">`shiftR`</span></span><span> </span><span class="annot"><span class="hs-number">8</span></span><span class="hs-special">)</span><span>
+</span><span class="hs-operator hs-var">`shiftR`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">)</span><span>
 </span><span id="line-177"></span></pre></body></html>

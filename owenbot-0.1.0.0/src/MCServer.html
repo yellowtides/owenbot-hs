@@ -27,7 +27,7 @@
 </span><a href="MCServer.html#getStatus"><span class="hs-identifier hs-var">getStatus</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Message -&gt; DiscordHandler ()
 </span><a href="MCServer.html#setServer"><span class="hs-identifier hs-var">setServer</span></a></span><span> </span><span class="hs-special">]</span><span>
 </span><span id="line-26"></span><span>
-</span><span id="line-27"></span><span id="local-6989586621679186944"><span id="local-6989586621679186945"></span></span><span class="hs-keyword">data</span><span> </span><span id="ServerStatus"><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-var">ServerStatus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ServerStatus"><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-var">ServerStatus</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-27"></span><span id="local-6989586621679165647"><span id="local-6989586621679165648"></span></span><span class="hs-keyword">data</span><span> </span><span id="ServerStatus"><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-var">ServerStatus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ServerStatus"><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-var">ServerStatus</span></a></span></span><span> </span><span class="hs-special">{</span><span>
 </span><span id="line-28"></span><span>    </span><span id="ip"><span class="annot"><span class="annottext">ServerStatus -&gt; String
 </span><a href="MCServer.html#ip"><span class="hs-identifier hs-var hs-var">ip</span></a></span></span><span>              </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span>
 </span><span id="line-29"></span><span>    </span><span id="online"><span class="annot"><span class="annottext">ServerStatus -&gt; Bool
@@ -40,7 +40,7 @@
 </span><a href="MCServer.html#version"><span class="hs-identifier hs-var hs-var">version</span></a></span></span><span>         </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span>
 </span><span id="line-33"></span><span>    </span><span id="software"><span class="annot"><span class="annottext">ServerStatus -&gt; Maybe String
 </span><a href="MCServer.html#software"><span class="hs-identifier hs-var hs-var">software</span></a></span></span><span>        </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-34"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679186931"><span id="local-6989586621679186933"><span id="local-6989586621679186935"><span class="annot"><span class="annottext">Int -&gt; ServerStatus -&gt; ShowS
+</span><span id="line-34"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679165634"><span id="local-6989586621679165636"><span id="local-6989586621679165638"><span class="annot"><span class="annottext">Int -&gt; ServerStatus -&gt; ShowS
 [ServerStatus] -&gt; ShowS
 ServerStatus -&gt; String
 (Int -&gt; ServerStatus -&gt; ShowS)
@@ -66,17 +66,17 @@ $cto :: forall x. Rep ServerStatus x -&gt; ServerStatus
 $cfrom :: forall x. ServerStatus -&gt; Rep ServerStatus x
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
 </span><span id="line-35"></span><span>
-</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679186923"><span id="local-6989586621679186925"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-type">ServerStatus</span></a></span></span></span><span>
-</span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679186914"><span id="local-6989586621679186916"><span id="local-6989586621679186918"><span id="local-6989586621679186920"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-type">ServerStatus</span></a></span></span></span></span></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679165626"><span id="local-6989586621679165628"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-type">ServerStatus</span></a></span></span></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679165617"><span id="local-6989586621679165619"><span id="local-6989586621679165621"><span id="local-6989586621679165623"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-type">ServerStatus</span></a></span></span></span></span></span><span>
 </span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span id="local-6989586621679186911"><span id="local-6989586621679186912"></span></span><span class="hs-keyword">data</span><span> </span><span id="ServerMOTD"><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-var">ServerMOTD</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ServerMOTD"><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-var">ServerMOTD</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-39"></span><span id="local-6989586621679165614"><span id="local-6989586621679165615"></span></span><span class="hs-keyword">data</span><span> </span><span id="ServerMOTD"><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-var">ServerMOTD</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ServerMOTD"><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-var">ServerMOTD</span></a></span></span><span> </span><span class="hs-special">{</span><span>
 </span><span id="line-40"></span><span>    </span><span id="raw"><span class="annot"><span class="annottext">ServerMOTD -&gt; [String]
 </span><a href="MCServer.html#raw"><span class="hs-identifier hs-var hs-var">raw</span></a></span></span><span>             </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span>
 </span><span id="line-41"></span><span>    </span><span id="clean"><span class="annot"><span class="annottext">ServerMOTD -&gt; [String]
 </span><a href="MCServer.html#clean"><span class="hs-identifier hs-var hs-var">clean</span></a></span></span><span>           </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span>
 </span><span id="line-42"></span><span>    </span><span id="html"><span class="annot"><span class="annottext">ServerMOTD -&gt; [String]
 </span><a href="MCServer.html#html"><span class="hs-identifier hs-var hs-var">html</span></a></span></span><span>            </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
-</span><span id="line-43"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679186901"><span id="local-6989586621679186903"><span id="local-6989586621679186905"><span class="annot"><span class="annottext">Int -&gt; ServerMOTD -&gt; ShowS
+</span><span id="line-43"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679165604"><span id="local-6989586621679165606"><span id="local-6989586621679165608"><span class="annot"><span class="annottext">Int -&gt; ServerMOTD -&gt; ShowS
 [ServerMOTD] -&gt; ShowS
 ServerMOTD -&gt; String
 (Int -&gt; ServerMOTD -&gt; ShowS)
@@ -101,15 +101,15 @@ $cto :: forall x. Rep ServerMOTD x -&gt; ServerMOTD
 $cfrom :: forall x. ServerMOTD -&gt; Rep ServerMOTD x
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
 </span><span id="line-44"></span><span>
-</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679186895"><span id="local-6989586621679186897"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-type">ServerMOTD</span></a></span></span></span><span>
-</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679186887"><span id="local-6989586621679186889"><span id="local-6989586621679186891"><span id="local-6989586621679186893"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-type">ServerMOTD</span></a></span></span></span></span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679165598"><span id="local-6989586621679165600"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-type">ServerMOTD</span></a></span></span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679165590"><span id="local-6989586621679165592"><span id="local-6989586621679165594"><span id="local-6989586621679165596"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerMOTD"><span class="hs-identifier hs-type">ServerMOTD</span></a></span></span></span></span></span><span>
 </span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span id="local-6989586621679186885"><span id="local-6989586621679186886"></span></span><span class="hs-keyword">data</span><span> </span><span id="ServerPlayers"><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-var">ServerPlayers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ServerPlayers"><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-var">ServerPlayers</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-48"></span><span id="local-6989586621679165588"><span id="local-6989586621679165589"></span></span><span class="hs-keyword">data</span><span> </span><span id="ServerPlayers"><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-var">ServerPlayers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ServerPlayers"><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-var">ServerPlayers</span></a></span></span><span> </span><span class="hs-special">{</span><span>
 </span><span id="line-49"></span><span>    </span><span id="players_online"><span class="annot"><span class="annottext">ServerPlayers -&gt; Integer
 </span><a href="MCServer.html#players_online"><span class="hs-identifier hs-var hs-var">players_online</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">,</span><span>
 </span><span id="line-50"></span><span>    </span><span id="players_max"><span class="annot"><span class="annottext">ServerPlayers -&gt; Integer
 </span><a href="MCServer.html#players_max"><span class="hs-identifier hs-var hs-var">players_max</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
-</span><span id="line-51"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679186876"><span id="local-6989586621679186878"><span id="local-6989586621679186880"><span class="annot"><span class="annottext">Int -&gt; ServerPlayers -&gt; ShowS
+</span><span id="line-51"></span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679165579"><span id="local-6989586621679165581"><span id="local-6989586621679165583"><span class="annot"><span class="annottext">Int -&gt; ServerPlayers -&gt; ShowS
 [ServerPlayers] -&gt; ShowS
 ServerPlayers -&gt; String
 (Int -&gt; ServerPlayers -&gt; ShowS)
@@ -135,8 +135,8 @@ $cto :: forall x. Rep ServerPlayers x -&gt; ServerPlayers
 $cfrom :: forall x. ServerPlayers -&gt; Rep ServerPlayers x
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
 </span><span id="line-52"></span><span>
-</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679186871"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-type">ServerPlayers</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-54"></span><span>    </span><span id="local-6989586621679186870"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser ServerPlayers
+</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679165574"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-type">ServerPlayers</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679165573"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser ServerPlayers
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Options -&gt; Value -&gt; Parser ServerPlayers
 forall a.
 (Generic a, GFromJSON Zero (Rep a)) =&gt;
@@ -147,24 +147,29 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Options
 </span><span class="hs-identifier hs-var">defaultOptions</span></span><span> </span><span class="hs-special">{</span><span>
 </span><span id="line-55"></span><span>        </span><span class="annot"><span class="annottext">fieldLabelModifier :: ShowS
-</span><a href="#local-6989586621679186866"><span class="hs-identifier hs-var">fieldLabelModifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ShowS
+</span><a href="#local-6989586621679165569"><span class="hs-identifier hs-var">fieldLabelModifier</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ShowS
 </span><a href="MCServer.html#playersPrefix"><span class="hs-identifier hs-var">playersPrefix</span></a></span><span>
 </span><span id="line-56"></span><span>        </span><span class="hs-special">}</span><span>
-</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679186857"><span id="local-6989586621679186859"><span id="local-6989586621679186861"><span id="local-6989586621679186863"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-type">ServerPlayers</span></a></span></span></span></span></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679165560"><span id="local-6989586621679165562"><span id="local-6989586621679165564"><span id="local-6989586621679165566"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerPlayers"><span class="hs-identifier hs-type">ServerPlayers</span></a></span></span></span></span></span><span>
 </span><span id="line-58"></span><span>
 </span><span id="line-59"></span><span class="annot"><a href="MCServer.html#playersPrefix"><span class="hs-identifier hs-type">playersPrefix</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-60"></span><span id="playersPrefix"><span class="annot"><span class="annottext">playersPrefix :: ShowS
-</span><a href="MCServer.html#playersPrefix"><span class="hs-identifier hs-var hs-var">playersPrefix</span></a></span></span><span> </span><span class="hs-string">&quot;players_online&quot;</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;online&quot;</span></span><span>
-</span><span id="line-61"></span><span class="annot"><a href="MCServer.html#playersPrefix"><span class="hs-identifier hs-var">playersPrefix</span></a></span><span> </span><span class="hs-string">&quot;players_max&quot;</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;max&quot;</span></span><span>
+</span><a href="MCServer.html#playersPrefix"><span class="hs-identifier hs-var hs-var">playersPrefix</span></a></span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;players_online&quot;</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;online&quot;</span></span><span>
+</span><span id="line-61"></span><span class="annot"><a href="MCServer.html#playersPrefix"><span class="hs-identifier hs-var">playersPrefix</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;players_max&quot;</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;max&quot;</span></span><span>
 </span><span id="line-62"></span><span>
 </span><span id="line-63"></span><span class="annot"><a href="MCServer.html#jsonURL"><span class="hs-identifier hs-type">jsonURL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-64"></span><span id="jsonURL"><span class="annot"><span class="annottext">jsonURL :: String
-</span><a href="MCServer.html#jsonURL"><span class="hs-identifier hs-var hs-var">jsonURL</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;https://api.mcsrvstat.us/2/&quot;</span></span><span>
+</span><a href="MCServer.html#jsonURL"><span class="hs-identifier hs-var hs-var">jsonURL</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;https://api.mcsrvstat.us/2/&quot;</span></span><span>
 </span><span id="line-65"></span><span>
 </span><span id="line-66"></span><span class="annot"><a href="MCServer.html#getJSON"><span class="hs-identifier hs-type">getJSON</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
 </span><span id="line-67"></span><span id="getJSON"><span class="annot"><span class="annottext">getJSON :: Text -&gt; IO ByteString
-</span><a href="MCServer.html#getJSON"><span class="hs-identifier hs-var hs-var">getJSON</span></a></span></span><span> </span><span id="local-6989586621679186854"><span class="annot"><span class="annottext">server_ip :: Text
-</span><a href="#local-6989586621679186854"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ByteString
+</span><a href="MCServer.html#getJSON"><span class="hs-identifier hs-var hs-var">getJSON</span></a></span></span><span> </span><span id="local-6989586621679165557"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165557"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ByteString
 forall (m :: * -&gt; *). MonadIO m =&gt; String -&gt; m ByteString
 </span><span class="hs-identifier hs-var">simpleHttp</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ByteString) -&gt; String -&gt; IO ByteString
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -173,55 +178,60 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
 </span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679186854"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
+</span><a href="#local-6989586621679165557"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
 </span><span id="line-68"></span><span>
 </span><span id="line-69"></span><span class="annot"><a href="MCServer.html#fetchServerDetails"><span class="hs-identifier hs-type">fetchServerDetails</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span>
 </span><span id="line-70"></span><span id="fetchServerDetails"><span class="annot"><span class="annottext">fetchServerDetails :: Text -&gt; IO (Either String String)
-</span><a href="MCServer.html#fetchServerDetails"><span class="hs-identifier hs-var hs-var">fetchServerDetails</span></a></span></span><span> </span><span id="local-6989586621679186851"><span class="annot"><span class="annottext">server_ip :: Text
-</span><a href="#local-6989586621679186851"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-71"></span><span>    </span><span id="local-6989586621679186850"><span class="annot"><span class="annottext">Either String ServerStatus
-</span><a href="#local-6989586621679186850"><span class="hs-identifier hs-var">serverDeetsM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Either String ServerStatus
+</span><a href="MCServer.html#fetchServerDetails"><span class="hs-identifier hs-var hs-var">fetchServerDetails</span></a></span></span><span> </span><span id="local-6989586621679165554"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165554"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-71"></span><span>    </span><span id="local-6989586621679165553"><span class="annot"><span class="annottext">Either String ServerStatus
+</span><a href="#local-6989586621679165553"><span class="hs-identifier hs-var">serverDeetsM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Either String ServerStatus
 forall a. FromJSON a =&gt; ByteString -&gt; Either String a
 </span><span class="hs-identifier hs-var">eitherDecode</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Either String ServerStatus)
 -&gt; IO ByteString -&gt; IO (Either String ServerStatus)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO ByteString
 </span><a href="MCServer.html#getJSON"><span class="hs-identifier hs-var">getJSON</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679186851"><span class="hs-identifier hs-var">server_ip</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-type">ServerStatus</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165554"><span class="hs-identifier hs-var">server_ip</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="MCServer.html#ServerStatus"><span class="hs-identifier hs-type">ServerStatus</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-72"></span><span>    </span><span class="annot"><span class="annottext">Either String String -&gt; IO (Either String String)
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String String -&gt; IO (Either String String))
 -&gt; Either String String -&gt; IO (Either String String)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String ServerStatus
-</span><a href="#local-6989586621679186850"><span class="hs-identifier hs-var">serverDeetsM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-73"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679186847"><span class="annot"><span class="annottext">err :: String
-</span><a href="#local-6989586621679186847"><span class="hs-identifier hs-var">err</span></a></span></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String String
+</span><a href="#local-6989586621679165553"><span class="hs-identifier hs-var">serverDeetsM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-73"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679165550"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165550"><span class="hs-identifier hs-var">err</span></a></span></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String String
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186847"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-74"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679186846"><span class="annot"><span class="annottext">serverDeets :: ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-75"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186845"><span class="annot"><span class="annottext">serverStatus :: String
-</span><a href="#local-6989586621679186845"><span class="hs-identifier hs-var hs-var">serverStatus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><a href="#local-6989586621679165550"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-74"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679165549"><span class="annot"><span class="annottext">ServerStatus
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-75"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165548"><span class="annot"><span class="annottext">serverStatus :: String
+</span><a href="#local-6989586621679165548"><span class="hs-identifier hs-var hs-var">serverStatus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
 forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="hs-special">[</span><span>
-</span><span id="line-76"></span><span>                                   </span><span class="annot"><span class="hs-string">&quot;:pick: The Minecraft server is &quot;</span></span><span class="hs-special">,</span><span>
-</span><span id="line-77"></span><span>                                   </span><span class="annot"><span class="hs-string">&quot;**&quot;</span></span><span class="hs-special">,</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; Bool
+</span><span id="line-76"></span><span>                                   </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;:pick: The Minecraft server is &quot;</span></span><span class="hs-special">,</span><span>
+</span><span id="line-77"></span><span>                                   </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;**&quot;</span></span><span class="hs-special">,</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; Bool
 </span><a href="MCServer.html#online"><span class="hs-identifier hs-var hs-var">online</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="hs-string">&quot;online&quot;</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="hs-string">&quot;offline&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;**. &quot;</span></span><span>
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;online&quot;</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;offline&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;**. &quot;</span></span><span>
 </span><span id="line-78"></span><span>                               </span><span class="hs-special">]</span><span>
 </span><span id="line-79"></span><span>            </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
 </span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ServerStatus -&gt; Bool
 </span><a href="MCServer.html#online"><span class="hs-identifier hs-var hs-var">online</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">then</span><span>
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">then</span><span>
 </span><span id="line-80"></span><span>                </span><span class="annot"><span class="annottext">String -&gt; Either String String
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186845"><span class="hs-identifier hs-var">serverStatus</span></a></span><span>
+</span><a href="#local-6989586621679165548"><span class="hs-identifier hs-var">serverStatus</span></a></span><span>
 </span><span id="line-81"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-82"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186842"><span class="annot"><span class="annottext">playersonline :: String
-</span><a href="#local-6989586621679186842"><span class="hs-identifier hs-var hs-var">playersonline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; String
+</span><span id="line-82"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165545"><span class="annot"><span class="annottext">playersonline :: String
+</span><a href="#local-6989586621679165545"><span class="hs-identifier hs-var hs-var">playersonline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; String) -&gt; Integer -&gt; String
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -235,9 +245,9 @@ forall a. HasCallStack =&gt; Maybe a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; Maybe ServerPlayers
 </span><a href="MCServer.html#players"><span class="hs-identifier hs-var hs-var">players</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
-</span><span id="line-83"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186840"><span class="annot"><span class="annottext">playersmax :: String
-</span><a href="#local-6989586621679186840"><span class="hs-identifier hs-var hs-var">playersmax</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; String
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
+</span><span id="line-83"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165543"><span class="annot"><span class="annottext">playersmax :: String
+</span><a href="#local-6989586621679165543"><span class="hs-identifier hs-var hs-var">playersmax</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; String) -&gt; Integer -&gt; String
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -251,9 +261,9 @@ forall a. HasCallStack =&gt; Maybe a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; Maybe ServerPlayers
 </span><a href="MCServer.html#players"><span class="hs-identifier hs-var hs-var">players</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
-</span><span id="line-84"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186839"><span class="annot"><span class="annottext">motdclean :: String
-</span><a href="#local-6989586621679186839"><span class="hs-identifier hs-var hs-var">motdclean</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
+</span><span id="line-84"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165542"><span class="annot"><span class="annottext">motdclean :: String
+</span><a href="#local-6989586621679165542"><span class="hs-identifier hs-var hs-var">motdclean</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
 </span><a href="MCServer.html#alwaysHead"><span class="hs-identifier hs-var">alwaysHead</span></a></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; String) -&gt; [String] -&gt; String
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ServerMOTD -&gt; [String]
@@ -265,67 +275,78 @@ forall a. HasCallStack =&gt; Maybe a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; Maybe ServerMOTD
 </span><a href="MCServer.html#motd"><span class="hs-identifier hs-var hs-var">motd</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
-</span><span id="line-85"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186837"><span class="annot"><span class="annottext">ipstr :: String
-</span><a href="#local-6989586621679186837"><span class="hs-identifier hs-var hs-var">ipstr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; String
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
+</span><span id="line-85"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165540"><span class="annot"><span class="annottext">ipstr :: String
+</span><a href="#local-6989586621679165540"><span class="hs-identifier hs-var hs-var">ipstr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; String
 </span><a href="MCServer.html#ip"><span class="hs-identifier hs-var hs-var">ip</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
-</span><span id="line-86"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186836"><span class="annot"><span class="annottext">ver :: String
-</span><a href="#local-6989586621679186836"><span class="hs-identifier hs-var hs-var">ver</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe String -&gt; String
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
+</span><span id="line-86"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165539"><span class="annot"><span class="annottext">ver :: String
+</span><a href="#local-6989586621679165539"><span class="hs-identifier hs-var hs-var">ver</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe String -&gt; String
 forall a. HasCallStack =&gt; Maybe a -&gt; a
 </span><span class="hs-identifier hs-var">fromJust</span></span><span> </span><span class="annot"><span class="annottext">(Maybe String -&gt; String) -&gt; Maybe String -&gt; String
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ServerStatus -&gt; Maybe String
 </span><a href="MCServer.html#version"><span class="hs-identifier hs-var hs-var">version</span></a></span><span> </span><span class="annot"><span class="annottext">ServerStatus
-</span><a href="#local-6989586621679186846"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
-</span><span id="line-87"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186835"><span class="annot"><span class="annottext">onlineServerDeets :: String
-</span><a href="#local-6989586621679186835"><span class="hs-identifier hs-var hs-var">onlineServerDeets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><a href="#local-6989586621679165549"><span class="hs-identifier hs-var">serverDeets</span></a></span><span>
+</span><span id="line-87"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165538"><span class="annot"><span class="annottext">onlineServerDeets :: String
+</span><a href="#local-6989586621679165538"><span class="hs-identifier hs-var hs-var">onlineServerDeets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
 forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="hs-special">[</span><span>
-</span><span id="line-88"></span><span>                                            </span><span class="annot"><span class="hs-string">&quot;Current Players: &quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186842"><span class="hs-identifier hs-var">playersonline</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;/&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186840"><span class="hs-identifier hs-var">playersmax</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;.\n&quot;</span></span><span class="hs-special">,</span><span>
-</span><span id="line-89"></span><span>                                            </span><span class="annot"><span class="hs-string">&quot;Message of the Day: *&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186839"><span class="hs-identifier hs-var">motdclean</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;*\n&quot;</span></span><span class="hs-special">,</span><span>
-</span><span id="line-90"></span><span>                                            </span><span class="annot"><span class="hs-string">&quot;Come join at `&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186837"><span class="hs-identifier hs-var">ipstr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;` on version `&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186836"><span class="hs-identifier hs-var">ver</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;`&quot;</span></span><span>
+</span><span id="line-88"></span><span>                                            </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Current Players: &quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165545"><span class="hs-identifier hs-var">playersonline</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;/&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165543"><span class="hs-identifier hs-var">playersmax</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;.\n&quot;</span></span><span class="hs-special">,</span><span>
+</span><span id="line-89"></span><span>                                            </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Message of the Day: *&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165542"><span class="hs-identifier hs-var">motdclean</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;*\n&quot;</span></span><span class="hs-special">,</span><span>
+</span><span id="line-90"></span><span>                                            </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Come join at `&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165540"><span class="hs-identifier hs-var">ipstr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;` on version `&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165539"><span class="hs-identifier hs-var">ver</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;`&quot;</span></span><span>
 </span><span id="line-91"></span><span>                                        </span><span class="hs-special">]</span><span>
 </span><span id="line-92"></span><span>                </span><span class="annot"><span class="annottext">String -&gt; Either String String
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Either String String) -&gt; String -&gt; Either String String
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186845"><span class="hs-identifier hs-var">serverStatus</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679165548"><span class="hs-identifier hs-var">serverStatus</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186835"><span class="hs-identifier hs-var">onlineServerDeets</span></a></span><span>
+</span><a href="#local-6989586621679165538"><span class="hs-identifier hs-var">onlineServerDeets</span></a></span><span>
 </span><span id="line-93"></span><span>
 </span><span id="line-94"></span><span class="annot"><a href="MCServer.html#alwaysHead"><span class="hs-identifier hs-type">alwaysHead</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-95"></span><span id="alwaysHead"><span class="annot"><span class="annottext">alwaysHead :: [String] -&gt; String
-</span><a href="MCServer.html#alwaysHead"><span class="hs-identifier hs-var hs-var">alwaysHead</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&quot;</span></span><span>
-</span><span id="line-96"></span><span class="annot"><a href="MCServer.html#alwaysHead"><span class="hs-identifier hs-var">alwaysHead</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679186834"><span class="annot"><span class="annottext">a :: String
-</span><a href="#local-6989586621679186834"><span class="hs-identifier hs-var">a</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679186833"><span class="annot"><span class="annottext">as :: [String]
-</span><a href="#local-6989586621679186833"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186834"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="MCServer.html#alwaysHead"><span class="hs-identifier hs-var hs-var">alwaysHead</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span>
+</span><span id="line-96"></span><span class="annot"><a href="MCServer.html#alwaysHead"><span class="hs-identifier hs-var">alwaysHead</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679165537"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165537"><span class="hs-identifier hs-var">a</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679165536"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679165536"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165537"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-97"></span><span>
 </span><span id="line-98"></span><span class="annot"><a href="MCServer.html#getStatus"><span class="hs-identifier hs-type">getStatus</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-99"></span><span id="getStatus"><span class="annot"><span class="annottext">getStatus :: Message -&gt; DiscordHandler ()
-</span><a href="MCServer.html#getStatus"><span class="hs-identifier hs-var hs-var">getStatus</span></a></span></span><span> </span><span id="local-6989586621679186832"><span class="annot"><span class="annottext">m :: Message
-</span><a href="#local-6989586621679186832"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="MCServer.html#getStatus"><span class="hs-identifier hs-var hs-var">getStatus</span></a></span></span><span> </span><span id="local-6989586621679165535"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165535"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
 -&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 </span><a href="Utils.html#newCommand"><span class="hs-identifier hs-var">newCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679186832"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;minecraft&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165535"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;minecraft&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-100"></span><span>    </span><span id="local-6989586621679186831"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679186831"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Text -&gt; ReaderT DiscordHandle IO Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-100"></span><span>    </span><span id="local-6989586621679165534"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165534"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Text -&gt; ReaderT DiscordHandle IO Text
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">IO Text
 </span><a href="MCServer.html#readServerIP"><span class="hs-identifier hs-var">readServerIP</span></a></span><span>
-</span><span id="line-101"></span><span>    </span><span id="local-6989586621679186829"><span class="annot"><span class="annottext">Either String String
-</span><a href="#local-6989586621679186829"><span class="hs-identifier hs-var">deets</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either String String)
+</span><span id="line-101"></span><span>    </span><span id="local-6989586621679165532"><span class="annot"><span class="annottext">Either String String
+</span><a href="#local-6989586621679165532"><span class="hs-identifier hs-var">deets</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Either String String)
 -&gt; ReaderT DiscordHandle IO (Either String String)
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Either String String)
@@ -335,28 +356,30 @@ forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO (Either String String)
 </span><a href="MCServer.html#fetchServerDetails"><span class="hs-identifier hs-var">fetchServerDetails</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679186831"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
+</span><a href="#local-6989586621679165534"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
 </span><span id="line-102"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String String
-</span><a href="#local-6989586621679186829"><span class="hs-identifier hs-var">deets</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span>
-</span><span id="line-103"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679186828"><span class="annot"><span class="annottext">err :: String
-</span><a href="#local-6989586621679186828"><span class="hs-identifier hs-var">err</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165532"><span class="hs-identifier hs-var">deets</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span>
+</span><span id="line-103"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679165531"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165531"><span class="hs-identifier hs-var">err</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; DiscordHandler ()
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; IO ()
 forall a. Show a =&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">print</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186828"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">DiscordHandler () -&gt; DiscordHandler () -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165531"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">DiscordHandler () -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679186832"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="#local-6989586621679165535"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186828"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-104"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679186826"><span class="annot"><span class="annottext">nice :: String
-</span><a href="#local-6989586621679186826"><span class="hs-identifier hs-var">nice</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165531"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679165529"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679165529"><span class="hs-identifier hs-var">nice</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679186832"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><a href="#local-6989586621679165535"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span>
 </span><span id="line-105"></span><span>            </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
@@ -364,24 +387,28 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679186826"><span class="hs-identifier hs-var">nice</span></a></span><span>
+</span><a href="#local-6989586621679165529"><span class="hs-identifier hs-var">nice</span></a></span><span>
 </span><span id="line-106"></span><span>
 </span><span id="line-107"></span><span class="annot"><a href="MCServer.html#readServerIP"><span class="hs-identifier hs-type">readServerIP</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-108"></span><span id="readServerIP"><span class="annot"><span class="annottext">readServerIP :: IO Text
 </span><a href="MCServer.html#readServerIP"><span class="hs-identifier hs-var hs-var">readServerIP</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-109"></span><span>    </span><span id="local-6989586621679186825"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679186825"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO [Text]
-</span><a href="CSV.html#readSingleColCSV"><span class="hs-identifier hs-var">readSingleColCSV</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;mcServer.csv&quot;</span></span><span>
+</span><span id="line-109"></span><span>    </span><span id="local-6989586621679165528"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165528"><span class="hs-identifier hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO [Text]
+</span><a href="CSV.html#readSingleColCSV"><span class="hs-identifier hs-var">readSingleColCSV</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;mcServer.csv&quot;</span></span><span>
 </span><span id="line-110"></span><span>    </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
 </span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679186825"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
+</span><a href="#local-6989586621679165528"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
 </span><span id="line-111"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Text] -&gt; IO ()
-</span><a href="CSV.html#writeSingleColCSV"><span class="hs-identifier hs-var">writeSingleColCSV</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;mcServer.csv&quot;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;123.456.789.123&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO Text -&gt; IO Text
+</span><a href="CSV.html#writeSingleColCSV"><span class="hs-identifier hs-var">writeSingleColCSV</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;mcServer.csv&quot;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;123.456.789.123&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; IO Text -&gt; IO Text
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
-</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="hs-string">&quot;123.456.789.123&quot;</span></span><span>
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;123.456.789.123&quot;</span></span><span>
 </span><span id="line-112"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO Text
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; IO Text) -&gt; Text -&gt; IO Text
@@ -389,33 +416,37 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679186825"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
+</span><a href="#local-6989586621679165528"><span class="hs-identifier hs-var">server_ip</span></a></span><span>
 </span><span id="line-113"></span><span>
 </span><span id="line-114"></span><span class="annot"><a href="MCServer.html#setServer"><span class="hs-identifier hs-type">setServer</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-115"></span><span id="setServer"><span class="annot"><span class="annottext">setServer :: Message -&gt; DiscordHandler ()
-</span><a href="MCServer.html#setServer"><span class="hs-identifier hs-var hs-var">setServer</span></a></span></span><span> </span><span id="local-6989586621679186822"><span class="annot"><span class="annottext">m :: Message
-</span><a href="#local-6989586621679186822"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="MCServer.html#setServer"><span class="hs-identifier hs-var hs-var">setServer</span></a></span></span><span> </span><span id="local-6989586621679165525"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165525"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
 -&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 </span><a href="Utils.html#newDevCommand"><span class="hs-identifier hs-var">newDevCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679186822"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;set minecraft ([0-9a-zA-Z\\.]+)&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165525"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;set minecraft ([0-9a-zA-Z\\.]+)&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679186821"><span class="annot"><span class="annottext">captures :: [Text]
-</span><a href="#local-6989586621679186821"><span class="hs-identifier hs-var">captures</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-116"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679186820"><span class="annot"><span class="annottext">server_ip :: Text
-</span><a href="#local-6989586621679186820"><span class="hs-identifier hs-var hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165524"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165524"><span class="hs-identifier hs-var">captures</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-116"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165523"><span class="annot"><span class="annottext">server_ip :: Text
+</span><a href="#local-6989586621679165523"><span class="hs-identifier hs-var hs-var">server_ip</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679186821"><span class="hs-identifier hs-var">captures</span></a></span><span>
+</span><a href="#local-6989586621679165524"><span class="hs-identifier hs-var">captures</span></a></span><span>
 </span><span id="line-117"></span><span>    </span><span class="annot"><span class="annottext">IO () -&gt; DiscordHandler ()
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; DiscordHandler ()) -&gt; IO () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Text] -&gt; IO ()
-</span><a href="CSV.html#writeSingleColCSV"><span class="hs-identifier hs-var">writeSingleColCSV</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;mcServer.csv&quot;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679186820"><span class="hs-identifier hs-var">server_ip</span></a></span><span class="hs-special">]</span><span>
+</span><a href="CSV.html#writeSingleColCSV"><span class="hs-identifier hs-var">writeSingleColCSV</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;mcServer.csv&quot;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165523"><span class="hs-identifier hs-var">server_ip</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-118"></span><span>    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679186822"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-string">&quot;Success!&quot;</span></span><span>
+</span><a href="#local-6989586621679165525"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;Success!&quot;</span></span><span>
 </span><span id="line-119"></span></pre></body></html>
