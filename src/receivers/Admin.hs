@@ -168,6 +168,9 @@ statusRE = "(online|idle|dnd|invisible) "
            <> "(playing|streaming|competing|listening to) "
            <> "(.*)"
 
+-- | This can't be polymoprhic because updateStatus requires gateway specific
+-- things.
+setStatus :: Command DiscordHandler
 setStatus
     = command "status"
     $ \msg newStatus newType (Remaining newName) -> do
@@ -176,7 +179,7 @@ setStatus
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
 
-someComplexThing :: (MonadDiscord m, MonadIO m) => Command m
+someComplexThing :: (MonadDiscord m) => Command m
 someComplexThing
     = command "complex"
     $ \msg words -> do
