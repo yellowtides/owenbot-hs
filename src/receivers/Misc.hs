@@ -2,11 +2,13 @@
 
 module Misc (commandReceivers, miscReceivers, reactionReceivers, changePronouns) where
 
+import              Discord.Internal.Monad
 import              Discord.Types
 import              Discord
 import              Discord.Internal.Rest.User
 import              Discord.Internal.Rest.Guild
 
+import              Data.Char               ( toUpper )
 import qualified    Data.Maybe as M
 import qualified    Data.Text.IO as TIO
 import qualified    Data.Text as T
@@ -19,12 +21,15 @@ import              Control.Monad           ( when
                                             , void
                                             , join
                                             , guard, forM_ )
+import              Control.Monad.IO.Class  ( MonadIO )
 import              System.Random           ( randomR
                                             , getStdRandom
                                             , randomRIO
                                             )
 
-
+import qualified    Text.Parsec.Text as T
+import              Text.Parsec
+import              Command
 import              Utils                   ( sendMessageChan
                                             , sendReply
                                             , sendFileChan
@@ -82,24 +87,21 @@ forceOwoifyEmotes =
 -- duplicates.
 forceOwoify :: ReactionInfo -> DiscordHandler ()
 forceOwoify r = do
-    messM <- messageFromReaction r
-    case messM of
-        Right mess -> do
-            -- Get all reactions for the associated message
-            let reactions = messageReactions mess
-            -- Define conditions that stops execution
-            let blockCond = \x ->
-                    messageReactionMeIncluded x
-                    && emojiName (messageReactionEmoji x) == owoifiedEmoji
-            -- Conditions that say go!
-            let fulfillCond = \x ->
-                    T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
-            -- If all goes good, add a checkmark and send an owoification reply
-            unless (any blockCond reactions || not (any fulfillCond reactions)) $ do
-                addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
-                -- Send reply without pinging (this isn't as ping-worthy as random trigger)
-                sendReply mess False $ owoify (messageText mess)
-        Left err -> liftIO (print err) >> pure ()
+    mess <- messageFromReaction r
+    -- Get all reactions for the associated message
+    let reactions = messageReactions mess
+    -- Define conditions that stops execution
+    let blockCond = \x ->
+            messageReactionMeIncluded x
+            && emojiName (messageReactionEmoji x) == owoifiedEmoji
+    -- Conditions that say go!
+    let fulfillCond = \x ->
+            T.toUpper (emojiName $ messageReactionEmoji x) `elem` forceOwoifyEmotes
+    -- If all goes good, add a checkmark and send an owoification reply
+    unless (any blockCond reactions || not (any fulfillCond reactions)) $ do
+        addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
+        -- Send reply without pinging (this isn't as ping-worthy as random trigger)
+        sendReply mess False $ owoify (messageText mess)
 
 godIsDead :: Message -> DiscordHandler ()
 godIsDead m = do
@@ -111,13 +113,17 @@ thatcherRE :: T.Text
 thatcherRE = "thatcher('s *| *[Ii]s) *"
 
 thatcherIsDead :: Message -> DiscordHandler ()
-thatcherIsDead m = when (messageText m =~= (thatcherRE <> "[Dd]ead"))
-        $ sendMessageChan (messageChannel m)
+thatcherIsDead
+    = runCommand
+    . regexCommand (thatcherRE <> "[Dd]ead") $ \m _ ->
+        sendMessageChan (messageChannel m)
             "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
 thatcherIsAlive :: Message -> DiscordHandler ()
-thatcherIsAlive m = when (messageText m =~= (thatcherRE <> "[Aa]live"))
-        $ sendFileChan (messageChannel m)
+thatcherIsAlive
+    = runCommand
+    . regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
+        sendFileChan (messageChannel m)
             "god_help_us_all.mp4" $ assetDir <> "god_help_us_all.mp4"
 
 dadJokeIfPossible :: Message -> DiscordHandler ()
@@ -169,11 +175,11 @@ fortuneCow = do
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
 
 -- | "Joke" function to change owen's pronouns randomly in servers on startup, cause owen is our favourite genderfluid icon
-changePronouns :: DiscordHandler ()
+changePronouns :: (MonadDiscord m, MonadIO m) => m ()
 changePronouns = do
-    Right u <- restCall GetCurrentUser
+    u <- getCurrentUser
     -- get partial guilds, don't contain full information, so getId is defined below
-    Right pGuilds <- restCall GetCurrentUserGuilds
+    pGuilds <- getCurrentUserGuilds
     let guilds = partialGuildId <$> pGuilds
     let pronouns = ["she/her", "he/him", "they/them"]
 
@@ -189,7 +195,7 @@ changePronouns = do
 
     -- remove current pronoun roles
     let simplifiedMap = concat $ sequence <$> guildPronounMap
-    forM_ simplifiedMap (\(g, r) -> restCall $ RemoveGuildMemberRole g (userId u) r)
+    forM_ simplifiedMap (\(g, r) -> removeGuildMemberRole g (userId u) r)
 
     chosenPronouns <- sequence $ do
         (gid, roles) <- guildPronounMap
@@ -197,7 +203,7 @@ changePronouns = do
             Just role <- liftIO $ randomChoice roles
             pure (gid, role)
 
-    forM_ chosenPronouns (\(g, r) -> restCall $ AddGuildMemberRole g (userId u) r)
+    forM_ chosenPronouns (\(g, r) -> addGuildMemberRole g (userId u) r)
 
     where
         randomChoice :: [a] -> IO (Maybe a)

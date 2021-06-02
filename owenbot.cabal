@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fda0e2d9069a80cf75111b73ca4305aaa16b82f89c01305819cef98e84c1fcd1
+-- hash: 1fb5fd453c31ac1d7f64fdd1dbf032f693d39802f371b98b80bc48e720e664b9
 
 name:           owenbot
 version:        0.1.0.0
@@ -27,9 +27,14 @@ source-repository head
 
 library
   exposed-modules:
+      Command
+      Command.Command
+      Command.Error
+      Command.Parser
       Config
       CSV
       DB
+      Discord.Internal.Monad
       EventHandler
       Owoifier
       Status
@@ -64,12 +69,15 @@ library
     , discord-haskell
     , hashable
     , http-conduit
+    , mtl
     , network-bsd
     , parsec
     , pointfree
     , process
     , random
     , regex-tdfa
+    , req
+    , safe-exceptions
     , split
     , text
     , time
@@ -97,6 +105,7 @@ executable owenbot-exe
     , discord-haskell
     , hashable
     , http-conduit
+    , mtl
     , network-bsd
     , owenbot
     , parsec
@@ -104,6 +113,8 @@ executable owenbot-exe
     , process
     , random
     , regex-tdfa
+    , req
+    , safe-exceptions
     , split
     , text
     , time
@@ -119,6 +130,7 @@ test-suite owenbot-test
   main-is: Spec.hs
   other-modules:
       CSVSpec
+      Discord.Arbitrary
       OwoifierSpec
       Paths_owenbot
   hs-source-dirs:
@@ -136,6 +148,7 @@ test-suite owenbot-test
     , hashable
     , hspec
     , http-conduit
+    , mtl
     , network-bsd
     , owenbot
     , parsec
@@ -144,6 +157,8 @@ test-suite owenbot-test
     , quickcheck-instances
     , random
     , regex-tdfa
+    , req
+    , safe-exceptions
     , split
     , text
     , time

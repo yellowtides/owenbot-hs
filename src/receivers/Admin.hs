@@ -3,43 +3,46 @@
 module Admin ( receivers, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
-import           Discord.Types        ( ChannelId
-                                      , Message   ( messageChannel, messageGuild )
-                                      , Channel ( ChannelText )
-                                      , OverwriteId
-                                      )
-import           Discord              ( DiscordHandler
-                                      , stopDiscord, restCall
-                                      )
+import           Discord.Types          ( ChannelId
+                                        , Message (..)
+                                        , Channel ( ChannelText )
+                                        , OverwriteId
+                                        , ActivityType
+                                        , UpdateStatusType
+                                        )
+import           Discord                ( DiscordHandler
+                                        , stopDiscord, restCall
+                                        )
 import           Discord.Requests as R
-import           UnliftIO             ( liftIO )
-import           Data.Char            ( isSpace )
-import Data.Maybe                     ( fromJust )
-import           Control.Monad        ( unless
-                                      , void
-                                      )
-import           Network.BSD          ( getHostName )
-import           Text.Regex.TDFA      ( (=~) )
+import           UnliftIO               ( liftIO )
+import           Data.Char              ( isSpace )
+import Data.Maybe                       ( fromJust )
+import           Control.Monad          ( unless
+                                        , void
+                                        )
+import           Network.BSD            ( getHostName )
+import           Text.Regex.TDFA        ( (=~) )
 
-import           System.Directory     ( doesPathExist )
-import           System.Posix.Process ( getProcessID )
-import           System.Process as Process
+import           System.Directory       ( doesPathExist )
+import           System.Posix.Process   ( getProcessID )
+import qualified System.Process as Process
 
-import           Owoifier             ( owoify )
+import           Command
+import           Owoifier               ( owoify )
 
-import           Utils                ( newDevCommand
-                                      , newModCommand
-                                      , sendMessageChan
-                                      , captureCommandOutput
-                                      , devIDs
-                                      , update
-                                      )
-import           Status               ( updateStatus
-                                      , editStatusFile
-                                      )
-import           CSV                  ( readSingleColCSV
-                                      , writeSingleColCSV
-                                      )
+import           Utils                  ( newDevCommand
+                                        , newModCommand
+                                        , sendMessageChan
+                                        , captureCommandOutput
+                                        , devIDs
+                                        , update
+                                        )
+import           Status                 ( editStatusFile
+                                        , updateStatus
+                                        )
+import           CSV                    ( readSingleColCSV
+                                        , writeSingleColCSV
+                                        )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
@@ -48,7 +51,8 @@ receivers =
     , restartOwen
     , stopOwen
     , updateOwen
-    , prepareStatus
+    , runCommand setStatus
+    , runCommand someComplexThing
     , listDevs
     , addDevs
     , removeDevs
@@ -76,7 +80,7 @@ sendGitInfo :: Message -> DiscordHandler ()
 sendGitInfo m = newDevCommand m "repo" $ \_ ->
     sendGitInfoChan $ messageChannel m
 
-sendGitInfoChan :: ChannelId -> DiscordHandler ()
+sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendGitInfoChan chan = do
     inRepo <- liftIO isGitRepo
     if not inRepo then
@@ -94,7 +98,7 @@ sendInstanceInfo :: Message -> DiscordHandler ()
 sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
     sendInstanceInfoChan $ messageChannel m
 
-sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
+sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
     pid  <- liftIO getProcessID
@@ -164,25 +168,25 @@ statusRE = "(online|idle|dnd|invisible) "
            <> "(playing|streaming|competing|listening to) "
            <> "(.*)"
 
--- | Checks the input against the correct version of :status
--- If incorrect, return appropriate messages
--- If correct, pass onto Status.updateStatus
-prepareStatus :: Message -> DiscordHandler ()
-prepareStatus m = newDevCommand m "status(.*)" $ \captures -> do
-    let (_, _, _, components) = (head captures =~ statusRE) :: (T.Text, T.Text, T.Text, [T.Text])
-    let newStatus = head components
-    let newType = (head . tail) components
-    let newName = (head . tail . tail) components
-    if length components == 3 then do
+-- | This can't be polymoprhic because updateStatus requires gateway specific
+-- things.
+setStatus :: Command DiscordHandler
+setStatus
+    = command "status"
+    $ \msg newStatus newType (Remaining newName) -> do
         updateStatus newStatus newType newName
         liftIO $ editStatusFile newStatus newType newName
-        sendMessageChan (messageChannel m)
+        respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
-    else
-        sendMessageChan (messageChannel m) $
-            "Syntax: `:status <online|dnd|idle|invisible> "
-            <> "<playing|streaming|competing|listening to> "
-            <> "<custom text...>`"
+
+someComplexThing :: (MonadDiscord m) => Command m
+someComplexThing
+    = command "complex"
+    $ \msg words -> do
+        respond msg $
+            "Length: " <> (T.pack . show . length) words <> "\n" <>
+                "Caught items: \n" <> T.intercalate "\n" words
+
 
 data Lock = Lockdown | Unlock deriving (Show, Eq)
 

@@ -1,5 +1,6 @@
 module EventHandler ( handleEvent ) where
 
+import           Control.Applicative    ( (<|>) )
 import           Discord.Types          ( Message ( messageAuthor )
                                         , ReactionInfo
                                         , Event ( MessageCreate
@@ -72,12 +73,12 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-     MessageCreate m ->
-          unless (isFromBot m) $ if T.head (messageText m) == ':'
+    MessageCreate m ->
+        unless (isFromBot m) $ if T.head (messageText m) == ':'
             then for_ commandReceivers ($ m)
             else for_ messageReceivers ($ m)
-     MessageReactionAdd r ->
-          for_ reactionAddReceivers ($ r)
-     MessageReactionRemove r ->
-          for_ reactionRemoveReceivers ($ r)
-     _ -> pure ()
+    MessageReactionAdd r ->
+        for_ reactionAddReceivers ($ r)
+    MessageReactionRemove r ->
+        for_ reactionRemoveReceivers ($ r)
+    _ -> pure ()

@@ -3,7 +3,6 @@ module Main where
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Control.Monad
-import Discord.Requests as R ( UserRequest(GetCurrentUser) )
 import           Discord                ( runDiscord
                                         , def
                                         , DiscordHandler
@@ -13,11 +12,12 @@ import           Discord                ( runDiscord
                                                          , discordOnLog
                                                          ), restCall
                                         )
-import           Discord.Types          ( ChannelId, User (userName), Event (ChannelCreate) )
+import           Discord.Types
 import           System.Directory       ( createDirectoryIfMissing )
 
 import           CSV                    ( configDir )
 import           DB                     ( dbDir )
+import           Command
 import           EventHandler           ( handleEvent )
 import           Admin                  ( sendGitInfoChan
                                         , sendInstanceInfoChan )
@@ -38,16 +38,16 @@ owen t = do
                                         , discordOnEvent = handleEvent
                                         , discordOnLog = \s ->
                                             putStrLn ("[Info] " ++ T.unpack s)}
-    putStrLn (T.unpack userFacingError)
+    TIO.putStrLn userFacingError
 
 startHandler :: DiscordHandler ()
 startHandler = do
-    sendMessageChan startupChan (T.pack "Hewwo, I am bawck! UwU")
-    Right owenId <- restCall GetCurrentUser
-    _ <- liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
-    _ <- sendGitInfoChan startupChan
-    _ <- sendInstanceInfoChan startupChan
-    _ <- changePronouns
+    owenId <- getCurrentUser
+    createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
+    sendGitInfoChan startupChan
+    sendInstanceInfoChan startupChan
+    changePronouns
+    liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
 main :: IO ()

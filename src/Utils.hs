@@ -5,7 +5,6 @@
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
 module Utils ( emojiToUsableText
-             , respond
              , sendMessageChan
              , sendReply
              , sendMessageChanEmbed
@@ -26,6 +25,7 @@ module Utils ( emojiToUsableText
              , getMessageLink
              , hasRoleByName
              , hasRoleByID
+             , channelRequirement
              , isMod
              , devIDs
              , assetDir
@@ -72,6 +72,7 @@ import           CSV                    ( readSingleColCSV )
 import           Data.Maybe             ( fromJust )
 
 import           Data.Char              ( isDigit )
+import           Command
 
 -- | The `FilePath` to the configuration file listing OwenDev role IDs.
 devIDs :: FilePath
@@ -134,9 +135,9 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 -- | `isRoleInGuild` determines whether a role containing the given text exists
 -- in the guild (case insensitive). If it does, then it returns the role's ID.
 -- Otherwise, `Nothing` is returned.
-isRoleInGuild :: T.Text -> GuildId -> DiscordHandler (Maybe RoleId)
+isRoleInGuild :: (MonadDiscord m) => T.Text -> GuildId -> m (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
-    Right roles <- restCall $ R.GetGuildRoles gid
+    roles <- getGuildRoles gid
     let matchingRoles = filter (\role -> T.toUpper roleFragment `T.isInfixOf` T.toUpper (roleName role)) roles
     pure $ case matchingRoles of
         []      -> Nothing
@@ -191,22 +192,19 @@ linkChannel :: ChannelId  -> T.Text
 linkChannel c = "<#" <> T.pack (show c) <> ">"
 
 -- | `getMessageLink` attempts to construct the Discord URL of the given message, as a `Text`.
-getMessageLink :: Message -> DiscordHandler (Either RestCallErrorCode T.Text)
+getMessageLink :: Message -> DiscordHandler T.Text
 getMessageLink m = do
-    chanM <- restCall $ R.GetChannel (messageChannel m)
-    case chanM of
-        Right chan -> do
-            -- the ID of the server containing the channel, as a `Text`
-            let serverIDT  = T.pack . show $ channelGuild chan
-            -- the ID of the channel the message was sent in, as a `Text`
-            let channelIDT = T.pack . show $ messageChannel m
-            -- the messageID, as a `Text`
-            let messageIDT = T.pack . show $ messageId m
-            pure . Right $ T.concat [ "https://discord.com/channels/",
-                                      serverIDT, "/",
-                                      channelIDT, "/",
-                                      messageIDT ]
-        Left err -> pure $ Left err
+    chan <- getChannel (messageChannel m)
+    -- the ID of the server containing the channel, as a `Text`
+    let serverIDT  = T.pack . show $ channelGuild chan
+    -- the ID of the channel the message was sent in, as a `Text`
+    let channelIDT = T.pack . show $ messageChannel m
+    -- the messageID, as a `Text`
+    let messageIDT = T.pack . show $ messageId m
+    pure $ T.concat [ "https://discord.com/channels/",
+                    serverIDT, "/",
+                    channelIDT, "/",
+                    messageIDT ]
 
 -- | `emojiToUsableText` converts a given emoji to a text which can be used to display it in Discord.
 emojiToUsableText :: Emoji -> T.Text
@@ -216,17 +214,14 @@ emojiToUsableText r = do
         Nothing -> name
         Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
 
-respond :: Message -> T.Text -> DiscordHandler ()
-respond = sendMessageChan . messageChannel
-
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
-sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
-sendMessageChan c xs = void $ restCall $ R.CreateMessage c xs
+sendMessageChan :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
+sendMessageChan c xs = void $ createMessage c xs
 
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
-sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler ()
+sendMessageChanPingsDisabled :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
 sendMessageChanPingsDisabled cid t = do
     let opts = def { R.messageDetailedContent = t
                    , R.messageDetailedAllowedMentions = Just
@@ -235,13 +230,13 @@ sendMessageChanPingsDisabled cid t = do
                               , R.mentionRoles    = False
                               }
                    }
-    void $ restCall (R.CreateMessageDetailed cid opts)
+    void $ createMessageDetailed cid opts
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
-sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
+sendReply :: (MonadDiscord m) => Message -> Bool -> T.Text -> m ()
 sendReply m mention xs =
-    void $ restCall $ R.CreateMessageDetailed (messageChannel m)
+    void $ createMessageDetailed (messageChannel m)
         $ def { R.messageDetailedContent = xs
               , R.messageDetailedReference = Just
                 $ def { referenceMessageId = Just $ messageId m }
@@ -251,29 +246,27 @@ sendReply m mention xs =
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
-sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
-sendMessageChanEmbed c xs e = void $ restCall $ R.CreateMessageEmbed c xs e
+sendMessageChanEmbed :: (MonadDiscord m) => ChannelId -> T.Text -> CreateEmbed -> m ()
+sendMessageChanEmbed c xs e = void $ createMessageEmbed c xs e
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
-sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
+sendMessageDM :: (MonadDiscord m) => UserId -> T.Text -> m ()
 sendMessageDM u t = do
-    chanM <- restCall $ R.CreateDM u
-    case chanM of
-        Right chan -> sendMessageChan (channelId chan) t
-        Left  err  -> pure ()
+    chan <- createDM u
+    sendMessageChan (channelId chan) t
 
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`. Surpresses any error
 -- message(s), returning `()`.
-sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
+sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
 sendFileChan c name fp = do
     mFileContent <- liftIO $ safeReadFile fp
     case mFileContent of
-        Nothing          -> do
-              _ <- liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
+        Nothing -> do
+              liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
               sendMessageChan c $ owoify "The file cannot be found!"
-        Just fileContent -> void $ restCall $ R.CreateMessageUploadFile c name fileContent
+        Just fileContent -> void $ createMessageUploadFile c name fileContent
 
 -- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
 -- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.
@@ -284,9 +277,8 @@ safeReadFile path = catch (Just <$> B.readFile path) putNothing
                 putNothing = const $ pure Nothing
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
-messageFromReaction :: ReactionInfo -> DiscordHandler (Either RestCallErrorCode Message)
-messageFromReaction r = restCall
-    $ R.GetChannelMessage (reactionChannelId r, reactionMessageId r)
+messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
+messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageId r)
 
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
 -- error message(s), returning `()`.
@@ -334,6 +326,12 @@ checkAllIDs m = do
 -- | `isSenderDeveloper` checks whether the provided message's author is a developer.
 isSenderDeveloper :: Message -> DiscordHandler Bool
 isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
+
+-- | channelRequirement is a requirement for a Command to be in a certain channel.
+channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
+channelRequirement cid msg = if (messageChannel msg) == (read cid)
+    then pure Nothing
+    else pure $ Just "need to be in channel"
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.

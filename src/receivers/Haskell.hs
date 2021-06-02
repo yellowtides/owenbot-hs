@@ -11,6 +11,7 @@ import           Data.Aeson              ( FromJSON
                                          , (.:) )
 import           Data.Maybe              ( fromMaybe )
 import qualified Data.Text as T
+import           Command
 import           Discord                 ( DiscordHandler
                                          )
 import           Discord.Types           ( Message )
@@ -20,8 +21,7 @@ import           Network.URI.Encode      ( encode )
 import           Pointfree               ( pointfree' )
 import           UnliftIO                ( liftIO )
 
-import           Utils                   ( respond
-                                         , newCommand )
+import           Utils                   ( newCommand )
 
 receivers =
     [ pointfree
