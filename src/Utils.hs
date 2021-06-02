@@ -81,12 +81,12 @@ devIDs = "devs.csv"
 -- | The `FilePath` representing the repo for the bot.
 -- TODO: chuck in a config file, handle not having a repo
 repoDir :: FilePath
-repoDir = "$HOME/owenbot-hs/"
+repoDir = "~/owenbot-hs/"
 
 -- | The `FilePath` representing the location of the assets.
 -- TODO: Use XDG_DATA_DIR instead of hardcoding ls
 assetDir :: FilePath
-assetDir = "$HOME/.local/share/owen/" <> "assets/"
+assetDir = "~/.local/share/owen/" <> "assets/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
