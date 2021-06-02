@@ -75,9 +75,7 @@ instance ParsableArgument String where
 -- Both are provided so that it can easily be used for arguments in other
 -- functions that only accept one of the types.
 instance ParsableArgument T.Text where
-    parserForArg msg = do
-        result <- parserForArg msg
-        pure $ T.pack result
+    parserForArg msg = T.pack <$> parserForArg msg
 
 -- | Zero or more texts. Each one could be quoted or not.
 instance ParsableArgument [T.Text] where
