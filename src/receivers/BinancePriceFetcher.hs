@@ -127,21 +127,21 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
 
 
 handleTicker :: Message -> DiscordHandler ()
-handleTicker = runCommand $ regexCommand "binance ([A-Z]+) ([A-Z]+)" $ \m symbol -> do
-    let [base, quote] = T.unpack <$> symbol
+handleTicker = runCommand $ command "binance" $ \m base quote -> do
     announcementM <- liftIO $ fetchTicker base quote
     case announcementM of
          Left err -> do
             liftIO (putStrLn $ "Cannot get ticker from Binance: " ++ err)
-            sendMessageChan (messageChannel m)
-                $ owoify "Couldn't get the data! Sorry"
+            respond m $ owoify "Couldn't get the data! Sorry"
          Right announcement ->
-            sendMessageChan (messageChannel m)
-                $ owoify . T.pack $ base <> "/" <> quote <> " is "
+            respond m $ owoify . T.pack $ base <> "/" <> quote <> " is "
                                  <> announcement
 
 handleAda24h :: Message -> DiscordHandler ()
-handleAda24h = runCommand $ regexCommand "ada(24h)?" $ \m _ -> do
+handleAda24h =
+    runCommand
+    . alias "ada24h"
+    . command "ada" $ \m -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
         Left err -> do
