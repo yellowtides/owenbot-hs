@@ -16,6 +16,7 @@ import           Discord.Types          ( Message
                                         , messageChannel )
 import           UnliftIO               ( liftIO )
 
+import           Command
 import           Utils                  ( newCommand
                                         , sendMessageChan )
 import           Owoifier               ( owoify )
@@ -126,7 +127,7 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
 
 
 handleTicker :: Message -> DiscordHandler ()
-handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
+handleTicker = runCommand $ regexCommand "binance ([A-Z]+) ([A-Z]+)" $ \m symbol -> do
     let [base, quote] = T.unpack <$> symbol
     announcementM <- liftIO $ fetchTicker base quote
     case announcementM of
@@ -140,7 +141,7 @@ handleTicker m = newCommand m "binance ([A-Z]+) ([A-Z]+)" $ \symbol -> do
                                  <> announcement
 
 handleAda24h :: Message -> DiscordHandler ()
-handleAda24h m = newCommand m "ada(24h)?" $ \_ -> do
+handleAda24h = runCommand $ regexCommand "ada(24h)?" $ \m _ -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
         Left err -> do
