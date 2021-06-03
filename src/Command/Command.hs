@@ -585,7 +585,7 @@ defaultErrorHandler m e =
         DiscordError x ->
             respond m $ T.pack $ "Discord request failed with a " <> (show x)
         HaskellError x ->
-            respond m (owoify $ T.pack $ show x)
+            respond m $ owoify $ T.pack $ "Runtime error (contact OwenDev, this is a bug): " <> show x
 
 
 
