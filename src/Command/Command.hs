@@ -312,8 +312,7 @@ data Command m = forall h. Command
 --         -- some parsec
 --         parsed \<- read \<$> many digit
 --         endOrSpaces
---         remaining <- getInput
---         pure (parsed, remaining)
+--         pure parsed
 --
 -- complex :: (MonadDiscord m) => Command m
 -- complex = command "setLimit" $ \\i -> do
@@ -417,7 +416,7 @@ alias newAlias cmd = cmd
 -- @
 -- example
 --     = requires moderatorPrivs
---     . parsecCommand (string '::' >> many1 anyChar) $ \msg quoteName -> do
+--     . parsecCommand (string '::' >> many1 anyChar) $ \\msg quoteName -> do
 --         ...
 --         -- this is triggered on "::<one or more chars>" where quoteName
 --         -- contains the section enclosed in <>
@@ -452,7 +451,7 @@ parsecCommand parserFunc handler = Command
 -- @newCommand@).
 --
 -- @
--- thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ \msg caps -> do
+-- thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ \\msg caps -> do
 --     let verb = head caps
 -- ...
 -- @
