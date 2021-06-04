@@ -42,7 +42,6 @@ dependencies:
 - unix
 - unliftio # comes with discord-haskell
 - unordered-containers # comes with discord-haskell
-- uri-encode
 - vector # comes with discord-haskell
 
 library:
