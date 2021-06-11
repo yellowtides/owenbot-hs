@@ -246,7 +246,7 @@ data Command m = Command
     -- ^ A tuple of (whether to use a custom applier and skip the name parsing,
     -- the function used to apply the arguments into a handler). The function
     -- needs to take a 'Message' that triggered the command, the input text,
-    -- the handler, and the return monad.
+    -- and produce an action in the monad @m@.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
