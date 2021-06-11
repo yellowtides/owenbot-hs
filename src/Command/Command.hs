@@ -3,7 +3,7 @@
 -- for CommandHandlerType
 {-# LANGUAGE FlexibleInstances, FunctionalDependencies, UndecidableInstances #-}
 -- for Command
-{-# LANGUAGE ExistentialQuantification, RecordWildCards #-}
+{-# LANGUAGE NamedFieldPuns #-}
 -- for runCommand
 {-# LANGUAGE ScopedTypeVariables #-}
 {-|
@@ -47,27 +47,7 @@ __extensions are used internally within this module only__.
     this module however, all instances strictly converges to the @m (m ())@
     instance so I say it is safe. [Read more]
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
-    * ExistentialQuantification: For declaring 'Command' with only the monad.
-    This is not idiomatic Haskell (usually parametric polymorphism is fine), but
-    in this use case, the type signatures can be drastically improved:
-    [see the examples in this change]
-    (https://github.com/yellowtides/owenbot-hs/pull/34/commits/9c23b4b4764fc2de0b4f9ab5543f8ebb66ff9788).
-    This also allows us to define a list of 'Command's, which was not
-    possible before. This change allows us to create 'runHelp' and 'runCommands'.
-    [Read more on existential types]
-    (https://en.wikibooks.org/wiki/Haskell/Existentially_quantified_types)
-    , and [even more here]
-    (https://markkarpov.com/post/existential-quantification.html#existential-wrappers).
-    [This comes at a price (although the benefits outweigh the prices here)]
-    (https://lukepalmer.wordpress.com/2010/01/24/haskell-antipattern-existential-typeclass/)
-    , as now the compiler loses the information about what arguments the command
-    handler takes. [Record selector functions will no longer work too]
-    (https://stackoverflow.com/questions/10192663/why-cant-i-use-record-selectors-with-an-existentially-quantified-type)
-    , but this is covered by using pattern matching. 
-    * RecordWildCards: Enables you to write @Command{..}@ in pattern matches to
-    create accessors instead of doing @(Command one two three four five)@. Helps
-    with ExistentialQuantification because otherwise unpacking the @Command@ ADT
-    will be really really long. Not necessary but helpful.
+    * NamedFieldPuns: Shorten pattern matching ADT field names.
     
 Implementation references:
 
@@ -235,22 +215,18 @@ import           Owoifier                   ( owoify )
 -- The contents of this abstract datatype are not exported from this module for
 -- encapsulation. Use 'command', 'parsecCommand', or 'regexCommand' to
 -- instantiate one.
-data Command m = forall h. Command
+data Command m = Command
     { commandName         :: T.Text
     -- ^ The name of the command.
     , commandPrefix       :: T.Text
     -- ^ The prefix for the command. 
     , commandAliases      :: [T.Text]
     -- ^ Any alias names for the command.
-    , commandHandler      :: h
-    -- ^ The polyvariadic handler function for the command. All of its argument
-    -- types must be of 'ParsableArgument'. Its return type after applying all
-    -- the arguments must be @m ()@. These are enforced by the type-checker.
-    , commandApplier      :: (Bool, Message -> T.Text -> h -> m ())
+    , commandApplier      :: (Bool, Message -> T.Text -> m ())
     -- ^ A tuple of (whether to use a custom applier and skip the name parsing,
-    -- the function used to apply the arguments into the @commandHandler@). The
-    -- function needs to take a 'Message' that triggered the command, the input
-    -- text, the handler, and the return monad.
+    -- the function used to apply the arguments into a handler). The function
+    -- needs to take a 'Message' that triggered the command, the input text,
+    -- and produce an action in the monad @m@.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
@@ -327,12 +303,11 @@ command
     -- ^ The handler for the command, that takes an arbitrary amount of
     -- 'ParsableArgument's and returns a @m ()@
     -> Command m
-command name handler = Command
+command name commandHandler = Command
     { commandName         = name
     , commandPrefix       = ":"
     , commandAliases      = []
-    , commandHandler      = handler
-    , commandApplier      = (False, applyArgs)
+    , commandApplier      = (False, applyArgs commandHandler)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -428,12 +403,11 @@ parsecCommand
     -> (Message -> String -> m ())
     -- ^ The handler for the command.
     -> Command m
-parsecCommand parserFunc handler = Command
+parsecCommand parserFunc commandHandler = Command
     { commandName         = "<custom parser>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandHandler      = handler
-    , commandApplier      = (True, applyCustomParser parserFunc)
+    , commandApplier      = (True, applyCustomParser parserFunc commandHandler)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -460,12 +434,11 @@ regexCommand
     => T.Text
     -> (Message -> [T.Text] -> m ())
     -> Command m
-regexCommand regex handler = Command
+regexCommand regex commandHandler = Command
     { commandName         = "<regex>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandHandler      = handler
-    , commandApplier      = (True, applyRegex regex)
+    , commandApplier      = (True, applyRegex regex commandHandler)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -493,7 +466,7 @@ runCommand
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand cmd@Command{..} msg =
+runCommand cmd@Command{ commandApplier, commandErrorHandler, commandRequires } msg =
     case commandApplier of
         (True, applier) -> doChecksAndRunCommand applier ""
         (False, applier) -> do
@@ -511,7 +484,7 @@ runCommand cmd@Command{..} msg =
         if null failedChecks
             then
                 -- Apply the arguments one by one on the appropriate handler
-                (applier msg args commandHandler)
+                applier msg args
                     -- Asynchrnous errors are not caught as the `catch`
                     -- comes from Control.Exception.Safe. This is good.
                     `catch` basicErrorCatcher
@@ -553,7 +526,7 @@ runHelp name cmds
             "```" <> (T.intercalate "\n" $ map createCommandHelp cmds) <> "```"
   where
     createCommandHelp :: Command m -> T.Text
-    createCommandHelp Command{..} =
+    createCommandHelp Command{ commandPrefix, commandName, commandHelp } =
         "# " <> commandPrefix <> commandName <> "\n" <> commandHelp
 
 
@@ -598,19 +571,19 @@ defaultErrorHandler m e =
 -- command handler may have. Its only function is @applyArgs@.
 class (MonadThrow m) => CommandHandlerType m h | h -> m where
     applyArgs
-        :: Message
+        :: h
+        -- ^ The handler. It must be in the same monad as @m@.
+        -> Message
         -- ^ The relevant message.
         -> T.Text
         -- ^ The arguments of the command, i.e. everything after the command
         -- name followed by one or more spaces. Is "" if empty.
-        -> h
-        -- ^ The handler. It must be in the same monad as @m@.
         -> m ()
         -- ^ The monad to run the handler in, and to throw parse errors in.
 
 -- | For the case when all arguments have been applied. Base case.
 instance (MonadThrow m) => CommandHandlerType m (m ()) where
-    applyArgs msg input handler = 
+    applyArgs handler msg input =
         case parse eof "" input of
             Left e -> throwM $ ArgumentParseError $
                 "Too many arguments! " <> showErrAsText e
@@ -618,11 +591,11 @@ instance (MonadThrow m) => CommandHandlerType m (m ()) where
 
 -- | For the case where there are multiple arguments to apply. 
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
-    applyArgs msg input handler =
+    applyArgs handler msg input =
         case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
             Left e -> throwM $ ArgumentParseError $
                 "Error while parsing argument. " <> showErrAsText e
-            Right (x, remaining) -> applyArgs msg remaining (handler x) 
+            Right (x, remaining) -> applyArgs (handler x) msg remaining
 
 -- | For the case where there is only one argument to apply.
 -- It overlaps the previous instance (it is more specific). With the OVERLAPPING
@@ -632,11 +605,11 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHa
 -- both @m ()@ (@(->) r@ is a monad) and @a -> b@ and since neither are more
 -- specific, GHC cannot prefer one over the other, even with any pragmas.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
-    applyArgs msg input handler =
+    applyArgs handler msg input =
         case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
             Left e -> throwM $ ArgumentParseError $
                 "Error while parsing argument. " <> showErrAsText e
-            Right (x, remaining) -> applyArgs msg remaining (handler x)
+            Right (x, remaining) -> applyArgs (handler x) msg remaining
 
 -- The default 'Show' instance for ParseError contains the error position,
 -- which only adds clutter in a Discord message. This defines a much
@@ -655,11 +628,11 @@ applyCustomParser
     :: (Monad m)
     => T.Parser String 
     -- ^ the custom parser
+    -> (Message -> String -> m ())
     -> Message
     -> T.Text
-    -> (Message -> String -> m ())
     -> m ()
-applyCustomParser parser msg _ handler =
+applyCustomParser parser handler msg _ =
     case parse parser "" (messageText msg) of
         Left e -> pure ()
         Right result -> handler msg result
@@ -670,11 +643,11 @@ applyRegex
     :: (Monad m)
     => T.Text
     -- ^ the regex
+    -> (Message -> [T.Text] -> m ())
     -> Message
     -> T.Text
-    -> (Message -> [T.Text] -> m ())
     -> m ()
-applyRegex regex msg _ handler =
+applyRegex regex handler msg _ =
     unless (shouldNotBeEmpty == "") $
         handler msg captures
   where
