@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 13392a1e00191c0ae10dc4c3767166d72a4804782fa58873bfff89c78f7ac242
+-- hash: ce80c9feb7b7ed1f759d1bdf4030bed56b640a0bdb8018734c0233e27a1800f4
 
 name:           owenbot
 version:        0.1.0.0
@@ -128,7 +128,6 @@ test-suite owenbot-test
   main-is: Spec.hs
   other-modules:
       CSVSpec
-      Discord.Arbitrary
       OwoifierSpec
       Paths_owenbot
   hs-source-dirs:
