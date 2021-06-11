@@ -47,27 +47,7 @@ __extensions are used internally within this module only__.
     this module however, all instances strictly converges to the @m (m ())@
     instance so I say it is safe. [Read more]
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
-    * ExistentialQuantification: For declaring 'Command' with only the monad.
-    This is not idiomatic Haskell (usually parametric polymorphism is fine), but
-    in this use case, the type signatures can be drastically improved:
-    [see the examples in this change]
-    (https://github.com/yellowtides/owenbot-hs/pull/34/commits/9c23b4b4764fc2de0b4f9ab5543f8ebb66ff9788).
-    This also allows us to define a list of 'Command's, which was not
-    possible before. This change allows us to create 'runHelp' and 'runCommands'.
-    [Read more on existential types]
-    (https://en.wikibooks.org/wiki/Haskell/Existentially_quantified_types)
-    , and [even more here]
-    (https://markkarpov.com/post/existential-quantification.html#existential-wrappers).
-    [This comes at a price (although the benefits outweigh the prices here)]
-    (https://lukepalmer.wordpress.com/2010/01/24/haskell-antipattern-existential-typeclass/)
-    , as now the compiler loses the information about what arguments the command
-    handler takes. [Record selector functions will no longer work too]
-    (https://stackoverflow.com/questions/10192663/why-cant-i-use-record-selectors-with-an-existentially-quantified-type)
-    , but this is covered by using pattern matching. 
-    * RecordWildCards: Enables you to write @Command{..}@ in pattern matches to
-    create accessors instead of doing @(Command one two three four five)@. Helps
-    with ExistentialQuantification because otherwise unpacking the @Command@ ADT
-    will be really really long. Not necessary but helpful.
+    * NamedFieldPuns: Shorten pattern matching ADT field names.
     
 Implementation references:
 
@@ -662,8 +642,8 @@ applyCustomParser parser handler msg _ =
 applyRegex
     :: (Monad m)
     => T.Text
-    -> (Message -> [T.Text] -> m ())
     -- ^ the regex
+    -> (Message -> [T.Text] -> m ())
     -> Message
     -> T.Text
     -> m ()
