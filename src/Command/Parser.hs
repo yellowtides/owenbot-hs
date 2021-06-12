@@ -94,7 +94,7 @@ instance ParsableArgument [T.Text] where
             pure $ word:rest
 
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
--- everything remaining. The accessor function @getEm@ isn't really meant to be
+-- everything remaining. The accessor function @getDeez@ isn't really meant to be
 -- used since pattern matching can do everything. Open to renaming.
 --
 -- Example usage:
@@ -105,7 +105,7 @@ instance ParsableArgument [T.Text] where
 --     $ \\msg newStatus newType (Remaining newName) -> do
 --         ...
 -- @
-data RemainingText = Remaining { getEm :: T.Text }
+data RemainingText = Remaining { getDeez :: T.Text }
 
 -- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
 -- with @Text@. At least one character is required.

@@ -23,7 +23,7 @@ however it is documented quite extensively anyway.
 __As an OwenDev, you do not need to enable any GHC extensions, as the__
 __extensions are used internally within this module only__.
 
-=== __Notable extensions used (if you want to know)__
+==== __Notable extensions used (if you want to know)__
 
     * ScopedTypeVariables: For using the same type variables in @where@
     statements as function declarations.
@@ -49,7 +49,7 @@ __extensions are used internally within this module only__.
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
     * NamedFieldPuns: Shorten pattern matching ADT field names.
     
-Implementation references:
+==== __Implementation references__
 
     * [Varargs - Haskell Wiki]
     (https://wiki.haskell.org/Varargs)
@@ -60,7 +60,7 @@ Implementation references:
     * [How to write a Haskell function that takes a variadic function as an argument]
     (https://stackoverflow.com/questions/8353845/how-to-write-a-haskell-function-that-takes-a-variadic-function-as-an-argument)
 
-Design references:
+==== __Design references__
 
     * [calamity-commands](https://github.com/simmsb/calamity/tree/master/calamity-commands)
 -}
@@ -254,7 +254,7 @@ data Command m = Command
 -- in. This means you can call it from 'DiscordHandler' or any other
 -- Monad that satisfies the constraints of 'MonadDiscord'.
 -- 
--- == __Examples:__
+-- ==== __See some examples__
 --
 -- @pong@ below responds to a ping by a pong.
 --
@@ -402,7 +402,7 @@ alias newAlias cmd = cmd
 --     = requires moderatorPrivs
 --     . parsecCommand (string '::' >> many1 anyChar) $ \\msg quoteName -> do
 --         ...
---         -- this is triggered on "::<one or more chars>" where quoteName
+--         -- this is triggered on "::\<one or more chars>" where quoteName
 --         -- contains the section enclosed in <>
 -- @
 parsecCommand
