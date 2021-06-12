@@ -95,6 +95,8 @@ module Command.Command
     , onError
     , defaultErrorHandler
     , requires
+    -- ** Errors
+    , CommandError(..)
     -- ** Parsing arguments
     -- | The 'ParsableArgument' is the core dataclass for command arguments that
     -- can be parsed.
