@@ -257,24 +257,11 @@ sendMessageDM u t = do
     sendMessageChan (channelId chan) t
 
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
--- provided `ChannelId`. The file attachment is annotated by the given `Text`. Surpresses any error
--- message(s), returning `()`.
+-- provided `ChannelId`. The file attachment is annotated by the given `Text`.
 sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
 sendFileChan c name fp = do
-    mFileContent <- liftIO $ safeReadFile fp
-    case mFileContent of
-        Nothing -> do
-              liftIO $ putStrLn $ "[WARN] Couldn't load file: " <> fp
-              sendMessageChan c $ owoify "The file cannot be found!"
-        Just fileContent -> void $ createMessageUploadFile c name fileContent
-
--- | `safeReadFile` attempts to convert the file at the provided `FilePath` into a `ByteString`,
--- wrapped in a `Maybe` monad. On reading failure, this function returns `Nothing`.
-safeReadFile :: FilePath -> IO (Maybe B.ByteString)
-safeReadFile path = catch (Just <$> B.readFile path) putNothing
-            where
-                putNothing :: IOException -> IO (Maybe B.ByteString)
-                putNothing = const $ pure Nothing
+    fileContent <- liftIO $ B.readFile fp
+    void $ createMessageUploadFile c name fileContent
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
