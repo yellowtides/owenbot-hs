@@ -23,8 +23,8 @@ import           Owoifier               ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
-    [ handleTicker
-    , handleAda24h
+    [ runCommand handleTicker
+    , runCommand handleAda24h
     ]
 
 data Ticker = Ticker {
@@ -126,28 +126,26 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
     ]
 
 
-handleTicker :: Message -> DiscordHandler ()
-handleTicker = runCommand $ command "binance" $ \m base quote -> do
+handleTicker :: Command DiscordHandler
+handleTicker = command "binance" $ \m base quote -> do
     announcementM <- liftIO $ fetchTicker base quote
     case announcementM of
          Left err -> do
-            liftIO (putStrLn $ "Cannot get ticker from Binance: " ++ err)
-            respond m $ owoify "Couldn't get the data! Sorry"
+            liftIO $ putStrLn $ "[DEBUG] Cannot get ticker from Binance: " ++ err
+            respond m $ owoify "Couldn't get the data! Sorry!"
          Right announcement ->
             respond m $ owoify . T.pack $ base <> "/" <> quote <> " is "
                                  <> announcement
 
-handleAda24h :: Message -> DiscordHandler ()
+handleAda24h :: Command DiscordHandler
 handleAda24h =
-    runCommand
-    . alias "ada24h"
+    alias "ada24h"
     . command "ada" $ \m -> do
+    -- owo no indent here needed??? owo???
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
         Left err -> do
-            liftIO (putStrLn $ "Cannot fetch ADA details from Binance: " ++ err)
-            sendMessageChan (messageChannel m)
-                $ owoify "Couldn't get the data! Sorry"
+            liftIO $ putStrLn $ "[DEBUG] Cannot fetch ADA details from Binance: " ++ err
+            respond m $ owoify "Couldn't get the data! Sorry!"
         Right announcement ->
-            sendMessageChan (messageChannel m)
-                $ owoify $ T.pack announcement
+            respond m $ owoify $ T.pack announcement
