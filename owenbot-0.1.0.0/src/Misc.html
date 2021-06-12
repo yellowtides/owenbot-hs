@@ -85,8 +85,8 @@
 </span><span id="line-69"></span><span>
 </span><span id="line-70"></span><span class="annot"><a href="Misc.html#roll"><span class="hs-identifier hs-type">roll</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-71"></span><span id="roll"><span class="annot"><span class="annottext">roll :: Int -&gt; IO Int
-</span><a href="Misc.html#roll"><span class="hs-identifier hs-var hs-var">roll</span></a></span></span><span> </span><span id="local-6989586621679165397"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165397"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(StdGen -&gt; (Int, StdGen)) -&gt; IO Int
+</span><a href="Misc.html#roll"><span class="hs-identifier hs-var hs-var">roll</span></a></span></span><span> </span><span id="local-6989586621679165834"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679165834"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(StdGen -&gt; (Int, StdGen)) -&gt; IO Int
 forall a. (StdGen -&gt; (a, StdGen)) -&gt; IO a
 </span><span class="hs-identifier hs-var">getStdRandom</span></span><span> </span><span class="annot"><span class="annottext">((StdGen -&gt; (Int, StdGen)) -&gt; IO Int)
 -&gt; (StdGen -&gt; (Int, StdGen)) -&gt; IO Int
@@ -95,14 +95,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a g. (Random a, RandomGen g) =&gt; (a, a) -&gt; g -&gt; (a, g)
 </span><span class="hs-identifier hs-var">randomR</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165397"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165834"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-72"></span><span>
 </span><span id="line-73"></span><span class="annot"><a href="Misc.html#owoifyIfPossible"><span class="hs-identifier hs-type">owoifyIfPossible</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-74"></span><span id="owoifyIfPossible"><span class="annot"><span class="annottext">owoifyIfPossible :: Message -&gt; DiscordHandler ()
-</span><a href="Misc.html#owoifyIfPossible"><span class="hs-identifier hs-var hs-var">owoifyIfPossible</span></a></span></span><span> </span><span id="local-6989586621679165396"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165396"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-75"></span><span>    </span><span id="local-6989586621679165395"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165395"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Int -&gt; ReaderT DiscordHandle IO Int
+</span><a href="Misc.html#owoifyIfPossible"><span class="hs-identifier hs-var hs-var">owoifyIfPossible</span></a></span></span><span> </span><span id="local-6989586621679165833"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165833"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-75"></span><span>    </span><span id="local-6989586621679165832"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679165832"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Int -&gt; ReaderT DiscordHandle IO Int
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Int -&gt; ReaderT DiscordHandle IO Int)
 -&gt; IO Int -&gt; ReaderT DiscordHandle IO Int
@@ -110,21 +110,21 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO Int
 </span><a href="Misc.html#roll"><span class="hs-identifier hs-var">roll</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="Misc.html#owoifyChance"><span class="hs-identifier hs-var">owoifyChance</span></a></span><span>
-</span><span id="line-76"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165394"><span class="annot"><span class="annottext">isOwoifiable :: Bool
-</span><a href="#local-6989586621679165394"><span class="hs-identifier hs-var hs-var">isOwoifiable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
+</span><span id="line-76"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165831"><span class="annot"><span class="annottext">isOwoifiable :: Bool
+</span><a href="#local-6989586621679165831"><span class="hs-identifier hs-var hs-var">isOwoifiable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165396"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
+</span><a href="#local-6989586621679165833"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
 </span><a href="Utils.html#%3D~%3D"><span class="hs-operator hs-var">=~=</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;[lLrR]|[nNmM][oO]&quot;</span></span><span>
 </span><span id="line-77"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165395"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679165832"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679165394"><span class="hs-identifier hs-var">isOwoifiable</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165831"><span class="hs-identifier hs-var">isOwoifiable</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-78"></span><span>        </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
 -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -133,13 +133,13 @@ forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 Message -&gt; Bool -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendReply"><span class="hs-identifier hs-var">sendReply</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165396"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679165833"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165396"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165833"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>
 </span><span id="line-80"></span><span class="hs-comment">-- | Emote names for which to trigger force owoify on. Use All Caps.</span><span>
 </span><span id="line-81"></span><span class="annot"><a href="Misc.html#forceOwoifyEmotes"><span class="hs-identifier hs-type">forceOwoifyEmotes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
@@ -153,44 +153,44 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-87"></span><span class="hs-comment">-- duplicates.</span><span>
 </span><span id="line-88"></span><span class="annot"><a href="Misc.html#forceOwoify"><span class="hs-identifier hs-type">forceOwoify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ReactionInfo</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-89"></span><span id="forceOwoify"><span class="annot"><span class="annottext">forceOwoify :: ReactionInfo -&gt; DiscordHandler ()
-</span><a href="Misc.html#forceOwoify"><span class="hs-identifier hs-var hs-var">forceOwoify</span></a></span></span><span> </span><span id="local-6989586621679165390"><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679165390"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-90"></span><span>    </span><span id="local-6989586621679165389"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165389"><span class="hs-identifier hs-var">mess</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; ReaderT DiscordHandle IO Message
+</span><a href="Misc.html#forceOwoify"><span class="hs-identifier hs-var hs-var">forceOwoify</span></a></span></span><span> </span><span id="local-6989586621679165827"><span class="annot"><span class="annottext">ReactionInfo
+</span><a href="#local-6989586621679165827"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679165826"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165826"><span class="hs-identifier hs-var">mess</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; ReaderT DiscordHandle IO Message
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ReactionInfo -&gt; m Message
 </span><a href="Utils.html#messageFromReaction"><span class="hs-identifier hs-var">messageFromReaction</span></a></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679165390"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><a href="#local-6989586621679165827"><span class="hs-identifier hs-var">r</span></a></span><span>
 </span><span id="line-91"></span><span>    </span><span class="hs-comment">-- Get all reactions for the associated message</span><span>
-</span><span id="line-92"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165388"><span class="annot"><span class="annottext">reactions :: [MessageReaction]
-</span><a href="#local-6989586621679165388"><span class="hs-identifier hs-var hs-var">reactions</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [MessageReaction]
+</span><span id="line-92"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165825"><span class="annot"><span class="annottext">reactions :: [MessageReaction]
+</span><a href="#local-6989586621679165825"><span class="hs-identifier hs-var hs-var">reactions</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [MessageReaction]
 </span><span class="hs-identifier hs-var hs-var">messageReactions</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165389"><span class="hs-identifier hs-var">mess</span></a></span><span>
+</span><a href="#local-6989586621679165826"><span class="hs-identifier hs-var">mess</span></a></span><span>
 </span><span id="line-93"></span><span>    </span><span class="hs-comment">-- Define conditions that stops execution</span><span>
-</span><span id="line-94"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165386"><span class="annot"><span class="annottext">blockCond :: MessageReaction -&gt; Bool
-</span><a href="#local-6989586621679165386"><span class="hs-identifier hs-var hs-var">blockCond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165385"><span class="annot"><span class="annottext">MessageReaction
-</span><a href="#local-6989586621679165385"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-94"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165823"><span class="annot"><span class="annottext">blockCond :: MessageReaction -&gt; Bool
+</span><a href="#local-6989586621679165823"><span class="hs-identifier hs-var hs-var">blockCond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165822"><span class="annot"><span class="annottext">MessageReaction
+</span><a href="#local-6989586621679165822"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-95"></span><span>            </span><span class="annot"><span class="annottext">MessageReaction -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var">messageReactionMeIncluded</span></span><span> </span><span class="annot"><span class="annottext">MessageReaction
-</span><a href="#local-6989586621679165385"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679165822"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-96"></span><span>            </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Emoji -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">emojiName</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MessageReaction -&gt; Emoji
 </span><span class="hs-identifier hs-var hs-var">messageReactionEmoji</span></span><span> </span><span class="annot"><span class="annottext">MessageReaction
-</span><a href="#local-6989586621679165385"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
+</span><a href="#local-6989586621679165822"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Misc.html#owoifiedEmoji"><span class="hs-identifier hs-var">owoifiedEmoji</span></a></span><span>
 </span><span id="line-97"></span><span>    </span><span class="hs-comment">-- Conditions that say go!</span><span>
-</span><span id="line-98"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165381"><span class="annot"><span class="annottext">fulfillCond :: MessageReaction -&gt; Bool
-</span><a href="#local-6989586621679165381"><span class="hs-identifier hs-var hs-var">fulfillCond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165380"><span class="annot"><span class="annottext">MessageReaction
-</span><a href="#local-6989586621679165380"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-98"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165818"><span class="annot"><span class="annottext">fulfillCond :: MessageReaction -&gt; Bool
+</span><a href="#local-6989586621679165818"><span class="hs-identifier hs-var hs-var">fulfillCond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165817"><span class="annot"><span class="annottext">MessageReaction
+</span><a href="#local-6989586621679165817"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-99"></span><span>            </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><span class="hs-identifier hs-var">T.toUpper</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Emoji -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">emojiName</span></span><span> </span><span class="annot"><span class="annottext">(Emoji -&gt; Text) -&gt; Emoji -&gt; Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">MessageReaction -&gt; Emoji
 </span><span class="hs-identifier hs-var hs-var">messageReactionEmoji</span></span><span> </span><span class="annot"><span class="annottext">MessageReaction
-</span><a href="#local-6989586621679165380"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Bool
+</span><a href="#local-6989586621679165817"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Bool
 forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
 </span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><a href="Misc.html#forceOwoifyEmotes"><span class="hs-identifier hs-var">forceOwoifyEmotes</span></a></span><span>
@@ -200,23 +200,23 @@ forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(MessageReaction -&gt; Bool) -&gt; [MessageReaction] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
 </span><span class="hs-identifier hs-var">any</span></span><span> </span><span class="annot"><span class="annottext">MessageReaction -&gt; Bool
-</span><a href="#local-6989586621679165386"><span class="hs-identifier hs-var">blockCond</span></a></span><span> </span><span class="annot"><span class="annottext">[MessageReaction]
-</span><a href="#local-6989586621679165388"><span class="hs-identifier hs-var">reactions</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679165823"><span class="hs-identifier hs-var">blockCond</span></a></span><span> </span><span class="annot"><span class="annottext">[MessageReaction]
+</span><a href="#local-6989586621679165825"><span class="hs-identifier hs-var">reactions</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
 </span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(MessageReaction -&gt; Bool) -&gt; [MessageReaction] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
 </span><span class="hs-identifier hs-var">any</span></span><span> </span><span class="annot"><span class="annottext">MessageReaction -&gt; Bool
-</span><a href="#local-6989586621679165381"><span class="hs-identifier hs-var">fulfillCond</span></a></span><span> </span><span class="annot"><span class="annottext">[MessageReaction]
-</span><a href="#local-6989586621679165388"><span class="hs-identifier hs-var">reactions</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165818"><span class="hs-identifier hs-var">fulfillCond</span></a></span><span> </span><span class="annot"><span class="annottext">[MessageReaction]
+</span><a href="#local-6989586621679165825"><span class="hs-identifier hs-var">reactions</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
 -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-102"></span><span>        </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelId -&gt; Text -&gt; DiscordHandler ()
 </span><a href="Utils.html#addReaction"><span class="hs-identifier hs-var">addReaction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ReactionInfo -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">reactionChannelId</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679165390"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ReactionInfo -&gt; ChannelId
+</span><a href="#local-6989586621679165827"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ReactionInfo -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">reactionMessageId</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679165390"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165827"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Misc.html#owoifiedEmoji"><span class="hs-identifier hs-var">owoifiedEmoji</span></a></span><span>
 </span><span id="line-103"></span><span>        </span><span class="hs-comment">-- Send reply without pinging (this isn't as ping-worthy as random trigger)</span><span>
 </span><span id="line-104"></span><span>        </span><span class="annot"><span class="annottext">Message -&gt; Bool -&gt; Text -&gt; DiscordHandler ()
@@ -224,31 +224,45 @@ forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 Message -&gt; Bool -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendReply"><span class="hs-identifier hs-var">sendReply</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165389"><span class="hs-identifier hs-var">mess</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679165826"><span class="hs-identifier hs-var">mess</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165389"><span class="hs-identifier hs-var">mess</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165826"><span class="hs-identifier hs-var">mess</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-105"></span><span>
 </span><span id="line-106"></span><span class="annot"><a href="Misc.html#godIsDead"><span class="hs-identifier hs-type">godIsDead</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-107"></span><span id="godIsDead"><span class="annot"><span class="annottext">godIsDead :: Message -&gt; DiscordHandler ()
-</span><a href="Misc.html#godIsDead"><span class="hs-identifier hs-var hs-var">godIsDead</span></a></span></span><span> </span><span id="local-6989586621679165372"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165372"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-108"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165371"><span class="annot"><span class="annottext">isMatch :: Bool
-</span><a href="#local-6989586621679165371"><span class="hs-identifier hs-var hs-var">isMatch</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
-</span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165372"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
-</span><a href="Utils.html#%3D~%3D"><span class="hs-operator hs-var">=~=</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><span class="hs-string">&quot;[gG]od *[iI]s *[dD]ead&quot;</span></span><span>
-</span><span id="line-109"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
-forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
-</span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679165371"><span class="hs-identifier hs-var">isMatch</span></a></span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
--&gt; DiscordHandler () -&gt; DiscordHandler ()
+</span><a href="Misc.html#godIsDead"><span class="hs-identifier hs-var hs-var">godIsDead</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
+forall (m :: * -&gt; *).
+MonadDiscord m =&gt;
+Command m -&gt; Message -&gt; m ()
+</span><a href="Command.Command.html#runCommand"><span class="hs-identifier hs-var">runCommand</span></a></span><span> </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
+ -&gt; Message -&gt; DiscordHandler ())
+-&gt; ((Message -&gt; [Text] -&gt; DiscordHandler ())
+    -&gt; Command (ReaderT DiscordHandle IO))
+-&gt; (Message -&gt; [Text] -&gt; DiscordHandler ())
+-&gt; Message
+-&gt; DiscordHandler ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; (Message -&gt; [Text] -&gt; DiscordHandler ())
+-&gt; Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *).
+MonadDiscord m =&gt;
+Text -&gt; (Message -&gt; [Text] -&gt; m ()) -&gt; Command m
+</span><a href="Command.Command.html#regexCommand"><span class="hs-identifier hs-var">regexCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;[gG]od *[iI]s *[dD]ead&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; [Text] -&gt; DiscordHandler ())
+ -&gt; Message -&gt; DiscordHandler ())
+-&gt; (Message -&gt; [Text] -&gt; DiscordHandler ())
+-&gt; Message
+-&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IO Text -&gt; ReaderT DiscordHandle IO Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165806"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165806"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-108"></span><span>    </span><span class="annot"><span class="annottext">IO Text -&gt; ReaderT DiscordHandle IO Text
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; IO Text
 </span><span class="hs-identifier hs-var">TIO.readFile</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO Text) -&gt; FilePath -&gt; IO Text
@@ -258,33 +272,33 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;nietzsche.txt&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-110"></span><span>            </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO Text
+</span><span id="line-109"></span><span>        </span><span class="annot"><span class="annottext">ReaderT DiscordHandle IO Text
 -&gt; (Text -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165372"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165806"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
 -&gt; (Text -&gt; Text) -&gt; Text -&gt; DiscordHandler ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span>
-</span><span id="line-111"></span><span>
-</span><span id="line-112"></span><span class="annot"><a href="Misc.html#thatcherRE"><span class="hs-identifier hs-type">thatcherRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
-</span><span id="line-113"></span><span id="thatcherRE"><span class="annot"><span class="annottext">thatcherRE :: Text
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span class="annot"><a href="Misc.html#thatcherRE"><span class="hs-identifier hs-type">thatcherRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-112"></span><span id="thatcherRE"><span class="annot"><span class="annottext">thatcherRE :: Text
 </span><a href="Misc.html#thatcherRE"><span class="hs-identifier hs-var hs-var">thatcherRE</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;thatcher('s *| *[Ii]s) *&quot;</span></span><span>
-</span><span id="line-114"></span><span>
-</span><span id="line-115"></span><span class="annot"><a href="Misc.html#thatcherIsDead"><span class="hs-identifier hs-type">thatcherIsDead</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-116"></span><span id="thatcherIsDead"><span class="annot"><span class="annottext">thatcherIsDead :: Message -&gt; DiscordHandler ()
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="annot"><a href="Misc.html#thatcherIsDead"><span class="hs-identifier hs-type">thatcherIsDead</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span id="thatcherIsDead"><span class="annot"><span class="annottext">thatcherIsDead :: Message -&gt; DiscordHandler ()
 </span><a href="Misc.html#thatcherIsDead"><span class="hs-identifier hs-var hs-var">thatcherIsDead</span></a></span></span><span>
-</span><span id="line-117"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
+</span><span id="line-116"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
 forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 Command m -&gt; Message -&gt; m ()
 </span><a href="Command.Command.html#runCommand"><span class="hs-identifier hs-var">runCommand</span></a></span><span>
-</span><span id="line-118"></span><span>    </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
+</span><span id="line-117"></span><span>    </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
  -&gt; Message -&gt; DiscordHandler ())
 -&gt; ((Message -&gt; [Text] -&gt; DiscordHandler ())
     -&gt; Command (ReaderT DiscordHandle IO))
@@ -308,26 +322,26 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 -&gt; Message
 -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165364"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165364"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165802"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165802"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-119"></span><span>        </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+</span><span id="line-118"></span><span>        </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165364"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-120"></span><span>            </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165802"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>            </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;https://www.youtube.com/watch?v=ILvd5buCEnU&quot;</span></span><span>
-</span><span id="line-121"></span><span>
-</span><span id="line-122"></span><span class="annot"><a href="Misc.html#thatcherIsAlive"><span class="hs-identifier hs-type">thatcherIsAlive</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-123"></span><span id="thatcherIsAlive"><span class="annot"><span class="annottext">thatcherIsAlive :: Message -&gt; DiscordHandler ()
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="annot"><a href="Misc.html#thatcherIsAlive"><span class="hs-identifier hs-type">thatcherIsAlive</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span id="thatcherIsAlive"><span class="annot"><span class="annottext">thatcherIsAlive :: Message -&gt; DiscordHandler ()
 </span><a href="Misc.html#thatcherIsAlive"><span class="hs-identifier hs-var hs-var">thatcherIsAlive</span></a></span></span><span>
-</span><span id="line-124"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
+</span><span id="line-123"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
 forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 Command m -&gt; Message -&gt; m ()
 </span><a href="Command.Command.html#runCommand"><span class="hs-identifier hs-var">runCommand</span></a></span><span>
-</span><span id="line-125"></span><span>    </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
+</span><span id="line-124"></span><span>    </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
  -&gt; Message -&gt; DiscordHandler ())
 -&gt; ((Message -&gt; [Text] -&gt; DiscordHandler ())
     -&gt; Command (ReaderT DiscordHandle IO))
@@ -351,17 +365,17 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 -&gt; Message
 -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165363"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165363"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165801"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165801"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-126"></span><span>        </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; FilePath -&gt; DiscordHandler ()
+</span><span id="line-125"></span><span>        </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; FilePath -&gt; DiscordHandler ()
 forall (m :: * -&gt; *).
 (MonadDiscord m, MonadIO m) =&gt;
 ChannelId -&gt; Text -&gt; FilePath -&gt; m ()
 </span><a href="Utils.html#sendFileChan"><span class="hs-identifier hs-var">sendFileChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165363"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-127"></span><span>            </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165801"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span>            </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;god_help_us_all.mp4&quot;</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; DiscordHandler ()) -&gt; FilePath -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath
@@ -369,32 +383,32 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;god_help_us_all.mp4&quot;</span></span><span>
-</span><span id="line-128"></span><span>
-</span><span id="line-129"></span><span class="annot"><a href="Misc.html#dadJokeIfPossible"><span class="hs-identifier hs-type">dadJokeIfPossible</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-130"></span><span id="dadJokeIfPossible"><span class="annot"><span class="annottext">dadJokeIfPossible :: Message -&gt; DiscordHandler ()
-</span><a href="Misc.html#dadJokeIfPossible"><span class="hs-identifier hs-var hs-var">dadJokeIfPossible</span></a></span></span><span> </span><span id="local-6989586621679165362"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165362"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-131"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165361"><span class="annot"><span class="annottext">name :: Maybe Text
-</span><a href="#local-6989586621679165361"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Maybe Text
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="annot"><a href="Misc.html#dadJokeIfPossible"><span class="hs-identifier hs-type">dadJokeIfPossible</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span id="dadJokeIfPossible"><span class="annot"><span class="annottext">dadJokeIfPossible :: Message -&gt; DiscordHandler ()
+</span><a href="Misc.html#dadJokeIfPossible"><span class="hs-identifier hs-var hs-var">dadJokeIfPossible</span></a></span></span><span> </span><span id="local-6989586621679165800"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165800"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-130"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165799"><span class="annot"><span class="annottext">name :: Maybe Text
+</span><a href="#local-6989586621679165799"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Maybe Text
 </span><a href="Misc.html#attemptParseDadJoke"><span class="hs-identifier hs-var">attemptParseDadJoke</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165362"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-132"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165800"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-131"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe Text -&gt; Bool
 forall a. Maybe a -&gt; Bool
 </span><span class="hs-identifier hs-var">M.isJust</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165361"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165799"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
 -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-133"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165358"><span class="annot"><span class="annottext">n :: Text
-</span><a href="#local-6989586621679165358"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Text -&gt; Text
+</span><span id="line-132"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165796"><span class="annot"><span class="annottext">n :: Text
+</span><a href="#local-6989586621679165796"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Text -&gt; Text
 forall a. HasCallStack =&gt; Maybe a -&gt; a
 </span><span class="hs-identifier hs-var">M.fromJust</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165361"><span class="hs-identifier hs-var">name</span></a></span><span>
-</span><span id="line-134"></span><span>        </span><span id="local-6989586621679165356"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165356"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Int -&gt; ReaderT DiscordHandle IO Int
+</span><a href="#local-6989586621679165799"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><span id="line-133"></span><span>        </span><span id="local-6989586621679165794"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679165794"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Int -&gt; ReaderT DiscordHandle IO Int
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Int -&gt; ReaderT DiscordHandle IO Int)
 -&gt; IO Int -&gt; ReaderT DiscordHandle IO Int
@@ -402,170 +416,184 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO Int
 </span><a href="Misc.html#roll"><span class="hs-identifier hs-var">roll</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="Misc.html#dadJokeChance"><span class="hs-identifier hs-var">dadJokeChance</span></a></span><span>
-</span><span id="line-135"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
+</span><span id="line-134"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165356"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679165794"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int
 </span><span class="hs-identifier hs-var">T.length</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165358"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679165796"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span class="hs-special">)</span><span>
-</span><span id="line-136"></span><span>            </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
+</span><span id="line-135"></span><span>            </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
 -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165362"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-137"></span><span>                </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165800"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-136"></span><span>                </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;hello &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165358"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679165796"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;, i'm owen&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-138"></span><span>
-</span><span id="line-139"></span><span class="annot"><a href="Misc.html#attemptParseDadJoke"><span class="hs-identifier hs-type">attemptParseDadJoke</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
-</span><span id="line-140"></span><span id="attemptParseDadJoke"><span class="annot"><span class="annottext">attemptParseDadJoke :: Text -&gt; Maybe Text
-</span><a href="Misc.html#attemptParseDadJoke"><span class="hs-identifier hs-var hs-var">attemptParseDadJoke</span></a></span></span><span> </span><span id="local-6989586621679165354"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165354"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-141"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165353"><span class="hs-identifier hs-var">captures</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-142"></span><span>        </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Text
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span class="annot"><a href="Misc.html#attemptParseDadJoke"><span class="hs-identifier hs-type">attemptParseDadJoke</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-139"></span><span id="attemptParseDadJoke"><span class="annot"><span class="annottext">attemptParseDadJoke :: Text -&gt; Maybe Text
+</span><a href="Misc.html#attemptParseDadJoke"><span class="hs-identifier hs-var hs-var">attemptParseDadJoke</span></a></span></span><span> </span><span id="local-6989586621679165792"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165792"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-140"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165791"><span class="hs-identifier hs-var">captures</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-141"></span><span>        </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Text
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-143"></span><span>        </span><span class="annot"><span class="annottext">[Text]
+</span><span id="line-142"></span><span>        </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Maybe Text
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Text
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165353"><span class="hs-identifier hs-var">captures</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span>
-</span><span id="line-144"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-145"></span><span>    </span><span class="annot"><a href="#local-6989586621679165351"><span class="hs-identifier hs-type">match</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-146"></span><span>    </span><span id="local-6989586621679165351"><span class="annot"><span class="annottext">match :: (Text, Text, Text, [Text])
-</span><a href="#local-6989586621679165351"><span class="hs-identifier hs-var">match</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165791"><span class="hs-identifier hs-var">captures</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-144"></span><span>    </span><span class="annot"><a href="#local-6989586621679165789"><span class="hs-identifier hs-type">match</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-145"></span><span>    </span><span id="local-6989586621679165789"><span class="annot"><span class="annottext">match :: (Text, Text, Text, [Text])
+</span><a href="#local-6989586621679165789"><span class="hs-identifier hs-var">match</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165353"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165353"><span class="hs-identifier hs-var">captures</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-147"></span><span>        </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165354"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; (Text, Text, Text, [Text])
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165791"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165791"><span class="hs-identifier hs-var">captures</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-146"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165792"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; (Text, Text, Text, [Text])
 forall source source1 target.
 (RegexMaker Regex CompOption ExecOption source,
  RegexContext Regex source1 target) =&gt;
 source1 -&gt; source -&gt; target
 </span><span class="hs-operator hs-var">=~</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)&quot;</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span>
-</span><span id="line-148"></span><span>
-</span><span id="line-149"></span><span class="annot"><a href="Misc.html#handleFortune"><span class="hs-identifier hs-type">handleFortune</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-150"></span><span id="handleFortune"><span class="annot"><span class="annottext">handleFortune :: Message -&gt; DiscordHandler ()
-</span><a href="Misc.html#handleFortune"><span class="hs-identifier hs-var hs-var">handleFortune</span></a></span></span><span> </span><span id="local-6989586621679165350"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165350"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
--&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
-</span><a href="Utils.html#newCommand"><span class="hs-identifier hs-var">newCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165350"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><span class="hs-string">&quot;fortune&quot;</span></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
--&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span><span class="annot"><a href="Misc.html#handleFortune"><span class="hs-identifier hs-type">handleFortune</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span id="handleFortune"><span class="annot"><span class="annottext">handleFortune :: Message -&gt; DiscordHandler ()
+</span><a href="Misc.html#handleFortune"><span class="hs-identifier hs-var hs-var">handleFortune</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
+forall (m :: * -&gt; *).
+MonadDiscord m =&gt;
+Command m -&gt; Message -&gt; m ()
+</span><a href="Command.Command.html#runCommand"><span class="hs-identifier hs-var">runCommand</span></a></span><span> </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
+ -&gt; Message -&gt; DiscordHandler ())
+-&gt; ((Message -&gt; DiscordHandler ())
+    -&gt; Command (ReaderT DiscordHandle IO))
+-&gt; (Message -&gt; DiscordHandler ())
+-&gt; Message
+-&gt; DiscordHandler ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; (Message -&gt; DiscordHandler ())
+-&gt; Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;fortune&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; DiscordHandler ()) -&gt; Message -&gt; DiscordHandler ())
+-&gt; (Message -&gt; DiscordHandler ()) -&gt; Message -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">[Text]
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-151"></span><span>    </span><span id="local-6989586621679165349"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679165349"><span class="hs-identifier hs-var">cowText</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO FilePath -&gt; ReaderT DiscordHandle IO FilePath
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165787"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165787"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-150"></span><span>    </span><span id="local-6989586621679165786"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679165786"><span class="hs-identifier hs-var">cowText</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO FilePath -&gt; ReaderT DiscordHandle IO FilePath
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">IO FilePath
 </span><a href="Misc.html#fortuneCow"><span class="hs-identifier hs-var">fortuneCow</span></a></span><span>
-</span><span id="line-152"></span><span>    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
+</span><span id="line-151"></span><span>    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165350"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-153"></span><span>        </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165787"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-152"></span><span>        </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;```&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679165349"><span class="hs-identifier hs-var">cowText</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679165786"><span class="hs-identifier hs-var">cowText</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;```&quot;</span></span><span>
-</span><span id="line-154"></span><span>
-</span><span id="line-155"></span><span class="annot"><a href="Misc.html#fortune"><span class="hs-identifier hs-type">fortune</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-156"></span><span id="fortune"><span class="annot"><span class="annottext">fortune :: IO FilePath
+</span><span id="line-153"></span><span>
+</span><span id="line-154"></span><span class="annot"><a href="Misc.html#fortune"><span class="hs-identifier hs-type">fortune</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-155"></span><span id="fortune"><span class="annot"><span class="annottext">fortune :: IO FilePath
 </span><a href="Misc.html#fortune"><span class="hs-identifier hs-var hs-var">fortune</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath -&gt; IO FilePath
 </span><span class="hs-identifier hs-var">SP.readProcess</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;fortune&quot;</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-157"></span><span>
-</span><span id="line-158"></span><span class="annot"><a href="Misc.html#fortuneCowFiles"><span class="hs-identifier hs-type">fortuneCowFiles</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
-</span><span id="line-159"></span><span id="fortuneCowFiles"><span class="annot"><span class="annottext">fortuneCowFiles :: [FilePath]
+</span><span id="line-156"></span><span>
+</span><span id="line-157"></span><span class="annot"><a href="Misc.html#fortuneCowFiles"><span class="hs-identifier hs-type">fortuneCowFiles</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
+</span><span id="line-158"></span><span id="fortuneCowFiles"><span class="annot"><span class="annottext">fortuneCowFiles :: [FilePath]
 </span><a href="Misc.html#fortuneCowFiles"><span class="hs-identifier hs-var hs-var">fortuneCowFiles</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-160"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-159"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;default&quot;</span></span><span>
-</span><span id="line-161"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-160"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;milk&quot;</span></span><span>
-</span><span id="line-162"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-161"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;moose&quot;</span></span><span>
-</span><span id="line-163"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-162"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;moofasa&quot;</span></span><span>
-</span><span id="line-164"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-163"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;three-eyes&quot;</span></span><span>
-</span><span id="line-165"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-164"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;www&quot;</span></span><span>
-</span><span id="line-166"></span><span>    </span><span class="hs-special">]</span><span>
-</span><span id="line-167"></span><span>
-</span><span id="line-168"></span><span class="annot"><a href="Misc.html#fortuneCow"><span class="hs-identifier hs-type">fortuneCow</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-169"></span><span id="fortuneCow"><span class="annot"><span class="annottext">fortuneCow :: IO FilePath
+</span><span id="line-165"></span><span>    </span><span class="hs-special">]</span><span>
+</span><span id="line-166"></span><span>
+</span><span id="line-167"></span><span class="annot"><a href="Misc.html#fortuneCow"><span class="hs-identifier hs-type">fortuneCow</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-168"></span><span id="fortuneCow"><span class="annot"><span class="annottext">fortuneCow :: IO FilePath
 </span><a href="Misc.html#fortuneCow"><span class="hs-identifier hs-var hs-var">fortuneCow</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-170"></span><span>    </span><span id="local-6989586621679165342"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165342"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Text
+</span><span id="line-169"></span><span>    </span><span id="local-6989586621679165779"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165779"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Text) -&gt; IO FilePath -&gt; IO Text
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">IO FilePath
 </span><a href="Misc.html#fortune"><span class="hs-identifier hs-var">fortune</span></a></span><span>
-</span><span id="line-171"></span><span>    </span><span id="local-6989586621679165340"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165340"><span class="hs-identifier hs-var">roll</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO Int
+</span><span id="line-170"></span><span>    </span><span id="local-6989586621679165777"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679165777"><span class="hs-identifier hs-var">roll</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO Int
 </span><a href="Misc.html#roll"><span class="hs-identifier hs-var">roll</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; IO Int) -&gt; Int -&gt; IO Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[FilePath]
 </span><a href="Misc.html#fortuneCowFiles"><span class="hs-identifier hs-var">fortuneCowFiles</span></a></span><span>
-</span><span id="line-172"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165338"><span class="annot"><span class="annottext">file :: FilePath
-</span><a href="#local-6989586621679165338"><span class="hs-identifier hs-var hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165340"><span class="hs-identifier hs-var">roll</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><span id="line-171"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165775"><span class="annot"><span class="annottext">file :: FilePath
+</span><a href="#local-6989586621679165775"><span class="hs-identifier hs-var hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679165777"><span class="hs-identifier hs-var">roll</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
-</span><span id="line-173"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span id="line-172"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><a href="Utils.html#assetDir"><span class="hs-identifier hs-var">assetDir</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;freddy.cow&quot;</span></span><span>
-</span><span id="line-174"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><span id="line-173"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[FilePath]
 </span><a href="Misc.html#fortuneCowFiles"><span class="hs-identifier hs-var">fortuneCowFiles</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; Int -&gt; FilePath
 forall a. [a] -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Ord a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">max</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679165340"><span class="hs-identifier hs-var">roll</span></a></span><span>
-</span><span id="line-175"></span><span>    </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath -&gt; IO FilePath
+</span><a href="#local-6989586621679165777"><span class="hs-identifier hs-var">roll</span></a></span><span>
+</span><span id="line-174"></span><span>    </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath -&gt; IO FilePath
 </span><span class="hs-identifier hs-var">SP.readProcess</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;cowsay&quot;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;-f&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679165338"><span class="hs-identifier hs-var">file</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO FilePath)
+</span><a href="#local-6989586621679165775"><span class="hs-identifier hs-var">file</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO FilePath)
 -&gt; (Text -&gt; FilePath) -&gt; Text -&gt; IO FilePath
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; FilePath
@@ -573,35 +601,35 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165342"><span class="hs-identifier hs-var">f</span></a></span><span>
-</span><span id="line-176"></span><span>
-</span><span id="line-177"></span><span class="hs-comment">-- | &quot;Joke&quot; function to change owen's pronouns randomly in servers on startup, cause owen is our favourite genderfluid icon</span><span>
-</span><span id="line-178"></span><span id="local-6989586621679165334"><span class="annot"><a href="Misc.html#changePronouns"><span class="hs-identifier hs-type">changePronouns</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679165334"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679165334"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679165334"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
-</span><span id="line-179"></span><span id="changePronouns"><span class="annot"><span class="annottext">changePronouns :: m ()
+</span><a href="#local-6989586621679165779"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-175"></span><span>
+</span><span id="line-176"></span><span class="hs-comment">-- | &quot;Joke&quot; function to change owen's pronouns randomly in servers on startup, cause owen is our favourite genderfluid icon</span><span>
+</span><span id="line-177"></span><span id="local-6989586621679165771"><span class="annot"><a href="Misc.html#changePronouns"><span class="hs-identifier hs-type">changePronouns</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679165771"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679165771"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679165771"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-178"></span><span id="changePronouns"><span class="annot"><span class="annottext">changePronouns :: m ()
 </span><a href="Misc.html#changePronouns"><span class="hs-identifier hs-var hs-var">changePronouns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-180"></span><span>    </span><span id="local-6989586621679165333"><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679165333"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m User
+</span><span id="line-179"></span><span>    </span><span id="local-6989586621679165770"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679165770"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m User
 forall (m :: * -&gt; *). MonadDiscord m =&gt; m User
 </span><a href="Discord.Internal.Monad.html#getCurrentUser"><span class="hs-identifier hs-var">getCurrentUser</span></a></span><span>
-</span><span id="line-181"></span><span>    </span><span class="hs-comment">-- get partial guilds, don't contain full information, so getId is defined below</span><span>
-</span><span id="line-182"></span><span>    </span><span id="local-6989586621679165331"><span class="annot"><span class="annottext">[PartialGuild]
-</span><a href="#local-6989586621679165331"><span class="hs-identifier hs-var">pGuilds</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m [PartialGuild]
+</span><span id="line-180"></span><span>    </span><span class="hs-comment">-- get partial guilds, don't contain full information, so getId is defined below</span><span>
+</span><span id="line-181"></span><span>    </span><span id="local-6989586621679165768"><span class="annot"><span class="annottext">[PartialGuild]
+</span><a href="#local-6989586621679165768"><span class="hs-identifier hs-var">pGuilds</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m [PartialGuild]
 forall (m :: * -&gt; *). MonadDiscord m =&gt; m [PartialGuild]
 </span><a href="Discord.Internal.Monad.html#getCurrentUserGuilds"><span class="hs-identifier hs-var">getCurrentUserGuilds</span></a></span><span>
-</span><span id="line-183"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165329"><span class="annot"><span class="annottext">guilds :: [ChannelId]
-</span><a href="#local-6989586621679165329"><span class="hs-identifier hs-var hs-var">guilds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PartialGuild -&gt; ChannelId
+</span><span id="line-182"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165766"><span class="annot"><span class="annottext">guilds :: [ChannelId]
+</span><a href="#local-6989586621679165766"><span class="hs-identifier hs-var hs-var">guilds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PartialGuild -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">partialGuildId</span></span><span> </span><span class="annot"><span class="annottext">(PartialGuild -&gt; ChannelId) -&gt; [PartialGuild] -&gt; [ChannelId]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[PartialGuild]
-</span><a href="#local-6989586621679165331"><span class="hs-identifier hs-var">pGuilds</span></a></span><span>
-</span><span id="line-184"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165327"><span class="annot"><span class="annottext">pronouns :: [Text]
-</span><a href="#local-6989586621679165327"><span class="hs-identifier hs-var hs-var">pronouns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165768"><span class="hs-identifier hs-var">pGuilds</span></a></span><span>
+</span><span id="line-183"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165764"><span class="annot"><span class="annottext">pronouns :: [Text]
+</span><a href="#local-6989586621679165764"><span class="hs-identifier hs-var hs-var">pronouns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;she/her&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;he/him&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;they/them&quot;</span></span><span class="hs-special">]</span><span>
-</span><span id="line-185"></span><span>
-</span><span id="line-186"></span><span>    </span><span id="local-6989586621679165326"><span class="annot"><span class="annottext">[(ChannelId, [ChannelId])]
-</span><a href="#local-6989586621679165326"><span class="hs-identifier hs-var">guildPronounMapUnfiltered</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[m (ChannelId, [ChannelId])] -&gt; m [(ChannelId, [ChannelId])]
+</span><span id="line-184"></span><span>
+</span><span id="line-185"></span><span>    </span><span id="local-6989586621679165763"><span class="annot"><span class="annottext">[(ChannelId, [ChannelId])]
+</span><a href="#local-6989586621679165763"><span class="hs-identifier hs-var">guildPronounMapUnfiltered</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[m (ChannelId, [ChannelId])] -&gt; m [(ChannelId, [ChannelId])]
 forall (t :: * -&gt; *) (m :: * -&gt; *) a.
 (Traversable t, Monad m) =&gt;
 t (m a) -&gt; m (t a)
@@ -609,17 +637,17 @@ t (m a) -&gt; m (t a)
 -&gt; [m (ChannelId, [ChannelId])] -&gt; m [(ChannelId, [ChannelId])]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-187"></span><span>        </span><span id="local-6989586621679165324"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165324"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ChannelId]
-</span><a href="#local-6989586621679165329"><span class="hs-identifier hs-var">guilds</span></a></span><span>
-</span><span id="line-188"></span><span>        </span><span class="annot"><span class="annottext">m (ChannelId, [ChannelId]) -&gt; [m (ChannelId, [ChannelId])]
+</span><span id="line-186"></span><span>        </span><span id="local-6989586621679165761"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165761"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ChannelId]
+</span><a href="#local-6989586621679165766"><span class="hs-identifier hs-var">guilds</span></a></span><span>
+</span><span id="line-187"></span><span>        </span><span class="annot"><span class="annottext">m (ChannelId, [ChannelId]) -&gt; [m (ChannelId, [ChannelId])]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(m (ChannelId, [ChannelId]) -&gt; [m (ChannelId, [ChannelId])])
 -&gt; m (ChannelId, [ChannelId]) -&gt; [m (ChannelId, [ChannelId])]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-189"></span><span>            </span><span id="local-6989586621679165323"><span class="annot"><span class="annottext">[Maybe ChannelId]
-</span><a href="#local-6989586621679165323"><span class="hs-identifier hs-var">pronounRoles</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[m (Maybe ChannelId)] -&gt; m [Maybe ChannelId]
+</span><span id="line-188"></span><span>            </span><span id="local-6989586621679165760"><span class="annot"><span class="annottext">[Maybe ChannelId]
+</span><a href="#local-6989586621679165760"><span class="hs-identifier hs-var">pronounRoles</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[m (Maybe ChannelId)] -&gt; m [Maybe ChannelId]
 forall (t :: * -&gt; *) (m :: * -&gt; *) a.
 (Traversable t, Monad m) =&gt;
 t (m a) -&gt; m (t a)
@@ -631,24 +659,24 @@ forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 Text -&gt; ChannelId -&gt; m (Maybe ChannelId)
 </span><a href="Utils.html#isRoleInGuild"><span class="hs-operator hs-var">`isRoleInGuild`</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165324"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; m (Maybe ChannelId)) -&gt; [Text] -&gt; [m (Maybe ChannelId)]
+</span><a href="#local-6989586621679165761"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; m (Maybe ChannelId)) -&gt; [Text] -&gt; [m (Maybe ChannelId)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165327"><span class="hs-identifier hs-var">pronouns</span></a></span><span>
-</span><span id="line-190"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165322"><span class="annot"><span class="annottext">matchingRoles :: [ChannelId]
-</span><a href="#local-6989586621679165322"><span class="hs-identifier hs-var hs-var">matchingRoles</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Maybe ChannelId] -&gt; [ChannelId]
+</span><a href="#local-6989586621679165764"><span class="hs-identifier hs-var">pronouns</span></a></span><span>
+</span><span id="line-189"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165759"><span class="annot"><span class="annottext">matchingRoles :: [ChannelId]
+</span><a href="#local-6989586621679165759"><span class="hs-identifier hs-var hs-var">matchingRoles</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Maybe ChannelId] -&gt; [ChannelId]
 forall a. [Maybe a] -&gt; [a]
 </span><span class="hs-identifier hs-var">M.catMaybes</span></span><span> </span><span class="annot"><span class="annottext">[Maybe ChannelId]
-</span><a href="#local-6989586621679165323"><span class="hs-identifier hs-var">pronounRoles</span></a></span><span>
-</span><span id="line-191"></span><span>            </span><span class="annot"><span class="annottext">(ChannelId, [ChannelId]) -&gt; m (ChannelId, [ChannelId])
+</span><a href="#local-6989586621679165760"><span class="hs-identifier hs-var">pronounRoles</span></a></span><span>
+</span><span id="line-190"></span><span>            </span><span class="annot"><span class="annottext">(ChannelId, [ChannelId]) -&gt; m (ChannelId, [ChannelId])
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165324"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ChannelId]
-</span><a href="#local-6989586621679165322"><span class="hs-identifier hs-var">matchingRoles</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-192"></span><span>
-</span><span id="line-193"></span><span>    </span><span class="hs-comment">-- remove guilds without pronoun roles</span><span>
-</span><span id="line-194"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165320"><span class="annot"><span class="annottext">guildPronounMap :: [(ChannelId, [ChannelId])]
-</span><a href="#local-6989586621679165320"><span class="hs-identifier hs-var hs-var">guildPronounMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((ChannelId, [ChannelId]) -&gt; Bool)
+</span><a href="#local-6989586621679165761"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[ChannelId]
+</span><a href="#local-6989586621679165759"><span class="hs-identifier hs-var">matchingRoles</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-191"></span><span>
+</span><span id="line-192"></span><span>    </span><span class="hs-comment">-- remove guilds without pronoun roles</span><span>
+</span><span id="line-193"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165757"><span class="annot"><span class="annottext">guildPronounMap :: [(ChannelId, [ChannelId])]
+</span><a href="#local-6989586621679165757"><span class="hs-identifier hs-var hs-var">guildPronounMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((ChannelId, [ChannelId]) -&gt; Bool)
 -&gt; [(ChannelId, [ChannelId])] -&gt; [(ChannelId, [ChannelId])]
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool -&gt; Bool
@@ -667,11 +695,11 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(ChannelId, [ChannelId]) -&gt; [ChannelId]
 forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(ChannelId, [ChannelId])]
-</span><a href="#local-6989586621679165326"><span class="hs-identifier hs-var">guildPronounMapUnfiltered</span></a></span><span>
-</span><span id="line-195"></span><span>
-</span><span id="line-196"></span><span>    </span><span class="hs-comment">-- remove current pronoun roles</span><span>
-</span><span id="line-197"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165318"><span class="annot"><span class="annottext">simplifiedMap :: [(ChannelId, ChannelId)]
-</span><a href="#local-6989586621679165318"><span class="hs-identifier hs-var hs-var">simplifiedMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[(ChannelId, ChannelId)]] -&gt; [(ChannelId, ChannelId)]
+</span><a href="#local-6989586621679165763"><span class="hs-identifier hs-var">guildPronounMapUnfiltered</span></a></span><span>
+</span><span id="line-194"></span><span>
+</span><span id="line-195"></span><span>    </span><span class="hs-comment">-- remove current pronoun roles</span><span>
+</span><span id="line-196"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165755"><span class="annot"><span class="annottext">simplifiedMap :: [(ChannelId, ChannelId)]
+</span><a href="#local-6989586621679165755"><span class="hs-identifier hs-var hs-var">simplifiedMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[(ChannelId, ChannelId)]] -&gt; [(ChannelId, ChannelId)]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">([[(ChannelId, ChannelId)]] -&gt; [(ChannelId, ChannelId)])
 -&gt; [[(ChannelId, ChannelId)]] -&gt; [(ChannelId, ChannelId)]
@@ -684,27 +712,27 @@ t (m a) -&gt; m (t a)
 -&gt; [(ChannelId, [ChannelId])] -&gt; [[(ChannelId, ChannelId)]]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[(ChannelId, [ChannelId])]
-</span><a href="#local-6989586621679165320"><span class="hs-identifier hs-var">guildPronounMap</span></a></span><span>
-</span><span id="line-198"></span><span>    </span><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
+</span><a href="#local-6989586621679165757"><span class="hs-identifier hs-var">guildPronounMap</span></a></span><span>
+</span><span id="line-197"></span><span>    </span><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
 -&gt; ((ChannelId, ChannelId) -&gt; m ()) -&gt; m ()
 forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Foldable t, Monad m) =&gt;
 t a -&gt; (a -&gt; m b) -&gt; m ()
 </span><span class="hs-identifier hs-var">forM_</span></span><span> </span><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
-</span><a href="#local-6989586621679165318"><span class="hs-identifier hs-var">simplifiedMap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679165316"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165316"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165315"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165315"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelId -&gt; ChannelId -&gt; m ()
+</span><a href="#local-6989586621679165755"><span class="hs-identifier hs-var">simplifiedMap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679165753"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165753"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165752"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165752"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelId -&gt; ChannelId -&gt; m ()
 forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 ChannelId -&gt; ChannelId -&gt; ChannelId -&gt; m ()
 </span><a href="Discord.Internal.Monad.html#removeGuildMemberRole"><span class="hs-identifier hs-var">removeGuildMemberRole</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165316"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; ChannelId
+</span><a href="#local-6989586621679165753"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">userId</span></span><span> </span><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679165333"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165315"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-199"></span><span>
-</span><span id="line-200"></span><span>    </span><span id="local-6989586621679165312"><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
-</span><a href="#local-6989586621679165312"><span class="hs-identifier hs-var">chosenPronouns</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[m (ChannelId, ChannelId)] -&gt; m [(ChannelId, ChannelId)]
+</span><a href="#local-6989586621679165770"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165752"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-198"></span><span>
+</span><span id="line-199"></span><span>    </span><span id="local-6989586621679165749"><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
+</span><a href="#local-6989586621679165749"><span class="hs-identifier hs-var">chosenPronouns</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[m (ChannelId, ChannelId)] -&gt; m [(ChannelId, ChannelId)]
 forall (t :: * -&gt; *) (m :: * -&gt; *) a.
 (Traversable t, Monad m) =&gt;
 t (m a) -&gt; m (t a)
@@ -712,60 +740,60 @@ t (m a) -&gt; m (t a)
 -&gt; [m (ChannelId, ChannelId)] -&gt; m [(ChannelId, ChannelId)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-201"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679165311"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165311"><span class="hs-identifier hs-var">gid</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165310"><span class="annot"><span class="annottext">[ChannelId]
-</span><a href="#local-6989586621679165310"><span class="hs-identifier hs-var">roles</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(ChannelId, [ChannelId])]
-</span><a href="#local-6989586621679165320"><span class="hs-identifier hs-var">guildPronounMap</span></a></span><span>
-</span><span id="line-202"></span><span>        </span><span class="annot"><span class="annottext">m (ChannelId, ChannelId) -&gt; [m (ChannelId, ChannelId)]
+</span><span id="line-200"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679165748"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165748"><span class="hs-identifier hs-var">gid</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165747"><span class="annot"><span class="annottext">[ChannelId]
+</span><a href="#local-6989586621679165747"><span class="hs-identifier hs-var">roles</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(ChannelId, [ChannelId])]
+</span><a href="#local-6989586621679165757"><span class="hs-identifier hs-var">guildPronounMap</span></a></span><span>
+</span><span id="line-201"></span><span>        </span><span class="annot"><span class="annottext">m (ChannelId, ChannelId) -&gt; [m (ChannelId, ChannelId)]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(m (ChannelId, ChannelId) -&gt; [m (ChannelId, ChannelId)])
 -&gt; m (ChannelId, ChannelId) -&gt; [m (ChannelId, ChannelId)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-203"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679165309"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165309"><span class="hs-keyword hs-var">role</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe ChannelId) -&gt; m (Maybe ChannelId)
+</span><span id="line-202"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679165746"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165746"><span class="hs-keyword hs-var">role</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe ChannelId) -&gt; m (Maybe ChannelId)
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Maybe ChannelId) -&gt; m (Maybe ChannelId))
 -&gt; IO (Maybe ChannelId) -&gt; m (Maybe ChannelId)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[ChannelId] -&gt; IO (Maybe ChannelId)
 forall a. [a] -&gt; IO (Maybe a)
-</span><a href="#local-6989586621679165308"><span class="hs-identifier hs-var">randomChoice</span></a></span><span> </span><span class="annot"><span class="annottext">[ChannelId]
-</span><a href="#local-6989586621679165310"><span class="hs-identifier hs-var">roles</span></a></span><span>
-</span><span id="line-204"></span><span>            </span><span class="annot"><span class="annottext">(ChannelId, ChannelId) -&gt; m (ChannelId, ChannelId)
+</span><a href="#local-6989586621679165745"><span class="hs-identifier hs-var">randomChoice</span></a></span><span> </span><span class="annot"><span class="annottext">[ChannelId]
+</span><a href="#local-6989586621679165747"><span class="hs-identifier hs-var">roles</span></a></span><span>
+</span><span id="line-203"></span><span>            </span><span class="annot"><span class="annottext">(ChannelId, ChannelId) -&gt; m (ChannelId, ChannelId)
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165311"><span class="hs-identifier hs-var">gid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165309"><span class="hs-keyword hs-var">role</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-205"></span><span>
-</span><span id="line-206"></span><span>    </span><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
+</span><a href="#local-6989586621679165748"><span class="hs-identifier hs-var">gid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165746"><span class="hs-keyword hs-var">role</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-204"></span><span>
+</span><span id="line-205"></span><span>    </span><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
 -&gt; ((ChannelId, ChannelId) -&gt; m ()) -&gt; m ()
 forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Foldable t, Monad m) =&gt;
 t a -&gt; (a -&gt; m b) -&gt; m ()
 </span><span class="hs-identifier hs-var">forM_</span></span><span> </span><span class="annot"><span class="annottext">[(ChannelId, ChannelId)]
-</span><a href="#local-6989586621679165312"><span class="hs-identifier hs-var">chosenPronouns</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679165307"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165307"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165306"><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165306"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelId -&gt; ChannelId -&gt; m ()
+</span><a href="#local-6989586621679165749"><span class="hs-identifier hs-var">chosenPronouns</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679165744"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165744"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165743"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165743"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; ChannelId -&gt; ChannelId -&gt; m ()
 forall (m :: * -&gt; *).
 MonadDiscord m =&gt;
 ChannelId -&gt; ChannelId -&gt; ChannelId -&gt; m ()
 </span><a href="Discord.Internal.Monad.html#addGuildMemberRole"><span class="hs-identifier hs-var">addGuildMemberRole</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165307"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; ChannelId
+</span><a href="#local-6989586621679165744"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">userId</span></span><span> </span><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679165333"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ChannelId
-</span><a href="#local-6989586621679165306"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-207"></span><span>
-</span><span id="line-208"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-209"></span><span>        </span><span id="local-6989586621679165439"><span class="annot"><a href="#local-6989586621679165308"><span class="hs-identifier hs-type">randomChoice</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679165439"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679165439"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-210"></span><span>        </span><span id="local-6989586621679165308"><span class="annot"><span class="annottext">randomChoice :: [a] -&gt; IO (Maybe a)
-</span><a href="#local-6989586621679165308"><span class="hs-identifier hs-var hs-var">randomChoice</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; IO (Maybe a)
+</span><a href="#local-6989586621679165770"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679165743"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-206"></span><span>
+</span><span id="line-207"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-208"></span><span>        </span><span id="local-6989586621679165876"><span class="annot"><a href="#local-6989586621679165745"><span class="hs-identifier hs-type">randomChoice</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679165876"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679165876"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-209"></span><span>        </span><span id="local-6989586621679165745"><span class="annot"><span class="annottext">randomChoice :: [a] -&gt; IO (Maybe a)
+</span><a href="#local-6989586621679165745"><span class="hs-identifier hs-var hs-var">randomChoice</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; IO (Maybe a)
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-211"></span><span>        </span><span class="annot"><a href="#local-6989586621679165308"><span class="hs-identifier hs-var">randomChoice</span></a></span><span> </span><span id="local-6989586621679165304"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679165304"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (IO a) -&gt; IO (Maybe a)
+</span><span id="line-210"></span><span>        </span><span class="annot"><a href="#local-6989586621679165745"><span class="hs-identifier hs-var">randomChoice</span></a></span><span> </span><span id="local-6989586621679165741"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679165741"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (IO a) -&gt; IO (Maybe a)
 forall (t :: * -&gt; *) (m :: * -&gt; *) a.
 (Traversable t, Monad m) =&gt;
 t (m a) -&gt; m (t a)
@@ -776,7 +804,7 @@ forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(IO a -&gt; Maybe (IO a)) -&gt; IO a -&gt; Maybe (IO a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679165304"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int -&gt; a
+</span><a href="#local-6989586621679165741"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int -&gt; a
 forall a. [a] -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">!!</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; a) -&gt; IO Int -&gt; IO a
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -786,9 +814,9 @@ forall a. Random a =&gt; (a, a) -&gt; IO a
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679165304"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679165741"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
-</span><span id="line-212"></span><span>
-</span><span id="line-213"></span></pre></body></html>
+</span><span id="line-211"></span><span>
+</span><span id="line-212"></span></pre></body></html>

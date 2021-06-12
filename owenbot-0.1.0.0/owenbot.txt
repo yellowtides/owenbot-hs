@@ -60,7 +60,10 @@ instance GHC.Exception.Type.Exception Command.Error.CommandError
 -- | Parser component for Commands. Its usage is mainly internal, to be
 --   used from <a>Command.Command</a>.
 --   
---   If you want to add your own parser argument type, this is the module.
+--   If you want to add your own parser argument type, you can either add
+--   it here (to be reused across multiple modules), or in your receive
+--   module (if it is only used there). Either works really, but sometimes
+--   you need the other to prevent looping imports.
 module Command.Parser
 
 -- | A <tt>ParsableArgument</tt> is a dataclass that represents arguments
@@ -100,6 +103,8 @@ instance Command.Parser.ParsableArgument GHC.Base.String
 instance Command.Parser.ParsableArgument Data.Text.Internal.Text
 instance Command.Parser.ParsableArgument [Data.Text.Internal.Text]
 instance Command.Parser.ParsableArgument a => Command.Parser.ParsableArgument (GHC.Maybe.Maybe a)
+instance (Command.Parser.ParsableArgument a, Command.Parser.ParsableArgument b) => Command.Parser.ParsableArgument (a, b)
+instance Command.Parser.ParsableArgument Discord.Internal.Types.Prelude.Snowflake
 instance Command.Parser.ParsableArgument Discord.Internal.Types.Gateway.UpdateStatusType
 instance Command.Parser.ParsableArgument Discord.Internal.Types.Gateway.ActivityType
 
@@ -282,23 +287,7 @@ weakOwoify :: Text -> Text
 --   terminate if the instance declarations recursively reference each
 --   other. In this module however, all instances strictly converges to the
 --   <tt>m (m ())</tt> instance so I say it is safe. <a>Read more</a></li>
---   <li>ExistentialQuantification: For declaring <a>Command</a> with only
---   the monad. This is not idiomatic Haskell (usually parametric
---   polymorphism is fine), but in this use case, the type signatures can
---   be drastically improved: <a>see the examples in this change</a>. This
---   also allows us to define a list of <a>Command</a>s, which was not
---   possible before. This change allows us to create <a>runHelp</a> and
---   <a>runCommands</a>. <a>Read more on existential types</a> , and
---   <a>even more here</a>. <a>This comes at a price (although the benefits
---   outweigh the prices here)</a> , as now the compiler loses the
---   information about what arguments the command handler takes. <a>Record
---   selector functions will no longer work too</a> , but this is covered
---   by using pattern matching.</li>
---   <li>RecordWildCards: Enables you to write <tt>Command{..}</tt> in
---   pattern matches to create accessors instead of doing <tt>(Command one
---   two three four five)</tt>. Helps with ExistentialQuantification
---   because otherwise unpacking the <tt>Command</tt> ADT will be really
---   really long. Not necessary but helpful.</li>
+--   <li>NamedFieldPuns: Shorten pattern matching ADT field names.</li>
 --   </ul>
 --   
 --   Implementation references:
@@ -322,8 +311,8 @@ module Command.Command
 --   user-registered command.
 --   
 --   <tt>Command m</tt> is a command that runs in the monad <tt>m</tt>,
---   which when called will trigger a polyvariadic handler function. The
---   handler *must* be in the <tt>m</tt> monad, which is enforced by the
+--   which when triggered will run a polyvariadic handler function. The
+--   handler *must* run in the <tt>m</tt> monad, which is enforced by the
 --   type-checker (to see the details, look in <tt>CommandHandlerType</tt>
 --   in the source code).
 --   
@@ -333,7 +322,7 @@ module Command.Command
 data Command m
 
 -- | <tt>command name handler</tt> creates a <a>Command</a> named
---   <tt>name</tt>, which upon receiving a message will call
+--   <tt>name</tt>, which upon receiving a message will run
 --   <tt>handler</tt>. The <tt>name</tt> cannot contain any spaces, as it
 --   breaks the parser. The <tt>handler</tt> function can take an arbitrary
 --   amount of arguments of arbitrary types (it is polyvariadic), as long
@@ -383,8 +372,7 @@ data Command m
 --           -- some parsec
 --           parsed &lt;- read &lt;$&gt; many digit
 --           endOrSpaces
---           remaining &lt;- getInput
---           pure (parsed, remaining)
+--           pure parsed
 --   
 --   complex :: (MonadDiscord m) =&gt; Command m
 --   complex = command "setLimit" $ \i -&gt; do
@@ -393,18 +381,21 @@ data Command m
 command :: (CommandHandlerType m h, MonadDiscord m) => Text -> h -> Command m
 
 -- | <tt>runCommand command msg</tt> runs the specified <a>Command</a> with
---   the given message. It checks for any requirement failures, then calls
---   the <tt>commandApplier</tt> function in the <a>Command</a> ADT. Any
---   errors inside the handler is caught and appropriately handled.
+--   the given message. It first does the initial checks:
 --   
---   <ul>
---   <li>If a custom parser is defined, the requirements are checked and
---   the parser is called.</li>
---   <li>If a custom parser is not defined, the command name is first
---   matched and confirmed, before doing the requirement check and parser
---   calls. If the name does not match, it does nothing (<tt>pure
---   ()</tt>).</li>
---   </ul>
+--   For commands registered with <a>command</a>, the check will check for
+--   the prefix and the name.
+--   
+--   For commands registered with <a>regexCommand</a>, the check will check
+--   against the regex.
+--   
+--   For commands registered with <a>parsecCommand</a>, the check will
+--   check against the parser.
+--   
+--   Any failures during this stage is silently ignored, as it may still be
+--   a valid command elsewhere. After this, the requirements are checked
+--   (chance, priv, etc). Finally, the <tt>commandApplier</tt> is called.
+--   Any errors inside the handler is caught and appropriately handled.
 --   
 --   <pre>
 --   runCommand pong :: Message -&gt; m ()
@@ -420,12 +411,13 @@ runCommands :: (MonadDiscord m, Alternative m) => [Command m] -> Message -> m ()
 runHelp :: MonadDiscord m => Text -> [Command m] -> Message -> m ()
 
 -- | <tt>parsecCommand</tt> defines a command that has no name, and has a
---   custom parser. It can help things like "::quotes" because they have
---   special syntax that demands a special parser.
+--   custom parser that begins from the start of a message. It can help
+--   things like "::quotes" because they have special syntax that demands a
+--   special parser.
 --   
---   <a>prefix</a>, if used together, is ignored. Other compoasble
---   functions like <a>help</a>, <a>requires</a>, and <a>onError</a> are
---   still valid.
+--   <a>prefix</a> and <a>alias</a>, if used together, are ignored. Other
+--   compoasble functions like <a>help</a>, <a>requires</a>, and
+--   <a>onError</a> are still valid.
 --   
 --   The handler <b>must</b> take a <a>Message</a> and a <a>String</a> as
 --   argument (nothing more, nothing less), where the latter is the result
@@ -434,7 +426,7 @@ runHelp :: MonadDiscord m => Text -> [Command m] -> Message -> m ()
 --   <pre>
 --   example
 --       = requires moderatorPrivs
---       . parsecCommand (string '::' &gt;&gt; many1 anyChar) $ msg quoteName -&gt; do
+--       . parsecCommand (string '::' &gt;&gt; many1 anyChar) $ \msg quoteName -&gt; do
 --           ...
 --           -- this is triggered on "::<a>or more chars</a>" where quoteName
 --           -- contains the section enclosed in &lt;&gt;
@@ -442,19 +434,19 @@ runHelp :: MonadDiscord m => Text -> [Command m] -> Message -> m ()
 parsecCommand :: MonadDiscord m => Parser String -> (Message -> String -> m ()) -> Command m
 
 -- | <tt>regexCommand</tt> defines a command that has no name, and has a
---   custom regular expression matcher. Convenient when parsers can get
---   complicated, although slow.
+--   custom regular expression matcher, that <b>searches across any part of
+--   the message</b>.
 --   
---   <a>prefix</a>, if used together, is ignored. Other compoasble
---   functions like <a>help</a>, <a>requires</a>, and <a>onError</a> are
---   still valid.
+--   <a>prefix</a> and <a>alias</a>, if used together, are ignored. Other
+--   compoasble functions like <a>help</a>, <a>requires</a>, and
+--   <a>onError</a> are still valid.
 --   
 --   The handler <b>must</b> take a <a>Message</a> and a '[T.Text]' as
 --   argument, where the latter are the list of captured values from the
 --   Regex (same as the past <tt>newCommand</tt>).
 --   
 --   <pre>
---   thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ msg caps -&gt; do
+--   thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ \msg caps -&gt; do
 --       let verb = head caps
 --   ...
 --   </pre>
@@ -469,7 +461,7 @@ help :: Text -> Command m -> Command m
 --   used.
 --   
 --   Functionally, this is equivalent to defining a new command with the
---   same handler.
+--   same handler, however the aliases may not appear on help pages.
 alias :: Text -> Command m -> Command m
 
 -- | <tt>onError</tt> overwrites the default error handler of a command
@@ -510,6 +502,32 @@ defaultErrorHandler :: MonadDiscord m => Message -> CommandError -> m ()
 --   
 --   Commands default to having no requirements.
 requires :: (Message -> m (Maybe Text)) -> Command m -> Command m
+
+-- | This represents any error that can arise from an invocation of a
+--   command. Some are thrown by the system (such as ArgumentParseError),
+--   however you can also manually throw them with <tt>throwM</tt> within
+--   any handler.
+data CommandError
+
+-- | Indicates the command arguments failed to parse, either because of
+--   lack of arguments, incorrect types, or too many arguments.
+ArgumentParseError :: Text -> CommandError
+
+-- | Indicates that a requirement for this command failed to pass. The
+--   reason is specified in the text field.
+RequirementError :: Text -> CommandError
+
+-- | This is a value unused by the system, and is free to be used by the
+--   handler as they wish.
+ProcessingError :: Text -> CommandError
+
+-- | Indicates there was a fatal Discord call somewhere in the handler.
+DiscordError :: RestCallErrorCode -> CommandError
+
+-- | Indicates there was some sort of runtime error. This contains all
+--   sorts of errors, however they are guaranteed to be safe synchronous
+--   exceptions.
+HaskellError :: SomeException -> CommandError
 
 -- | A <tt>ParsableArgument</tt> is a dataclass that represents arguments
 --   that can be parsed from a message. Any datatype that is an instance of
@@ -623,8 +641,7 @@ sendMessageDM :: MonadDiscord m => UserId -> Text -> m ()
 
 -- | <a>sendFileChan</a> attempts to send the file at the provided
 --   <a>FilePath</a> in the channel with the provided <a>ChannelId</a>. The
---   file attachment is annotated by the given <tt>Text</tt>. Surpresses
---   any error message(s), returning <tt>()</tt>.
+--   file attachment is annotated by the given <tt>Text</tt>.
 sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> Text -> FilePath -> m ()
 
 -- | <a>addReaction</a> attempts to add a reaction to the given message ID.
@@ -685,15 +702,22 @@ getMessageLink :: Message -> DiscordHandler Text
 
 -- | <a>hasRoleByName</a> checks whether the provided message was sent by a
 --   user that has a role matching the provided <tt>Text</tt> exactly.
-hasRoleByName :: Message -> Text -> DiscordHandler Bool
+hasRoleByName :: MonadDiscord m => Message -> Text -> m Bool
 
 -- | <a>hasRoleByID</a> checks whether the provided message was sent by a
 --   user that has a role matching the provided <a>RoleId</a>.
-hasRoleByID :: Message -> RoleId -> DiscordHandler Bool
+hasRoleByID :: MonadDiscord m => Message -> RoleId -> m Bool
 
 -- | channelRequirement is a requirement for a Command to be in a certain
 --   channel.
 channelRequirement :: MonadDiscord m => String -> Message -> m (Maybe Text)
+
+-- | Command requirement for role names, matched with OR. For and, just
+--   compose multiple of this.
+roleNameRequirement :: MonadDiscord m => [Text] -> Message -> m (Maybe Text)
+
+-- | Command requirement for sender being a registered developer.
+developerRequirement :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe Text)
 
 -- | <a>isMod</a> checks whether the provided message was sent by a user
 --   with the <tt>Moderator</tt> role.
@@ -703,8 +727,8 @@ isMod :: Message -> DiscordHandler Bool
 --   IDs.
 devIDs :: FilePath
 
--- | The <a>FilePath</a> representing the location of the assets. TODO:
---   Move to configDir
+-- | The <a>FilePath</a> representing the location of the assets. TODO: Use
+--   XDG_DATA_DIR instead of hardcoding ls
 assetDir :: FilePath
 
 -- | The <a>(=~=)</a> function matches a given <tt>Text</tt> again a regex.

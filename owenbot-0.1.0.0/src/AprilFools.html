@@ -70,12 +70,12 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-48"></span><span>
 </span><span id="line-49"></span><span class="annot"><a href="AprilFools.html#isLikelyIRCMessage"><span class="hs-identifier hs-type">isLikelyIRCMessage</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-50"></span><span id="isLikelyIRCMessage"><span class="annot"><span class="annottext">isLikelyIRCMessage :: Message -&gt; Bool
-</span><a href="AprilFools.html#isLikelyIRCMessage"><span class="hs-identifier hs-var hs-var">isLikelyIRCMessage</span></a></span></span><span> </span><span id="local-6989586621679166427"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166427"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text
+</span><a href="AprilFools.html#isLikelyIRCMessage"><span class="hs-identifier hs-var hs-var">isLikelyIRCMessage</span></a></span></span><span> </span><span id="local-6989586621679166894"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679166894"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text
 </span><span class="hs-identifier hs-var">T.take</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166427"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
+</span><a href="#local-6989586621679166894"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;**&lt;&quot;</span></span><span>
@@ -83,8 +83,8 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-52"></span><span class="annot"><a href="AprilFools.html#botIdM"><span class="hs-identifier hs-type">botIdM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UserId</span></span><span>
 </span><span id="line-53"></span><span id="botIdM"><span class="annot"><span class="annottext">botIdM :: DiscordHandler UserId
 </span><a href="AprilFools.html#botIdM"><span class="hs-identifier hs-var hs-var">botIdM</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-54"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679166424"><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679166424"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UserRequest User -&gt; DiscordHandler (Either RestCallErrorCode User)
+</span><span id="line-54"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679166891"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679166891"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UserRequest User -&gt; DiscordHandler (Either RestCallErrorCode User)
 forall a (r :: * -&gt; *).
 (FromJSON a, Request (r a)) =&gt;
 r a -&gt; DiscordHandler (Either RestCallErrorCode a)
@@ -97,14 +97,14 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">User -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">userId</span></span><span> </span><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679166424"><span class="hs-identifier hs-var">user</span></a></span><span>
+</span><a href="#local-6989586621679166891"><span class="hs-identifier hs-var">user</span></a></span><span>
 </span><span id="line-56"></span><span>
 </span><span id="line-57"></span><span class="annot"><a href="AprilFools.html#rewriteReactionAsIRC"><span class="hs-identifier hs-type">rewriteReactionAsIRC</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ReactionInfo</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-58"></span><span id="rewriteReactionAsIRC"><span class="annot"><span class="annottext">rewriteReactionAsIRC :: ReactionInfo -&gt; DiscordHandler ()
-</span><a href="AprilFools.html#rewriteReactionAsIRC"><span class="hs-identifier hs-var hs-var">rewriteReactionAsIRC</span></a></span></span><span> </span><span id="local-6989586621679166421"><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166421"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-59"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679166420"><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679166420"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UserRequest User -&gt; DiscordHandler (Either RestCallErrorCode User)
+</span><a href="AprilFools.html#rewriteReactionAsIRC"><span class="hs-identifier hs-var hs-var">rewriteReactionAsIRC</span></a></span></span><span> </span><span id="local-6989586621679166888"><span class="annot"><span class="annottext">ReactionInfo
+</span><a href="#local-6989586621679166888"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-59"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679166887"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679166887"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UserRequest User -&gt; DiscordHandler (Either RestCallErrorCode User)
 forall a (r :: * -&gt; *).
 (FromJSON a, Request (r a)) =&gt;
 r a -&gt; DiscordHandler (Either RestCallErrorCode a)
@@ -115,9 +115,9 @@ r a -&gt; DiscordHandler (Either RestCallErrorCode a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">UserId -&gt; UserRequest User
 </span><span class="hs-identifier hs-var">R.GetUser</span></span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166418"><span class="hs-identifier hs-var">uid</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679166417"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166417"><span class="hs-identifier hs-var">message</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChannelRequest Message
+</span><a href="#local-6989586621679166885"><span class="hs-identifier hs-var">uid</span></a></span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679166884"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679166884"><span class="hs-identifier hs-var">message</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChannelRequest Message
 -&gt; DiscordHandler (Either RestCallErrorCode Message)
 forall a (r :: * -&gt; *).
 (FromJSON a, Request (r a)) =&gt;
@@ -129,8 +129,8 @@ r a -&gt; DiscordHandler (Either RestCallErrorCode a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(UserId, UserId) -&gt; ChannelRequest Message
 </span><span class="hs-identifier hs-var">R.GetChannelMessage</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166415"><span class="hs-identifier hs-var">cid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166414"><span class="hs-identifier hs-var">mid</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166882"><span class="hs-identifier hs-var">cid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679166881"><span class="hs-identifier hs-var">mid</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-61"></span><span>    </span><span class="annot"><span class="annottext">Either RestCallErrorCode ()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChannelRequest () -&gt; DiscordHandler (Either RestCallErrorCode ())
 forall a (r :: * -&gt; *).
@@ -142,52 +142,52 @@ r a -&gt; DiscordHandler (Either RestCallErrorCode a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(UserId, UserId) -&gt; ChannelRequest ()
 </span><span class="hs-identifier hs-var">R.DeleteAllReactions</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166415"><span class="hs-identifier hs-var">cid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166414"><span class="hs-identifier hs-var">mid</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-62"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166412"><span class="annot"><span class="annottext">reactedMessageT :: Text
-</span><a href="#local-6989586621679166412"><span class="hs-identifier hs-var hs-var">reactedMessageT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="#local-6989586621679166882"><span class="hs-identifier hs-var">cid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679166881"><span class="hs-identifier hs-var">mid</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166879"><span class="annot"><span class="annottext">reactedMessageT :: Text
+</span><a href="#local-6989586621679166879"><span class="hs-identifier hs-var hs-var">reactedMessageT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166417"><span class="hs-identifier hs-var">message</span></a></span><span>
-</span><span id="line-63"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166411"><span class="annot"><span class="annottext">reacterUsername :: Text
-</span><a href="#local-6989586621679166411"><span class="hs-identifier hs-var hs-var">reacterUsername</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">User -&gt; Text
+</span><a href="#local-6989586621679166884"><span class="hs-identifier hs-var">message</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166878"><span class="annot"><span class="annottext">reacterUsername :: Text
+</span><a href="#local-6989586621679166878"><span class="hs-identifier hs-var hs-var">reacterUsername</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">User -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">userName</span></span><span> </span><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679166420"><span class="hs-identifier hs-var">user</span></a></span><span>
-</span><span id="line-64"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166409"><span class="annot"><span class="annottext">maxMessageLen :: Int
-</span><a href="#local-6989586621679166409"><span class="hs-identifier hs-var hs-var">maxMessageLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166887"><span class="hs-identifier hs-var">user</span></a></span><span>
+</span><span id="line-64"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166876"><span class="annot"><span class="annottext">maxMessageLen :: Int
+</span><a href="#local-6989586621679166876"><span class="hs-identifier hs-var hs-var">maxMessageLen</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">69</span></span><span>
-</span><span id="line-65"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166408"><span class="annot"><span class="annottext">ellipses :: Text
-</span><a href="#local-6989586621679166408"><span class="hs-identifier hs-var hs-var">ellipses</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int
+</span><span id="line-65"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166875"><span class="annot"><span class="annottext">ellipses :: Text
+</span><a href="#local-6989586621679166875"><span class="hs-identifier hs-var hs-var">ellipses</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int
 </span><span class="hs-identifier hs-var">T.length</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166412"><span class="hs-identifier hs-var">reactedMessageT</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679166879"><span class="hs-identifier hs-var">reactedMessageT</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679166409"><span class="hs-identifier hs-var">maxMessageLen</span></a></span><span>
+</span><a href="#local-6989586621679166876"><span class="hs-identifier hs-var">maxMessageLen</span></a></span><span>
 </span><span id="line-66"></span><span>                        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;[...]&quot;</span></span><span>
 </span><span id="line-67"></span><span>                        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;&quot;</span></span><span>
-</span><span id="line-68"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166405"><span class="annot"><span class="annottext">reactMessageT :: Text
-</span><a href="#local-6989586621679166405"><span class="hs-identifier hs-var hs-var">reactMessageT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span id="line-68"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166872"><span class="annot"><span class="annottext">reactMessageT :: Text
+</span><a href="#local-6989586621679166872"><span class="hs-identifier hs-var hs-var">reactMessageT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.concat</span></span><span> </span><span class="hs-special">[</span><span>
 </span><span id="line-69"></span><span>                </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;*&quot;</span></span><span class="hs-special">,</span><span>
 </span><span id="line-70"></span><span>                </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166411"><span class="hs-identifier hs-var">reacterUsername</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679166878"><span class="hs-identifier hs-var">reacterUsername</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-71"></span><span>                </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot; reacted to \&quot;&quot;</span></span><span class="hs-special">,</span><span>
 </span><span id="line-72"></span><span>                </span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text
 </span><span class="hs-identifier hs-var">T.take</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679166409"><span class="hs-identifier hs-var">maxMessageLen</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679166876"><span class="hs-identifier hs-var">maxMessageLen</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; Text -&gt; Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166417"><span class="hs-identifier hs-var">message</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679166884"><span class="hs-identifier hs-var">message</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-73"></span><span>                </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166408"><span class="hs-identifier hs-var">ellipses</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679166875"><span class="hs-identifier hs-var">ellipses</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-74"></span><span>                </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;\&quot; with &quot;</span></span><span class="hs-special">,</span><span>
 </span><span id="line-75"></span><span>                </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166403"><span class="hs-identifier hs-var">emojiT</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679166870"><span class="hs-identifier hs-var">emojiT</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-76"></span><span>                </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;*&quot;</span></span><span>
 </span><span id="line-77"></span><span>            </span><span class="hs-special">]</span><span>
@@ -195,51 +195,51 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Bool
 </span><a href="AprilFools.html#isLikelyIRCMessage"><span class="hs-identifier hs-var">isLikelyIRCMessage</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166417"><span class="hs-identifier hs-var">message</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId -&gt; Text -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679166884"><span class="hs-identifier hs-var">message</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; UserId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChanPingsDisabled"><span class="hs-identifier hs-var">sendMessageChanPingsDisabled</span></a></span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166415"><span class="hs-identifier hs-var">cid</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166405"><span class="hs-identifier hs-var">reactMessageT</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166882"><span class="hs-identifier hs-var">cid</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166872"><span class="hs-identifier hs-var">reactMessageT</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-80"></span><span>        </span><span id="local-6989586621679166418"><span class="annot"><span class="annottext">uid :: UserId
-</span><a href="#local-6989586621679166418"><span class="hs-identifier hs-var hs-var">uid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
+</span><span id="line-80"></span><span>        </span><span id="local-6989586621679166885"><span class="annot"><span class="annottext">uid :: UserId
+</span><a href="#local-6989586621679166885"><span class="hs-identifier hs-var hs-var">uid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">reactionUserId</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166421"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-81"></span><span>        </span><span id="local-6989586621679166415"><span class="annot"><span class="annottext">cid :: UserId
-</span><a href="#local-6989586621679166415"><span class="hs-identifier hs-var hs-var">cid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
+</span><a href="#local-6989586621679166888"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-81"></span><span>        </span><span id="local-6989586621679166882"><span class="annot"><span class="annottext">cid :: UserId
+</span><a href="#local-6989586621679166882"><span class="hs-identifier hs-var hs-var">cid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">reactionChannelId</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166421"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-82"></span><span>        </span><span id="local-6989586621679166414"><span class="annot"><span class="annottext">mid :: UserId
-</span><a href="#local-6989586621679166414"><span class="hs-identifier hs-var hs-var">mid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
+</span><a href="#local-6989586621679166888"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-82"></span><span>        </span><span id="local-6989586621679166881"><span class="annot"><span class="annottext">mid :: UserId
+</span><a href="#local-6989586621679166881"><span class="hs-identifier hs-var hs-var">mid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">reactionMessageId</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166421"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-83"></span><span>        </span><span id="local-6989586621679166403"><span class="annot"><span class="annottext">emojiT :: Text
-</span><a href="#local-6989586621679166403"><span class="hs-identifier hs-var hs-var">emojiT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Emoji -&gt; Text
+</span><a href="#local-6989586621679166888"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-83"></span><span>        </span><span id="local-6989586621679166870"><span class="annot"><span class="annottext">emojiT :: Text
+</span><a href="#local-6989586621679166870"><span class="hs-identifier hs-var hs-var">emojiT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Emoji -&gt; Text
 </span><a href="Utils.html#emojiToUsableText"><span class="hs-identifier hs-var">emojiToUsableText</span></a></span><span> </span><span class="annot"><span class="annottext">(Emoji -&gt; Text) -&gt; Emoji -&gt; Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo -&gt; Emoji
 </span><span class="hs-identifier hs-var hs-var">reactionEmoji</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166421"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><a href="#local-6989586621679166888"><span class="hs-identifier hs-var">r</span></a></span><span>
 </span><span id="line-84"></span><span>
 </span><span id="line-85"></span><span class="hs-comment">-- | Returns false only if it a crosspost, new pin add, announcement follow added, boost, etc.</span><span>
 </span><span id="line-86"></span><span class="annot"><a href="AprilFools.html#isProperMessage"><span class="hs-identifier hs-type">isProperMessage</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-87"></span><span id="isProperMessage"><span class="annot"><span class="annottext">isProperMessage :: Message -&gt; Bool
-</span><a href="AprilFools.html#isProperMessage"><span class="hs-identifier hs-var hs-var">isProperMessage</span></a></span></span><span> </span><span id="local-6989586621679166397"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166397"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe MessageReference -&gt; Bool
+</span><a href="AprilFools.html#isProperMessage"><span class="hs-identifier hs-var hs-var">isProperMessage</span></a></span></span><span> </span><span id="local-6989586621679166864"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679166864"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe MessageReference -&gt; Bool
 forall a. Maybe a -&gt; Bool
 </span><span class="hs-identifier hs-var">isNothing</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Maybe MessageReference
 </span><span class="hs-identifier hs-var hs-var">messageReference</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166397"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679166864"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Message -&gt; Bool
 forall a. Maybe a -&gt; Bool
 </span><span class="hs-identifier hs-var">isJust</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Maybe Message
 </span><span class="hs-identifier hs-var hs-var">referencedMessage</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166397"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166864"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-88"></span><span>
 </span><span id="line-89"></span><span class="annot"><a href="AprilFools.html#rewriteMessageAsIRC"><span class="hs-identifier hs-type">rewriteMessageAsIRC</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-90"></span><span id="rewriteMessageAsIRC"><span class="annot"><span class="annottext">rewriteMessageAsIRC :: Message -&gt; DiscordHandler ()
-</span><a href="AprilFools.html#rewriteMessageAsIRC"><span class="hs-identifier hs-var hs-var">rewriteMessageAsIRC</span></a></span></span><span> </span><span id="local-6989586621679166393"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="AprilFools.html#rewriteMessageAsIRC"><span class="hs-identifier hs-var hs-var">rewriteMessageAsIRC</span></a></span></span><span> </span><span id="local-6989586621679166860"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-91"></span><span>
 </span><span id="line-92"></span><span>    </span><span class="hs-comment">-- Safely use guard because there won't be any handlers using this.</span><span>
 </span><span id="line-93"></span><span>    </span><span class="hs-comment">-- Concern is that a CompSoc msg may get sent during the day, but it's an insignificance</span><span>
@@ -250,13 +250,13 @@ forall (f :: * -&gt; *). Alternative f =&gt; Bool -&gt; f ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Bool
 </span><a href="AprilFools.html#isProperMessage"><span class="hs-identifier hs-var">isProperMessage</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
 </span><span id="line-96"></span><span>
-</span><span id="line-97"></span><span>    </span><span id="local-6989586621679166392"><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166392"><span class="hs-identifier hs-var">excludeThisPing</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">DiscordHandler UserId
+</span><span id="line-97"></span><span>    </span><span id="local-6989586621679166859"><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679166859"><span class="hs-identifier hs-var">excludeThisPing</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">DiscordHandler UserId
 </span><a href="AprilFools.html#botIdM"><span class="hs-identifier hs-var">botIdM</span></a></span><span>
-</span><span id="line-98"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166391"><span class="annot"><span class="annottext">userPings :: [Text]
-</span><a href="#local-6989586621679166391"><span class="hs-identifier hs-var hs-var">userPings</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">User -&gt; Text
+</span><span id="line-98"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166858"><span class="annot"><span class="annottext">userPings :: [Text]
+</span><a href="#local-6989586621679166858"><span class="hs-identifier hs-var hs-var">userPings</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">User -&gt; Text
 </span><a href="Utils.html#pingUser"><span class="hs-identifier hs-var">pingUser</span></a></span><span> </span><span class="annot"><span class="annottext">(User -&gt; Text) -&gt; [User] -&gt; [Text]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(User -&gt; Bool) -&gt; [User] -&gt; [User]
@@ -264,35 +264,35 @@ forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId -&gt; UserId -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166392"><span class="hs-identifier hs-var">excludeThisPing</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; Bool) -&gt; (User -&gt; UserId) -&gt; User -&gt; Bool
+</span><a href="#local-6989586621679166859"><span class="hs-identifier hs-var">excludeThisPing</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; Bool) -&gt; (User -&gt; UserId) -&gt; User -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">User -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">userId</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[User]
-</span><a href="#local-6989586621679166389"><span class="hs-identifier hs-var">mentionU</span></a></span><span>
-</span><span id="line-99"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166388"><span class="annot"><span class="annottext">rolePings :: [Text]
-</span><a href="#local-6989586621679166388"><span class="hs-identifier hs-var hs-var">rolePings</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Text
+</span><a href="#local-6989586621679166856"><span class="hs-identifier hs-var">mentionU</span></a></span><span>
+</span><span id="line-99"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166855"><span class="annot"><span class="annottext">rolePings :: [Text]
+</span><a href="#local-6989586621679166855"><span class="hs-identifier hs-var hs-var">rolePings</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">UserId -&gt; Text
 </span><a href="Utils.html#pingRole"><span class="hs-identifier hs-var">pingRole</span></a></span><span> </span><span class="annot"><span class="annottext">(UserId -&gt; Text) -&gt; [UserId] -&gt; [Text]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[UserId]
-</span><a href="#local-6989586621679166387"><span class="hs-identifier hs-var">mentionR</span></a></span><span>
-</span><span id="line-100"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166386"><span class="annot"><span class="annottext">replyUsername :: Text
-</span><a href="#local-6989586621679166386"><span class="hs-identifier hs-var hs-var">replyUsername</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; (Message -&gt; Text) -&gt; Maybe Message -&gt; Text
+</span><a href="#local-6989586621679166854"><span class="hs-identifier hs-var">mentionR</span></a></span><span>
+</span><span id="line-100"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166853"><span class="annot"><span class="annottext">replyUsername :: Text
+</span><a href="#local-6989586621679166853"><span class="hs-identifier hs-var hs-var">replyUsername</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; (Message -&gt; Text) -&gt; Maybe Message -&gt; Text
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><a href="AprilFools.html#ircMessageToUsername"><span class="hs-identifier hs-var">ircMessageToUsername</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Maybe Message
 </span><span class="hs-identifier hs-var hs-var">referencedMessage</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-101"></span><span>    </span><span class="hs-comment">-- _ &lt;- liftIO . print $ replyUsername</span><span>
-</span><span id="line-102"></span><span>    </span><span id="local-6989586621679166384"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166384"><span class="hs-identifier hs-var">replyPing</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Maybe UserId
+</span><span id="line-102"></span><span>    </span><span id="local-6989586621679166851"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166851"><span class="hs-identifier hs-var">replyPing</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Maybe UserId
 </span><span class="hs-identifier hs-var hs-var">messageGuild</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-103"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679166382"><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166382"><span class="hs-identifier hs-var">guildId</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; UserId -&gt; ReaderT DiscordHandle IO Text
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-103"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679166849"><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679166849"><span class="hs-identifier hs-var">guildId</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; UserId -&gt; ReaderT DiscordHandle IO Text
 </span><a href="Utils.html#pingWithUsername"><span class="hs-identifier hs-var">pingWithUsername</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166386"><span class="hs-identifier hs-var">replyUsername</span></a></span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166382"><span class="hs-identifier hs-var">guildId</span></a></span><span>
+</span><a href="#local-6989586621679166853"><span class="hs-identifier hs-var">replyUsername</span></a></span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679166849"><span class="hs-identifier hs-var">guildId</span></a></span><span>
 </span><span id="line-104"></span><span>            </span><span class="annot"><span class="annottext">Maybe UserId
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; ReaderT DiscordHandle IO Text
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -300,59 +300,59 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-string">&quot;&quot;</span></span><span>
 </span><span id="line-105"></span><span>    </span><span class="hs-comment">-- _ &lt;- liftIO . print $ replyPing</span><span>
 </span><span id="line-106"></span><span>    </span><span class="hs-comment">-- &gt; AUTHOR HANDLE</span><span>
-</span><span id="line-107"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166381"><span class="annot"><span class="annottext">authorHandle :: Text
-</span><a href="#local-6989586621679166381"><span class="hs-identifier hs-var hs-var">authorHandle</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span id="line-107"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166848"><span class="annot"><span class="annottext">authorHandle :: Text
+</span><a href="#local-6989586621679166848"><span class="hs-identifier hs-var hs-var">authorHandle</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.concat</span></span><span>
 </span><span id="line-108"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;**&lt;&quot;</span></span><span>
 </span><span id="line-109"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">User -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">userName</span></span><span> </span><span class="annot"><span class="annottext">User
-</span><a href="#local-6989586621679166380"><span class="hs-identifier hs-var">author</span></a></span><span>
+</span><a href="#local-6989586621679166847"><span class="hs-identifier hs-var">author</span></a></span><span>
 </span><span id="line-110"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;&gt;** &quot;</span></span><span>
 </span><span id="line-111"></span><span>            </span><span class="hs-special">]</span><span>
 </span><span id="line-112"></span><span>    </span><span class="hs-comment">-- &gt; MESSAGE CONTENTS</span><span>
-</span><span id="line-113"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166379"><span class="annot"><span class="annottext">mentionsT :: Text
-</span><a href="#local-6989586621679166379"><span class="hs-identifier hs-var hs-var">mentionsT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span id="line-113"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166846"><span class="annot"><span class="annottext">mentionsT :: Text
+</span><a href="#local-6989586621679166846"><span class="hs-identifier hs-var hs-var">mentionsT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.concat</span></span><span>
 </span><span id="line-114"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
-</span><a href="#local-6989586621679166378"><span class="hs-identifier hs-var">onNonEmptyAddAfter</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166384"><span class="hs-identifier hs-var">replyPing</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166845"><span class="hs-identifier hs-var">onNonEmptyAddAfter</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166851"><span class="hs-identifier hs-var">replyPing</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;: &quot;</span></span><span>
 </span><span id="line-115"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
-</span><a href="#local-6989586621679166378"><span class="hs-identifier hs-var">onNonEmptyAddAfter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Text
+</span><a href="#local-6989586621679166845"><span class="hs-identifier hs-var">onNonEmptyAddAfter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.intercalate</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;: &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679166391"><span class="hs-identifier hs-var">userPings</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166858"><span class="hs-identifier hs-var">userPings</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;: &quot;</span></span><span>
 </span><span id="line-116"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
-</span><a href="#local-6989586621679166378"><span class="hs-identifier hs-var">onNonEmptyAddAfter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Text
+</span><a href="#local-6989586621679166845"><span class="hs-identifier hs-var">onNonEmptyAddAfter</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.intercalate</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;: &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679166388"><span class="hs-identifier hs-var">rolePings</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166855"><span class="hs-identifier hs-var">rolePings</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;: &quot;</span></span><span>
 </span><span id="line-117"></span><span>            </span><span class="hs-special">]</span><span>
-</span><span id="line-118"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166376"><span class="annot"><span class="annottext">postHandleT :: Text
-</span><a href="#local-6989586621679166376"><span class="hs-identifier hs-var hs-var">postHandleT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span id="line-118"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166843"><span class="annot"><span class="annottext">postHandleT :: Text
+</span><a href="#local-6989586621679166843"><span class="hs-identifier hs-var hs-var">postHandleT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.concat</span></span><span>
 </span><span id="line-119"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166379"><span class="hs-identifier hs-var">mentionsT</span></a></span><span>
+</span><a href="#local-6989586621679166846"><span class="hs-identifier hs-var">mentionsT</span></a></span><span>
 </span><span id="line-120"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Utils.html#stripAllPings"><span class="hs-identifier hs-var">stripAllPings</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166375"><span class="hs-identifier hs-var">messageT</span></a></span><span>
+</span><a href="#local-6989586621679166842"><span class="hs-identifier hs-var">messageT</span></a></span><span>
 </span><span id="line-121"></span><span>            </span><span class="hs-special">]</span><span>
-</span><span id="line-122"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166374"><span class="annot"><span class="annottext">newMessageT :: Text
-</span><a href="#local-6989586621679166374"><span class="hs-identifier hs-var hs-var">newMessageT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span id="line-122"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166841"><span class="annot"><span class="annottext">newMessageT :: Text
+</span><a href="#local-6989586621679166841"><span class="hs-identifier hs-var hs-var">newMessageT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.concat</span></span><span>
 </span><span id="line-123"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166381"><span class="hs-identifier hs-var">authorHandle</span></a></span><span>
+</span><a href="#local-6989586621679166848"><span class="hs-identifier hs-var">authorHandle</span></a></span><span>
 </span><span id="line-124"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166376"><span class="hs-identifier hs-var">postHandleT</span></a></span><span>
+</span><a href="#local-6989586621679166843"><span class="hs-identifier hs-var">postHandleT</span></a></span><span>
 </span><span id="line-125"></span><span>            </span><span class="hs-special">]</span><span>
 </span><span id="line-126"></span><span>
 </span><span id="line-127"></span><span>    </span><span class="hs-comment">-- Download before deletion, will return Nothing if attach is null</span><span>
-</span><span id="line-128"></span><span>    </span><span id="local-6989586621679166373"><span class="annot"><span class="annottext">Maybe (Text, ByteString)
-</span><a href="#local-6989586621679166373"><span class="hs-identifier hs-var">downloadedAttachment</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe (Text, ByteString))
+</span><span id="line-128"></span><span>    </span><span id="local-6989586621679166840"><span class="annot"><span class="annottext">Maybe (Text, ByteString)
+</span><a href="#local-6989586621679166840"><span class="hs-identifier hs-var">downloadedAttachment</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe (Text, ByteString))
 -&gt; ReaderT DiscordHandle IO (Maybe (Text, ByteString))
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Maybe (Text, ByteString))
@@ -362,7 +362,7 @@ forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Attachment] -&gt; IO (Maybe (Text, ByteString))
 </span><a href="AprilFools.html#downloadFirstAttachment"><span class="hs-identifier hs-var">downloadFirstAttachment</span></a></span><span> </span><span class="annot"><span class="annottext">[Attachment]
-</span><a href="#local-6989586621679166371"><span class="hs-identifier hs-var">attach</span></a></span><span>
+</span><a href="#local-6989586621679166838"><span class="hs-identifier hs-var">attach</span></a></span><span>
 </span><span id="line-129"></span><span>
 </span><span id="line-130"></span><span>    </span><span class="hs-comment">-- &gt; SEND IRC MESSAGE</span><span>
 </span><span id="line-131"></span><span>    </span><span class="annot"><span class="annottext">Either RestCallErrorCode ()
@@ -376,31 +376,31 @@ r a -&gt; DiscordHandler (Either RestCallErrorCode a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(UserId, UserId) -&gt; ChannelRequest ()
 </span><span class="hs-identifier hs-var">R.DeleteMessage</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166369"><span class="hs-identifier hs-var">cid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166368"><span class="hs-identifier hs-var">mid</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166836"><span class="hs-identifier hs-var">cid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UserId
+</span><a href="#local-6989586621679166835"><span class="hs-identifier hs-var">mid</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-132"></span><span>
 </span><span id="line-133"></span><span>    </span><span class="hs-comment">-- Unless it's a truly empty message, i.e. no attachments &amp; no text</span><span>
 </span><span id="line-134"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Bool
 </span><span class="hs-identifier hs-var">T.null</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166376"><span class="hs-identifier hs-var">postHandleT</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679166843"><span class="hs-identifier hs-var">postHandleT</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Text, ByteString) -&gt; Bool
 forall a. Maybe a -&gt; Bool
 </span><span class="hs-identifier hs-var">isNothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Text, ByteString)
-</span><a href="#local-6989586621679166373"><span class="hs-identifier hs-var">downloadedAttachment</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679166840"><span class="hs-identifier hs-var">downloadedAttachment</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
 -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-135"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166366"><span class="annot"><span class="annottext">opts :: MessageDetailedOpts
-</span><a href="#local-6989586621679166366"><span class="hs-identifier hs-var hs-var">opts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MessageDetailedOpts
+</span><span id="line-135"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166833"><span class="annot"><span class="annottext">opts :: MessageDetailedOpts
+</span><a href="#local-6989586621679166833"><span class="hs-identifier hs-var hs-var">opts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MessageDetailedOpts
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">messageDetailedContent :: Text
 </span><span class="hs-identifier hs-var">R.messageDetailedContent</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166374"><span class="hs-identifier hs-var">newMessageT</span></a></span><span>
+</span><a href="#local-6989586621679166841"><span class="hs-identifier hs-var">newMessageT</span></a></span><span>
 </span><span id="line-136"></span><span>                       </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">messageDetailedFile :: Maybe (Text, ByteString)
 </span><span class="hs-identifier hs-var">R.messageDetailedFile</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Text, ByteString)
-</span><a href="#local-6989586621679166373"><span class="hs-identifier hs-var">downloadedAttachment</span></a></span><span>
+</span><a href="#local-6989586621679166840"><span class="hs-identifier hs-var">downloadedAttachment</span></a></span><span>
 </span><span id="line-137"></span><span>                       </span><span class="hs-special">}</span><span>
 </span><span id="line-138"></span><span>        </span><span class="annot"><span class="annottext">Either RestCallErrorCode Message
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChannelRequest Message
@@ -415,58 +415,58 @@ r a -&gt; DiscordHandler (Either RestCallErrorCode a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">UserId -&gt; MessageDetailedOpts -&gt; ChannelRequest Message
 </span><span class="hs-identifier hs-var">R.CreateMessageDetailed</span></span><span> </span><span class="annot"><span class="annottext">UserId
-</span><a href="#local-6989586621679166369"><span class="hs-identifier hs-var">cid</span></a></span><span> </span><span class="annot"><span class="annottext">MessageDetailedOpts
-</span><a href="#local-6989586621679166366"><span class="hs-identifier hs-var">opts</span></a></span><span>
+</span><a href="#local-6989586621679166836"><span class="hs-identifier hs-var">cid</span></a></span><span> </span><span class="annot"><span class="annottext">MessageDetailedOpts
+</span><a href="#local-6989586621679166833"><span class="hs-identifier hs-var">opts</span></a></span><span>
 </span><span id="line-139"></span><span>        </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-140"></span><span>
 </span><span id="line-141"></span><span>    </span><span class="hs-comment">-- _ &lt;- liftIO . print $ messageT</span><span>
 </span><span id="line-142"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-143"></span><span>        </span><span id="local-6989586621679166369"><span class="annot"><span class="annottext">cid :: UserId
-</span><a href="#local-6989586621679166369"><span class="hs-identifier hs-var hs-var">cid</span></a></span></span><span>                   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; UserId
+</span><span id="line-143"></span><span>        </span><span id="local-6989586621679166836"><span class="annot"><span class="annottext">cid :: UserId
+</span><a href="#local-6989586621679166836"><span class="hs-identifier hs-var hs-var">cid</span></a></span></span><span>                   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-144"></span><span>        </span><span id="local-6989586621679166368"><span class="annot"><span class="annottext">mid :: UserId
-</span><a href="#local-6989586621679166368"><span class="hs-identifier hs-var hs-var">mid</span></a></span></span><span>                   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; UserId
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-144"></span><span>        </span><span id="local-6989586621679166835"><span class="annot"><span class="annottext">mid :: UserId
+</span><a href="#local-6989586621679166835"><span class="hs-identifier hs-var hs-var">mid</span></a></span></span><span>                   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; UserId
 </span><span class="hs-identifier hs-var hs-var">messageId</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-145"></span><span>        </span><span id="local-6989586621679166380"><span class="annot"><span class="annottext">author :: User
-</span><a href="#local-6989586621679166380"><span class="hs-identifier hs-var hs-var">author</span></a></span></span><span>                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; User
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-145"></span><span>        </span><span id="local-6989586621679166847"><span class="annot"><span class="annottext">author :: User
+</span><a href="#local-6989586621679166847"><span class="hs-identifier hs-var hs-var">author</span></a></span></span><span>                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; User
 </span><span class="hs-identifier hs-var hs-var">messageAuthor</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-146"></span><span>        </span><span id="local-6989586621679166375"><span class="annot"><span class="annottext">messageT :: Text
-</span><a href="#local-6989586621679166375"><span class="hs-identifier hs-var hs-var">messageT</span></a></span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-146"></span><span>        </span><span id="local-6989586621679166842"><span class="annot"><span class="annottext">messageT :: Text
+</span><a href="#local-6989586621679166842"><span class="hs-identifier hs-var hs-var">messageT</span></a></span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-147"></span><span>        </span><span id="local-6989586621679166371"><span class="annot"><span class="annottext">attach :: [Attachment]
-</span><a href="#local-6989586621679166371"><span class="hs-identifier hs-var hs-var">attach</span></a></span></span><span>                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [Attachment]
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-147"></span><span>        </span><span id="local-6989586621679166838"><span class="annot"><span class="annottext">attach :: [Attachment]
+</span><a href="#local-6989586621679166838"><span class="hs-identifier hs-var hs-var">attach</span></a></span></span><span>                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [Attachment]
 </span><span class="hs-identifier hs-var hs-var">messageAttachments</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-148"></span><span>        </span><span id="local-6989586621679166389"><span class="annot"><span class="annottext">mentionU :: [User]
-</span><a href="#local-6989586621679166389"><span class="hs-identifier hs-var hs-var">mentionU</span></a></span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [User]
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-148"></span><span>        </span><span id="local-6989586621679166856"><span class="annot"><span class="annottext">mentionU :: [User]
+</span><a href="#local-6989586621679166856"><span class="hs-identifier hs-var hs-var">mentionU</span></a></span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [User]
 </span><span class="hs-identifier hs-var hs-var">messageMentions</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-149"></span><span>        </span><span id="local-6989586621679166387"><span class="annot"><span class="annottext">mentionR :: [UserId]
-</span><a href="#local-6989586621679166387"><span class="hs-identifier hs-var hs-var">mentionR</span></a></span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [UserId]
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-149"></span><span>        </span><span id="local-6989586621679166854"><span class="annot"><span class="annottext">mentionR :: [UserId]
+</span><a href="#local-6989586621679166854"><span class="hs-identifier hs-var hs-var">mentionR</span></a></span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; [UserId]
 </span><span class="hs-identifier hs-var hs-var">messageMentionRoles</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166393"><span class="hs-identifier hs-var">m</span></a></span><span>
-</span><span id="line-150"></span><span>        </span><span id="local-6989586621679166378"><span class="annot"><span class="annottext">onNonEmptyAddAfter :: Text -&gt; Text -&gt; Text
-</span><a href="#local-6989586621679166378"><span class="hs-identifier hs-var hs-var">onNonEmptyAddAfter</span></a></span></span><span> </span><span id="local-6989586621679166356"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166356"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679166355"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166355"><span class="hs-identifier hs-var">extra</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int
+</span><a href="#local-6989586621679166860"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-150"></span><span>        </span><span id="local-6989586621679166845"><span class="annot"><span class="annottext">onNonEmptyAddAfter :: Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679166845"><span class="hs-identifier hs-var hs-var">onNonEmptyAddAfter</span></a></span></span><span> </span><span id="local-6989586621679166823"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679166822"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166822"><span class="hs-identifier hs-var">extra</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int
 </span><span class="hs-identifier hs-var">T.length</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166356"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span>
 </span><span id="line-151"></span><span>                                         </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166356"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166355"><span class="hs-identifier hs-var">extra</span></a></span><span>
+</span><a href="#local-6989586621679166822"><span class="hs-identifier hs-var">extra</span></a></span><span>
 </span><span id="line-152"></span><span>                                         </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679166356"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">t</span></a></span><span>
 </span><span id="line-153"></span><span>
 </span><span id="line-154"></span><span class="hs-comment">-- | If possible download the first attachment into memory, return it in Maybe</span><span>
 </span><span id="line-155"></span><span class="hs-comment">-- I don't really know how GHC handles it but I guess the memory is freed when</span><span>
@@ -478,12 +478,12 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Text, ByteString)
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-159"></span><span class="annot"><a href="AprilFools.html#downloadFirstAttachment"><span class="hs-identifier hs-var">downloadFirstAttachment</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166354"><span class="annot"><span class="annottext">Attachment
-</span><a href="#local-6989586621679166354"><span class="hs-identifier hs-var">a</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[Attachment]
+</span><span id="line-159"></span><span class="annot"><a href="AprilFools.html#downloadFirstAttachment"><span class="hs-identifier hs-var">downloadFirstAttachment</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166821"><span class="annot"><span class="annottext">Attachment
+</span><a href="#local-6989586621679166821"><span class="hs-identifier hs-var">a</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[Attachment]
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-160"></span><span>    </span><span class="hs-comment">-- Start lazy download of bytestring</span><span>
-</span><span id="line-161"></span><span>    </span><span id="local-6989586621679166353"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679166353"><span class="hs-identifier hs-var">bytestring</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ByteString
+</span><span id="line-161"></span><span>    </span><span id="local-6989586621679166820"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166820"><span class="hs-identifier hs-var">bytestring</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ByteString
 forall (m :: * -&gt; *). MonadIO m =&gt; String -&gt; m ByteString
 </span><span class="hs-identifier hs-var">simpleHttp</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ByteString) -&gt; String -&gt; IO ByteString
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -492,13 +492,13 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Attachment -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">attachmentUrl</span></span><span> </span><span class="annot"><span class="annottext">Attachment
-</span><a href="#local-6989586621679166354"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="#local-6989586621679166821"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-162"></span><span>    </span><span class="hs-comment">-- Convert lazy to not lazy. Forces entire lazy data into memory so it's expensive.</span><span>
 </span><span id="line-163"></span><span>    </span><span class="hs-comment">-- Only possible because the VPS has enough RAM.</span><span>
-</span><span id="line-164"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166350"><span class="annot"><span class="annottext">stricter :: ByteString
-</span><a href="#local-6989586621679166350"><span class="hs-identifier hs-var hs-var">stricter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><span id="line-164"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166817"><span class="annot"><span class="annottext">stricter :: ByteString
+</span><a href="#local-6989586621679166817"><span class="hs-identifier hs-var hs-var">stricter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
 </span><span class="hs-identifier hs-var">BL.toStrict</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679166353"><span class="hs-identifier hs-var">bytestring</span></a></span><span>
+</span><a href="#local-6989586621679166820"><span class="hs-identifier hs-var">bytestring</span></a></span><span>
 </span><span id="line-165"></span><span>    </span><span class="annot"><span class="annottext">Maybe (Text, ByteString) -&gt; IO (Maybe (Text, ByteString))
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (Text, ByteString) -&gt; IO (Maybe (Text, ByteString)))
@@ -508,6 +508,6 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Attachment -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">attachmentFilename</span></span><span> </span><span class="annot"><span class="annottext">Attachment
-</span><a href="#local-6989586621679166354"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679166350"><span class="hs-identifier hs-var">stricter</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166821"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166817"><span class="hs-identifier hs-var">stricter</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-166"></span></pre></body></html>

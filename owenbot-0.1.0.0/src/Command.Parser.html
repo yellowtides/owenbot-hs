@@ -8,52 +8,57 @@ Description : Parsers for commands.
 Parser component for Commands.
 Its usage is mainly internal, to be used from &quot;Command.Command&quot;.
 
-If you want to add your own parser argument type, this is the module.
+If you want to add your own parser argument type, you can either add it here
+(to be reused across multiple modules), or in your receive module (if it is only
+used there). Either works really, but sometimes you need the other to prevent
+looping imports.
 
 -}</span><span>
-</span><span id="line-14"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Command.Parser</span><span>
-</span><span id="line-15"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier">ParsableArgument</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
-</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Command.Parser.html#RemainingText"><span class="hs-identifier">RemainingText</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
-</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Command.Parser.html#manyTill1"><span class="hs-identifier">manyTill1</span></a></span><span>
-</span><span id="line-18"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-19"></span><span>
-</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">void</span></span><span>
-</span><span id="line-21"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">guard</span></span><span>
-</span><span id="line-22"></span><span>                                            </span><span class="hs-special">)</span><span>
-</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec.Combinator</span></span><span>
-</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Parsec.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
-</span><span id="line-26"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec</span></span><span>
-</span><span id="line-27"></span><span>
-</span><span id="line-28"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord.Types</span></span><span>
-</span><span id="line-29"></span><span>
-</span><span id="line-30"></span><span class="hs-comment">-- | @manyTill1 p end@ is a parser that applies parser @p@ /one/ or more times</span><span>
-</span><span id="line-31"></span><span class="hs-comment">-- until parser @end@ succeeds. This is a variation on 'manyTill' from Parsec.</span><span>
-</span><span id="line-32"></span><span id="local-6989586621679162831"><span id="local-6989586621679162832"><span id="local-6989586621679162833"><span id="local-6989586621679162834"><span id="local-6989586621679162835"><span id="local-6989586621679162836"><span class="annot"><a href="Command.Parser.html#manyTill1"><span class="hs-identifier hs-type">manyTill1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Stream</span></span><span> </span><span class="annot"><a href="#local-6989586621679162836"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162835"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162834"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsecT</span></span><span> </span><span class="annot"><a href="#local-6989586621679162836"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162833"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162835"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162832"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsecT</span></span><span> </span><span class="annot"><a href="#local-6989586621679162836"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162833"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162835"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162831"><span class="hs-identifier hs-type">end</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsecT</span></span><span> </span><span class="annot"><a href="#local-6989586621679162836"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162833"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162835"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679162832"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span></span></span></span><span>
-</span><span id="line-33"></span><span id="manyTill1"><span class="annot"><span class="annottext">manyTill1 :: ParsecT s u m a -&gt; ParsecT s u m end -&gt; ParsecT s u m [a]
-</span><a href="Command.Parser.html#manyTill1"><span class="hs-identifier hs-var hs-var">manyTill1</span></a></span></span><span> </span><span id="local-6989586621679162830"><span class="annot"><span class="annottext">ParsecT s u m a
-</span><a href="#local-6989586621679162830"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679162829"><span class="annot"><span class="annottext">ParsecT s u m end
-</span><a href="#local-6989586621679162829"><span class="hs-identifier hs-var">end</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span class="hs-special">{</span><span> </span><span id="local-6989586621679162828"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679162828"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT s u m a
-</span><a href="#local-6989586621679162830"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">;</span><span> </span><span id="local-6989586621679162827"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679162827"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT s u m a -&gt; ParsecT s u m end -&gt; ParsecT s u m [a]
+</span><span id="line-17"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Command.Parser</span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier">ParsableArgument</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Command.Parser.html#RemainingText"><span class="hs-identifier">RemainingText</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Command.Parser.html#manyTill1"><span class="hs-identifier">manyTill1</span></a></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>        </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">liftA2</span></span><span>
+</span><span id="line-24"></span><span>                                            </span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">void</span></span><span>
+</span><span id="line-26"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">guard</span></span><span>
+</span><span id="line-27"></span><span>                                            </span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec.Combinator</span></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Parsec.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec</span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord.Types</span></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- | @manyTill1 p end@ is a parser that applies parser @p@ /one/ or more times</span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- until parser @end@ succeeds. This is a variation on 'manyTill' from Parsec.</span><span>
+</span><span id="line-37"></span><span id="local-6989586621679163264"><span id="local-6989586621679163265"><span id="local-6989586621679163266"><span id="local-6989586621679163267"><span id="local-6989586621679163268"><span id="local-6989586621679163269"><span class="annot"><a href="Command.Parser.html#manyTill1"><span class="hs-identifier hs-type">manyTill1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Stream</span></span><span> </span><span class="annot"><a href="#local-6989586621679163269"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163268"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163267"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsecT</span></span><span> </span><span class="annot"><a href="#local-6989586621679163269"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163266"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163268"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163265"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsecT</span></span><span> </span><span class="annot"><a href="#local-6989586621679163269"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163266"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163268"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163264"><span class="hs-identifier hs-type">end</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsecT</span></span><span> </span><span class="annot"><a href="#local-6989586621679163269"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163266"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163268"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679163265"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span></span></span></span><span>
+</span><span id="line-38"></span><span id="manyTill1"><span class="annot"><span class="annottext">manyTill1 :: ParsecT s u m a -&gt; ParsecT s u m end -&gt; ParsecT s u m [a]
+</span><a href="Command.Parser.html#manyTill1"><span class="hs-identifier hs-var hs-var">manyTill1</span></a></span></span><span> </span><span id="local-6989586621679163263"><span class="annot"><span class="annottext">ParsecT s u m a
+</span><a href="#local-6989586621679163263"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679163262"><span class="annot"><span class="annottext">ParsecT s u m end
+</span><a href="#local-6989586621679163262"><span class="hs-identifier hs-var">end</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span class="hs-special">{</span><span> </span><span id="local-6989586621679163261"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163261"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT s u m a
+</span><a href="#local-6989586621679163263"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">;</span><span> </span><span id="local-6989586621679163260"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163260"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT s u m a -&gt; ParsecT s u m end -&gt; ParsecT s u m [a]
 forall s (m :: * -&gt; *) t u a end.
 Stream s m t =&gt;
 ParsecT s u m a -&gt; ParsecT s u m end -&gt; ParsecT s u m [a]
 </span><span class="hs-identifier hs-var">manyTill</span></span><span> </span><span class="annot"><span class="annottext">ParsecT s u m a
-</span><a href="#local-6989586621679162830"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT s u m end
-</span><a href="#local-6989586621679162829"><span class="hs-identifier hs-var">end</span></a></span><span class="hs-special">;</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; ParsecT s u m [a]
+</span><a href="#local-6989586621679163263"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT s u m end
+</span><a href="#local-6989586621679163262"><span class="hs-identifier hs-var">end</span></a></span><span class="hs-special">;</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; ParsecT s u m [a]
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679162828"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679163261"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679162827"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span class="hs-comment">-- | @eofOrSpaces@ is a parser that parses an end of command, or at least one</span><span>
-</span><span id="line-36"></span><span class="hs-comment">-- space and skips the result.</span><span>
-</span><span id="line-37"></span><span class="annot"><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-type">endOrSpaces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span id="endOrSpaces"><span class="annot"><span class="annottext">endOrSpaces :: Parser ()
+</span><a href="#local-6989586621679163260"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | @eofOrSpaces@ is a parser that parses an end of command, or at least one</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- space and skips the result.</span><span>
+</span><span id="line-42"></span><span class="annot"><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-type">endOrSpaces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span id="endOrSpaces"><span class="annot"><span class="annottext">endOrSpaces :: Parser ()
 </span><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-var hs-var">endOrSpaces</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser ()
 forall s (m :: * -&gt; *) t u.
 (Stream s m t, Show t) =&gt;
@@ -72,36 +77,36 @@ forall s u (m :: * -&gt; *) a.
 ParsecT s u m a -&gt; String -&gt; ParsecT s u m a
 </span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;at least one space between arguments&quot;</span></span><span>
-</span><span id="line-39"></span><span>
-</span><span id="line-40"></span><span class="hs-comment">-- | A @ParsableArgument@ is a dataclass that represents arguments that can be</span><span>
-</span><span id="line-41"></span><span class="hs-comment">-- parsed from a message. Any datatype that is an instance of this dataclass can</span><span>
-</span><span id="line-42"></span><span class="hs-comment">-- be used as function arguments for a command handler in 'command'.</span><span>
-</span><span id="line-43"></span><span class="hs-keyword">class</span><span> </span><span id="ParsableArgument"><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-var">ParsableArgument</span></a></span></span><span> </span><span id="local-6989586621679162890"><span class="annot"><a href="#local-6989586621679162890"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-44"></span><span>    </span><span class="hs-comment">-- | @parserForArg msg@ returns a parser that contains the parsed element.</span><span>
-</span><span id="line-45"></span><span>    </span><span id="parserForArg"><span class="annot"><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-type">parserForArg</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="annot"><a href="#local-6989586621679162890"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-46"></span><span>
-</span><span id="line-47"></span><span class="hs-comment">-- | The message that invoked the command.</span><span>
-</span><span id="line-48"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-49"></span><span>    </span><span id="local-6989586621679162816"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser Message
-</span><a href="#local-6989586621679162816"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162815"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162815"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser Message
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- | A @ParsableArgument@ is a dataclass that represents arguments that can be</span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- parsed from a message. Any datatype that is an instance of this dataclass can</span><span>
+</span><span id="line-47"></span><span class="hs-comment">-- be used as function arguments for a command handler in 'command'.</span><span>
+</span><span id="line-48"></span><span class="hs-keyword">class</span><span> </span><span id="ParsableArgument"><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-var">ParsableArgument</span></a></span></span><span> </span><span id="local-6989586621679163332"><span class="annot"><a href="#local-6989586621679163332"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-comment">-- | @parserForArg msg@ returns a parser that contains the parsed element.</span><span>
+</span><span id="line-50"></span><span>    </span><span id="parserForArg"><span class="annot"><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-type">parserForArg</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="annot"><a href="#local-6989586621679163332"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="hs-comment">-- | The message that invoked the command.</span><span>
+</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679163249"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser Message
+</span><a href="#local-6989586621679163249"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163248"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163248"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser Message
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162815"><span class="hs-identifier hs-var">msg</span></a></span><span>
-</span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="hs-comment">-- | Any number of non-space characters. If quoted, spaces are allowed.</span><span>
-</span><span id="line-52"></span><span class="hs-comment">-- Quotes in quoted phrases can be escaped with a backslash. The following is</span><span>
-</span><span id="line-53"></span><span class="hs-comment">-- parsed as a single string: </span><span>
-</span><span id="line-54"></span><span class="hs-comment">-- @\&quot;He said, \\\&quot;Lovely\\\&quot;.\&quot;@</span><span>
-</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-56"></span><span>    </span><span id="local-6989586621679162813"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser String
-</span><a href="#local-6989586621679162813"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162812"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162812"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-57"></span><span>        </span><span class="hs-comment">-- try quoted text first. if it failed, then normal word</span><span>
-</span><span id="line-58"></span><span>        </span><span id="local-6989586621679162811"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679162811"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser String
+</span><a href="#local-6989586621679163248"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-comment">-- | Any number of non-space characters. If quoted, spaces are allowed.</span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- Quotes in quoted phrases can be escaped with a backslash. The following is</span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- parsed as a single string: </span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- @\&quot;He said, \\\&quot;Lovely\\\&quot;.\&quot;@</span><span>
+</span><span id="line-60"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>    </span><span id="local-6989586621679163246"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser String
+</span><a href="#local-6989586621679163246"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163245"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163245"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-62"></span><span>        </span><span class="hs-comment">-- try quoted text first. if it failed, then normal word</span><span>
+</span><span id="line-63"></span><span>        </span><span id="local-6989586621679163244"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679163244"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser String
 forall u. ParsecT Text u Identity String
-</span><a href="#local-6989586621679162810"><span class="hs-identifier hs-var">quotedText</span></a></span><span> </span><span class="annot"><span class="annottext">Parser String -&gt; String -&gt; Parser String
+</span><a href="#local-6989586621679163243"><span class="hs-identifier hs-var">quotedText</span></a></span><span> </span><span class="annot"><span class="annottext">Parser String -&gt; String -&gt; Parser String
 forall s u (m :: * -&gt; *) a.
 ParsecT s u m a -&gt; String -&gt; ParsecT s u m a
 </span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
@@ -110,35 +115,35 @@ forall s u (m :: * -&gt; *) a.
 ParsecT s u m a -&gt; ParsecT s u m a -&gt; ParsecT s u m a
 </span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser String
 forall u. ParsecT Text u Identity String
-</span><a href="#local-6989586621679162809"><span class="hs-identifier hs-var">word</span></a></span><span> </span><span class="annot"><span class="annottext">Parser String -&gt; String -&gt; Parser String
+</span><a href="#local-6989586621679163242"><span class="hs-identifier hs-var">word</span></a></span><span> </span><span class="annot"><span class="annottext">Parser String -&gt; String -&gt; Parser String
 forall s u (m :: * -&gt; *) a.
 ParsecT s u m a -&gt; String -&gt; ParsecT s u m a
 </span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;word&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-59"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
+</span><span id="line-64"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
 </span><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-var">endOrSpaces</span></a></span><span>
-</span><span id="line-60"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-65"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679162811"><span class="hs-identifier hs-var">parsed</span></a></span><span>
-</span><span id="line-61"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-62"></span><span>        </span><span id="local-6989586621679162810"><span class="annot"><span class="annottext">quotedText :: ParsecT Text u Identity String
-</span><a href="#local-6989586621679162810"><span class="hs-identifier hs-var hs-var">quotedText</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsecT Text u Identity String -&gt; ParsecT Text u Identity String
+</span><a href="#local-6989586621679163244"><span class="hs-identifier hs-var">parsed</span></a></span><span>
+</span><span id="line-66"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>        </span><span id="local-6989586621679163243"><span class="annot"><span class="annottext">quotedText :: ParsecT Text u Identity String
+</span><a href="#local-6989586621679163243"><span class="hs-identifier hs-var hs-var">quotedText</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsecT Text u Identity String -&gt; ParsecT Text u Identity String
 forall s u (m :: * -&gt; *) a. ParsecT s u m a -&gt; ParsecT s u m a
 </span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="annot"><span class="annottext">(ParsecT Text u Identity String -&gt; ParsecT Text u Identity String)
 -&gt; ParsecT Text u Identity String -&gt; ParsecT Text u Identity String
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span> </span><span class="hs-comment">-- backtrack if failed, parse as normal word</span><span>
-</span><span id="line-63"></span><span>            </span><span class="hs-comment">-- consume opening quote</span><span>
-</span><span id="line-64"></span><span>            </span><span class="annot"><span class="annottext">Char -&gt; ParsecT Text u Identity Char
+</span><span id="line-68"></span><span>            </span><span class="hs-comment">-- consume opening quote</span><span>
+</span><span id="line-69"></span><span>            </span><span class="annot"><span class="annottext">Char -&gt; ParsecT Text u Identity Char
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 Char -&gt; ParsecT s u m Char
 </span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'&quot;'</span></span><span>
-</span><span id="line-65"></span><span>            </span><span class="hs-comment">-- consume everything but quotes, unless it is escaped</span><span>
-</span><span id="line-66"></span><span>            </span><span id="local-6989586621679162806"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679162806"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Text u Identity Char -&gt; ParsecT Text u Identity String
+</span><span id="line-70"></span><span>            </span><span class="hs-comment">-- consume everything but quotes, unless it is escaped</span><span>
+</span><span id="line-71"></span><span>            </span><span id="local-6989586621679163239"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679163239"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Text u Identity Char -&gt; ParsecT Text u Identity String
 forall s (m :: * -&gt; *) t u a.
 Stream s m t =&gt;
 ParsecT s u m a -&gt; ParsecT s u m [a]
@@ -168,21 +173,21 @@ Stream s m Char =&gt;
 String -&gt; ParsecT s u m Char
 </span><span class="hs-identifier hs-var">noneOf</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;\&quot;&quot;</span></span><span> </span><span>
-</span><span id="line-67"></span><span>            </span><span class="hs-comment">-- consume closing quote</span><span>
-</span><span id="line-68"></span><span>            </span><span class="annot"><span class="annottext">Char -&gt; ParsecT Text u Identity Char
+</span><span id="line-72"></span><span>            </span><span class="hs-comment">-- consume closing quote</span><span>
+</span><span id="line-73"></span><span>            </span><span class="annot"><span class="annottext">Char -&gt; ParsecT Text u Identity Char
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 Char -&gt; ParsecT s u m Char
 </span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'&quot;'</span></span><span>
-</span><span id="line-69"></span><span>            </span><span class="annot"><span class="annottext">String -&gt; ParsecT Text u Identity String
+</span><span id="line-74"></span><span>            </span><span class="annot"><span class="annottext">String -&gt; ParsecT Text u Identity String
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679162806"><span class="hs-identifier hs-var">content</span></a></span><span>
-</span><span id="line-70"></span><span>        </span><span id="local-6989586621679162809"><span class="annot"><span class="annottext">word :: ParsecT Text u Identity String
-</span><a href="#local-6989586621679162809"><span class="hs-identifier hs-var hs-var">word</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-71"></span><span>            </span><span class="hs-comment">-- consume at least one character that is not a space or eof</span><span>
-</span><span id="line-72"></span><span>            </span><span class="annot"><span class="annottext">ParsecT Text u Identity Char
+</span><a href="#local-6989586621679163239"><span class="hs-identifier hs-var">content</span></a></span><span>
+</span><span id="line-75"></span><span>        </span><span id="local-6989586621679163242"><span class="annot"><span class="annottext">word :: ParsecT Text u Identity String
+</span><a href="#local-6989586621679163242"><span class="hs-identifier hs-var hs-var">word</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-76"></span><span>            </span><span class="hs-comment">-- consume at least one character that is not a space or eof</span><span>
+</span><span id="line-77"></span><span>            </span><span class="annot"><span class="annottext">ParsecT Text u Identity Char
 -&gt; ParsecT Text u Identity () -&gt; ParsecT Text u Identity String
 forall s (m :: * -&gt; *) t u a end.
 Stream s m t =&gt;
@@ -206,28 +211,28 @@ forall s (m :: * -&gt; *) t u.
 (Stream s m t, Show t) =&gt;
 ParsecT s u m ()
 </span><span class="hs-identifier hs-var">eof</span></span><span class="hs-special">)</span><span>
-</span><span id="line-73"></span><span>
-</span><span id="line-74"></span><span class="hs-comment">-- | Wrapper for the String version, since Text is the trend nowadays.</span><span>
-</span><span id="line-75"></span><span class="hs-comment">-- Both are provided so that it can easily be used for arguments in other</span><span>
-</span><span id="line-76"></span><span class="hs-comment">-- functions that only accept one of the types.</span><span>
-</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-78"></span><span>    </span><span id="local-6989586621679162799"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser Text
-</span><a href="#local-6989586621679162799"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162798"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162798"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="hs-comment">-- | Wrapper for the String version, since Text is the trend nowadays.</span><span>
+</span><span id="line-80"></span><span class="hs-comment">-- Both are provided so that it can easily be used for arguments in other</span><span>
+</span><span id="line-81"></span><span class="hs-comment">-- functions that only accept one of the types.</span><span>
+</span><span id="line-82"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679163232"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser Text
+</span><a href="#local-6989586621679163232"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163231"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163231"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text) -&gt; Parser String -&gt; Parser Text
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser String
 forall a. ParsableArgument a =&gt; Message -&gt; Parser a
 </span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var">parserForArg</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162798"><span class="hs-identifier hs-var">msg</span></a></span><span>
-</span><span id="line-79"></span><span>
-</span><span id="line-80"></span><span class="hs-comment">-- | Zero or more texts. Each one could be quoted or not.</span><span>
-</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679162794"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser [Text]
-</span><a href="#local-6989586621679162794"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162793"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162793"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-83"></span><span>        </span><span class="hs-comment">-- if it's the end, return empty (base case).</span><span>
-</span><span id="line-84"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser ()
+</span><a href="#local-6989586621679163231"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="hs-comment">-- | Zero or more texts. Each one could be quoted or not.</span><span>
+</span><span id="line-86"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-87"></span><span>    </span><span id="local-6989586621679163227"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser [Text]
+</span><a href="#local-6989586621679163227"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163226"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163226"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-88"></span><span>        </span><span class="hs-comment">-- if it's the end, return empty (base case).</span><span>
+</span><span id="line-89"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser ()
 forall s (m :: * -&gt; *) t u.
 (Stream s m t, Show t) =&gt;
 ParsecT s u m ()
@@ -239,78 +244,78 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 forall s u (m :: * -&gt; *) a.
 ParsecT s u m a -&gt; ParsecT s u m a -&gt; ParsecT s u m a
 </span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-85"></span><span>            </span><span class="hs-comment">-- do the usual text parsing (which consumes any trailing spaces)</span><span>
-</span><span id="line-86"></span><span>            </span><span id="local-6989586621679162792"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162792"><span class="hs-identifier hs-var">word</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser Text
+</span><span id="line-90"></span><span>            </span><span class="hs-comment">-- do the usual text parsing (which consumes any trailing spaces)</span><span>
+</span><span id="line-91"></span><span>            </span><span id="local-6989586621679163225"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163225"><span class="hs-identifier hs-var">word</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser Text
 forall a. ParsableArgument a =&gt; Message -&gt; Parser a
 </span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var">parserForArg</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162793"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
-</span><span id="line-87"></span><span>            </span><span class="hs-comment">-- recursively do this and append</span><span>
-</span><span id="line-88"></span><span>            </span><span id="local-6989586621679162791"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679162791"><span class="hs-identifier hs-var">rest</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser [Text]
+</span><a href="#local-6989586621679163226"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-92"></span><span>            </span><span class="hs-comment">-- recursively do this and append</span><span>
+</span><span id="line-93"></span><span>            </span><span id="local-6989586621679163224"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679163224"><span class="hs-identifier hs-var">rest</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Parser [Text]
 forall a. ParsableArgument a =&gt; Message -&gt; Parser a
 </span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var">parserForArg</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162793"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
-</span><span id="line-89"></span><span>            </span><span class="annot"><span class="annottext">[Text] -&gt; Parser [Text]
+</span><a href="#local-6989586621679163226"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Parser</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
+</span><span id="line-94"></span><span>            </span><span class="annot"><span class="annottext">[Text] -&gt; Parser [Text]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Parser [Text]) -&gt; [Text] -&gt; Parser [Text]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162792"><span class="hs-identifier hs-var">word</span></a></span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; [Text]
+</span><a href="#local-6989586621679163225"><span class="hs-identifier hs-var">word</span></a></span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; [Text]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679162791"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-90"></span><span>
-</span><span id="line-91"></span><span class="hs-comment">-- | Datatype wrapper for the remaining text in the input. Handy for capturing</span><span>
-</span><span id="line-92"></span><span class="hs-comment">-- everything remaining. The accessor function @getEm@ isn't really meant to be</span><span>
-</span><span id="line-93"></span><span class="hs-comment">-- used since pattern matching can do everything. Open to renaming.</span><span>
-</span><span id="line-94"></span><span class="hs-comment">--</span><span>
-</span><span id="line-95"></span><span class="hs-comment">-- Example usage:</span><span>
-</span><span id="line-96"></span><span class="hs-comment">--</span><span>
-</span><span id="line-97"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-98"></span><span class="hs-comment">-- setStatus =</span><span>
-</span><span id="line-99"></span><span class="hs-comment">--     command &quot;status&quot;</span><span>
-</span><span id="line-100"></span><span class="hs-comment">--     $ \\msg newStatus newType (Remaining newName) -&gt; do</span><span>
-</span><span id="line-101"></span><span class="hs-comment">--         ...</span><span>
+</span><a href="#local-6989586621679163224"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- | Datatype wrapper for the remaining text in the input. Handy for capturing</span><span>
+</span><span id="line-97"></span><span class="hs-comment">-- everything remaining. The accessor function @getEm@ isn't really meant to be</span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- used since pattern matching can do everything. Open to renaming.</span><span>
+</span><span id="line-99"></span><span class="hs-comment">--</span><span>
+</span><span id="line-100"></span><span class="hs-comment">-- Example usage:</span><span>
+</span><span id="line-101"></span><span class="hs-comment">--</span><span>
 </span><span id="line-102"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-103"></span><span class="hs-keyword">data</span><span> </span><span id="RemainingText"><span class="annot"><a href="Command.Parser.html#RemainingText"><span class="hs-identifier hs-var">RemainingText</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Remaining"><span class="annot"><a href="Command.Parser.html#Remaining"><span class="hs-identifier hs-var">Remaining</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getEm"><span class="annot"><span class="annottext">RemainingText -&gt; Text
+</span><span id="line-103"></span><span class="hs-comment">-- setStatus =</span><span>
+</span><span id="line-104"></span><span class="hs-comment">--     command &quot;status&quot;</span><span>
+</span><span id="line-105"></span><span class="hs-comment">--     $ \\msg newStatus newType (Remaining newName) -&gt; do</span><span>
+</span><span id="line-106"></span><span class="hs-comment">--         ...</span><span>
+</span><span id="line-107"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-108"></span><span class="hs-keyword">data</span><span> </span><span id="RemainingText"><span class="annot"><a href="Command.Parser.html#RemainingText"><span class="hs-identifier hs-var">RemainingText</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Remaining"><span class="annot"><a href="Command.Parser.html#Remaining"><span class="hs-identifier hs-var">Remaining</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getEm"><span class="annot"><span class="annottext">RemainingText -&gt; Text
 </span><a href="Command.Parser.html#getEm"><span class="hs-identifier hs-var hs-var">getEm</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-104"></span><span>
-</span><span id="line-105"></span><span class="hs-comment">-- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike</span><span>
-</span><span id="line-106"></span><span class="hs-comment">-- with @Text@. At least one character is required.</span><span>
-</span><span id="line-107"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="Command.Parser.html#RemainingText"><span class="hs-identifier hs-type">RemainingText</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-108"></span><span>    </span><span id="local-6989586621679162787"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser RemainingText
-</span><a href="#local-6989586621679162787"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162786"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162786"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-109"></span><span>        </span><span class="hs-comment">-- Make sure at least one character is present</span><span>
-</span><span id="line-110"></span><span>        </span><span class="hs-comment">-- This is guaranteed to not be a space, because previous parsers</span><span>
-</span><span id="line-111"></span><span>        </span><span class="hs-comment">-- consume trailing spaces.</span><span>
-</span><span id="line-112"></span><span>        </span><span id="local-6989586621679162785"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679162785"><span class="hs-identifier hs-var">firstChar</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity Char
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span class="hs-comment">-- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike</span><span>
+</span><span id="line-111"></span><span class="hs-comment">-- with @Text@. At least one character is required.</span><span>
+</span><span id="line-112"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="Command.Parser.html#RemainingText"><span class="hs-identifier hs-type">RemainingText</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-113"></span><span>    </span><span id="local-6989586621679163220"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser RemainingText
+</span><a href="#local-6989586621679163220"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163219"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163219"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-114"></span><span>        </span><span class="hs-comment">-- Make sure at least one character is present</span><span>
+</span><span id="line-115"></span><span>        </span><span class="hs-comment">-- This is guaranteed to not be a space, because previous parsers</span><span>
+</span><span id="line-116"></span><span>        </span><span class="hs-comment">-- consume trailing spaces.</span><span>
+</span><span id="line-117"></span><span>        </span><span id="local-6989586621679163218"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679163218"><span class="hs-identifier hs-var">firstChar</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity Char
 forall s (m :: * -&gt; *) u. Stream s m Char =&gt; ParsecT s u m Char
 </span><span class="hs-identifier hs-var">anyChar</span></span><span>
-</span><span id="line-113"></span><span>        </span><span class="hs-comment">-- Get the rest of the input.</span><span>
-</span><span id="line-114"></span><span>        </span><span class="hs-comment">-- This is more convenient than doing &quot;many anyChar&quot; because it doesn't</span><span>
-</span><span id="line-115"></span><span>        </span><span class="hs-comment">-- need to parse anything for the remaining input.</span><span>
-</span><span id="line-116"></span><span>        </span><span id="local-6989586621679162784"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162784"><span class="hs-identifier hs-var">remaining</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser Text
+</span><span id="line-118"></span><span>        </span><span class="hs-comment">-- Get the rest of the input.</span><span>
+</span><span id="line-119"></span><span>        </span><span class="hs-comment">-- This is more convenient than doing &quot;many anyChar&quot; because it doesn't</span><span>
+</span><span id="line-120"></span><span>        </span><span class="hs-comment">-- need to parse anything for the remaining input.</span><span>
+</span><span id="line-121"></span><span>        </span><span id="local-6989586621679163217"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163217"><span class="hs-identifier hs-var">remaining</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser Text
 forall (m :: * -&gt; *) s u. Monad m =&gt; ParsecT s u m s
 </span><span class="hs-identifier hs-var">getInput</span></span><span>
-</span><span id="line-117"></span><span>        </span><span class="annot"><span class="annottext">RemainingText -&gt; Parser RemainingText
+</span><span id="line-122"></span><span>        </span><span class="annot"><span class="annottext">RemainingText -&gt; Parser RemainingText
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; RemainingText
 </span><a href="Command.Parser.html#Remaining"><span class="hs-identifier hs-var">Remaining</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; RemainingText) -&gt; Text -&gt; RemainingText
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Text -&gt; Text
 </span><span class="hs-identifier hs-var">T.cons</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679162785"><span class="hs-identifier hs-var">firstChar</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162784"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-118"></span><span>
-</span><span id="line-119"></span><span class="hs-comment">-- | An argument that can or cannot exist. </span><span>
-</span><span id="line-120"></span><span id="local-6989586621679162781"><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162781"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679162781"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-121"></span><span>    </span><span id="local-6989586621679162779"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser (Maybe a)
-</span><a href="#local-6989586621679162779"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162778"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162778"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser (Maybe a) -&gt; Parser (Maybe a)
+</span><a href="#local-6989586621679163218"><span class="hs-identifier hs-var">firstChar</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163217"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="hs-comment">-- | An argument that can or cannot exist. </span><span>
+</span><span id="line-125"></span><span id="local-6989586621679163214"><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163214"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679163214"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-126"></span><span>    </span><span id="local-6989586621679163212"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser (Maybe a)
+</span><a href="#local-6989586621679163212"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163211"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163211"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser (Maybe a) -&gt; Parser (Maybe a)
 forall s u (m :: * -&gt; *) a. ParsecT s u m a -&gt; ParsecT s u m a
 </span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Maybe a
 forall a. a -&gt; Maybe a
@@ -319,7 +324,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Message -&gt; ParsecT Text () Identity a
 forall a. ParsableArgument a =&gt; Message -&gt; Parser a
 </span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var">parserForArg</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162778"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser (Maybe a) -&gt; Parser (Maybe a) -&gt; Parser (Maybe a)
+</span><a href="#local-6989586621679163211"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser (Maybe a) -&gt; Parser (Maybe a) -&gt; Parser (Maybe a)
 forall s u (m :: * -&gt; *) a.
 ParsecT s u m a -&gt; ParsecT s u m a -&gt; ParsecT s u m a
 </span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; Parser (Maybe a)
@@ -327,30 +332,71 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span></span><span>
-</span><span id="line-122"></span><span>
-</span><span id="line-123"></span><span class="hs-comment">-- Integer. TODO</span><span>
-</span><span id="line-124"></span><span class="hs-comment">-- instance ParsableArgument Int where</span><span>
-</span><span id="line-125"></span><span class="hs-comment">--     parserForArg msg =</span><span>
-</span><span id="line-126"></span><span>
-</span><span id="line-127"></span><span class="hs-comment">-- Float. TODO don't even know if we need this.</span><span>
-</span><span id="line-128"></span><span class="hs-comment">-- instance ParsableArgument Float where</span><span>
-</span><span id="line-129"></span><span class="hs-comment">--     parserForArg msg =</span><span>
-</span><span id="line-130"></span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="hs-comment">-- Integer. TODO</span><span>
+</span><span id="line-129"></span><span class="hs-comment">-- instance ParsableArgument Int where</span><span>
+</span><span id="line-130"></span><span class="hs-comment">--     parserForArg msg =</span><span>
 </span><span id="line-131"></span><span>
-</span><span id="line-132"></span><span>
-</span><span id="line-133"></span><span>
-</span><span id="line-134"></span><span>
+</span><span id="line-132"></span><span class="hs-comment">-- Float. TODO don't even know if we need this.</span><span>
+</span><span id="line-133"></span><span class="hs-comment">-- instance ParsableArgument Float where</span><span>
+</span><span id="line-134"></span><span class="hs-comment">--     parserForArg msg =</span><span>
 </span><span id="line-135"></span><span>
-</span><span id="line-136"></span><span>
-</span><span id="line-137"></span><span class="hs-comment">-- | Parses &quot;online&quot; &quot;dnd&quot; &quot;idle&quot; and &quot;invisible&quot; as 'UpdateStatusType's</span><span>
-</span><span id="line-138"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UpdateStatusType</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-139"></span><span>    </span><span id="local-6989586621679162776"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser UpdateStatusType
-</span><a href="#local-6989586621679162776"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162775"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162775"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-140"></span><span>        </span><span class="hs-comment">-- consume either of the following:</span><span>
-</span><span id="line-141"></span><span>        </span><span class="hs-comment">-- (if fail then backtrack using try)</span><span>
-</span><span id="line-142"></span><span>        </span><span id="local-6989586621679162774"><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679162774"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Parser UpdateStatusType] -&gt; Parser UpdateStatusType
+</span><span id="line-136"></span><span class="hs-comment">-- | An argument that always has to be followed by another.</span><span>
+</span><span id="line-137"></span><span id="local-6989586621679163209"><span id="local-6989586621679163210"><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163210"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163209"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679163210"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679163209"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-138"></span><span>    </span><span id="local-6989586621679163207"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser (a, b)
+</span><a href="#local-6989586621679163207"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163206"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163206"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; (a, b))
+-&gt; ParsecT Text () Identity a
+-&gt; ParsecT Text () Identity b
+-&gt; Parser (a, b)
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ParsecT Text () Identity a
+forall a. ParsableArgument a =&gt; Message -&gt; Parser a
+</span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var">parserForArg</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163206"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ParsecT Text () Identity b
+forall a. ParsableArgument a =&gt; Message -&gt; Parser a
+</span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var">parserForArg</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163206"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span>
+</span><span id="line-143"></span><span>
+</span><span id="line-144"></span><span>
+</span><span id="line-145"></span><span>
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Snowflake</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-148"></span><span>    </span><span id="local-6989586621679163204"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser Snowflake
+</span><a href="#local-6989586621679163204"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163203"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163203"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-149"></span><span>        </span><span id="local-6989586621679163202"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679163202"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity Char -&gt; Parser String
+forall s (m :: * -&gt; *) t u a.
+Stream s m t =&gt;
+ParsecT s u m a -&gt; ParsecT s u m [a]
+</span><span class="hs-identifier hs-var">many1</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity Char
+forall s (m :: * -&gt; *) u. Stream s m Char =&gt; ParsecT s u m Char
+</span><span class="hs-identifier hs-var">digit</span></span><span>
+</span><span id="line-150"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
+</span><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-var">endOrSpaces</span></a></span><span>
+</span><span id="line-151"></span><span>        </span><span class="annot"><span class="annottext">Snowflake -&gt; Parser Snowflake
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Snowflake
+forall a. Read a =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">read</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679163202"><span class="hs-identifier hs-var">parsed</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-152"></span><span>
+</span><span id="line-153"></span><span class="hs-comment">-- | Parses &quot;online&quot; &quot;dnd&quot; &quot;idle&quot; and &quot;invisible&quot; as 'UpdateStatusType's</span><span>
+</span><span id="line-154"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UpdateStatusType</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-155"></span><span>    </span><span id="local-6989586621679163198"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser UpdateStatusType
+</span><a href="#local-6989586621679163198"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163197"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163197"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-156"></span><span>        </span><span class="hs-comment">-- consume either of the following:</span><span>
+</span><span id="line-157"></span><span>        </span><span class="hs-comment">-- (if fail then backtrack using try)</span><span>
+</span><span id="line-158"></span><span>        </span><span id="local-6989586621679163196"><span class="annot"><span class="annottext">UpdateStatusType
+</span><a href="#local-6989586621679163196"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Parser UpdateStatusType] -&gt; Parser UpdateStatusType
 forall s (m :: * -&gt; *) t u a.
 Stream s m t =&gt;
 [ParsecT s u m a] -&gt; ParsecT s u m a
@@ -366,7 +412,7 @@ forall s u (m :: * -&gt; *) a. ParsecT s u m a -&gt; ParsecT s u m a
 -&gt; [Parser UpdateStatusType] -&gt; [Parser UpdateStatusType]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-143"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-159"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -377,7 +423,7 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
 </span><span class="hs-identifier hs-var">UpdateStatusOnline</span></span><span>
-</span><span id="line-144"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-160"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -388,7 +434,7 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
 </span><span class="hs-identifier hs-var">UpdateStatusDoNotDisturb</span></span><span>
-</span><span id="line-145"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-161"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -399,7 +445,7 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
 </span><span class="hs-identifier hs-var">UpdateStatusAwayFromKeyboard</span></span><span>
-</span><span id="line-146"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-162"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -410,24 +456,24 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
 </span><span class="hs-identifier hs-var">UpdateStatusInvisibleOffline</span></span><span>
-</span><span id="line-147"></span><span>            </span><span class="hs-special">]</span><span>
-</span><span id="line-148"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
+</span><span id="line-163"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-164"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
 </span><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-var">endOrSpaces</span></a></span><span>
-</span><span id="line-149"></span><span>        </span><span class="annot"><span class="annottext">UpdateStatusType -&gt; Parser UpdateStatusType
+</span><span id="line-165"></span><span>        </span><span class="annot"><span class="annottext">UpdateStatusType -&gt; Parser UpdateStatusType
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679162774"><span class="hs-identifier hs-var">parsed</span></a></span><span>
-</span><span id="line-150"></span><span>
-</span><span id="line-151"></span><span class="hs-comment">-- | Parses &quot;playing&quot;, &quot;streaming&quot;, &quot;listening to&quot; and &quot;competing in&quot; as</span><span>
-</span><span id="line-152"></span><span class="hs-comment">-- 'ActivityType's.</span><span>
-</span><span id="line-153"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ActivityType</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-154"></span><span>    </span><span id="local-6989586621679162767"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser ActivityType
-</span><a href="#local-6989586621679162767"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679162766"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679162766"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-155"></span><span>        </span><span class="hs-comment">-- consume either of the following:</span><span>
-</span><span id="line-156"></span><span>        </span><span class="hs-comment">-- (if fail then backtrack using try)</span><span>
-</span><span id="line-157"></span><span>        </span><span id="local-6989586621679162765"><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679162765"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Parser ActivityType] -&gt; Parser ActivityType
+</span><a href="#local-6989586621679163196"><span class="hs-identifier hs-var">parsed</span></a></span><span>
+</span><span id="line-166"></span><span>
+</span><span id="line-167"></span><span class="hs-comment">-- | Parses &quot;playing&quot;, &quot;streaming&quot;, &quot;listening to&quot; and &quot;competing in&quot; as</span><span>
+</span><span id="line-168"></span><span class="hs-comment">-- 'ActivityType's.</span><span>
+</span><span id="line-169"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ActivityType</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-170"></span><span>    </span><span id="local-6989586621679163189"><span class="annot"><span class="annottext">parserForArg :: Message -&gt; Parser ActivityType
+</span><a href="#local-6989586621679163189"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span id="local-6989586621679163188"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679163188"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-171"></span><span>        </span><span class="hs-comment">-- consume either of the following:</span><span>
+</span><span id="line-172"></span><span>        </span><span class="hs-comment">-- (if fail then backtrack using try)</span><span>
+</span><span id="line-173"></span><span>        </span><span id="local-6989586621679163187"><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679163187"><span class="hs-identifier hs-var">parsed</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Parser ActivityType] -&gt; Parser ActivityType
 forall s (m :: * -&gt; *) t u a.
 Stream s m t =&gt;
 [ParsecT s u m a] -&gt; ParsecT s u m a
@@ -443,7 +489,7 @@ forall s u (m :: * -&gt; *) a. ParsecT s u m a -&gt; ParsecT s u m a
 -&gt; [Parser ActivityType] -&gt; [Parser ActivityType]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-158"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-174"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -454,7 +500,7 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">ActivityType
 </span><span class="hs-identifier hs-var">ActivityTypeGame</span></span><span>
-</span><span id="line-159"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-175"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -465,7 +511,7 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">ActivityType
 </span><span class="hs-identifier hs-var">ActivityTypeStreaming</span></span><span>
-</span><span id="line-160"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-176"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -476,7 +522,7 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">ActivityType
 </span><span class="hs-identifier hs-var">ActivityTypeListening</span></span><span>
-</span><span id="line-161"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
+</span><span id="line-177"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser String
 forall s (m :: * -&gt; *) u.
 Stream s m Char =&gt;
 String -&gt; ParsecT s u m String
@@ -487,12 +533,12 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; m b -&gt; m b
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">ActivityType
 </span><span class="hs-identifier hs-var">ActivityTypeCompeting</span></span><span>
-</span><span id="line-162"></span><span>            </span><span class="hs-special">]</span><span>
-</span><span id="line-163"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
+</span><span id="line-178"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-179"></span><span>        </span><span class="annot"><span class="annottext">Parser ()
 </span><a href="Command.Parser.html#endOrSpaces"><span class="hs-identifier hs-var">endOrSpaces</span></a></span><span>
-</span><span id="line-164"></span><span>        </span><span class="annot"><span class="annottext">ActivityType -&gt; Parser ActivityType
+</span><span id="line-180"></span><span>        </span><span class="annot"><span class="annottext">ActivityType -&gt; Parser ActivityType
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679162765"><span class="hs-identifier hs-var">parsed</span></a></span><span>
-</span><span id="line-165"></span><span>
-</span><span id="line-166"></span></pre></body></html>
+</span><a href="#local-6989586621679163187"><span class="hs-identifier hs-var">parsed</span></a></span><span>
+</span><span id="line-181"></span><span>
+</span><span id="line-182"></span></pre></body></html>

@@ -42,51 +42,51 @@
 </span><span id="line-38"></span><span class="hs-comment">-- | Locks a file for thread-safety</span><span>
 </span><span id="line-39"></span><span class="annot"><a href="DB.html#lockFile"><span class="hs-identifier hs-type">lockFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-40"></span><span id="lockFile"><span class="annot"><span class="annottext">lockFile :: FilePath -&gt; IO ()
-</span><a href="DB.html#lockFile"><span class="hs-identifier hs-var hs-var">lockFile</span></a></span></span><span> </span><span id="local-6989586621679162969"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162969"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+</span><a href="DB.html#lockFile"><span class="hs-identifier hs-var hs-var">lockFile</span></a></span></span><span> </span><span id="local-6989586621679163411"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163411"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>  </span><span class="hs-comment">-- TODO: Replace stub with working impl.</span><span>
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span class="hs-comment">-- | Checks if a file is locked</span><span>
 </span><span id="line-43"></span><span class="annot"><a href="DB.html#isFileLocked"><span class="hs-identifier hs-type">isFileLocked</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-44"></span><span id="isFileLocked"><span class="annot"><span class="annottext">isFileLocked :: FilePath -&gt; IO Bool
-</span><a href="DB.html#isFileLocked"><span class="hs-identifier hs-var hs-var">isFileLocked</span></a></span></span><span> </span><span id="local-6989586621679162967"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162967"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; IO Bool
+</span><a href="DB.html#isFileLocked"><span class="hs-identifier hs-var hs-var">isFileLocked</span></a></span></span><span> </span><span id="local-6989586621679163409"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163409"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; IO Bool
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>  </span><span class="hs-comment">-- TODO: Replace stub with working impl.</span><span>
 </span><span id="line-45"></span><span>
 </span><span id="line-46"></span><span class="annot"><a href="DB.html#readDB"><span class="hs-identifier hs-type">readDB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
 </span><span id="line-47"></span><span id="readDB"><span class="annot"><span class="annottext">readDB :: FilePath -&gt; IO ByteString
-</span><a href="DB.html#readDB"><span class="hs-identifier hs-var hs-var">readDB</span></a></span></span><span> </span><span id="local-6989586621679162965"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162965"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-48"></span><span>        </span><span id="local-6989586621679162964"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162964"><span class="hs-identifier hs-var">base</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO FilePath
+</span><a href="DB.html#readDB"><span class="hs-identifier hs-var hs-var">readDB</span></a></span></span><span> </span><span id="local-6989586621679163407"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163407"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-48"></span><span>        </span><span id="local-6989586621679163406"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163406"><span class="hs-identifier hs-var">base</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO FilePath
 </span><a href="DB.html#dbDir"><span class="hs-identifier hs-var">dbDir</span></a></span><span>
 </span><span id="line-49"></span><span>        </span><span class="annot"><span class="annottext">FilePath -&gt; IO ByteString
 </span><span class="hs-identifier hs-var">BS.readFile</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO ByteString) -&gt; FilePath -&gt; IO ByteString
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162964"><span class="hs-identifier hs-var">base</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="#local-6989586621679163406"><span class="hs-identifier hs-var">base</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162965"><span class="hs-identifier hs-var">file</span></a></span><span>
+</span><a href="#local-6989586621679163407"><span class="hs-identifier hs-var">file</span></a></span><span>
 </span><span id="line-50"></span><span>
 </span><span id="line-51"></span><span class="annot"><a href="DB.html#writeDB"><span class="hs-identifier hs-type">writeDB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-52"></span><span id="writeDB"><span class="annot"><span class="annottext">writeDB :: FilePath -&gt; ByteString -&gt; IO ()
-</span><a href="DB.html#writeDB"><span class="hs-identifier hs-var hs-var">writeDB</span></a></span></span><span> </span><span id="local-6989586621679162962"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162962"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679162961"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679162961"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-53"></span><span>    </span><span id="local-6989586621679162960"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162960"><span class="hs-identifier hs-var">base</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO FilePath
+</span><a href="DB.html#writeDB"><span class="hs-identifier hs-var hs-var">writeDB</span></a></span></span><span> </span><span id="local-6989586621679163404"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163404"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679163403"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679163403"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-53"></span><span>    </span><span id="local-6989586621679163402"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163402"><span class="hs-identifier hs-var">base</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO FilePath
 </span><a href="DB.html#dbDir"><span class="hs-identifier hs-var">dbDir</span></a></span><span>
 </span><span id="line-54"></span><span>    </span><span class="annot"><span class="annottext">FilePath -&gt; ByteString -&gt; IO ()
 </span><span class="hs-identifier hs-var">BS.writeFile</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162960"><span class="hs-identifier hs-var">base</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="#local-6989586621679163402"><span class="hs-identifier hs-var">base</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162962"><span class="hs-identifier hs-var">file</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679162961"><span class="hs-identifier hs-var">db</span></a></span><span>
+</span><a href="#local-6989586621679163404"><span class="hs-identifier hs-var">file</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679163403"><span class="hs-identifier hs-var">db</span></a></span><span>
 </span><span id="line-55"></span><span>
 </span><span id="line-56"></span><span>
 </span><span id="line-57"></span><span class="hs-comment">-- LIST OPS</span><span>
@@ -98,19 +98,19 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-63"></span><span class="hs-comment">-- | Reads a KeyValue DB from a file</span><span>
 </span><span id="line-64"></span><span class="annot"><a href="DB.html#readKV"><span class="hs-identifier hs-type">readKV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span>
 </span><span id="line-65"></span><span id="readKV"><span class="annot"><span class="annottext">readKV :: FilePath -&gt; IO KeyValue
-</span><a href="DB.html#readKV"><span class="hs-identifier hs-var hs-var">readKV</span></a></span></span><span> </span><span id="local-6989586621679162959"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162959"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-66"></span><span>    </span><span id="local-6989586621679162958"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679162958"><span class="hs-identifier hs-var">contents</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ByteString
+</span><a href="DB.html#readKV"><span class="hs-identifier hs-var hs-var">readKV</span></a></span></span><span> </span><span id="local-6989586621679163401"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163401"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679163400"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679163400"><span class="hs-identifier hs-var">contents</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ByteString
 </span><a href="DB.html#readDB"><span class="hs-identifier hs-var">readDB</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162959"><span class="hs-identifier hs-var">file</span></a></span><span>
+</span><a href="#local-6989586621679163401"><span class="hs-identifier hs-var">file</span></a></span><span>
 </span><span id="line-67"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HasHeader -&gt; ByteString -&gt; Either FilePath KeyValue
 forall a.
 FromRecord a =&gt;
 HasHeader -&gt; ByteString -&gt; Either FilePath (Vector a)
 </span><span class="hs-identifier hs-var">decode</span></span><span> </span><span class="annot"><span class="annottext">HasHeader
 </span><span class="hs-identifier hs-var">NoHeader</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679162958"><span class="hs-identifier hs-var">contents</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679163400"><span class="hs-identifier hs-var">contents</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-68"></span><span>         </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span>  </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">KeyValue -&gt; IO KeyValue
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
@@ -121,20 +121,20 @@ forall a. a -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.singleton</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-69"></span><span>         </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679162956"><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162956"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">KeyValue -&gt; IO KeyValue
+</span><span id="line-69"></span><span>         </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679163398"><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163398"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">KeyValue -&gt; IO KeyValue
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162956"><span class="hs-identifier hs-var">db</span></a></span><span>
+</span><a href="#local-6989586621679163398"><span class="hs-identifier hs-var">db</span></a></span><span>
 </span><span id="line-70"></span><span>
 </span><span id="line-71"></span><span class="hs-comment">-- | Writes a KeyValue to a file</span><span>
 </span><span id="line-72"></span><span class="hs-comment">-- TODO: Handle errors</span><span>
 </span><span id="line-73"></span><span class="annot"><a href="DB.html#writeKV"><span class="hs-identifier hs-type">writeKV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-74"></span><span id="writeKV"><span class="annot"><span class="annottext">writeKV :: FilePath -&gt; KeyValue -&gt; IO ()
-</span><a href="DB.html#writeKV"><span class="hs-identifier hs-var hs-var">writeKV</span></a></span></span><span> </span><span id="local-6989586621679162955"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162955"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ByteString -&gt; IO ()
+</span><a href="DB.html#writeKV"><span class="hs-identifier hs-var hs-var">writeKV</span></a></span></span><span> </span><span id="local-6989586621679163397"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163397"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ByteString -&gt; IO ()
 </span><a href="DB.html#writeDB"><span class="hs-identifier hs-var">writeDB</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162955"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; IO ())
+</span><a href="#local-6989586621679163397"><span class="hs-identifier hs-var">file</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; IO ())
 -&gt; (KeyValue -&gt; ByteString) -&gt; KeyValue -&gt; IO ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[(Text, Text)] -&gt; ByteString
@@ -149,11 +149,11 @@ forall a. Vector a -&gt; [a]
 </span><span id="line-76"></span><span class="hs-comment">-- | Returns `Just T.Text` if `k` is in the KeyValue, `Nothing` otherwise.</span><span>
 </span><span id="line-77"></span><span class="annot"><a href="DB.html#lookupKV"><span class="hs-identifier hs-type">lookupKV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-78"></span><span id="lookupKV"><span class="annot"><span class="annottext">lookupKV :: Text -&gt; KeyValue -&gt; Maybe Text
-</span><a href="DB.html#lookupKV"><span class="hs-identifier hs-var hs-var">lookupKV</span></a></span></span><span> </span><span id="local-6989586621679162952"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162952"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; [(Text, Text)] -&gt; Maybe Text
+</span><a href="DB.html#lookupKV"><span class="hs-identifier hs-var hs-var">lookupKV</span></a></span></span><span> </span><span id="local-6989586621679163394"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163394"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; [(Text, Text)] -&gt; Maybe Text
 forall a b. Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
 </span><span class="hs-identifier hs-var">lookup</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162952"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">([(Text, Text)] -&gt; Maybe Text)
+</span><a href="#local-6989586621679163394"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">([(Text, Text)] -&gt; Maybe Text)
 -&gt; (KeyValue -&gt; [(Text, Text)]) -&gt; KeyValue -&gt; Maybe Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">KeyValue -&gt; [(Text, Text)]
@@ -163,37 +163,37 @@ forall a. Vector a -&gt; [a]
 </span><span id="line-80"></span><span class="hs-comment">-- | O(n) - Adds (k,v) to the start of the KeyValue</span><span>
 </span><span id="line-81"></span><span class="annot"><a href="DB.html#prependKV"><span class="hs-identifier hs-type">prependKV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span>
 </span><span id="line-82"></span><span id="prependKV"><span class="annot"><span class="annottext">prependKV :: Text -&gt; Text -&gt; KeyValue -&gt; KeyValue
-</span><a href="DB.html#prependKV"><span class="hs-identifier hs-var hs-var">prependKV</span></a></span></span><span> </span><span id="local-6989586621679162950"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162950"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679162949"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162949"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text, Text) -&gt; KeyValue -&gt; KeyValue
+</span><a href="DB.html#prependKV"><span class="hs-identifier hs-var hs-var">prependKV</span></a></span></span><span> </span><span id="local-6989586621679163392"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163392"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163391"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163391"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text, Text) -&gt; KeyValue -&gt; KeyValue
 forall a. a -&gt; Vector a -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.cons</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162950"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162949"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679163392"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163391"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-83"></span><span>
 </span><span id="line-84"></span><span class="hs-comment">-- | O(n) - Adds (k,v) to the start of the KeyValue</span><span>
 </span><span id="line-85"></span><span class="annot"><a href="DB.html#appendKV"><span class="hs-identifier hs-type">appendKV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DB.html#KeyValue"><span class="hs-identifier hs-type">KeyValue</span></a></span><span>
 </span><span id="line-86"></span><span id="appendKV"><span class="annot"><span class="annottext">appendKV :: Text -&gt; Text -&gt; KeyValue -&gt; KeyValue
-</span><a href="DB.html#appendKV"><span class="hs-identifier hs-var hs-var">appendKV</span></a></span></span><span> </span><span id="local-6989586621679162946"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162946"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679162945"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162945"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span id="local-6989586621679162944"><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162944"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">KeyValue -&gt; (Text, Text) -&gt; KeyValue
+</span><a href="DB.html#appendKV"><span class="hs-identifier hs-var hs-var">appendKV</span></a></span></span><span> </span><span id="local-6989586621679163388"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163388"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163387"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163387"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span id="local-6989586621679163386"><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163386"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">KeyValue -&gt; (Text, Text) -&gt; KeyValue
 forall a. Vector a -&gt; a -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.snoc</span></span><span> </span><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162944"><span class="hs-identifier hs-var">db</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162946"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162945"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679163386"><span class="hs-identifier hs-var">db</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163388"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163387"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-87"></span><span>
 </span><span id="line-88"></span><span class="hs-comment">-- | Gets a value from a given db; if it doesn't exist, return &quot;&quot;</span><span>
 </span><span id="line-89"></span><span class="annot"><a href="DB.html#fetch"><span class="hs-identifier hs-type">fetch</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-90"></span><span id="fetch"><span class="annot"><span class="annottext">fetch :: FilePath -&gt; Text -&gt; IO Text
-</span><a href="DB.html#fetch"><span class="hs-identifier hs-var hs-var">fetch</span></a></span></span><span> </span><span id="local-6989586621679162942"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162942"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span id="local-6989586621679162941"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162941"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-91"></span><span>    </span><span id="local-6989586621679162940"><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162940"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO KeyValue
+</span><a href="DB.html#fetch"><span class="hs-identifier hs-var hs-var">fetch</span></a></span></span><span> </span><span id="local-6989586621679163384"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163384"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span id="local-6989586621679163383"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163383"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-91"></span><span>    </span><span id="local-6989586621679163382"><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163382"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO KeyValue
 </span><a href="DB.html#readKV"><span class="hs-identifier hs-var">readKV</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162942"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><a href="#local-6989586621679163384"><span class="hs-identifier hs-var">path</span></a></span><span>
 </span><span id="line-92"></span><span>    </span><span class="annot"><span class="annottext">Text -&gt; IO Text
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; IO Text) -&gt; Text -&gt; IO Text
@@ -205,27 +205,27 @@ forall a. a -&gt; Maybe a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; KeyValue -&gt; Maybe Text
 </span><a href="DB.html#lookupKV"><span class="hs-identifier hs-var">lookupKV</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162941"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162940"><span class="hs-identifier hs-var">db</span></a></span><span>
+</span><a href="#local-6989586621679163383"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163382"><span class="hs-identifier hs-var">db</span></a></span><span>
 </span><span id="line-93"></span><span>
 </span><span id="line-94"></span><span class="hs-comment">-- | Prepends a key value pair to a db file. Handles it all!</span><span>
 </span><span id="line-95"></span><span class="hs-comment">-- TODO: This should really signal failure to the caller</span><span>
 </span><span id="line-96"></span><span class="annot"><a href="DB.html#store"><span class="hs-identifier hs-type">store</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-97"></span><span id="store"><span class="annot"><span class="annottext">store :: FilePath -&gt; Text -&gt; Text -&gt; IO ()
-</span><a href="DB.html#store"><span class="hs-identifier hs-var hs-var">store</span></a></span></span><span> </span><span id="local-6989586621679162939"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162939"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span id="local-6989586621679162938"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162938"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679162937"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162937"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-98"></span><span>    </span><span id="local-6989586621679162936"><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162936"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO KeyValue
+</span><a href="DB.html#store"><span class="hs-identifier hs-var hs-var">store</span></a></span></span><span> </span><span id="local-6989586621679163381"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679163381"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span id="local-6989586621679163380"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163380"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163379"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163379"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679163378"><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163378"><span class="hs-identifier hs-var">db</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO KeyValue
 </span><a href="DB.html#readKV"><span class="hs-identifier hs-var">readKV</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162939"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><a href="#local-6989586621679163381"><span class="hs-identifier hs-var">path</span></a></span><span>
 </span><span id="line-99"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Text -&gt; KeyValue -&gt; Maybe Text
 </span><a href="DB.html#lookupKV"><span class="hs-identifier hs-var">lookupKV</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162938"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162936"><span class="hs-identifier hs-var">db</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-100"></span><span>         </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679162935"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162935"><span class="hs-identifier hs-var">v</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
+</span><a href="#local-6989586621679163380"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163378"><span class="hs-identifier hs-var">db</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-100"></span><span>         </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679163377"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163377"><span class="hs-identifier hs-var">v</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
 </span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO ()) -&gt; FilePath -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath
@@ -233,18 +233,18 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; FilePath
 </span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162935"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="#local-6989586621679163377"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot; was already in the KeyValue!&quot;</span></span><span>
 </span><span id="line-101"></span><span>         </span><span class="annot"><span class="annottext">Maybe Text
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; KeyValue -&gt; IO ()
 </span><a href="DB.html#writeKV"><span class="hs-identifier hs-var">writeKV</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679162939"><span class="hs-identifier hs-var">path</span></a></span><span> </span><span class="annot"><span class="annottext">(KeyValue -&gt; IO ()) -&gt; KeyValue -&gt; IO ()
+</span><a href="#local-6989586621679163381"><span class="hs-identifier hs-var">path</span></a></span><span> </span><span class="annot"><span class="annottext">(KeyValue -&gt; IO ()) -&gt; KeyValue -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; KeyValue -&gt; KeyValue
 </span><a href="DB.html#prependKV"><span class="hs-identifier hs-var">prependKV</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162938"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679162937"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">KeyValue
-</span><a href="#local-6989586621679162936"><span class="hs-identifier hs-var">db</span></a></span><span>
+</span><a href="#local-6989586621679163380"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163379"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">KeyValue
+</span><a href="#local-6989586621679163378"><span class="hs-identifier hs-var">db</span></a></span><span>
 </span><span id="line-102"></span></pre></body></html>

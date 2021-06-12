@@ -102,30 +102,30 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span id="line-70"></span><span>
 </span><span id="line-71"></span><span class="annot"><a href="EventHandler.html#isFromBot"><span class="hs-identifier hs-type">isFromBot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-72"></span><span id="isFromBot"><span class="annot"><span class="annottext">isFromBot :: Message -&gt; Bool
-</span><a href="EventHandler.html#isFromBot"><span class="hs-identifier hs-var hs-var">isFromBot</span></a></span></span><span> </span><span id="local-6989586621679166729"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166729"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">User -&gt; Bool
+</span><a href="EventHandler.html#isFromBot"><span class="hs-identifier hs-var hs-var">isFromBot</span></a></span></span><span> </span><span id="local-6989586621679167194"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679167194"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">User -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var">userIsBot</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; User
 </span><span class="hs-identifier hs-var hs-var">messageAuthor</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166729"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679167194"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-73"></span><span>
 </span><span id="line-74"></span><span class="annot"><a href="EventHandler.html#handleEvent"><span class="hs-identifier hs-type">handleEvent</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Event</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-75"></span><span id="handleEvent"><span class="annot"><span class="annottext">handleEvent :: Event -&gt; DiscordHandler ()
-</span><a href="EventHandler.html#handleEvent"><span class="hs-identifier hs-var hs-var">handleEvent</span></a></span></span><span> </span><span id="local-6989586621679166728"><span class="annot"><span class="annottext">Event
-</span><a href="#local-6989586621679166728"><span class="hs-identifier hs-var">event</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Event
-</span><a href="#local-6989586621679166728"><span class="hs-identifier hs-var">event</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-76"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">MessageCreate</span></span><span> </span><span id="local-6989586621679166727"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="EventHandler.html#handleEvent"><span class="hs-identifier hs-var hs-var">handleEvent</span></a></span></span><span> </span><span id="local-6989586621679167193"><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679167193"><span class="hs-identifier hs-var">event</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679167193"><span class="hs-identifier hs-var">event</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-76"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">MessageCreate</span></span><span> </span><span id="local-6989586621679167192"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679167192"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-77"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Bool
 </span><a href="EventHandler.html#isFromBot"><span class="hs-identifier hs-var">isFromBot</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679167192"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
 -&gt; DiscordHandler () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Char
 </span><span class="hs-identifier hs-var">T.head</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; Text
 </span><span class="hs-identifier hs-var hs-var">messageText</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
+</span><a href="#local-6989586621679167192"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">':'</span></span><span>
@@ -139,7 +139,7 @@ t a -&gt; (a -&gt; f b) -&gt; f ()
 </span><a href="EventHandler.html#commandReceivers"><span class="hs-identifier hs-var">commandReceivers</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Message -&gt; DiscordHandler ()) -&gt; Message -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679167192"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[Message -&gt; DiscordHandler ()]
 -&gt; ((Message -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; DiscordHandler ()
@@ -150,9 +150,9 @@ t a -&gt; (a -&gt; f b) -&gt; f ()
 </span><a href="EventHandler.html#messageReceivers"><span class="hs-identifier hs-var">messageReceivers</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Message -&gt; DiscordHandler ()) -&gt; Message -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-80"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">MessageReactionAdd</span></span><span> </span><span id="local-6989586621679166726"><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166726"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679167192"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">MessageReactionAdd</span></span><span> </span><span id="local-6989586621679167191"><span class="annot"><span class="annottext">ReactionInfo
+</span><a href="#local-6989586621679167191"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-81"></span><span>        </span><span class="annot"><span class="annottext">[ReactionInfo -&gt; DiscordHandler ()]
 -&gt; ((ReactionInfo -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; DiscordHandler ()
@@ -164,9 +164,9 @@ t a -&gt; (a -&gt; f b) -&gt; f ()
 -&gt; ReactionInfo -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166726"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-82"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">MessageReactionRemove</span></span><span> </span><span id="local-6989586621679166725"><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166725"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679167191"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">MessageReactionRemove</span></span><span> </span><span id="local-6989586621679167190"><span class="annot"><span class="annottext">ReactionInfo
+</span><a href="#local-6989586621679167190"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-83"></span><span>        </span><span class="annot"><span class="annottext">[ReactionInfo -&gt; DiscordHandler ()]
 -&gt; ((ReactionInfo -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; DiscordHandler ()
@@ -178,7 +178,7 @@ t a -&gt; (a -&gt; f b) -&gt; f ()
 -&gt; ReactionInfo -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ReactionInfo
-</span><a href="#local-6989586621679166725"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679167190"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-84"></span><span>    </span><span class="annot"><span class="annottext">Event
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; DiscordHandler ()
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a

@@ -56,31 +56,31 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-37"></span><span class="annot"><a href="QuoteSystem.html#quoteTable"><span class="hs-identifier hs-type">quoteTable</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HM.HashMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span id="quoteTable"><span class="annot"><span class="annottext">quoteTable :: IO (HashMap Text Text)
 </span><a href="QuoteSystem.html#quoteTable"><span class="hs-identifier hs-var hs-var">quoteTable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679165187"><span class="annot"><span class="annottext">[[Text]]
-</span><a href="#local-6989586621679165187"><span class="hs-identifier hs-var">quote2DArray</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO [[Text]]
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679165624"><span class="annot"><span class="annottext">[[Text]]
+</span><a href="#local-6989586621679165624"><span class="hs-identifier hs-var">quote2DArray</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO [[Text]]
 </span><a href="CSV.html#readCSV"><span class="hs-identifier hs-var">readCSV</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><a href="QuoteSystem.html#quotePath"><span class="hs-identifier hs-var">quotePath</span></a></span><span>
-</span><span id="line-40"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165186"><span class="annot"><span class="annottext">compatibleLines :: [[Text]]
-</span><a href="#local-6989586621679165186"><span class="hs-identifier hs-var hs-var">compatibleLines</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Bool) -&gt; [[Text]] -&gt; [[Text]]
+</span><span id="line-40"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165623"><span class="annot"><span class="annottext">compatibleLines :: [[Text]]
+</span><a href="#local-6989586621679165623"><span class="hs-identifier hs-var hs-var">compatibleLines</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Bool) -&gt; [[Text]] -&gt; [[Text]]
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
-</span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679165185"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165185"><span class="hs-identifier hs-var">line</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Int
+</span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679165622"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165622"><span class="hs-identifier hs-var">line</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165185"><span class="hs-identifier hs-var">line</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679165622"><span class="hs-identifier hs-var">line</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[Text]]
-</span><a href="#local-6989586621679165187"><span class="hs-identifier hs-var">quote2DArray</span></a></span><span>
-</span><span id="line-41"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165183"><span class="annot"><span class="annottext">listMap :: [(Text, Text)]
-</span><a href="#local-6989586621679165183"><span class="hs-identifier hs-var hs-var">listMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; (Text, Text)) -&gt; [[Text]] -&gt; [(Text, Text)]
+</span><a href="#local-6989586621679165624"><span class="hs-identifier hs-var">quote2DArray</span></a></span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165620"><span class="annot"><span class="annottext">listMap :: [(Text, Text)]
+</span><a href="#local-6989586621679165620"><span class="hs-identifier hs-var hs-var">listMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; (Text, Text)) -&gt; [[Text]] -&gt; [(Text, Text)]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
-</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">[</span><span id="local-6989586621679165182"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165182"><span class="hs-identifier hs-var">key</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165181"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165181"><span class="hs-identifier hs-var">value</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165182"><span class="hs-identifier hs-var">key</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165181"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[Text]]
-</span><a href="#local-6989586621679165186"><span class="hs-identifier hs-var">compatibleLines</span></a></span><span>
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">[</span><span id="local-6989586621679165619"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165619"><span class="hs-identifier hs-var">key</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165618"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165618"><span class="hs-identifier hs-var">value</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165619"><span class="hs-identifier hs-var">key</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165618"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[Text]]
+</span><a href="#local-6989586621679165623"><span class="hs-identifier hs-var">compatibleLines</span></a></span><span>
 </span><span id="line-42"></span><span>    </span><span class="annot"><span class="annottext">HashMap Text Text -&gt; IO (HashMap Text Text)
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Text -&gt; IO (HashMap Text Text))
@@ -89,25 +89,25 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[(Text, Text)] -&gt; HashMap Text Text
 forall k v. (Eq k, Hashable k) =&gt; [(k, v)] -&gt; HashMap k v
 </span><span class="hs-identifier hs-var">HM.fromList</span></span><span> </span><span class="annot"><span class="annottext">[(Text, Text)]
-</span><a href="#local-6989586621679165183"><span class="hs-identifier hs-var">listMap</span></a></span><span>
+</span><a href="#local-6989586621679165620"><span class="hs-identifier hs-var">listMap</span></a></span><span>
 </span><span id="line-43"></span><span>
 </span><span id="line-44"></span><span class="annot"><a href="QuoteSystem.html#storeQuote"><span class="hs-identifier hs-type">storeQuote</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-45"></span><span id="storeQuote"><span class="annot"><span class="annottext">storeQuote :: Text -&gt; Text -&gt; IO ()
-</span><a href="QuoteSystem.html#storeQuote"><span class="hs-identifier hs-var hs-var">storeQuote</span></a></span></span><span> </span><span id="local-6989586621679165178"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165178"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679165177"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165177"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [[Text]] -&gt; IO ()
+</span><a href="QuoteSystem.html#storeQuote"><span class="hs-identifier hs-var hs-var">storeQuote</span></a></span></span><span> </span><span id="local-6989586621679165615"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165615"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679165614"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165614"><span class="hs-identifier hs-var">content</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [[Text]] -&gt; IO ()
 </span><a href="CSV.html#addToCSV"><span class="hs-identifier hs-var">addToCSV</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><a href="QuoteSystem.html#quotePath"><span class="hs-identifier hs-var">quotePath</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165178"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165177"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679165615"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165614"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
 </span><span id="line-46"></span><span>
 </span><span id="line-47"></span><span class="annot"><a href="QuoteSystem.html#fetchQuote"><span class="hs-identifier hs-type">fetchQuote</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span>
 </span><span id="line-48"></span><span id="fetchQuote"><span class="annot"><span class="annottext">fetchQuote :: Text -&gt; IO (Maybe Text)
-</span><a href="QuoteSystem.html#fetchQuote"><span class="hs-identifier hs-var hs-var">fetchQuote</span></a></span></span><span> </span><span id="local-6989586621679165175"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165175"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; HashMap Text Text -&gt; Maybe Text
+</span><a href="QuoteSystem.html#fetchQuote"><span class="hs-identifier hs-var hs-var">fetchQuote</span></a></span></span><span> </span><span id="local-6989586621679165612"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165612"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; HashMap Text Text -&gt; Maybe Text
 forall k v. (Eq k, Hashable k) =&gt; k -&gt; HashMap k v -&gt; Maybe v
 </span><span class="hs-identifier hs-var">HM.lookup</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165175"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Text -&gt; Maybe Text)
+</span><a href="#local-6989586621679165612"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Text -&gt; Maybe Text)
 -&gt; IO (HashMap Text Text) -&gt; IO (Maybe Text)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">IO (HashMap Text Text)
@@ -115,13 +115,13 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span id="line-49"></span><span>
 </span><span id="line-50"></span><span class="annot"><a href="QuoteSystem.html#removeQuote"><span class="hs-identifier hs-type">removeQuote</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span id="removeQuote"><span class="annot"><span class="annottext">removeQuote :: Text -&gt; IO ()
-</span><a href="QuoteSystem.html#removeQuote"><span class="hs-identifier hs-var hs-var">removeQuote</span></a></span></span><span> </span><span id="local-6989586621679165171"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165171"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-52"></span><span>    </span><span id="local-6989586621679165170"><span class="annot"><span class="annottext">HashMap Text Text
-</span><a href="#local-6989586621679165170"><span class="hs-identifier hs-var">newTable</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text -&gt; HashMap Text Text -&gt; HashMap Text Text
+</span><a href="QuoteSystem.html#removeQuote"><span class="hs-identifier hs-var hs-var">removeQuote</span></a></span></span><span> </span><span id="local-6989586621679165608"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165608"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-52"></span><span>    </span><span id="local-6989586621679165607"><span class="annot"><span class="annottext">HashMap Text Text
+</span><a href="#local-6989586621679165607"><span class="hs-identifier hs-var">newTable</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text -&gt; HashMap Text Text -&gt; HashMap Text Text
 forall k v. (Eq k, Hashable k) =&gt; k -&gt; HashMap k v -&gt; HashMap k v
 </span><span class="hs-identifier hs-var">HM.delete</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165171"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Text -&gt; HashMap Text Text)
+</span><a href="#local-6989586621679165608"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Text -&gt; HashMap Text Text)
 -&gt; IO (HashMap Text Text) -&gt; IO (HashMap Text Text)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">IO (HashMap Text Text)
@@ -129,7 +129,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span id="line-53"></span><span>    </span><span class="annot"><span class="annottext">FilePath -&gt; HashMap Text Text -&gt; IO ()
 </span><a href="CSV.html#writeHashMapToCSV"><span class="hs-identifier hs-var">writeHashMapToCSV</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><a href="QuoteSystem.html#quotePath"><span class="hs-identifier hs-var">quotePath</span></a></span><span> </span><span class="annot"><span class="annottext">HashMap Text Text
-</span><a href="#local-6989586621679165170"><span class="hs-identifier hs-var">newTable</span></a></span><span>
+</span><a href="#local-6989586621679165607"><span class="hs-identifier hs-var">newTable</span></a></span><span>
 </span><span id="line-54"></span><span>
 </span><span id="line-55"></span><span class="annot"><a href="QuoteSystem.html#receiveQuoteRE"><span class="hs-identifier hs-type">receiveQuoteRE</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-56"></span><span id="receiveQuoteRE"><span class="annot"><span class="annottext">receiveQuoteRE :: Text
@@ -144,42 +144,42 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-57"></span><span>
 </span><span id="line-58"></span><span class="annot"><a href="QuoteSystem.html#receiveQuote"><span class="hs-identifier hs-type">receiveQuote</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-59"></span><span id="receiveQuote"><span class="annot"><span class="annottext">receiveQuote :: Message -&gt; DiscordHandler ()
-</span><a href="QuoteSystem.html#receiveQuote"><span class="hs-identifier hs-var hs-var">receiveQuote</span></a></span></span><span> </span><span id="local-6989586621679165167"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165167"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="QuoteSystem.html#receiveQuote"><span class="hs-identifier hs-var hs-var">receiveQuote</span></a></span></span><span> </span><span id="local-6989586621679165604"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165604"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
 -&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 </span><a href="Utils.html#newCommand"><span class="hs-identifier hs-var">newCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165167"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165604"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="QuoteSystem.html#receiveQuoteRE"><span class="hs-identifier hs-var">receiveQuoteRE</span></a></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165166"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165166"><span class="hs-identifier hs-var">quote</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165165"><span class="annot"><span class="annottext">name :: Text
-</span><a href="#local-6989586621679165165"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165603"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165603"><span class="hs-identifier hs-var">quote</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-60"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165602"><span class="annot"><span class="annottext">name :: Text
+</span><a href="#local-6989586621679165602"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Text
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Text) -&gt; ([Text] -&gt; [Text]) -&gt; [Text] -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; [Text]
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">tail</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165166"><span class="hs-identifier hs-var">quote</span></a></span><span>
-</span><span id="line-61"></span><span>    </span><span id="local-6989586621679165161"><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165161"><span class="hs-identifier hs-var">textM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
+</span><a href="#local-6989586621679165603"><span class="hs-identifier hs-var">quote</span></a></span><span>
+</span><span id="line-61"></span><span>    </span><span id="local-6989586621679165598"><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679165598"><span class="hs-identifier hs-var">textM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text))
 -&gt; IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO (Maybe Text)
 </span><a href="QuoteSystem.html#fetchQuote"><span class="hs-identifier hs-var">fetchQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165165"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621679165602"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-62"></span><span>    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165167"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
+</span><a href="#local-6989586621679165604"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165161"><span class="hs-identifier hs-var">textM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679165598"><span class="hs-identifier hs-var">textM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-63"></span><span>        </span><span class="annot"><span class="annottext">Maybe Text
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var">owoify</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; Text -&gt; Text
@@ -191,9 +191,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-65"></span><span>                </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;Maybe consider `:addquote \&quot;[quote]\&quot; \&quot;[quote_message]\&quot;`&quot;</span></span><span>
 </span><span id="line-66"></span><span>            </span><span class="hs-special">]</span><span>
-</span><span id="line-67"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679165159"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165159"><span class="hs-identifier hs-var">text</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165159"><span class="hs-identifier hs-var">text</span></a></span><span>
+</span><span id="line-67"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679165596"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165596"><span class="hs-identifier hs-var">text</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165596"><span class="hs-identifier hs-var">text</span></a></span><span>
 </span><span id="line-68"></span><span>
 </span><span id="line-69"></span><span>
 </span><span id="line-70"></span><span class="hs-comment">-- | `addQuoteRE` is the regex for the quote addition command. Quote texts and names *must* be wrapped in</span><span>
@@ -211,44 +211,44 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-74"></span><span>
 </span><span id="line-75"></span><span class="annot"><a href="QuoteSystem.html#addQuote"><span class="hs-identifier hs-type">addQuote</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-76"></span><span id="addQuote"><span class="annot"><span class="annottext">addQuote :: Message -&gt; DiscordHandler ()
-</span><a href="QuoteSystem.html#addQuote"><span class="hs-identifier hs-var hs-var">addQuote</span></a></span></span><span> </span><span id="local-6989586621679165157"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165157"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="QuoteSystem.html#addQuote"><span class="hs-identifier hs-var hs-var">addQuote</span></a></span></span><span> </span><span id="local-6989586621679165594"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165594"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
 -&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 </span><a href="Utils.html#newCommand"><span class="hs-identifier hs-var">newCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165157"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165594"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="QuoteSystem.html#addQuoteRE"><span class="hs-identifier hs-var">addQuoteRE</span></a></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165156"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165156"><span class="hs-identifier hs-var">quote</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165593"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165593"><span class="hs-identifier hs-var">quote</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-77"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Message -&gt; Maybe ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageGuild</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165157"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679165594"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-78"></span><span>        </span><span class="annot"><span class="annottext">Maybe ChannelId
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-79"></span><span>            </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165157"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165594"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;Only possible in a server!&quot;</span></span><span>
 </span><span id="line-80"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
 </span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-81"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">[</span><span id="local-6989586621679165155"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165155"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165154"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165154"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165156"><span class="hs-identifier hs-var">quote</span></a></span><span>
-</span><span id="line-82"></span><span>            </span><span id="local-6989586621679165153"><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165153"><span class="hs-identifier hs-var">textM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
+</span><span id="line-81"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">[</span><span id="local-6989586621679165592"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165592"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165591"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165591"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165593"><span class="hs-identifier hs-var">quote</span></a></span><span>
+</span><span id="line-82"></span><span>            </span><span id="local-6989586621679165590"><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679165590"><span class="hs-identifier hs-var">textM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text))
 -&gt; IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO (Maybe Text)
 </span><a href="QuoteSystem.html#fetchQuote"><span class="hs-identifier hs-var">fetchQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165155"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621679165592"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-83"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165153"><span class="hs-identifier hs-var">textM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679165590"><span class="hs-identifier hs-var">textM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-84"></span><span>                </span><span class="annot"><span class="annottext">Maybe Text
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-85"></span><span>                    </span><span class="annot"><span class="annottext">IO () -&gt; DiscordHandler ()
@@ -257,20 +257,20 @@ forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; IO ()
 </span><a href="QuoteSystem.html#storeQuote"><span class="hs-identifier hs-var">storeQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165155"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165154"><span class="hs-identifier hs-var">content</span></a></span><span>
+</span><a href="#local-6989586621679165592"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165591"><span class="hs-identifier hs-var">content</span></a></span><span>
 </span><span id="line-86"></span><span>                    </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165157"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165594"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-87"></span><span>                        </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;New quote registered under `:quote &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165155"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679165592"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;`.&quot;</span></span><span>
@@ -279,7 +279,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165157"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165594"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
 -&gt; (Text -&gt; Text) -&gt; Text -&gt; DiscordHandler ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
@@ -290,7 +290,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-string">&quot;Quote already exists my dude, try `:quote &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165155"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679165592"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;`.&quot;</span></span><span>
@@ -309,38 +309,38 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-94"></span><span>
 </span><span id="line-95"></span><span class="annot"><a href="QuoteSystem.html#rmQuote"><span class="hs-identifier hs-type">rmQuote</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-96"></span><span id="rmQuote"><span class="annot"><span class="annottext">rmQuote :: Message -&gt; DiscordHandler ()
-</span><a href="QuoteSystem.html#rmQuote"><span class="hs-identifier hs-var hs-var">rmQuote</span></a></span></span><span> </span><span id="local-6989586621679165151"><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165151"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="QuoteSystem.html#rmQuote"><span class="hs-identifier hs-var hs-var">rmQuote</span></a></span></span><span> </span><span id="local-6989586621679165588"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679165588"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
 -&gt; Text -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 </span><a href="Utils.html#newDevCommand"><span class="hs-identifier hs-var">newDevCommand</span></a></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165151"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165588"><span class="hs-identifier hs-var">msg</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="QuoteSystem.html#rmQuoteRE"><span class="hs-identifier hs-var">rmQuoteRE</span></a></span><span> </span><span class="annot"><span class="annottext">(([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ())
 -&gt; ([Text] -&gt; DiscordHandler ()) -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165150"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165150"><span class="hs-identifier hs-var">quote</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-97"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165149"><span class="annot"><span class="annottext">name :: Text
-</span><a href="#local-6989586621679165149"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679165587"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165587"><span class="hs-identifier hs-var">quote</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-97"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679165586"><span class="annot"><span class="annottext">name :: Text
+</span><a href="#local-6989586621679165586"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679165150"><span class="hs-identifier hs-var">quote</span></a></span><span>
-</span><span id="line-98"></span><span>    </span><span id="local-6989586621679165148"><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165148"><span class="hs-identifier hs-var">textM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
+</span><a href="#local-6989586621679165587"><span class="hs-identifier hs-var">quote</span></a></span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679165585"><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679165585"><span class="hs-identifier hs-var">textM</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text))
 -&gt; IO (Maybe Text) -&gt; ReaderT DiscordHandle IO (Maybe Text)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO (Maybe Text)
 </span><a href="QuoteSystem.html#fetchQuote"><span class="hs-identifier hs-var">fetchQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165149"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621679165586"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-99"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679165148"><span class="hs-identifier hs-var">textM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679165585"><span class="hs-identifier hs-var">textM</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-100"></span><span>        </span><span class="annot"><span class="annottext">Maybe Text
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165151"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679165588"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-101"></span><span>                       </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ()) -&gt; Text -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
@@ -354,12 +354,12 @@ forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; IO ()
 </span><a href="QuoteSystem.html#removeQuote"><span class="hs-identifier hs-var">removeQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165149"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621679165586"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-104"></span><span>            </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; DiscordHandler ()
 forall (m :: * -&gt; *). MonadDiscord m =&gt; ChannelId -&gt; Text -&gt; m ()
 </span><a href="Utils.html#sendMessageChan"><span class="hs-identifier hs-var">sendMessageChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
 </span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
-</span><a href="#local-6989586621679165151"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
+</span><a href="#local-6989586621679165588"><span class="hs-identifier hs-var">msg</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; DiscordHandler ())
 -&gt; (Text -&gt; Text) -&gt; Text -&gt; DiscordHandler ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
@@ -370,7 +370,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-string">&quot;All done! Forgot all about `&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679165149"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679165586"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;`, was super bad anyways.&quot;</span></span><span>
