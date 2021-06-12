@@ -222,7 +222,11 @@ data Command m = Command
     -- ^ The prefix for the command. 
     , commandAliases      :: [T.Text]
     -- ^ Any alias names for the command.
-    , commandApplier      :: (Bool, Message -> T.Text -> m ())
+    , commandInitialMatch :: Message -> Command m -> Maybe [T.Text]
+    -- ^ A function that performs an initial match check before checking for
+    -- requirements or applying arguments. Grabs the necessary parts to be passed
+    -- into commandApplier. If not matching, this will be Nothing.
+    , commandApplier      :: Message -> [T.Text] -> m ()
     -- ^ A tuple of (whether to use a custom applier and skip the name parsing,
     -- the function used to apply the arguments into a handler). The function
     -- needs to take a 'Message' that triggered the command, the input text,
@@ -307,7 +311,11 @@ command name commandHandler = Command
     { commandName         = name
     , commandPrefix       = ":"
     , commandAliases      = []
-    , commandApplier      = (False, applyArgs commandHandler)
+    , commandInitialMatch = \msg cmd ->
+        case parse (parseCommandName cmd) "" (messageText msg) of
+            Left e -> Nothing
+            Right args -> Just [args]
+    , commandApplier      = \x y -> applyArgs commandHandler x (head y)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -407,7 +415,11 @@ parsecCommand parserFunc commandHandler = Command
     { commandName         = "<custom parser>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandApplier      = (True, applyCustomParser parserFunc commandHandler)
+    , commandInitialMatch = \msg cmd ->
+        case parse parserFunc "" (messageText msg) of
+            Left e -> Nothing
+            Right result -> Just [T.pack $ result]
+    , commandApplier      = \x y -> commandHandler x (T.unpack $ head y)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -438,7 +450,12 @@ regexCommand regex commandHandler = Command
     { commandName         = "<regex>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandApplier      = (True, applyRegex regex commandHandler)
+    , commandInitialMatch = \msg cmd ->
+      let
+        match = messageText msg =~ regex :: [[T.Text]]
+      in
+        if null match then Nothing else Just $ (concat . map tail) match
+    , commandApplier      = commandHandler
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
     , commandRequires     = []
@@ -466,33 +483,26 @@ runCommand
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand cmd@Command{ commandApplier, commandErrorHandler, commandRequires } msg =
-    case commandApplier of
-        (True, applier) -> doChecksAndRunCommand applier ""
-        (False, applier) -> do
-            -- Check that the command name is correct, and extract arguments.
-            case parse (parseCommandName cmd) "" (messageText msg) of
-                Left e -> pure ()
-                Right args -> doChecksAndRunCommand applier args
-
+runCommand cmd@Command{ commandInitialMatch, commandApplier, commandErrorHandler, commandRequires } msg =
+    case (commandInitialMatch msg cmd) of
+        Nothing -> pure ()
+        Just results -> do
+            -- Check for requirements. checks will be a list of Maybes
+            checks <- sequence $ map ($ msg) commandRequires
+            -- only get the Justs
+            let failedChecks = catMaybes checks
+            if null failedChecks
+                then
+                    -- Apply the arguments on the handler
+                    commandApplier msg results
+                        -- Asynchrnous errors are not caught as the `catch`
+                        -- comes from Control.Exception.Safe. This is good.
+                        `catch` basicErrorCatcher
+                        `catch` allErrorCatcher
+                else
+                    -- give the first requirement error to the error handler
+                    basicErrorCatcher (RequirementError $ head failedChecks)
   where
-    doChecksAndRunCommand applier args = do
-        -- Check for requirements. checks will be a list of Maybes
-        checks <- sequence $ map ($ msg) commandRequires
-        -- only get the Justs
-        let failedChecks = catMaybes checks
-        if null failedChecks
-            then
-                -- Apply the arguments one by one on the appropriate handler
-                applier msg args
-                    -- Asynchrnous errors are not caught as the `catch`
-                    -- comes from Control.Exception.Safe. This is good.
-                    `catch` basicErrorCatcher
-                    `catch` allErrorCatcher
-            else
-                -- give the first requirement error to the error handler
-                basicErrorCatcher (RequirementError $ head failedChecks)
-
     -- | Catch CommandErrors and handle them with the handler
     basicErrorCatcher :: CommandError -> m ()
     basicErrorCatcher = commandErrorHandler msg
@@ -617,46 +627,6 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
 showErrAsText :: ParseError -> T.Text
 showErrAsText err = T.tail $ T.pack $ showErrorMessages "or" "unknown parse error"
     "Expecting" "Unexpected" "end of message" (errorMessages err)
-
--- | @applyCustomParser@ is similar to @applyArgs@. If you apply the first Parser
--- argument, it is completely identical.
---
--- This is used when there is a custom parser that's defined. It only has one
--- possible instance (@Message -> String -> m ()@), so no special class is
--- defined like with CommandHandlerType (which is polyvariadic).
-applyCustomParser
-    :: (Monad m)
-    => T.Parser String 
-    -- ^ the custom parser
-    -> (Message -> String -> m ())
-    -> Message
-    -> T.Text
-    -> m ()
-applyCustomParser parser handler msg _ =
-    case parse parser "" (messageText msg) of
-        Left e -> pure ()
-        Right result -> handler msg result
-
--- | @applyRegex@ is another custom argument applier like 'applyCustomParser',
--- but Regex.
-applyRegex
-    :: (Monad m)
-    => T.Text
-    -- ^ the regex
-    -> (Message -> [T.Text] -> m ())
-    -> Message
-    -> T.Text
-    -> m ()
-applyRegex regex handler msg _ =
-    unless (shouldNotBeEmpty == "") $
-        handler msg captures
-  where
-    match :: ( T.Text
-             , T.Text   -- the first match of the regex against the message
-             , T.Text
-             , [T.Text] -- every message portion identified by the regex capture groups
-             )
-    match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ regex
 
 -- | @parseCommandName@ returns a parser that tries to consume the prefix,
 -- Command name, appropriate amount of spaces, and returns the arguments.
