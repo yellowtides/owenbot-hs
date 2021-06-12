@@ -3,13 +3,7 @@
 module Admin ( receivers, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
-import           Discord.Types          ( ChannelId
-                                        , Message (..)
-                                        , Channel ( ChannelText )
-                                        , OverwriteId
-                                        , ActivityType
-                                        , UpdateStatusType
-                                        )
+import           Discord.Types
 import           Discord                ( DiscordHandler
                                         , stopDiscord, restCall
                                         )
@@ -36,6 +30,7 @@ import           Utils                  ( newDevCommand
                                         , captureCommandOutput
                                         , devIDs
                                         , update
+                                        , developerRequirement
                                         )
 import           Status                 ( editStatusFile
                                         , updateStatus
@@ -53,9 +48,7 @@ receivers =
     , updateOwen
     , runCommand setStatus
     , runCommand someComplexThing
-    , listDevs
-    , addDevs
-    , removeDevs
+    , runCommand devs
     , lockdown
     , unlock
     , lockAll
@@ -95,8 +88,11 @@ sendGitInfoChan chan = do
                               "Remote is "  <> rstrip commits <> " commits ahead")
 
 sendInstanceInfo :: Message -> DiscordHandler ()
-sendInstanceInfo m = newDevCommand m "instance" $ \_ ->
-    sendInstanceInfoChan $ messageChannel m
+sendInstanceInfo
+  = runCommand
+  . requires developerRequirement
+  . command "instance" $ \m -> 
+        sendInstanceInfoChan $ messageChannel m
 
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
@@ -107,27 +103,34 @@ sendInstanceInfoChan chan = do
                           "Process ID: "      <> T.pack (show pid))
 
 restartOwen :: Message -> DiscordHandler ()
-restartOwen m = newDevCommand m "restart" $ \_ -> do
-    sendMessageChan (messageChannel m) "Restarting"
-    void $ liftIO $ Process.spawnCommand "owenbot-exe"
-    stopDiscord
+restartOwen
+  = runCommand
+  . requires developerRequirement
+  . command "restart" $ \m -> do
+        sendMessageChan (messageChannel m) "Restarting"
+        void $ liftIO $ Process.spawnCommand "owenbot-exe"
+        stopDiscord
 
 -- | Stops the entire Discord chain.
 stopOwen :: Message -> DiscordHandler ()
-stopOwen m = newDevCommand m "stop" $ \_ -> do
-    sendMessageChan (messageChannel m) "Stopping."
-    stopDiscord
+stopOwen
+  = runCommand
+  . requires developerRequirement
+  . command "stop" $ \m -> do
+        sendMessageChan (messageChannel m) "Stopping."
+        stopDiscord
 
 updateOwen :: Message -> DiscordHandler ()
-updateOwen m = newDevCommand m "update" $ \_ -> do
-    sendMessageChan (messageChannel m) "Updating Owen"
-    result <- liftIO update
-    if result then
-        sendMessageChan (messageChannel m)
-            $ owoify "Finished update"
-    else
-        sendMessageChan (messageChannel m)
-            $ owoify "Failed to update! Please check the logs"
+updateOwen
+  = runCommand
+  . requires developerRequirement
+  . command "update" $ \m -> do
+        respond m "Updating Owen"
+        result <- liftIO update
+        if result then
+            respond m $ owoify "Finished update"
+        else
+            respond m $ owoify "Failed to update! Please check the logs"
 
 -- DEV COMMANDS
 getDevs :: IO [T.Text]
@@ -136,32 +139,22 @@ getDevs = readSingleColCSV devIDs
 setDevs :: [T.Text] -> IO ()
 setDevs = writeSingleColCSV devIDs
 
-listDevs :: Message -> DiscordHandler ()
-listDevs m = newDevCommand m "devs" $ \_ -> do
-    contents <- liftIO getDevs
-    unless (null contents) $ sendMessageChan (messageChannel m)
-            $ T.intercalate "\n" contents
-
-addDevs :: Message -> DiscordHandler ()
-addDevs m = newDevCommand m "devs add ([0-9]{1,32})" $ \captures -> do
-    let id = head captures
-    contents <- liftIO getDevs
-    if null contents then do
-        liftIO $ setDevs [id]
-        sendMessageChan (messageChannel m) "Added!"
-    else do
-        liftIO $ setDevs (id:contents)
-        sendMessageChan (messageChannel m) "Added!"
-
-removeDevs :: Message -> DiscordHandler ()
-removeDevs m = newDevCommand m "devs remove ([0-9]{1,32})" $ \captures -> do
-    let id = head captures
-    contents <- liftIO getDevs
-    if null contents then
-        sendMessageChan (messageChannel m) "No devs in first place :("
-    else do
-        liftIO $ setDevs (filter (/= id) contents)
-        sendMessageChan (messageChannel m) "Removed!"
+devs :: Command DiscordHandler
+devs
+    = requires developerRequirement
+    . help "List/add/remove registered developer role IDs"
+    . command "devs" $ \m maybeActionValue -> do
+        contents <- liftIO getDevs
+        case maybeActionValue :: Maybe (T.Text, RoleId) of
+            Nothing -> do
+                unless (null contents) $
+                    respond m $ T.intercalate "\n" contents
+            Just ("add", roleId) -> do
+                liftIO $ setDevs (T.pack (show roleId):contents)
+                respond m "Added!"
+            Just ("remove", roleId) -> do
+                liftIO $ setDevs (filter (/= T.pack (show roleId)) contents)
+                respond m "Removed!"
 
 statusRE :: T.Text
 statusRE = "(online|idle|dnd|invisible) "
