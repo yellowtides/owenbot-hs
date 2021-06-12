@@ -146,7 +146,7 @@ attemptParseDadJoke t =
         t =~ ("^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)" :: T.Text)
 
 handleFortune :: Message -> DiscordHandler ()
-handleFortune m = newCommand m "fortune" $ \_ -> do
+handleFortune = runCommand . command "fortune" $ \m -> do
     cowText <- liftIO fortuneCow
     sendMessageChan (messageChannel m)
         $ "```" <> T.pack cowText <> "```"
