@@ -342,8 +342,8 @@ onError errorHandler cmd = cmd
     }
 
 -- | @prefix@ overwrites the default command prefix ":" of a command with a
--- custom one. This is ignored if a custom parser like 'regexCommand' or
--- 'parsecCommand' is used.
+-- custom one. This is ignored if a regex parser is used, however it is still
+-- applicable for 'parsecCommand'.
 --
 -- @
 -- example
@@ -391,8 +391,8 @@ alias newAlias cmd = cmd
 -- parser that begins from the start of a message. It can help things like
 -- "::quotes" because they have special syntax that demands a special parser.
 --
--- 'prefix' and 'alias', if used together, are ignored. Other compoasble
--- functions like 'help', 'requires', and 'onError' are still valid.
+-- 'alias', if used together, is ignored. Other compoasble functions like 'help',
+-- 'prefix', 'requires', and 'onError' are still valid.
 --
 -- The handler __must__ take a 'Message' and a 'String' as argument (nothing
 -- more, nothing less), where the latter is the result of the parser.
@@ -400,10 +400,11 @@ alias newAlias cmd = cmd
 -- @
 -- example
 --     = requires moderatorPrivs
---     . parsecCommand (string '::' >> many1 anyChar) $ \\msg quoteName -> do
+--     . prefix "~~"
+--     . parsecCommand (string "abc" >> many1 anyChar) $ \\msg quoteName -> do
 --         ...
---         -- this is triggered on "::\<one or more chars>" where quoteName
---         -- contains the section enclosed in <>
+--         -- this is triggered on "~~abc\<one or more chars>" where quoteName
+--         -- contains the section enclosed in \<>
 -- @
 parsecCommand
     :: (MonadDiscord m)
@@ -417,7 +418,14 @@ parsecCommand parserFunc commandHandler = Command
     , commandPrefix       = ""
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
-        case parse parserFunc "" (messageText msg) of
+      let
+        parser = do
+            -- consume prefix
+            string (T.unpack $ commandPrefix cmd)
+            -- apply parser
+            parserFunc
+      in
+        case parse parser "" (messageText msg) of
             Left e -> Nothing
             Right result -> Just [T.pack $ result]
             -- has to be packed and unpacked, which is not really good.
@@ -472,8 +480,8 @@ regexCommand regex commandHandler = Command
 -- For commands registered with 'regexCommand', the check will check against the
 -- regex.
 --
--- For commands registered with 'parsecCommand', the check will check against the
--- parser.
+-- For commands registered with 'parsecCommand', the check will check for the 
+-- prefix and the custom parser.
 --
 -- Any failures during this stage is silently ignored, as it may still be a valid
 -- command elsewhere. After this, the requirements are checked (chance, priv, etc).
