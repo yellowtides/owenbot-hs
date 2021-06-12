@@ -26,6 +26,8 @@ module Utils ( emojiToUsableText
              , hasRoleByName
              , hasRoleByID
              , channelRequirement
+             , roleNameRequirement
+             , developerRequirement
              , isMod
              , devIDs
              , assetDir
@@ -277,15 +279,6 @@ addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 isMod :: Message -> DiscordHandler Bool
 isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 
--- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
--- the provided `Text` exactly.
-hasRoleByName :: Message -> T.Text -> DiscordHandler Bool
-hasRoleByName m r = case messageGuild m of
-    Nothing -> pure False
-    Just g -> do
-        filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
-        return $ r `elem` map roleName filtered
-
 -- | `isNotMutExWith` checks whether the two given lists are not mutually exclusive. That is, if the
 -- two given lists contain at least one common element (with equality being determined by their `Eq`
 -- class instantiation).
@@ -293,9 +286,18 @@ isNotMutExWith :: Eq a => [a] -> [a] -> Bool
 isNotMutExWith x y = or $ (==) <$> x <*> y
 -- the cartesian product of two lists, but constructed with pairwise `(==)` instead of `(,)`.
 
+-- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
+-- the provided `Text` exactly.
+hasRoleByName :: (MonadDiscord m) => Message -> T.Text -> m Bool
+hasRoleByName m r = case messageGuild m of
+    Nothing -> pure False
+    Just g -> do
+        filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
+        return $ r `elem` map roleName filtered
+
 -- | `hasRoleByID` checks whether the provided message was sent by a user that has a role matching
 -- the provided `RoleId`.
-hasRoleByID :: Message -> RoleId -> DiscordHandler Bool
+hasRoleByID :: (MonadDiscord m) => Message -> RoleId -> m Bool
 hasRoleByID m r = case messageGuild m of
     Nothing -> pure False
     Just g -> do
@@ -304,14 +306,14 @@ hasRoleByID m r = case messageGuild m of
 
 -- | `checkAllIDs` checks every role of the provided message's author against every role in the
 -- global `devIDs` file, returning an exhaustive list of booleans as a result.
-checkAllIDs :: Message -> IO [DiscordHandler Bool]
+checkAllIDs :: (MonadDiscord m) => Message -> IO [m Bool]
 checkAllIDs m = do
     devFile <- readSingleColCSV devIDs
     let devRoleIDs = ((read . T.unpack) :: (T.Text -> RoleId)) <$> devFile
     pure $ map (hasRoleByID m) devRoleIDs
 
 -- | `isSenderDeveloper` checks whether the provided message's author is a developer.
-isSenderDeveloper :: Message -> DiscordHandler Bool
+isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
 isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
@@ -320,12 +322,29 @@ channelRequirement cid msg = if (messageChannel msg) == (read cid)
     then pure Nothing
     else pure $ Just "need to be in channel"
 
+-- | Command requirement for role names, matched with OR. For and, just compose 
+-- multiple of this.
+roleNameRequirement :: (MonadDiscord m) => [T.Text] -> Message -> m (Maybe T.Text)
+roleNameRequirement names msg = do
+    check <- or <$> mapM (hasRoleByName msg) names
+    case check of
+        True -> pure Nothing
+        False -> pure $ Just $ "need to have one of: " <> (T.pack . show) names
+
+-- | Command requirement for sender being a registered developer.
+developerRequirement :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
+developerRequirement msg = do
+    check <- isSenderDeveloper msg
+    case check of
+        True -> pure Nothing
+        False -> pure $ Just "need to be a developer"
+
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.
-getRolesOfUserInGuild :: UserId -> GuildId -> DiscordHandler [Role]
+getRolesOfUserInGuild :: (MonadDiscord m) => UserId -> GuildId -> m [Role]
 getRolesOfUserInGuild uid g = do
-    Right allGuildRoles <- restCall $ R.GetGuildRoles g
-    Right user <- restCall $ R.GetGuildMember g uid
+    allGuildRoles <- getGuildRoles g
+    user <- getGuildMember g uid
     let userRolesInGuild = filter (\x -> roleId x `elem` memberRoles user) allGuildRoles
     pure userRolesInGuild
 
