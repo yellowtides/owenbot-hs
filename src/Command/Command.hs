@@ -420,7 +420,7 @@ parsecCommand parserFunc commandHandler = Command
         case parse parserFunc "" (messageText msg) of
             Left e -> Nothing
             Right result -> Just [T.pack $ result]
-            -- ^ has to be packed and unpacked, which is not really good.
+            -- has to be packed and unpacked, which is not really good.
             -- TODO: find some datatype that can express String, T.Text, and [T.Text]
     , commandApplier      = \x y -> commandHandler x (T.unpack $ head y)
     , commandErrorHandler = defaultErrorHandler
