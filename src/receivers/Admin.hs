@@ -31,6 +31,7 @@ import           Utils                  ( newDevCommand
                                         , devIDs
                                         , update
                                         , developerRequirement
+                                        , roleNameRequirement
                                         )
 import           Status                 ( editStatusFile
                                         , updateStatus
@@ -41,18 +42,18 @@ import           CSV                    ( readSingleColCSV
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =
-    [ sendGitInfo
-    , sendInstanceInfo
-    , restartOwen
-    , stopOwen
-    , updateOwen
+    [ runCommand sendGitInfo
+    , runCommand sendInstanceInfo
+    , runCommand restartOwen
+    , runCommand stopOwen
+    , runCommand updateOwen
     , runCommand setStatus
     , runCommand someComplexThing
     , runCommand devs
-    , lockdown
-    , unlock
-    , lockAll
-    , unlockAll
+    , runCommand lockdown
+    , runCommand unlock
+    , runCommand lockAll
+    , runCommand unlockAll
     ]
 
 rstrip :: T.Text -> T.Text
@@ -69,9 +70,11 @@ commitsAhead = captureCommandOutput "git fetch"
 isGitRepo :: IO Bool
 isGitRepo = doesPathExist ".git"
 
-sendGitInfo :: Message -> DiscordHandler ()
-sendGitInfo m = newDevCommand m "repo" $ \_ ->
-    sendGitInfoChan $ messageChannel m
+sendGitInfo :: Command DiscordHandler
+sendGitInfo
+    = requires developerRequirement
+    . command "repo" $ \m ->
+        sendGitInfoChan $ messageChannel m
 
 sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendGitInfoChan chan = do
@@ -87,10 +90,9 @@ sendGitInfoChan chan = do
                               "Remote at: " <> remote <>
                               "Remote is "  <> rstrip commits <> " commits ahead")
 
-sendInstanceInfo :: Message -> DiscordHandler ()
+sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo
-  = runCommand
-  . requires developerRequirement
+  = requires developerRequirement
   . command "instance" $ \m -> 
         sendInstanceInfoChan $ messageChannel m
 
@@ -102,28 +104,25 @@ sendInstanceInfoChan chan = do
                           "Host: "            <> T.pack host <> "\n" <>
                           "Process ID: "      <> T.pack (show pid))
 
-restartOwen :: Message -> DiscordHandler ()
+restartOwen :: Command DiscordHandler
 restartOwen
-  = runCommand
-  . requires developerRequirement
+  = requires developerRequirement
   . command "restart" $ \m -> do
         sendMessageChan (messageChannel m) "Restarting"
         void $ liftIO $ Process.spawnCommand "owenbot-exe"
         stopDiscord
 
 -- | Stops the entire Discord chain.
-stopOwen :: Message -> DiscordHandler ()
+stopOwen :: Command DiscordHandler
 stopOwen
-  = runCommand
-  . requires developerRequirement
+  = requires developerRequirement
   . command "stop" $ \m -> do
         sendMessageChan (messageChannel m) "Stopping."
         stopDiscord
 
-updateOwen :: Message -> DiscordHandler ()
+updateOwen :: Command DiscordHandler
 updateOwen
-  = runCommand
-  . requires developerRequirement
+  = requires developerRequirement
   . command "update" $ \m -> do
         respond m "Updating Owen"
         result <- liftIO update
@@ -183,38 +182,35 @@ someComplexThing
 
 data Lock = Lockdown | Unlock deriving (Show, Eq)
 
-lockdown :: Message -> DiscordHandler ()
-lockdown m = newModCommand m "lockdown" $ \captures -> do
-    let chan = messageChannel m
-    eChannelObj <- restCall $ R.GetChannel chan
-    case eChannelObj of
-        Left err -> liftIO $ print err
-        Right channel -> do
-            case channel of
-                ChannelText _ guild _ _ _ _ _ _ _ _ -> do
-                    -- Guild is used in place of role ID as guildID == @everyone role ID
-                    restCall $ lockdownChan chan guild Lockdown
-                    sendMessageChan chan $ owoify "Locking Channel. To unlock use :unlock"
+lockdown :: Command DiscordHandler
+lockdown
+    = requires (roleNameRequirement ["Mod", "Moderator"])
+    . command "lockdown" $ \m -> do
+        let chan = messageChannel m
+        channel <- getChannel chan
+        case channel of
+            ChannelText _ guild _ _ _ _ _ _ _ _ -> do
+                -- Guild is used in place of role ID as guildID == @everyone role ID
+                lockdownChan chan guild Lockdown
+                respond m $ owoify "Locking Channel. To unlock use :unlock"
 
-                _ -> do sendMessageChan (messageChannel m) $ owoify "channel is not a valid Channel"
+            _ -> do respond m $ owoify "channel is not a valid Channel"
 
-unlock :: Message -> DiscordHandler ()
-unlock m = newModCommand m "unlock" $ \captures -> do
-  let chan = messageChannel m
-
-  eChannelObj <- restCall $ R.GetChannel chan
-  case eChannelObj of
-    Left err -> liftIO $ print err
-    Right channel -> do
+unlock :: Command DiscordHandler
+unlock
+  = requires (roleNameRequirement ["Mod", "Moderator"])
+  . command "unlock" $ \m -> do
+      let chan = messageChannel m
+      channel <- getChannel chan
       case channel of
-        ChannelText _ guild _ _ _ _ _ _ _ _ -> do
-          -- Guild is used in place of role ID as guildID == @everyone role ID
-          restCall $ lockdownChan chan guild Unlock
-          sendMessageChan chan $ owoify "Unlocking channel, GLHF!"
-        _ -> do sendMessageChan (messageChannel m) $ owoify "channel is not a valid Channel (How the fuck did you pull that off?)"
+          ChannelText _ guild _ _ _ _ _ _ _ _ -> do
+              -- Guild is used in place of role ID as guildID == @everyone role ID
+              lockdownChan chan guild Unlock
+              respond m $ owoify "Unlocking channel, GLHF!"
+          _ -> do respond m $ owoify "channel is not a valid Channel (How the fuck did you pull that off?)"
 
 
-lockdownChan :: ChannelId -> OverwriteId -> Lock -> ChannelRequest ()
+lockdownChan :: (MonadDiscord m) => ChannelId -> OverwriteId -> Lock -> m ()
 lockdownChan chan guild b = do
     let switch  = case b of Lockdown -> fst; Unlock -> snd
     let swapPermOpts = ChannelPermissionsOpts
@@ -222,24 +218,28 @@ lockdownChan chan guild b = do
                             , channelPermissionsOptsDeny  = switch (0x0000000800, 0)
                             , channelPermissionsOptsType  = ChannelPermissionsOptsRole
                             }
-    R.EditChannelPermissions chan guild swapPermOpts
+    editChannelPermissions chan guild swapPermOpts
 
 
 --https://discordapi.com/permissions.html#2251673153
-unlockAll :: Message -> DiscordHandler ()
-unlockAll m = newModCommand m "unlockAll" $ \_ -> do
-    let opts = ModifyGuildRoleOpts Nothing (Just 2251673153) Nothing Nothing Nothing
+unlockAll :: Command DiscordHandler
+unlockAll
+    = requires (roleNameRequirement ["Mod", "Moderator"])
+    . command "unlockAll" $ \m -> do
+        let opts = ModifyGuildRoleOpts Nothing (Just 2251673153) Nothing Nothing Nothing
 
-    let g = fromJust $ messageGuild m
-    restCall $ ModifyGuildRole g g opts
-    sendMessageChan (messageChannel m) "unlocked"
+        let g = fromJust $ messageGuild m
+        modifyGuildRole g g opts
+        respond m "unlocked"
 
 -- https://discordapi.com/permissions.html#2251671105
-lockAll :: Message -> DiscordHandler ()
-lockAll m = newModCommand m "lockAll" $ \_ -> do
-  let opts = ModifyGuildRoleOpts Nothing (Just 2251671105) Nothing Nothing Nothing
+lockAll :: Command DiscordHandler
+lockAll
+    = requires (roleNameRequirement ["Mod", "Moderator"])
+    . command "lockAll" $ \m -> do
+        let opts = ModifyGuildRoleOpts Nothing (Just 2251671105) Nothing Nothing Nothing
 
-  let g = fromJust $ messageGuild m
-  restCall $ ModifyGuildRole g g opts
-  sendMessageChan (messageChannel m) "locked"
+        let g = fromJust $ messageGuild m
+        modifyGuildRole g g opts
+        respond m "locked"
 
