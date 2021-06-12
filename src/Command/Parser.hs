@@ -20,6 +20,8 @@ module Command.Parser
     , manyTill1
     ) where
 
+import           Control.Applicative        ( liftA2
+                                            )
 import           Control.Monad              ( void
                                             , guard
                                             )
@@ -130,6 +132,10 @@ instance (ParsableArgument a) => ParsableArgument (Maybe a) where
 -- Float. TODO don't even know if we need this.
 -- instance ParsableArgument Float where
 --     parserForArg msg =
+
+-- | An argument that always has to be followed by another.
+instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
+    parserForArg msg = liftA2 (,) (parserForArg msg) (parserForArg msg)
 
 
 
