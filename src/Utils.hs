@@ -334,6 +334,8 @@ roleNameRequirement names msg = do
 -- | Command requirement for sender being a registered developer.
 developerRequirement :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
 developerRequirement msg = do
+    -- this will take a while, so put this here
+    triggerTypingIndicator (messageChannel msg)
     check <- isSenderDeveloper msg
     case check of
         True -> pure Nothing
