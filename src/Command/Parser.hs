@@ -143,6 +143,13 @@ instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) whe
 
 
 
+
+instance ParsableArgument Snowflake where
+    parserForArg msg = do
+        parsed <- many1 digit
+        endOrSpaces
+        pure (read parsed)
+
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where
     parserForArg msg = do
