@@ -207,8 +207,8 @@ import           Owoifier                   ( owoify )
 -- | A @Command@ is a datatype containing the metadata for a user-registered
 -- command. 
 --
--- @Command m@ is a command that runs in the monad @m@, which when called
--- will trigger a polyvariadic handler function. The handler *must* be in the
+-- @Command m@ is a command that runs in the monad @m@, which when triggered
+-- will run a polyvariadic handler function. The handler *must* run in the
 -- @m@ monad, which is enforced by the type-checker (to see the details, look in
 -- @CommandHandlerType@ in the source code).
 --
@@ -227,10 +227,9 @@ data Command m = Command
     -- requirements or applying arguments. Grabs the necessary parts to be passed
     -- into commandApplier. If not matching, this will be Nothing.
     , commandApplier      :: Message -> [T.Text] -> m ()
-    -- ^ A tuple of (whether to use a custom applier and skip the name parsing,
-    -- the function used to apply the arguments into a handler). The function
-    -- needs to take a 'Message' that triggered the command, the input text,
-    -- and produce an action in the monad @m@.
+    -- ^ The function used to apply the arguments into a handler. It needs to
+    -- take a 'Message' that triggered the command, the input text, and produce
+    -- an action in the monad @m@.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
@@ -244,7 +243,7 @@ data Command m = Command
 
 
 -- | @command name handler@ creates a 'Command' named @name@, which upon
--- receiving a message will call @handler@. The @name@ cannot contain any spaces,
+-- receiving a message will run @handler@. The @name@ cannot contain any spaces,
 -- as it breaks the parser. The @handler@ function can take an arbitrary amount
 -- of arguments of arbitrary types (it is polyvariadic), as long as they are
 -- instances of 'ParsableArgument'.
@@ -380,18 +379,18 @@ help newHelp cmd = cmd
 -- parser like 'regexCommand' or 'parsecCommand' is used.
 --
 -- Functionally, this is equivalent to defining a new command with the same
--- handler.
+-- handler, however the aliases may not appear on help pages.
 alias :: T.Text -> Command m -> Command m
 alias newAlias cmd = cmd
     { commandAliases = newAlias : commandAliases cmd
     }
 
 -- | @parsecCommand@ defines a command that has no name, and has a custom
--- parser. It can help things like "::quotes" because they have special
--- syntax that demands a special parser.
+-- parser that begins from the start of a message. It can help things like
+-- "::quotes" because they have special syntax that demands a special parser.
 --
--- 'prefix', if used together, is ignored. Other compoasble functions like
--- 'help', 'requires', and 'onError' are still valid.
+-- 'prefix' and 'alias', if used together, are ignored. Other compoasble
+-- functions like 'help', 'requires', and 'onError' are still valid.
 --
 -- The handler __must__ take a 'Message' and a 'String' as argument (nothing
 -- more, nothing less), where the latter is the result of the parser.
@@ -419,6 +418,8 @@ parsecCommand parserFunc commandHandler = Command
         case parse parserFunc "" (messageText msg) of
             Left e -> Nothing
             Right result -> Just [T.pack $ result]
+            -- ^ has to be packed and unpacked, which is not really good.
+            -- TODO: find some datatype that can express String, T.Text, and [T.Text]
     , commandApplier      = \x y -> commandHandler x (T.unpack $ head y)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
@@ -426,11 +427,10 @@ parsecCommand parserFunc commandHandler = Command
     }
 
 -- | @regexCommand@ defines a command that has no name, and has a custom
--- regular expression matcher. Convenient when parsers can get complicated,
--- although slow.
+-- regular expression matcher, that __searches across any part of the message__.
 --
--- 'prefix', if used together, is ignored. Other compoasble functions like
--- 'help', 'requires', and 'onError' are still valid.
+-- 'prefix' and 'alias', if used together, are ignored. Other compoasble
+-- functions like 'help', 'requires', and 'onError' are still valid.
 --
 -- The handler __must__ take a 'Message' and a '[T.Text]' as argument, where
 -- the latter are the list of captured values from the Regex (same as the past
@@ -462,15 +462,21 @@ regexCommand regex commandHandler = Command
     }
 
 -- | @runCommand command msg@ runs the specified 'Command' with the given
--- message. It checks for any requirement failures, then calls the
--- @commandApplier@ function in the 'Command' ADT. Any errors inside the
--- handler is caught and appropriately handled.
+-- message. It first does the initial checks:
 --
---     * If a custom parser is defined, the requirements are checked and the
---     parser is called.
---     * If a custom parser is not defined, the command name is first matched and
---     confirmed, before doing the requirement check and parser calls. If the
---     name does not match, it does nothing (@pure ()@).
+-- For commands registered with 'command', the check will check for the prefix
+-- and the name.
+--
+-- For commands registered with 'regexCommand', the check will check against the
+-- regex.
+--
+-- For commands registered with 'parsecCommand', the check will check against the
+-- parser.
+--
+-- Any failures during this stage is silently ignored, as it may still be a valid
+-- command elsewhere. After this, the requirements are checked (chance, priv, etc).
+-- Finally, the @commandApplier@ is called. Any errors inside the handler is
+-- caught and appropriately handled.
 --
 -- @
 -- runCommand pong :: Message -> m ()
