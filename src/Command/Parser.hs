@@ -8,7 +8,10 @@ Description : Parsers for commands.
 Parser component for Commands.
 Its usage is mainly internal, to be used from "Command.Command".
 
-If you want to add your own parser argument type, this is the module.
+If you want to add your own parser argument type, you can either add it here
+(to be reused across multiple modules), or in your receive module (if it is only
+used there). Either works really, but sometimes you need the other to prevent
+looping imports.
 
 -}
 module Command.Parser
