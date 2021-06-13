@@ -92,7 +92,7 @@ repoDir = "~/owenbot-hs/"
 -- | The `FilePath` representing the location of the assets.
 -- TODO: Move into a saner place than Utils
 assetDir :: IO FilePath
-assetDir = liftIO $ getXdgDirectory XdgData "assets/"
+assetDir = liftIO $ getXdgDirectory XdgData "owen/assets/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
