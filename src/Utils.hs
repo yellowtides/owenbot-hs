@@ -58,10 +58,13 @@ import           Data.List.Split        ( splitOn )
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
 
-import           System.Process as Process
+import           System.Directory       ( getXdgDirectory
+                                        , XdgDirectory ( XdgData )
+                                        )
 import           System.Exit            ( ExitCode  ( ExitSuccess
                                                     , ExitFailure )
                                         )
+import           System.Process as Process
 import           UnliftIO               ( liftIO )
 
 import           Text.Regex.TDFA        ( (=~) )
@@ -71,7 +74,6 @@ import           Owoifier               ( owoify
                                         )
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
-import           DB                     ( dbDir )
 
 import           Data.Maybe             ( fromJust )
 
@@ -88,12 +90,9 @@ repoDir :: FilePath
 repoDir = "~/owenbot-hs/"
 
 -- | The `FilePath` representing the location of the assets.
--- TODO: This can be simplified to avoid do notaion, but I'm too drunk
--- ``Write drunk, edit sober'' --Ernest Hemingway (*allegedly*)
+-- TODO: Move into a saner place than Utils
 assetDir :: IO FilePath
-assetDir = do
-    base <- dbDir
-    return $ base <> "assets/"
+assetDir = liftIO $ getXdgDirectory XdgData "assets/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
