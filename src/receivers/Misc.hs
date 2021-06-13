@@ -32,7 +32,7 @@ import              Text.Parsec
 import              Command
 import              Utils                   ( sendMessageChan
                                             , sendReply
-                                            , sendFileChan
+                                            , sendAssetChan
                                             , addReaction
                                             , messageFromReaction
                                             , newCommand
@@ -104,9 +104,10 @@ forceOwoify r = do
         sendReply mess False $ owoify (messageText mess)
 
 godIsDead :: Message -> DiscordHandler ()
-godIsDead = runCommand . regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ ->
-    liftIO (TIO.readFile $ assetDir <> "nietzsche.txt")
-        >>= sendMessageChan (messageChannel m) . owoify
+godIsDead = runCommand . regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
+    base <- liftIO assetDir
+    contents <- liftIO (TIO.readFile $ base <> "nietzsche.txt")
+    sendMessageChan (messageChannel m) $ owoify contents
 
 thatcherRE :: T.Text
 thatcherRE = "thatcher('s *| *[Ii]s) *"
@@ -122,8 +123,8 @@ thatcherIsAlive :: Message -> DiscordHandler ()
 thatcherIsAlive
     = runCommand
     . regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
-        sendFileChan (messageChannel m)
-            "god_help_us_all.mp4" $ assetDir <> "god_help_us_all.mp4"
+        sendAssetChan (messageChannel m)
+            "god_help_us_all.mp4" "god_help_us_all.mp4"
 
 dadJokeIfPossible :: Message -> DiscordHandler ()
 dadJokeIfPossible m = do
@@ -166,10 +167,11 @@ fortuneCowFiles =
 
 fortuneCow :: IO String
 fortuneCow = do
+    base <- assetDir
     f <- T.pack <$> fortune
     roll <- roll $ length fortuneCowFiles
     let file = if roll == 1
-        then assetDir <> "freddy.cow"
+        then base <> "freddy.cow"
         else fortuneCowFiles !! max 0 roll
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
 

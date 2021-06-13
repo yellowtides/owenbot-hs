@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import           Data.Bifunctor     ( first )
 import           Data.Char          ( toLower )
 
-import           Utils              ( sendFileChan
+import           Utils              ( sendAssetChan
                                     , newCommand
                                     , assetDir
                                     )
@@ -40,8 +40,8 @@ sendAsset m regex name = newCommand m (regex <> trailingWS)
         $ \(_:assetNr:_) -> do
     let assetNr' = parseAssetNr assetNr
     let name'    = T.pack $ name <> " " <> assetNr'
-    let path     = assetDir <> "ila/" <> map toLower name <> "s/" <> assetNr'
-    sendFileChan (messageChannel m) name' path
+    let path     = "ila/" <> map toLower name <> "s/" <> assetNr'
+    sendAssetChan (messageChannel m) name' path
 
 sendThm, sendDef, sendLem :: Message -> DiscordHandler ()
 sendThm m = sendAsset m ilathmRE   "Theorem"
@@ -50,8 +50,8 @@ sendLem m = sendAsset m ilalemmaRE "Lemma"
 
 sendTextbook :: Message -> DiscordHandler ()
 sendTextbook m = newCommand m ilatextbookRE $ \_ ->
-    sendFileChan (messageChannel m) "ila-textbook.pdf"
-                                    $ assetDir <> "textbooks/ila-textbook.pdf"
+    sendAssetChan (messageChannel m) "ila-textbook.pdf"
+                        "textbooks/ila-textbook.pdf"
 
 parseAssetNr :: T.Text -> String
 parseAssetNr = T.unpack . (<> ".png") . uncurry (<>) . first (padZeroes 2)

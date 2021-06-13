@@ -6,7 +6,7 @@ import           Discord.Types      ( Message ( messageChannel ) )
 import           Discord            ( DiscordHandler )
 import qualified Data.Text as T
 import           Utils              ( sendMessageChan
-                                    , sendFileChan
+                                    , sendAssetChan
                                     , newCommand
                                     , assetDir
                                     )
@@ -24,7 +24,7 @@ inf1atextbookRE = textbookRE <> "i(nf)?1a"
 
 sendAsset :: Message -> T.Text -> T.Text -> FilePath -> DiscordHandler ()
 sendAsset m regex filename path = newCommand m regex $ \_ ->
-    sendFileChan (messageChannel m) filename $ assetDir <> path
+    sendAssetChan (messageChannel m) filename path
 
 sendSyl, sendBool, sendTextbook :: Message -> DiscordHandler ()
 sendSyl      m = sendAsset m "syl(logisms)?" "id-smash-aristotle.png" "cl/syllogisms.png"

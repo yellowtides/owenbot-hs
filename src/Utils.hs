@@ -11,6 +11,7 @@ module Utils ( emojiToUsableText
              , sendMessageChanPingsDisabled
              , sendMessageDM
              , sendFileChan
+             , sendAssetChan
              , addReaction
              , messageFromReaction
              , pingUser
@@ -70,6 +71,7 @@ import           Owoifier               ( owoify
                                         )
 import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
+import           DB                     ( dbDir )
 
 import           Data.Maybe             ( fromJust )
 
@@ -86,9 +88,12 @@ repoDir :: FilePath
 repoDir = "~/owenbot-hs/"
 
 -- | The `FilePath` representing the location of the assets.
--- TODO: Use XDG_DATA_DIR instead of hardcoding ls
-assetDir :: FilePath
-assetDir = "~/.local/share/owen/" <> "assets/"
+-- TODO: This can be simplified to avoid do notaion, but I'm too drunk
+-- ``Write drunk, edit sober'' --Ernest Hemingway (*allegedly*)
+assetDir :: IO FilePath
+assetDir = do
+    base <- dbDir
+    return $ base <> "assets/"
 
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
@@ -264,6 +269,13 @@ sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -
 sendFileChan c name fp = do
     fileContent <- liftIO $ B.readFile fp
     void $ createMessageUploadFile c name fileContent
+
+-- | `sendAssetChan` is simply a wrapper for `sendFileChan` that perpends the data storage dir
+-- to the provided file path.
+sendAssetChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
+sendAssetChan c name path = do
+    base <- liftIO assetDir
+    sendFileChan c name (base <> path)
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
