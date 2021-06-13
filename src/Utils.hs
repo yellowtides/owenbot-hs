@@ -329,7 +329,7 @@ isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
 channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
-channelRequirement cid msg = if (messageChannel msg) == (read cid)
+channelRequirement cid msg = if messageChannel msg == read cid
     then pure Nothing
     else pure $ Just "need to be in channel"
 
@@ -338,9 +338,9 @@ channelRequirement cid msg = if (messageChannel msg) == (read cid)
 roleNameRequirement :: (MonadDiscord m) => [T.Text] -> Message -> m (Maybe T.Text)
 roleNameRequirement names msg = do
     check <- or <$> mapM (hasRoleByName msg) names
-    case check of
-        True -> pure Nothing
-        False -> pure $ Just $ "need to have one of: " <> (T.pack . show) names
+    pure $ if check
+              then Nothing
+              else Just $ "need to have one of: " <> (T.pack . show) names
 
 -- | Command requirement for sender being a registered developer.
 developerRequirement :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
@@ -348,9 +348,9 @@ developerRequirement msg = do
     -- this will take a while, so put this here
     triggerTypingIndicator (messageChannel msg)
     check <- isSenderDeveloper msg
-    case check of
-        True -> pure Nothing
-        False -> pure $ Just "need to be a developer"
+    pure $ if check
+              then Nothing
+              else Just "need to be a developer"
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.
