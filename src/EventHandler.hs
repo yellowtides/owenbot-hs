@@ -1,21 +1,11 @@
 module EventHandler ( handleEvent ) where
 
 import           Control.Applicative    ( (<|>) )
-import           Discord.Types          ( Message ( messageAuthor )
-                                        , ReactionInfo
-                                        , Event ( MessageCreate
-                                                , MessageReactionAdd
-                                                , MessageReactionRemove
-                                                )
-                                        , User ( userIsBot )
-                                        )
-import           Discord                ( DiscordHandler )
-import           Discord.Types          ( messageText )
+import           Control.Monad          ( unless )
 import           Data.Foldable          ( for_ )
-import           Control.Monad          ( unless
-                                        , forM_
-                                        )
 import qualified Data.Text as T         ( head )
+import           Discord.Types
+import           Discord
 
 import qualified Admin
 import qualified BinancePriceFetcher
@@ -38,6 +28,7 @@ commandReceivers = concat
        Admin.receivers
      , BinancePriceFetcher.receivers
      , Misc.commandReceivers
+     , Misc.miscReceivers
      , Calc.receivers
      , Helpme.receivers
      , Haskell.receivers
@@ -49,11 +40,6 @@ commandReceivers = concat
      , ModifyEventsChannel.receivers
      , RoleSelfAssign.receivers
      ]
-
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = concat
-    [ Misc.miscReceivers
-    ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = concat
@@ -74,11 +60,9 @@ isFromBot m = userIsBot (messageAuthor m)
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
     MessageCreate m ->
-        unless (isFromBot m) $ if T.head (messageText m) == ':'
-            then for_ commandReceivers ($ m)
-            else for_ messageReceivers ($ m)
+        unless (isFromBot m) $ for_ commandReceivers ($ m)
     MessageReactionAdd r ->
-        for_ reactionAddReceivers ($ r)
+        for_ reactionAddReceivers ($ r) <|> pure ()
     MessageReactionRemove r ->
-        for_ reactionRemoveReceivers ($ r)
+        for_ reactionRemoveReceivers ($ r) <|> pure ()
     _ -> pure ()
