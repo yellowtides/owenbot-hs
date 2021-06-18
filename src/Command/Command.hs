@@ -228,6 +228,10 @@ data Command m = Command
     -- ^ A function that performs an initial match check before checking for
     -- requirements or applying arguments. Grabs the necessary parts to be passed
     -- into commandApplier. If not matching, this will be Nothing.
+    -- TODO: Find a better type than [T.Text], that can express all of:
+    -- 1. Regex capture results (list of captured T.Text)
+    -- 2. Custom parsec result type (String)
+    -- 3. Arguments after a normal command name (T.Text: fed into the parser)
     , commandApplier      :: Message -> [T.Text] -> m ()
     -- ^ The function used to apply the arguments into a handler. It needs to
     -- take a 'Message' that triggered the command, the input text, and produce
