@@ -119,6 +119,7 @@ instance ParsableArgument RemainingText where
         -- This is more convenient than doing "many anyChar" because it doesn't
         -- need to parse anything for the remaining input.
         remaining <- getInput
+        setInput ""
         pure (Remaining $ T.cons firstChar remaining)
 
 -- | An argument that can or cannot exist. 
