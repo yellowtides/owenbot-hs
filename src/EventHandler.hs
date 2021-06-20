@@ -7,14 +7,12 @@ import qualified Data.Text as T         ( head )
 import           Discord.Types
 import           Discord
 
+import qualified Academic
 import qualified Admin
 import qualified BinancePriceFetcher
 import qualified Misc
-import qualified Calc
 import qualified Helpme
 import qualified Haskell
-import qualified ILA
-import qualified Inf1A
 import qualified HallOfFame
 import qualified RoleSelfAssign
 import qualified MCServer
@@ -26,14 +24,12 @@ commandReceivers :: [Message -> DiscordHandler ()]
 commandReceivers = concat
      [  -- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
        Admin.receivers
+     , Academic.receivers
      , BinancePriceFetcher.receivers
      , Misc.commandReceivers
      , Misc.miscReceivers
-     , Calc.receivers
      , Helpme.receivers
      , Haskell.receivers
-     , ILA.receivers
-     , Inf1A.receivers
      , HallOfFame.messageReceivers
      , MCServer.receivers
      , QuoteSystem.receivers

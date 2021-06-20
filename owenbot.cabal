@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 97cad7aedb8eba60b555eaf9273ef2cc958a7205e0b80cb20234da4e3857a106
+-- hash: b8f8a7a618bd3f48570d37088992026598ad894acafea299eedbfd26e8201763
 
 name:           owenbot
 version:        0.1.0.0
@@ -38,15 +38,13 @@ library
       Owoifier
       Status
       Utils
+      Academic
       Admin
       AprilFools
       BinancePriceFetcher
-      Calc
       HallOfFame
       Haskell
       Helpme
-      ILA
-      Inf1A
       MCServer
       Misc
       ModifyEventsChannel

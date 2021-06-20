@@ -18,6 +18,7 @@ module Command.Parser
     ( ParsableArgument(..)
     , RemainingText(..)
     , manyTill1
+    , endOrSpaces
     ) where
 
 import           Control.Applicative        ( liftA2
