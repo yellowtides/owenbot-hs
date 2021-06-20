@@ -63,63 +63,88 @@ instance ParsableArgument TextbookAssetNumber where
         endOrSpaces
         pure parsed
 
+-- | @thmDefLemErrorHandler@ returns the usage on argument error, and silences
+-- any other types of command errors (like "File not found" for theorems that
+-- do not exist).
+thmDefLemErrorHandler
+    :: (MonadDiscord m) 
+    => T.Text
+    -- ^ Usage text 
+    -> Message
+    -- ^ Message that triggered it
+    -> CommandError
+    -> m ()
+thmDefLemErrorHandler usage m (ArgumentParseError reason) =
+    respond m $ "Required format: `" <> usage <> "`"
+thmDefLemErrorHandler _ _ _ = pure ()
+
 -- | Theorem.
 theorem :: (MonadDiscord m, MonadIO m) => Command m
-theorem = alias "thm" $ command "theorem" $ \m subject number -> do
-    case (subject :: T.Text) of
-        "ila" -> case number of
-            OneDotSeparated _ _ ->
-                respond m "Theorem numbers in ILA need two dots!"
-            TwoDotSeparated{} -> do
-                let path = "ila/theorems/" <> show number <> ".png"
-                let name = show number <> ".png"
-                respondAsset m ("Theorem " <> (T.pack name)) path
-        _ -> 
-            respond m "No theorems found for subject!"
+theorem
+    = onError (thmDefLemErrorHandler ":theorem XX.YY.ZZ")
+    $ alias "thm" 
+    $ command "theorem" $ \m subject number -> do
+        case (subject :: T.Text) of
+            "ila" -> case number of
+                OneDotSeparated{} ->
+                    respond m "Theorem numbers in ILA need two dots!"
+                TwoDotSeparated{} -> do
+                    let path = "ila/theorems/" <> show number <> ".png"
+                    let name = show number <> ".png"
+                    respondAsset m ("Theorem " <> (T.pack name)) path
+            _ -> 
+                respond m "No theorems found for subject!"
 
 -- | Definition.
 definition :: (MonadDiscord m, MonadIO m) => Command m
-definition = alias "def" $ command "definition" $ \m subject number -> do
-    case (subject :: T.Text) of
-        "ila" -> case number of
-            TwoDotSeparated _ _ _ ->
-                respond m "Definition numbers in ILA need one dot!"
-            OneDotSeparated{} -> do
-                let path = "ila/definitions/" <> show number <> ".png"
-                let name = show number <> ".png"
-                respondAsset m ("Definition " <> (T.pack name)) path
-        _ ->
-            respond m "No definitions found for subject!"
+definition
+    = onError (thmDefLemErrorHandler ":definition XX.YY")
+    $ alias "def"
+    $ command "definition" $ \m subject number -> do
+        case (subject :: T.Text) of
+            "ila" -> case number of
+                TwoDotSeparated{} ->
+                    respond m "Definition numbers in ILA need one dot!"
+                OneDotSeparated{} -> do
+                    let path = "ila/definitions/" <> show number <> ".png"
+                    let name = show number <> ".png"
+                    respondAsset m ("Definition " <> (T.pack name)) path
+            _ ->
+                respond m "No definitions found for subject!"
 
 -- | Lemma.
 lemma :: (MonadDiscord m, MonadIO m) => Command m
-lemma = alias "lem" $ command "lemma" $ \m subject number -> do
-    case (subject :: T.Text) of
-        "ila" -> case number of
-            OneDotSeparated _ _ ->
-                respond m "Lemma numbers in ILA need two dots!"
-            TwoDotSeparated{} -> do
-                let path = "ila/lemmas/" <> show number <> ".png"
-                let name = show number <> ".png"
-                respondAsset m ("Lemma " <> (T.pack name)) path
-        _ ->
-            respond m "No lemmas found for subject!"
+lemma
+    = onError (thmDefLemErrorHandler ":lemma XX.YY.ZZ")
+    $ alias "lem"
+    $ command "lemma" $ \m subject number -> do
+        case (subject :: T.Text) of
+            "ila" -> case number of
+                OneDotSeparated{} ->
+                    respond m "Lemma numbers in ILA need two dots!"
+                TwoDotSeparated{} -> do
+                    let path = "ila/lemmas/" <> show number <> ".png"
+                    let name = show number <> ".png"
+                    respondAsset m ("Lemma " <> (T.pack name)) path
+            _ ->
+                respond m "No lemmas found for subject!"
 
 -- | Textbook.
 textbook :: (MonadDiscord m, MonadIO m) => Command m
-textbook = alias "tb" $ command "textbook" $ \m subject -> case () of
-    _ | subject `elem` ["i1a", "inf1a"] ->
-        respondAsset m "the-holy-bible-2.png" "textbooks/i1a-textbook.pdf"
+textbook = alias "tb" $ command "textbook" $ \m subject ->
+    case () of
+        _ | subject `elem` ["i1a", "inf1a"] ->
+            respondAsset m "the-holy-bible-2.png" "textbooks/i1a-textbook.pdf"
 
-    _ | subject `elem` ["calc", "cap"] ->
-        respond m $ "The textbook can be found here:\n" <> 
-            "http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea"
+        _ | subject `elem` ["calc", "cap"] ->
+            respond m $ "The textbook can be found here:\n" <> 
+                "http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea"
 
-    _ | subject == "ila" ->
-        respondAsset m "ila-textbook.pdf" "textbooks/ila-textbook.pdf"
+        _ | subject == "ila" ->
+            respondAsset m "ila-textbook.pdf" "textbooks/ila-textbook.pdf"
 
-    otherwse ->
-        respond m $ "No textbook registered for `" <> subject <> "`!"
+        otherwse ->
+            respond m $ "No textbook registered for `" <> subject <> "`!"
 
 -- | Syllogisms.
 syllogisms :: (MonadDiscord m, MonadIO m) => Command m
