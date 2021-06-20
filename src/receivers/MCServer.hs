@@ -12,17 +12,18 @@ import           GHC.Generics
 import           Network.HTTP.Conduit   ( simpleHttp )
 import           UnliftIO               ( liftIO )
 
-import           Utils                  ( newCommand
-                                        , newDevCommand
-                                        , sendMessageChan
-                                        )
+import           Command
 import           CSV                    ( writeSingleColCSV
                                         , readSingleColCSV
                                         )
+import           Utils                  ( developerRequirement )
 import           Owoifier               ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers = [ getStatus, setServer ]
+receivers =
+    [ runCommand getStatus
+    , runCommand setServer
+    ]
 
 data ServerStatus = ServerStatus {
     ip              :: String,
@@ -95,14 +96,13 @@ alwaysHead :: [String] -> String
 alwaysHead [] = ""
 alwaysHead (a:as) = a
 
-getStatus :: Message -> DiscordHandler ()
-getStatus m = newCommand m "minecraft" $ \_ -> do
+getStatus :: (MonadDiscord m, MonadIO m) => Command m
+getStatus = command "minecraft" $ \m -> do
     server_ip <- liftIO readServerIP
     deets <- liftIO $ fetchServerDetails server_ip
     case deets of 
-        Left err   -> liftIO (print err) >> sendMessageChan (messageChannel m) (T.pack err)
-        Right nice -> sendMessageChan (messageChannel m) 
-            $ owoify $ T.pack nice
+        Left err   -> liftIO (print err) >> respond m (T.pack err)
+        Right nice -> respond m $ owoify $ T.pack nice
 
 readServerIP :: IO T.Text
 readServerIP = do
@@ -111,8 +111,10 @@ readServerIP = do
         then writeSingleColCSV "mcServer.csv" ["123.456.789.123"] >> pure "123.456.789.123"
         else pure $ head server_ip
 
-setServer :: Message -> DiscordHandler ()
-setServer m = newDevCommand m "set minecraft ([0-9a-zA-Z\\.]+)" $ \captures -> do
-    let server_ip = head captures
-    liftIO $ writeSingleColCSV "mcServer.csv" [server_ip]
-    sendMessageChan (messageChannel m) "Success!"
+setServer :: (MonadDiscord m, MonadIO m) => Command m
+setServer
+    = requires developerRequirement
+    $ command "setMinecraft" 
+    $ \m server_ip -> do
+        liftIO $ writeSingleColCSV "mcServer.csv" [server_ip]
+        respond m "Success!"
