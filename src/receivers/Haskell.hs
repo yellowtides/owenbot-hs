@@ -12,7 +12,6 @@ import           Data.Aeson              ( FromJSON
 import           Data.Maybe              ( fromMaybe )
 import           Data.Text.Encoding      ( encodeUtf8 )
 import qualified Data.Text as T
-import           Command
 import           Discord                 ( DiscordHandler
                                          )
 import           Discord.Types           ( Message )
@@ -25,12 +24,14 @@ import           Network.HTTP.Simple     ( httpLBS
 import           Pointfree               ( pointfree' )
 import           UnliftIO                ( liftIO )
 
+import           Command
 import           Utils                   ( newCommand )
 
+receivers :: [Message -> DiscordHandler ()]
 receivers =
-    [ pointfree
-    , doc
-    , hoogle
+    [ runCommand pointfree
+    , runCommand doc
+    , runCommand hoogle
     ]
 
 -- | Maximum number of items to return from a Hoogle search
@@ -82,8 +83,8 @@ codeblock lang = (("```" ++ lang ++ "\n") ++) . (++ "```")
 --
 -- >>> :pf inlineCode str = "`" ++ str ++ "`"
 -- inlineCode = ("``" ++) . (++ "``")
-pointfree :: Message -> DiscordHandler ()
-pointfree m = newCommand m "pf (.*)" $ \(code:_) ->
+pointfree :: (MonadDiscord m) => Command m
+pointfree = command "pf" $ \m (Remaining code) ->
     respond m $ pf code
     where pf = T.pack . inlineCode . fromMaybe "" . pointfree' . T.unpack
           -- TODO: Strip double back-ticks to allow nicely formatted input
@@ -111,8 +112,8 @@ formatHoogleEntry r = T.pack $ inlineCode (item r) <> " from module "
                             <> inlineCode (name $ mdl r)
 
 -- | Searches hoogle for matching entries
-hoogle :: Message -> DiscordHandler ()
-hoogle m = newCommand m "hoogle (.*)" $ \(name:_) -> do
+hoogle :: (MonadDiscord m, MonadIO m) => Command m
+hoogle = command "hoogle" $ \m (Remaining name) -> do
     hdocs <- liftIO $ getHoogle maxHoogleItems name
     respond m $ T.intercalate "\n" $ map formatHoogleEntry hdocs
 
@@ -124,7 +125,7 @@ formatDoc r = formatHoogleEntry r <> "\n"
 
 -- | Gives the documentation for a given Haskell function (from online Hoogle)
 -- >>> :doc map
-doc :: Message -> DiscordHandler ()
-doc m = newCommand m "doc (.*)" $ \(name:_) -> do
+doc :: (MonadDiscord m, MonadIO m) => Command m
+doc = command "doc" $ \m (Remaining name) -> do
     hdoc <- liftIO $ getHoogle 1 name
     respond m $ formatDoc $ head hdoc
