@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Academic where
+module Academic (receivers) where
 
 import           Data.Bifunctor             ( first )
 import           Control.Monad              ( void )
