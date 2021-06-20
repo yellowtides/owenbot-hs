@@ -154,6 +154,7 @@ devs
             Just ("remove", roleId) -> do
                 liftIO $ setDevs (filter (/= T.pack (show roleId)) contents)
                 respond m "Removed!"
+            Just _ -> respond m "Usage: `:devs {add|remove} <roleId>"
 
 statusRE :: T.Text
 statusRE = "(online|idle|dnd|invisible) "

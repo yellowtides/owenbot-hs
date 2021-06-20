@@ -125,17 +125,17 @@ createHallOfFameEmbed m = do
                 CreateEmbedImageUrl $ getImageFromMessage m
         embedFooterText  = getTimestampFromMessage m
         embedFooterIcon  = Nothing
-    pure $ (CreateEmbed authorName
-                        authorUrl
-                        authorIcon
-                        embedTitle
-                        embedUrl
-                        embedThumbnail
-                        embedDescription
-                        embedFields
-                        embedImage
-                        embedFooterText
-                        embedFooterIcon )
+    pure $ CreateEmbed authorName
+                       authorUrl
+                       authorIcon
+                       embedTitle
+                       embedUrl
+                       embedThumbnail
+                       embedDescription
+                       embedFields
+                       embedImage
+                       embedFooterText
+                       embedFooterIcon
 
 reactLimit :: Message -> DiscordHandler ()
 reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do

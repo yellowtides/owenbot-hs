@@ -431,7 +431,7 @@ parsecCommand parserFunc commandHandler = Command
       in
         case parse parser "" (messageText msg) of
             Left e -> Nothing
-            Right result -> Just [T.pack $ result]
+            Right result -> Just [T.pack result]
             -- has to be packed and unpacked, which is not really good.
             -- TODO: find some datatype that can express String, T.Text, and [T.Text]
     , commandApplier      = \x y -> commandHandler x (T.unpack $ head y)
@@ -468,7 +468,7 @@ regexCommand regex commandHandler = Command
       let
         match = messageText msg =~ regex :: [[T.Text]]
       in
-        if null match then Nothing else Just $ (concat . map tail) match
+        if null match then Nothing else Just $ concatMap tail match
     , commandApplier      = commandHandler
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
@@ -504,11 +504,11 @@ runCommand
     -- ^ The message to run the command with.
     -> m ()
 runCommand cmd@Command{ commandInitialMatch, commandApplier, commandErrorHandler, commandRequires } msg =
-    case (commandInitialMatch msg cmd) of
+    case commandInitialMatch msg cmd of
         Nothing -> pure ()
         Just results -> do
             -- Check for requirements. checks will be a list of Maybes
-            checks <- sequence $ map ($ msg) commandRequires
+            checks <- mapM ($ msg) commandRequires
             -- only get the Justs
             let failedChecks = catMaybes checks
             if null failedChecks
@@ -529,7 +529,7 @@ runCommand cmd@Command{ commandInitialMatch, commandApplier, commandErrorHandler
 
     -- | Catch any and all errors, including ones thrown in basicErrorCatcher.
     allErrorCatcher :: SomeException -> m ()
-    allErrorCatcher = (commandErrorHandler msg) . HaskellError
+    allErrorCatcher = commandErrorHandler msg . HaskellError
 
 -- | @runCommands@ calls runCommand for all the Commands, and folds them with
 -- the Monadic bind ('>>').
@@ -538,7 +538,7 @@ runCommands
     => [Command m]
     -> Message
     -> m ()
-runCommands cmds msg = void $ sequence $ map ($ msg) (map runCommand cmds)
+runCommands = flip (mapM_ . flip runCommand)
 
 -- | @runHelp@ creates a super duper simple help command that just lists
 -- each command's names together with their help text.
@@ -553,7 +553,7 @@ runHelp name cmds
     . command name $ \msg -> do
         chan <- createDM (userId $ messageAuthor msg)
         void $ createMessage (channelId chan) $
-            "```" <> (T.intercalate "\n" $ map createCommandHelp cmds) <> "```"
+            "```" <> T.intercalate "\n" (map createCommandHelp cmds) <> "```"
   where
     createCommandHelp :: Command m -> T.Text
     createCommandHelp Command{ commandPrefix, commandName, commandHelp } =
@@ -585,7 +585,7 @@ defaultErrorHandler m e =
         ProcessingError x ->
             respond m x
         DiscordError x ->
-            respond m $ T.pack $ "Discord request failed with a " <> (show x)
+            respond m $ T.pack $ "Discord request failed with a " <> show x
         HaskellError x ->
             respond m $ owoify $ T.pack $ "Runtime error (contact OwenDev, this is a bug): " <> show x
 
