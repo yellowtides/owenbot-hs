@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ce80c9feb7b7ed1f759d1bdf4030bed56b640a0bdb8018734c0233e27a1800f4
+-- hash: 97cad7aedb8eba60b555eaf9273ef2cc958a7205e0b80cb20234da4e3857a106
 
 name:           owenbot
 version:        0.1.0.0
@@ -19,7 +19,6 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
-    ChangeLog.md
 
 source-repository head
   type: git

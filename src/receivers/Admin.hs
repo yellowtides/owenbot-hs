@@ -41,19 +41,19 @@ import           CSV                    ( readSingleColCSV
                                         )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand sendGitInfo
-    , runCommand sendInstanceInfo
-    , runCommand restartOwen
-    , runCommand stopOwen
-    , runCommand updateOwen
-    , runCommand setStatus
-    , runCommand someComplexThing
-    , runCommand devs
-    , runCommand lockdown
-    , runCommand unlock
-    , runCommand lockAll
-    , runCommand unlockAll
+receivers = fmap runCommand
+    [ sendGitInfo
+    , sendInstanceInfo
+    , restartOwen
+    , stopOwen
+    , updateOwen
+    , setStatus
+    , someComplexThing
+    , devs
+    , lockdown
+    , unlock
+    , lockAll
+    , unlockAll
     ]
 
 rstrip :: T.Text -> T.Text

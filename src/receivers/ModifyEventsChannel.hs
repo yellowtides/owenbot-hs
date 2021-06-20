@@ -22,13 +22,13 @@ import Data.Text as T ()
 import Owoifier ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [moveEventsChannel]
+receivers = [moveEventsChannel]
 
 eventsChannelId :: ChannelId
 eventsChannelId = 837700461192151120
 
 -- | Move a registered events channel to the top of the server.
+-- TODO: utilise Either monad
 moveEventsChannel :: Message -> DiscordHandler ()
 moveEventsChannel m = newModCommand m "showEvents" $ \_ -> do
     sendMessageChan (messageChannel m) $ owoify "Moving Events Channel."
