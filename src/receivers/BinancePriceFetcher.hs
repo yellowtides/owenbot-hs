@@ -22,9 +22,9 @@ import           Utils                  ( newCommand
 import           Owoifier               ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand handleTicker
-    , runCommand handleAda24h
+receivers = fmap runCommand
+    [ handleTicker
+    , handleAda24h
     ]
 
 data Ticker = Ticker {

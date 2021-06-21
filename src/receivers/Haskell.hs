@@ -12,8 +12,9 @@ import           Data.Aeson              ( FromJSON
 import           Data.Maybe              ( fromMaybe )
 import           Data.Text.Encoding      ( encodeUtf8 )
 import qualified Data.Text as T
-import           Discord                 ( DiscordHandler
-                                         )
+
+import           Command
+import           Discord                 ( DiscordHandler )
 import           Discord.Types           ( Message )
 import           GHC.Generics
 import           Network.HTTP.Simple     ( httpLBS
@@ -94,13 +95,13 @@ pointfree = command "pf" $ \m (Remaining code) ->
 getHoogle :: Int -> T.Text -> IO [HoogleResp]
 getHoogle n name = do
     initReq <- parseRequest "https://hoogle.haskell.org"
-    let req = (flip setRequestQueryString) initReq
+    let req = setRequestQueryString
             [ ("mode", Just "json")
             , ("format", Just "text")
             , ("start", Just "1")
             , ("count", Just $ encodeUtf8 $ T.pack $ show n)
             , ("hoogle", Just $ encodeUtf8 name)
-            ]
+            ] initReq
     resp <- getResponseBody <$> httpLBS req
     return $ case eitherDecode resp of
          Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e

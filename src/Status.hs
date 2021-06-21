@@ -53,7 +53,7 @@ setStatusFromFile = do
                 let name = T.unwords $ (tail . tail) line
                 pure (statusType, activityType, name)
         case mbStuff of
-            Nothing -> liftIO $ putStrLn $ "Incorrect status format, ignoring."
+            Nothing -> liftIO $ putStrLn "Incorrect status format, ignoring."
             Just (s, a, n) -> updateStatus s a n
 
 -- | @editStatusFile@ puts the status values into "status.csv" by calling

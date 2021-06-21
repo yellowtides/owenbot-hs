@@ -106,7 +106,7 @@ instance ParsableArgument [T.Text] where
 --     $ \\msg newStatus newType (Remaining newName) -> do
 --         ...
 -- @
-data RemainingText = Remaining { getDeez :: T.Text }
+newtype RemainingText = Remaining { getDeez :: T.Text }
 
 -- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
 -- with @Text@. At least one character is required.
@@ -157,7 +157,7 @@ instance ParsableArgument UpdateStatusType where
     parserForArg msg = do
         -- consume either of the following:
         -- (if fail then backtrack using try)
-        parsed <- choice $ map try $
+        parsed <- choice $ map try
             [ string "online" >> pure UpdateStatusOnline
             , string "dnd" >> pure UpdateStatusDoNotDisturb
             , string "idle" >> pure UpdateStatusAwayFromKeyboard
@@ -172,7 +172,7 @@ instance ParsableArgument ActivityType where
     parserForArg msg = do
         -- consume either of the following:
         -- (if fail then backtrack using try)
-        parsed <- choice $ map try $
+        parsed <- choice $ map try
             [ string "playing" >> pure ActivityTypeGame
             , string "streaming" >> pure ActivityTypeStreaming
             , string "listening to" >> pure ActivityTypeListening

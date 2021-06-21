@@ -45,6 +45,7 @@ reactionAddReceivers = concat
      , RoleSelfAssign.reactionAddReceivers
      ]
 
+{-# ANN reactionRemoveReceivers "HLint: ignore Evaluate" #-}
 reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler()]
 reactionRemoveReceivers = concat
      [ RoleSelfAssign.reactionRemReceivers

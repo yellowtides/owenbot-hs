@@ -277,7 +277,7 @@ handleDiscordResult :: Either RestCallErrorCode a -> DiscordHandler a
 handleDiscordResult result =
     case result of
         Left e  -> throwM $ DiscordError e
-        Right x -> pure $ x
+        Right x -> pure x
 
 -- | Unfortunately, IO cannot be an instance of MonadDiscord because it needs
 -- access to the Auth tokens, but that can't be put in the type signature.
