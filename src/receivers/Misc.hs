@@ -12,7 +12,6 @@ import              Data.Char               ( toUpper )
 import qualified    Data.Maybe as M
 import qualified    Data.Text.IO as TIO
 import qualified    Data.Text as T
-import qualified    Data.Bifunctor          (second)
 import              UnliftIO                ( liftIO, UnliftIO (unliftIO) )
 import              Text.Regex.TDFA         ( (=~) )
 import qualified    System.Process as SP
@@ -43,12 +42,12 @@ import              Owoifier                ( owoify )
 
 commandReceivers :: [Message -> DiscordHandler ()]
 commandReceivers =
-    [ handleFortune
+    [ runCommand fortune
     ]
 
 miscReceivers :: [Message -> DiscordHandler ()]
 miscReceivers =
-    [ owoifyIfPossible
+    [ runCommand owoifyIfPossible
     , godIsDead
     , thatcherIsDead
     , thatcherIsAlive
@@ -61,7 +60,7 @@ reactionReceivers =
 
 -- TODO: put these in config so they can be changed at runtime
 owoifyChance, dadJokeChance :: Int
-owoifyChance  = 500
+owoifyChance  = 2
 dadJokeChance = 20
 
 owoifiedEmoji :: T.Text
@@ -70,12 +69,14 @@ owoifiedEmoji = "✅"
 roll :: Int -> IO Int
 roll n = getStdRandom $ randomR (1, n)
 
-owoifyIfPossible :: Message -> DiscordHandler ()
-owoifyIfPossible m = do
-    r <- liftIO $ roll owoifyChance
-    let isOwoifiable = messageText m =~= "[lLrR]|[nNmM][oO]"
-    when (r == 1 && isOwoifiable)
-        $ sendReply m True $ owoify (messageText m)
+owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
+owoifyIfPossible
+    = requires (\m -> do
+        r <- liftIO $ roll owoifyChance
+        if r == 1 then pure Nothing else pure (Just "")
+        )
+    $ regexCommand "[lLrR]|[nNmM][oO]"
+    $ \m _ -> sendReply m True $ owoify (messageText m)
 
 -- | Emote names for which to trigger force owoify on. Use All Caps.
 forceOwoifyEmotes :: [T.Text]
@@ -146,14 +147,13 @@ attemptParseDadJoke t =
     match@(_, _, _, captures) =
         t =~ ("^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)" :: T.Text)
 
-handleFortune :: Message -> DiscordHandler ()
-handleFortune = runCommand . command "fortune" $ \m -> do
+fortune :: (MonadDiscord m, MonadIO m) => Command m
+fortune = command "fortune" $ \m -> do
     cowText <- liftIO fortuneCow
-    sendMessageChan (messageChannel m)
-        $ "```" <> T.pack cowText <> "```"
+    respond m $ "```" <> T.pack cowText <> "```"
 
-fortune :: IO String
-fortune = SP.readProcess "fortune" [] []
+fortuneProc :: IO String
+fortuneProc = SP.readProcess "fortune" [] []
 
 fortuneCowFiles :: [String]
 fortuneCowFiles =
@@ -168,7 +168,7 @@ fortuneCowFiles =
 fortuneCow :: IO String
 fortuneCow = do
     base <- assetDir
-    f <- T.pack <$> fortune
+    f <- T.pack <$> fortuneProc
     roll <- roll $ length fortuneCowFiles
     let file = if roll == 1
         then base <> "freddy.cow"
