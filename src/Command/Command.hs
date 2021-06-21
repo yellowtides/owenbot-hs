@@ -579,9 +579,10 @@ defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
             respond m x
-        RequirementError x -> do
-            chan <- createDM (userId $ messageAuthor m)
-            void $ createMessage (channelId chan) x
+        RequirementError x ->
+            unless (x == "") $ do
+                chan <- createDM (userId $ messageAuthor m)
+                void $ createMessage (channelId chan) x
         ProcessingError x ->
             respond m x
         DiscordError x ->
