@@ -66,13 +66,11 @@ instance ParsableArgument TextbookAssetNumber where
         a <- read <$> many1 digit
         void $ char '.'
         b <- read <$> many1 digit
-        parsed <- try (do
+        try (do
             void $ char '.'
             c <- read <$> many1 digit
             pure $ TwoDotSeparated a b c
             ) <|> (pure $ OneDotSeparated a b)
-        endOrSpaces
-        pure parsed
 
 padFirst :: [String] -> [String]
 padFirst (x:xs) = (padZeroes 2 x):xs
