@@ -203,6 +203,7 @@ import           Command.Error              ( CommandError(..) )
 import           Command.Parser             ( ParsableArgument(..)
                                             , RemainingText(..)
                                             , manyTill1
+                                            , endOrSpaces
                                             )
 import           Owoifier                   ( owoify )
 
@@ -293,11 +294,9 @@ data Command m = Command
 --
 -- @
 -- instance ParsableArgument Int where
---     parserForArg msg = do
+--     parserForArg msg =
 --         -- some parsec
---         parsed \<- read \<$> many digit
---         endOrSpaces
---         pure parsed
+--         read \<$> many digit
 --
 -- complex :: (MonadDiscord m) => Command m
 -- complex = command "setLimit" $ \\i -> do
@@ -622,25 +621,35 @@ instance (MonadThrow m) => CommandHandlerType m (m ()) where
 
 -- | For the case where there are multiple arguments to apply. 
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
-    applyArgs handler msg input =
-        case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
+    applyArgs handler msg input = do
+        let p = (,) <$> (parserForArg msg <* endOrSpaces) <*> getInput
+        case parse p "arguments" input of
             Left e -> throwM $ ArgumentParseError $
                 "Error while parsing argument. " <> showErrAsText e
             Right (x, remaining) -> applyArgs (handler x) msg remaining
 
+-- | For applying the message that invoked this command.
+-- It overlaps @a -> b@, but it is more specific, so use OVERLAPPING to make GHC
+-- prefer this one.
+instance {-# OVERLAPPING #-} (MonadThrow m, CommandHandlerType m b) => CommandHandlerType m (Message -> b) where
+    applyArgs handler msg input = applyArgs (handler msg) msg input
+
 -- | For the case where there is only one argument to apply.
--- It overlaps the previous instance (it is more specific). With the OVERLAPPING
--- pragma, GHC prefers this one when both match.
 --
--- This instance is necessary because otherwise @Message -> m ()@ will match
--- both @m ()@ (@(->) r@ is a monad) and @a -> b@ and since neither are more
--- specific, GHC cannot prefer one over the other, even with any pragmas.
+-- @SomeType -> m ()@ would match both @m ()@ (since -> is a monad), and @a -> b@,
+-- and neither are more specific, so introduce a more specific choice.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
-    applyArgs handler msg input =
-        case parse (liftA2 (,) (parserForArg msg) getInput) "arguments" input of
+    applyArgs handler msg input = do
+        let p = (,) <$> (parserForArg msg <* endOrSpaces) <*> getInput
+        case parse p "arguments" input of
             Left e -> throwM $ ArgumentParseError $
                 "Error while parsing argument. " <> showErrAsText e
             Right (x, remaining) -> applyArgs (handler x) msg remaining
+
+-- | And its corresponding Message-specific one. Otherwise Message -> m () would
+-- match both @a -> m ()@ and @Message -> b@, neither are more specific.
+instance {-# OVERLAPPING #-} (MonadThrow m) => CommandHandlerType m (Message -> m ()) where
+    applyArgs handler msg input = applyArgs (handler msg) msg input
 
 -- The default 'Show' instance for ParseError contains the error position,
 -- which only adds clutter in a Discord message. This defines a much

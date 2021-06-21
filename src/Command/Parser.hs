@@ -50,10 +50,6 @@ class ParsableArgument a where
     -- | @parserForArg msg@ returns a parser that contains the parsed element.
     parserForArg :: Message -> T.Parser a
 
--- | The message that invoked the command.
-instance ParsableArgument Message where
-    parserForArg msg = pure msg
-
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
 -- parsed as a single string: 
@@ -61,9 +57,7 @@ instance ParsableArgument Message where
 instance ParsableArgument String where
     parserForArg msg = do
         -- try quoted text first. if it failed, then normal word
-        parsed <- (quotedText <?> "quoted phrase") <|> (word <?> "word")
-        endOrSpaces
-        pure parsed
+        (quotedText <?> "quoted phrase") <|> (word <?> "word")
       where
         quotedText = try $ do -- backtrack if failed, parse as normal word
             -- consume opening quote
@@ -88,8 +82,9 @@ instance ParsableArgument [T.Text] where
     parserForArg msg =
         -- if it's the end, return empty (base case).
         (eof >> pure []) <|> do
-            -- do the usual text parsing (which consumes any trailing spaces)
+            -- do the usual text parsing
             word <- parserForArg msg :: T.Parser T.Text
+            endOrSpaces
             -- recursively do this and append
             rest <- parserForArg msg :: T.Parser [T.Text]
             pure $ word:rest
@@ -137,7 +132,7 @@ instance (ParsableArgument a) => ParsableArgument (Maybe a) where
 
 -- | An argument that always has to be followed by another.
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
-    parserForArg msg = liftA2 (,) (parserForArg msg) (parserForArg msg)
+    parserForArg msg = (,) <$> (parserForArg msg) <*> (parserForArg msg)
 
 
 
@@ -147,37 +142,31 @@ instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) whe
 
 
 instance ParsableArgument Snowflake where
-    parserForArg msg = do
-        parsed <- many1 digit
-        endOrSpaces
-        pure (read parsed)
+    parserForArg msg =
+        read <$> many1 digit
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where
-    parserForArg msg = do
+    parserForArg msg =
         -- consume either of the following:
         -- (if fail then backtrack using try)
-        parsed <- choice $ map try
+        choice $ map try
             [ string "online" >> pure UpdateStatusOnline
             , string "dnd" >> pure UpdateStatusDoNotDisturb
             , string "idle" >> pure UpdateStatusAwayFromKeyboard
             , string "invisible" >> pure UpdateStatusInvisibleOffline
             ]
-        endOrSpaces
-        pure parsed
 
 -- | Parses "playing", "streaming", "listening to" and "competing in" as
 -- 'ActivityType's.
 instance ParsableArgument ActivityType where
-    parserForArg msg = do
+    parserForArg msg =
         -- consume either of the following:
         -- (if fail then backtrack using try)
-        parsed <- choice $ map try
+        choice $ map try
             [ string "playing" >> pure ActivityTypeGame
             , string "streaming" >> pure ActivityTypeStreaming
             , string "listening to" >> pure ActivityTypeListening
             , string "competing in" >> pure ActivityTypeCompeting
             ]
-        endOrSpaces
-        pure parsed
 
