@@ -48,10 +48,10 @@ commandReceivers =
 miscReceivers :: [Message -> DiscordHandler ()]
 miscReceivers =
     [ runCommand owoifyIfPossible
-    , godIsDead
-    , thatcherIsDead
-    , thatcherIsAlive
-    , dadJokeIfPossible
+    , runCommand godIsDead
+    , runCommand thatcherIsDead
+    , runCommand thatcherIsAlive
+    , runCommand dadJokeIfPossible
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -61,7 +61,7 @@ reactionReceivers =
 -- TODO: put these in config so they can be changed at runtime
 owoifyChance, dadJokeChance :: Int
 owoifyChance  = 500
-dadJokeChance = 20
+dadJokeChance = 1
 
 owoifiedEmoji :: T.Text
 owoifiedEmoji = "✅"
@@ -73,7 +73,7 @@ owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 owoifyIfPossible
     = requires (\m -> do
         r <- liftIO $ roll owoifyChance
-        if r == 1 then pure Nothing else pure (Just "")
+        pure $ if r == 1 then Nothing else Just ""
         )
     $ regexCommand "[lLrR]|[nNmM][oO]"
     $ \m _ -> sendReply m True $ owoify (messageText m)
@@ -104,8 +104,8 @@ forceOwoify r = do
         -- Send reply without pinging (this isn't as ping-worthy as random trigger)
         sendReply mess False $ owoify (messageText mess)
 
-godIsDead :: Message -> DiscordHandler ()
-godIsDead = runCommand . regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
+godIsDead :: (MonadDiscord m, MonadIO m) => Command m
+godIsDead = regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
     base <- liftIO assetDir
     contents <- liftIO (TIO.readFile $ base <> "nietzsche.txt")
     sendMessageChan (messageChannel m) $ owoify contents
@@ -113,39 +113,24 @@ godIsDead = runCommand . regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
 thatcherRE :: T.Text
 thatcherRE = "thatcher('s *| *[Ii]s) *"
 
-thatcherIsDead :: Message -> DiscordHandler ()
-thatcherIsDead
-    = runCommand
-    . regexCommand (thatcherRE <> "[Dd]ead") $ \m _ ->
-        sendMessageChan (messageChannel m)
-            "https://www.youtube.com/watch?v=ILvd5buCEnU"
+thatcherIsDead :: (MonadDiscord m) => Command m
+thatcherIsDead = regexCommand (thatcherRE <> "[Dd]ead") $ \m _ ->
+    respond m "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
-thatcherIsAlive :: Message -> DiscordHandler ()
-thatcherIsAlive
-    = runCommand
-    . regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
-        sendAssetChan (messageChannel m)
-            "god_help_us_all.mp4" "god_help_us_all.mp4"
+thatcherIsAlive :: (MonadDiscord m, MonadIO m) => Command m
+thatcherIsAlive = regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
+    sendAssetChan (messageChannel m) "god_help_us_all.mp4" "god_help_us_all.mp4"
 
-dadJokeIfPossible :: Message -> DiscordHandler ()
-dadJokeIfPossible m = do
-    let name = attemptParseDadJoke (messageText m)
-    when (M.isJust name) $ do
-        let n = M.fromJust name
+dadJokeIfPossible :: (MonadDiscord m, MonadIO m) => Command m
+dadJokeIfPossible =
+    requires (\m -> do
         r <- liftIO $ roll dadJokeChance
-        when (r == 1 && T.length n >= 3)
-            $ sendMessageChan (messageChannel m)
-                $ owoify ("hello " <> n <> ", i'm owen")
-
-attemptParseDadJoke :: T.Text -> Maybe T.Text
-attemptParseDadJoke t =
-    case captures of
-        [] -> Nothing
-        _  -> Just (head captures :: T.Text)
-  where
-    match :: (T.Text, T.Text, T.Text, [T.Text])
-    match@(_, _, _, captures) =
-        t =~ ("^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)" :: T.Text)
+        pure $ if r == 1 then Nothing else Just ""
+        )
+    $ regexCommand "^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)"
+    $ \m (name:_) ->
+        when (T.length name >= 3) $
+            respond m $ owoify ("hello " <> name <> ", i'm owen")
 
 fortune :: (MonadDiscord m, MonadIO m) => Command m
 fortune = command "fortune" $ \m -> do
