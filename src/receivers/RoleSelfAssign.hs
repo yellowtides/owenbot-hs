@@ -22,10 +22,10 @@ import           Data.Text.Encoding     ( encodeUtf8 )
 
 import           Data.ByteString.Lazy   ( fromStrict )
 
-import           Discord.Requests
 import           Discord.Types
 import           Discord
 
+import           Command
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageDM
                                         , newModCommand
@@ -124,7 +124,7 @@ addRoleToStation m = newModCommand m ("addRoleToStation" <> spaceRE             
 
     -- Edit said message to the new one.
     assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
-    _ <- restCall $ EditMessage (channelIDNum, stationIDNum) assignStationT Nothing
+    _ <- editMessage (channelIDNum, stationIDNum) assignStationT Nothing
 
     -- Write the new mapping to the old CSV
     _ <- liftIO . writeCSV assignFilePath . mapToMatrix $ fmap (T.pack . show) <$> emojiRoleIDMap
@@ -143,7 +143,7 @@ roleIdToRole rid roles = roleName . head $ filter (\r -> roleId r == rid) roles
 
 formatAssignStation :: T.Text -> T.Text -> [(T.Text, RoleId)] -> DiscordHandler T.Text
 formatAssignStation prependT appendT options = do
-    Right roles <- restCall $ GetGuildRoles serverID
+    roles <- getGuildRoles serverID
     let roleTextOptions = (\(emojiT, roleID) -> (emojiT, roleIdToRole roleID roles)) <$> options
     let optionsT = (\(emoji, roleName) ->
                         "`[`" <> emoji <> "`]` for " <> "`[`" <> roleName <> "`]`")
@@ -196,7 +196,7 @@ handleRoleMapping :: T.Text -> T.Text -> Message -> [(T.Text, RoleId)] -> Discor
 handleRoleMapping prependT appendT m emojiRoleIDMap = do
     -- Post the assignment station text.
     assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
-    Right newMessage <- restCall $ CreateMessage (messageChannel m) assignStationT
+    newMessage <- createMessage (messageChannel m) assignStationT
     let assignStationID = messageId newMessage
 
     -- Hence, the map is fine. Write the mapping to the idAssign file :)
@@ -234,7 +234,7 @@ attemptRoleAssign r = do
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let newRoleId = fromJust desiredRole
-    restCall $ AddGuildMemberRole serverID (reactionUserId r) newRoleId
+    addGuildMemberRole serverID (reactionUserId r) newRoleId
 
     sendMessageDM (reactionUserId r)
         $ owoify "Added your desired role! Hurray!"
@@ -257,7 +257,7 @@ handleRoleRemove r = do
     -- NOTE: make sure the emoji names in the config are uppercase.
 
     let oldRoleId = fromJust desiredRole
-    restCall $ RemoveGuildMemberRole serverID (reactionUserId r) oldRoleId
+    removeGuildMemberRole serverID (reactionUserId r) oldRoleId
 
     sendMessageDM (reactionUserId r)
         $ owoify "Really sorry you didn't like the role, I went ahead and removed it."
