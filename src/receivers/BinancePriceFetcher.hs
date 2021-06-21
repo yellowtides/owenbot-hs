@@ -17,8 +17,6 @@ import           Discord.Types          ( Message
 import           UnliftIO               ( liftIO )
 
 import           Command
-import           Utils                  ( newCommand
-                                        , sendMessageChan )
 import           Owoifier               ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]

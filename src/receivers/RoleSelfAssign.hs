@@ -2,55 +2,32 @@
 {-# LANGUAGE TupleSections #-}
 module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers, receivers ) where
 
-import           Discord                ( restCall
-                                        , DiscordHandler
-                                        )
-import           Discord.Types          ( Emoji ( emojiName )
-                                        , ReactionInfo ( reactionEmoji
-                                                       , reactionUserId
-                                                       , reactionMessageId
-                                                       )
-                                        , MessageId
-                                        , Message
-                                        , messageId
-                                        , RoleId
-                                        , Role ( roleName, roleId )
-                                        , GuildId
-                                        , messageChannel
-                                        )
-import           Discord.Requests       ( GuildRequest ( RemoveGuildMemberRole
-                                                       , AddGuildMemberRole
-                                                       , GetGuildRoles
-                                                       )
-                                        , ChannelRequest ( CreateMessage
-                                                         , EditMessage )
-                                        )
 import           Control.Monad          ( guard
                                         , unless
                                         , forM_ )
 import           UnliftIO               ( liftIO )
+import           Data.Aeson             ( decode )
 import           Data.Bifunctor         ( first
                                         , bimap
                                         )
 import           Data.Char              ( isDigit )
+import           Data.Map               ( Map
+                                        , toList )
 import           Data.Maybe             ( fromJust
                                         , isJust
                                         , isNothing
                                         )
-import qualified Data.Text as T         ( toUpper
-                                        , unpack
-                                        , pack
-                                        , Text
-                                        , tail
-                                        , unlines
-                                        )
-import          Data.Text.Encoding      ( encodeUtf8 )
+import qualified Data.Text as T
+import           Data.Text.Encoding     ( encodeUtf8 )
 
-import          Data.ByteString.Lazy    ( fromStrict )
+import           Data.ByteString.Lazy   ( fromStrict )
+
+import           Discord.Requests
+import           Discord.Types
+import           Discord
 
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageDM
-                                        , newCommand
                                         , newModCommand
                                         , isEmojiValid
                                         , isRoleInGuild
@@ -63,14 +40,10 @@ import           CSV                    ( readCSV
                                         , writeCSV
                                         )
 
-import          TemplateRE              ( accoladedArgRE
+import           TemplateRE             ( accoladedArgRE
                                         , quotedArgRE
                                         , spaceRE
                                         )
-
-import          Data.Map                ( Map
-                                        , toList )
-import          Data.Aeson              ( decode )
 
 type EmojiRoleMap = [(String, RoleId)]
 -- emoji --> snowflake.

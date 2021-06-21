@@ -26,7 +26,6 @@ import           Pointfree               ( pointfree' )
 import           UnliftIO                ( liftIO )
 
 import           Command
-import           Utils                   ( newCommand )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers =

@@ -286,7 +286,6 @@ addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
 addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 
 -- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
-
 isMod :: Message -> DiscordHandler Bool
 isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 
