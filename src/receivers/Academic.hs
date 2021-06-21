@@ -2,8 +2,8 @@
 
 module Academic (receivers) where
 
-import           Data.Bifunctor             ( first )
 import           Control.Monad              ( void )
+import           Data.Char                  ( isDigit )
 import qualified Data.Text as T
 import           Data.List                  ( intercalate )
 import           Text.Parsec.Combinator
@@ -12,6 +12,7 @@ import           Text.Parsec                ( digit
                                             , try
                                             , char
                                             )
+import           Text.Read                  ( readMaybe )
 
 import           Discord.Types
 import           Discord
@@ -44,11 +45,21 @@ instance Show TextbookAssetNumber where
     show (TwoDotSeparated a b c) = intercalate "." $ padFirst $ map show [a, b, c]
     show (OneDotSeparated a b) = intercalate "." $ padFirst $ map show [a, b]
 
-padFirst :: [String] -> [String]
-padFirst (x:xs) = (padZeroes 2 x):xs
-
-padZeroes :: Int -> String -> String
-padZeroes newLen digits = replicate (newLen - length digits) '0' <> digits
+instance Read TextbookAssetNumber where
+    readsPrec _ input =
+      let
+        (a, xs) = span isDigit input
+        (dot1 : xs') = xs
+        (b, xs'') = span isDigit xs'
+      in
+        if dot1 == '.' then
+            case xs'' of
+                ('.' : xs''') ->
+                    let (c, xs'''') = span isDigit xs'''
+                    in  [(TwoDotSeparated (read a) (read b) (read c), xs'''')]
+                _ ->
+                    [(OneDotSeparated (read a) (read b), xs'')]
+        else []
 
 instance ParsableArgument TextbookAssetNumber where
     parserForArg m = do
@@ -63,71 +74,54 @@ instance ParsableArgument TextbookAssetNumber where
         endOrSpaces
         pure parsed
 
--- | @thmDefLemErrorHandler@ returns the usage on argument error, and silences
--- any other types of command errors (like "File not found" for theorems that
--- do not exist).
-thmDefLemErrorHandler
-    :: (MonadDiscord m) 
-    => T.Text
-    -- ^ Usage text 
-    -> Message
-    -- ^ Message that triggered it
-    -> CommandError
-    -> m ()
-thmDefLemErrorHandler usage m (ArgumentParseError reason) =
-    respond m $ "Required format: `" <> usage <> "`"
-thmDefLemErrorHandler _ _ _ = pure ()
+padFirst :: [String] -> [String]
+padFirst (x:xs) = (padZeroes 2 x):xs
+
+padZeroes :: Int -> String -> String
+padZeroes newLen digits = replicate (newLen - length digits) '0' <> digits
 
 -- | Theorem.
 theorem :: (MonadDiscord m, MonadIO m) => Command m
-theorem
-    = onError (thmDefLemErrorHandler ":theorem XX.YY.ZZ")
-    $ alias "thm" 
-    $ command "theorem" $ \m subject number -> do
-        case (subject :: T.Text) of
-            "ila" -> case number of
-                OneDotSeparated{} ->
-                    respond m "Theorem numbers in ILA need two dots!"
-                TwoDotSeparated{} -> do
-                    let path = "ila/theorems/" <> show number <> ".png"
-                    let name = show number <> ".png"
-                    respondAsset m ("Theorem " <> (T.pack name)) path
-            _ -> 
-                respond m "No theorems found for subject!"
+theorem = alias "thm" $ command "theorem" $ \m subject number -> do
+    case (subject :: T.Text) of
+        "ila" -> case readMaybe number of
+            Just x@TwoDotSeparated{} -> do
+                let path = "ila/theorems/" <> show x <> ".png"
+                let name = show x <> ".png"
+                respondAsset m ("Theorem " <> (T.pack name)) path
+            _ ->
+                respond m "Usage: :theorem ila XX.YY.ZZ!"
+        _ -> 
+            respond m "No theorems found for subject!"
 
 -- | Definition.
 definition :: (MonadDiscord m, MonadIO m) => Command m
-definition
-    = onError (thmDefLemErrorHandler ":definition XX.YY")
-    $ alias "def"
-    $ command "definition" $ \m subject number -> do
-        case (subject :: T.Text) of
-            "ila" -> case number of
-                TwoDotSeparated{} ->
-                    respond m "Definition numbers in ILA need one dot!"
-                OneDotSeparated{} -> do
-                    let path = "ila/definitions/" <> show number <> ".png"
-                    let name = show number <> ".png"
-                    respondAsset m ("Definition " <> (T.pack name)) path
+definition = alias "def" $ command "definition" $ \m subject number -> do
+    case (subject :: T.Text) of
+        "ila" -> case readMaybe number of
+            Just x@OneDotSeparated{} -> do
+                let path = "ila/definitions/" <> show x <> ".png"
+                let name = show x <> ".png"
+                respondAsset m ("Definition " <> (T.pack name)) path
             _ ->
-                respond m "No definitions found for subject!"
+                respond m "Usage: :definition ila XX.YY!"
+
+        _ ->
+            respond m "No definitions found for subject!"
 
 -- | Lemma.
 lemma :: (MonadDiscord m, MonadIO m) => Command m
-lemma
-    = onError (thmDefLemErrorHandler ":lemma XX.YY.ZZ")
-    $ alias "lem"
-    $ command "lemma" $ \m subject number -> do
-        case (subject :: T.Text) of
-            "ila" -> case number of
-                OneDotSeparated{} ->
-                    respond m "Lemma numbers in ILA need two dots!"
-                TwoDotSeparated{} -> do
-                    let path = "ila/lemmas/" <> show number <> ".png"
-                    let name = show number <> ".png"
-                    respondAsset m ("Lemma " <> (T.pack name)) path
+lemma = alias "lem" $ command "lemma" $ \m subject number -> do
+    case (subject :: T.Text) of
+        "ila" -> case readMaybe number of
+            Just x@TwoDotSeparated{} -> do
+                let path = "ila/lemmas/" <> show x <> ".png"
+                let name = show x <> ".png"
+                respondAsset m ("Lemma " <> (T.pack name)) path
             _ ->
-                respond m "No lemmas found for subject!"
+                respond m "Usage: :lemma ila XX.YY.ZZ!"
+        _ ->
+            respond m "No lemmas found for subject!"
 
 -- | Textbook.
 textbook :: (MonadDiscord m, MonadIO m) => Command m
