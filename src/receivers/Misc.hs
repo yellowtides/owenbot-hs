@@ -1,13 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Misc (commandReceivers, miscReceivers, reactionReceivers, changePronouns) where
+module Misc (receivers, reactionReceivers, changePronouns) where
 
-import              Discord.Internal.Monad
-import              Discord.Types
-import              Discord
-import              Discord.Internal.Rest.User
-import              Discord.Internal.Rest.Guild
-
+import              Control.Monad           ( when
+                                            , unless
+                                            , forM_ )
 import              Data.Char               ( toUpper )
 import qualified    Data.Maybe as M
 import qualified    Data.Text.IO as TIO
@@ -15,12 +12,6 @@ import qualified    Data.Text as T
 import              UnliftIO                ( liftIO, UnliftIO (unliftIO) )
 import              Text.Regex.TDFA         ( (=~) )
 import qualified    System.Process as SP
-import              Control.Monad           ( when
-                                            , unless
-                                            , void
-                                            , join
-                                            , guard, forM_ )
-import              Control.Monad.IO.Class  ( MonadIO )
 import              System.Random           ( randomR
                                             , getStdRandom
                                             , randomRIO
@@ -28,26 +19,25 @@ import              System.Random           ( randomR
 
 import qualified    Text.Parsec.Text as T
 import              Text.Parsec
+import              Discord.Types
+import              Discord
+
 import              Command
 import              Utils                   ( sendMessageChan
                                             , sendReply
                                             , sendAssetChan
                                             , addReaction
                                             , messageFromReaction
-                                            , newCommand
                                             , (=~=)
-                                            , assetDir, isRoleInGuild
+                                            , assetDir
+                                            , isRoleInGuild
                                             )
 import              Owoifier                ( owoify )
 
-commandReceivers :: [Message -> DiscordHandler ()]
-commandReceivers =
-    [ runCommand fortune
-    ]
-
-miscReceivers :: [Message -> DiscordHandler ()]
-miscReceivers =
+receivers :: [Message -> DiscordHandler ()]
+receivers =
     [ runCommand owoifyIfPossible
+    , runCommand fortune
     , runCommand godIsDead
     , runCommand thatcherIsDead
     , runCommand thatcherIsAlive

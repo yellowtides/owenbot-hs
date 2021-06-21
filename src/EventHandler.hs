@@ -26,8 +26,7 @@ commandReceivers = concat
        Admin.receivers
      , Academic.receivers
      , BinancePriceFetcher.receivers
-     , Misc.commandReceivers
-     , Misc.miscReceivers
+     , Misc.receivers
      , Helpme.receivers
      , Haskell.receivers
      , HallOfFame.messageReceivers
