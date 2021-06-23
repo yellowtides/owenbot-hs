@@ -26,6 +26,7 @@ import              Command
 import              Utils                   ( sendMessageChan
                                             , sendReply
                                             , sendAssetChan
+                                            , respondAsset
                                             , addReaction
                                             , messageFromReaction
                                             , (=~=)
@@ -98,7 +99,7 @@ godIsDead :: (MonadDiscord m, MonadIO m) => Command m
 godIsDead = regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
     base <- liftIO assetDir
     contents <- liftIO (TIO.readFile $ base <> "nietzsche.txt")
-    sendMessageChan (messageChannel m) $ owoify contents
+    respond m $ owoify contents
 
 thatcherRE :: T.Text
 thatcherRE = "thatcher('s *| *[Ii]s) *"
@@ -109,7 +110,7 @@ thatcherIsDead = regexCommand (thatcherRE <> "[Dd]ead") $ \m _ ->
 
 thatcherIsAlive :: (MonadDiscord m, MonadIO m) => Command m
 thatcherIsAlive = regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
-    sendAssetChan (messageChannel m) "god_help_us_all.mp4" "god_help_us_all.mp4"
+    respondAsset m "god_help_us_all.mp4" "god_help_us_all.mp4"
 
 dadJokeIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 dadJokeIfPossible =

@@ -12,6 +12,7 @@ module Utils ( emojiToUsableText
              , sendMessageDM
              , sendFileChan
              , sendAssetChan
+             , respondAsset
              , addReaction
              , messageFromReaction
              , pingUser
@@ -27,8 +28,9 @@ module Utils ( emojiToUsableText
              , hasRoleByName
              , hasRoleByID
              , channelRequirement
-             , roleNameRequirement
-             , developerRequirement
+             , roleNameIn
+             , modPerms
+             , devPerms
              , isMod
              , devIDs
              , assetDir
@@ -276,6 +278,11 @@ sendAssetChan c name path = do
     base <- liftIO assetDir
     sendFileChan c name (base <> path)
 
+-- | @respondAsset m name path@ responds to the message @m@ with the file at
+-- @path@, with the name overridden as @name@.
+respondAsset :: (MonadDiscord m, MonadIO m) => Message -> T.Text -> FilePath -> m ()
+respondAsset = sendAssetChan . messageChannel
+
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
 messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageId r)
@@ -334,16 +341,19 @@ channelRequirement cid msg = if messageChannel msg == read cid
 
 -- | Command requirement for role names, matched with OR. For and, just compose 
 -- multiple of this.
-roleNameRequirement :: (MonadDiscord m) => [T.Text] -> Message -> m (Maybe T.Text)
-roleNameRequirement names msg = do
+roleNameIn :: (MonadDiscord m) => [T.Text] -> Message -> m (Maybe T.Text)
+roleNameIn names msg = do
     check <- or <$> mapM (hasRoleByName msg) names
     pure $ if check
               then Nothing
               else Just $ "need to have one of: " <> (T.pack . show) names
 
+modPerms :: (MonadDiscord m) => Message -> m (Maybe T.Text)
+modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
+
 -- | Command requirement for sender being a registered developer.
-developerRequirement :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
-developerRequirement msg = do
+devPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
+devPerms msg = do
     -- this will take a while, so put this here
     triggerTypingIndicator (messageChannel msg)
     check <- isSenderDeveloper msg

@@ -25,8 +25,6 @@ import           Network.HTTP.Simple     ( httpLBS
 import           Pointfree               ( pointfree' )
 import           UnliftIO                ( liftIO )
 
-import           Command
-
 receivers :: [Message -> DiscordHandler ()]
 receivers =
     [ runCommand pointfree

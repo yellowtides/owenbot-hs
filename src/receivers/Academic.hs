@@ -19,7 +19,8 @@ import           Discord
 
 import           Command.Parser
 import           Command
-import           Utils                      ( sendAssetChan )
+import           Utils                      ( sendAssetChan
+                                            , respondAsset )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers = fmap runCommand
@@ -30,11 +31,6 @@ receivers = fmap runCommand
     , syllogisms
     , booleans 
     ]
-
--- | @respondAsset m name path@ responds to the message @m@ with the file at
--- @path@, with the name overridden as @name@.
-respondAsset :: (MonadDiscord m, MonadIO m) => Message -> T.Text -> FilePath -> m ()
-respondAsset = sendAssetChan . messageChannel
 
 -- | datatype representing possible textbook asset number formats
 data TextbookAssetNumber
