@@ -1,0 +1,596 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Academic</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Academic.html#receivers"><span class="hs-identifier">receivers</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">void</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>                  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">isDigit</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span>                  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">intercalate</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Parsec</span></span><span>                </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-keyword">label</span></span><span>
+</span><span id="line-10"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">many1</span></span><span>
+</span><span id="line-11"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">sepBy1</span></span><span>
+</span><span id="line-12"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">digit</span></span><span>
+</span><span id="line-13"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">char</span></span><span>
+</span><span id="line-14"></span><span>                                            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">try</span></span><span>
+</span><span id="line-15"></span><span>                                            </span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord.Types</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Discord</span></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Command.Parser.html"><span class="hs-identifier">Command.Parser</span></a></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Command.html"><span class="hs-identifier">Command</span></a></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Utils.html"><span class="hs-identifier">Utils</span></a></span><span>                      </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Utils.html#sendAssetChan"><span class="hs-identifier">sendAssetChan</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="annot"><a href="Academic.html#receivers"><span class="hs-identifier hs-type">receivers</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-25"></span><span id="receivers"><span class="annot"><span class="annottext">receivers :: [Message -&gt; DiscordHandler ()]
+</span><a href="Academic.html#receivers"><span class="hs-identifier hs-var hs-var">receivers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Command (ReaderT DiscordHandle IO)
+ -&gt; Message -&gt; DiscordHandler ())
+-&gt; [Command (ReaderT DiscordHandle IO)]
+-&gt; [Message -&gt; DiscordHandler ()]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO) -&gt; Message -&gt; DiscordHandler ()
+forall (m :: * -&gt; *).
+MonadDiscord m =&gt;
+Command m -&gt; Message -&gt; m ()
+</span><a href="Command.Command.html#runCommand"><span class="hs-identifier hs-var">runCommand</span></a></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *). (MonadDiscord m, MonadIO m) =&gt; Command m
+</span><a href="Academic.html#textbook"><span class="hs-identifier hs-var">textbook</span></a></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *). (MonadDiscord m, MonadIO m) =&gt; Command m
+</span><a href="Academic.html#theorem"><span class="hs-identifier hs-var">theorem</span></a></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *). (MonadDiscord m, MonadIO m) =&gt; Command m
+</span><a href="Academic.html#definition"><span class="hs-identifier hs-var">definition</span></a></span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *). (MonadDiscord m, MonadIO m) =&gt; Command m
+</span><a href="Academic.html#lemma"><span class="hs-identifier hs-var">lemma</span></a></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *). (MonadDiscord m, MonadIO m) =&gt; Command m
+</span><a href="Academic.html#syllogisms"><span class="hs-identifier hs-var">syllogisms</span></a></span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Command (ReaderT DiscordHandle IO)
+forall (m :: * -&gt; *). (MonadDiscord m, MonadIO m) =&gt; Command m
+</span><a href="Academic.html#booleans"><span class="hs-identifier hs-var">booleans</span></a></span><span> </span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">]</span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- | @respondAsset m name path@ responds to the message @m@ with the file at</span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- @path@, with the name overridden as @name@.</span><span>
+</span><span id="line-36"></span><span id="local-6989586621679168853"><span class="annot"><a href="Academic.html#respondAsset"><span class="hs-identifier hs-type">respondAsset</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168853"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168853"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Message</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679168853"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span><span>
+</span><span id="line-37"></span><span id="respondAsset"><span class="annot"><span class="annottext">respondAsset :: Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var hs-var">respondAsset</span></a></span></span><span> </span><span id="local-6989586621679168825"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168825"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679168824"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168824"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679168823"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168823"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+ChannelId -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Utils.html#sendAssetChan"><span class="hs-identifier hs-var">sendAssetChan</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; ChannelId
+</span><span class="hs-identifier hs-var hs-var">messageChannel</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168825"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168824"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168823"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="hs-comment">-- | datatype representing possible textbook asset number formats</span><span>
+</span><span id="line-40"></span><span class="hs-keyword">data</span><span> </span><span id="TextbookAssetNumber"><span class="annot"><a href="Academic.html#TextbookAssetNumber"><span class="hs-identifier hs-var">TextbookAssetNumber</span></a></span></span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="TwoDotSeparated"><span class="annot"><a href="Academic.html#TwoDotSeparated"><span class="hs-identifier hs-var">TwoDotSeparated</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-42"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="OneDotSeparated"><span class="annot"><a href="Academic.html#OneDotSeparated"><span class="hs-identifier hs-var">OneDotSeparated</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-43"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="UnknownSeparation"><span class="annot"><a href="Academic.html#UnknownSeparation"><span class="hs-identifier hs-var">UnknownSeparation</span></a></span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- | used to create the file name</span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679168814"><span id="local-6989586621679168817"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Academic.html#TextbookAssetNumber"><span class="hs-identifier hs-type">TextbookAssetNumber</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679168812"><span class="annot"><span class="annottext">show :: TextbookAssetNumber -&gt; FilePath
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Academic.html#TwoDotSeparated"><span class="hs-identifier hs-type">TwoDotSeparated</span></a></span><span> </span><span id="local-6989586621679168810"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168810"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679168809"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168809"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679168808"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168808"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath
+forall a. [a] -&gt; [[a]] -&gt; [a]
+</span><span class="hs-identifier hs-var">intercalate</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.&quot;</span></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; FilePath) -&gt; [FilePath] -&gt; FilePath
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath]
+</span><a href="Academic.html#padFirst"><span class="hs-identifier hs-var">padFirst</span></a></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; [FilePath]) -&gt; [FilePath] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; FilePath) -&gt; [Int] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168810"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168809"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168808"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-48"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Academic.html#OneDotSeparated"><span class="hs-identifier hs-type">OneDotSeparated</span></a></span><span> </span><span id="local-6989586621679168806"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168806"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679168805"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168805"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath
+forall a. [a] -&gt; [[a]] -&gt; [a]
+</span><span class="hs-identifier hs-var">intercalate</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.&quot;</span></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; FilePath) -&gt; [FilePath] -&gt; FilePath
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath]
+</span><a href="Academic.html#padFirst"><span class="hs-identifier hs-var">padFirst</span></a></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; [FilePath]) -&gt; [FilePath] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; FilePath) -&gt; [Int] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168806"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168805"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Command.Parser.html#ParsableArgument"><span class="hs-identifier hs-type">ParsableArgument</span></a></span><span> </span><span class="annot"><a href="Academic.html#TextbookAssetNumber"><span class="hs-identifier hs-type">TextbookAssetNumber</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621679168802"><span class="annot"><span class="annottext">parserForArg :: Parser TextbookAssetNumber
+</span><a href="Command.Parser.html#parserForArg"><span class="hs-identifier hs-var hs-var hs-var hs-var">parserForArg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-52"></span><span>        </span><span id="local-6989586621679168800"><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679168800"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ParsecT Text () Identity [Int]
+ -&gt; FilePath -&gt; ParsecT Text () Identity [Int])
+-&gt; FilePath
+-&gt; ParsecT Text () Identity [Int]
+-&gt; ParsecT Text () Identity [Int]
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity [Int]
+-&gt; FilePath -&gt; ParsecT Text () Identity [Int]
+forall s u (m :: * -&gt; *) a.
+ParsecT s u m a -&gt; FilePath -&gt; ParsecT s u m a
+</span><span class="hs-keyword hs-var">label</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;dot-separated asset number&quot;</span></span><span> </span><span class="annot"><span class="annottext">(ParsecT Text () Identity [Int] -&gt; ParsecT Text () Identity [Int])
+-&gt; ParsecT Text () Identity [Int] -&gt; ParsecT Text () Identity [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity [Int] -&gt; ParsecT Text () Identity [Int]
+forall s u (m :: * -&gt; *) a. ParsecT s u m a -&gt; ParsecT s u m a
+</span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="annot"><span class="annottext">(ParsecT Text () Identity [Int] -&gt; ParsecT Text () Identity [Int])
+-&gt; ParsecT Text () Identity [Int] -&gt; ParsecT Text () Identity [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-53"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(FilePath -&gt; Int) -&gt; [FilePath] -&gt; [Int]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Int
+forall a. Read a =&gt; FilePath -&gt; a
+</span><span class="hs-identifier hs-var">read</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; [Int])
+-&gt; ParsecT Text () Identity [FilePath]
+-&gt; ParsecT Text () Identity [Int]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity FilePath
+-&gt; ParsecT Text () Identity Char
+-&gt; ParsecT Text () Identity [FilePath]
+forall s (m :: * -&gt; *) t u a sep.
+Stream s m t =&gt;
+ParsecT s u m a -&gt; ParsecT s u m sep -&gt; ParsecT s u m [a]
+</span><span class="hs-identifier hs-var">sepBy1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsecT Text () Identity Char -&gt; ParsecT Text () Identity FilePath
+forall s (m :: * -&gt; *) t u a.
+Stream s m t =&gt;
+ParsecT s u m a -&gt; ParsecT s u m [a]
+</span><span class="hs-identifier hs-var">many1</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Text () Identity Char
+forall s (m :: * -&gt; *) u. Stream s m Char =&gt; ParsecT s u m Char
+</span><span class="hs-identifier hs-var">digit</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; ParsecT Text () Identity Char
+forall s (m :: * -&gt; *) u.
+Stream s m Char =&gt;
+Char -&gt; ParsecT s u m Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'.'</span></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679168800"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-55"></span><span>            </span><span class="hs-special">(</span><span id="local-6989586621679168796"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168796"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679168795"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168795"><span class="hs-identifier hs-var">y</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; Parser TextbookAssetNumber
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(TextbookAssetNumber -&gt; Parser TextbookAssetNumber)
+-&gt; TextbookAssetNumber -&gt; Parser TextbookAssetNumber
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; TextbookAssetNumber
+</span><a href="Academic.html#OneDotSeparated"><span class="hs-identifier hs-var">OneDotSeparated</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168796"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168795"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-56"></span><span>            </span><span class="hs-special">(</span><span id="local-6989586621679168794"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168794"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679168793"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168793"><span class="hs-identifier hs-var">y</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679168792"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168792"><span class="hs-identifier hs-var">z</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; Parser TextbookAssetNumber
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(TextbookAssetNumber -&gt; Parser TextbookAssetNumber)
+-&gt; TextbookAssetNumber -&gt; Parser TextbookAssetNumber
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; TextbookAssetNumber
+</span><a href="Academic.html#TwoDotSeparated"><span class="hs-identifier hs-var">TwoDotSeparated</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168794"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168793"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168792"><span class="hs-identifier hs-var">z</span></a></span><span>
+</span><span id="line-57"></span><span>            </span><span id="local-6989586621679168791"><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679168791"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; Parser TextbookAssetNumber
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(TextbookAssetNumber -&gt; Parser TextbookAssetNumber)
+-&gt; TextbookAssetNumber -&gt; Parser TextbookAssetNumber
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; TextbookAssetNumber
+</span><a href="Academic.html#UnknownSeparation"><span class="hs-identifier hs-var">UnknownSeparation</span></a></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679168791"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="annot"><a href="Academic.html#padFirst"><span class="hs-identifier hs-type">padFirst</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
+</span><span id="line-60"></span><span id="padFirst"><span class="annot"><span class="annottext">padFirst :: [FilePath] -&gt; [FilePath]
+</span><a href="Academic.html#padFirst"><span class="hs-identifier hs-var hs-var">padFirst</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679168789"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168789"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679168788"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679168788"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; ShowS
+</span><a href="Academic.html#padZeroes"><span class="hs-identifier hs-var">padZeroes</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168789"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; [FilePath]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679168788"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Academic.html#padZeroes"><span class="hs-identifier hs-type">padZeroes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-63"></span><span id="padZeroes"><span class="annot"><span class="annottext">padZeroes :: Int -&gt; ShowS
+</span><a href="Academic.html#padZeroes"><span class="hs-identifier hs-var hs-var">padZeroes</span></a></span></span><span> </span><span id="local-6989586621679168786"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168786"><span class="hs-identifier hs-var">newLen</span></a></span></span><span> </span><span id="local-6989586621679168785"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168785"><span class="hs-identifier hs-var">digits</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Char -&gt; FilePath
+forall a. Int -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">replicate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679168786"><span class="hs-identifier hs-var">newLen</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168785"><span class="hs-identifier hs-var">digits</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'0'</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168785"><span class="hs-identifier hs-var">digits</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- | Theorem.</span><span>
+</span><span id="line-66"></span><span id="local-6989586621679168782"><span class="annot"><a href="Academic.html#theorem"><span class="hs-identifier hs-type">theorem</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168782"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168782"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Command.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168782"><span class="hs-identifier hs-type">m</span></a></span></span><span>
+</span><span id="line-67"></span><span id="theorem"><span class="annot"><span class="annottext">theorem :: Command m
+</span><a href="Academic.html#theorem"><span class="hs-identifier hs-var hs-var">theorem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Command m -&gt; Command m
+forall (m :: * -&gt; *). Text -&gt; Command m -&gt; Command m
+</span><a href="Command.Command.html#alias"><span class="hs-identifier hs-var">alias</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;thm&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Command m -&gt; Command m) -&gt; Command m -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; (Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;theorem&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m)
+-&gt; (Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679168779"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168779"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679168778"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168778"><span class="hs-identifier hs-var">subject</span></a></span></span><span> </span><span id="local-6989586621679168777"><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168777"><span class="hs-identifier hs-var">number</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168778"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-69"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ila&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168777"><span class="hs-identifier hs-var">number</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-70"></span><span>            </span><span id="local-6989586621679168776"><span class="annot"><span class="annottext">x :: TextbookAssetNumber
+</span><a href="#local-6989586621679168776"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><a href="Academic.html#TwoDotSeparated"><span class="hs-identifier hs-type">TwoDotSeparated</span></a></span><span class="hs-special">{</span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-71"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168775"><span class="annot"><span class="annottext">path :: FilePath
+</span><a href="#local-6989586621679168775"><span class="hs-identifier hs-var hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;ila/theorems/&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168776"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.png&quot;</span></span><span>
+</span><span id="line-72"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168774"><span class="annot"><span class="annottext">name :: FilePath
+</span><a href="#local-6989586621679168774"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168776"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.png&quot;</span></span><span>
+</span><span id="line-73"></span><span>                </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168779"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;Theorem &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168774"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168775"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><span id="line-74"></span><span>            </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-75"></span><span>                </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168779"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ILA theorems have the format: XX.YY.ZZ!&quot;</span></span><span>
+</span><span id="line-76"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span>
+</span><span id="line-77"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168779"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;No theorems found for subject!&quot;</span></span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="hs-comment">-- | Definition.</span><span>
+</span><span id="line-80"></span><span id="local-6989586621679168771"><span class="annot"><a href="Academic.html#definition"><span class="hs-identifier hs-type">definition</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168771"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168771"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Command.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168771"><span class="hs-identifier hs-type">m</span></a></span></span><span>
+</span><span id="line-81"></span><span id="definition"><span class="annot"><span class="annottext">definition :: Command m
+</span><a href="Academic.html#definition"><span class="hs-identifier hs-var hs-var">definition</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Command m -&gt; Command m
+forall (m :: * -&gt; *). Text -&gt; Command m -&gt; Command m
+</span><a href="Command.Command.html#alias"><span class="hs-identifier hs-var">alias</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;def&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Command m -&gt; Command m) -&gt; Command m -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; (Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;definition&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m)
+-&gt; (Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679168770"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679168769"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168769"><span class="hs-identifier hs-var">subject</span></a></span></span><span> </span><span id="local-6989586621679168768"><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168768"><span class="hs-identifier hs-var">number</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168769"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-83"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ila&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168768"><span class="hs-identifier hs-var">number</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-84"></span><span>            </span><span id="local-6989586621679168767"><span class="annot"><span class="annottext">x :: TextbookAssetNumber
+</span><a href="#local-6989586621679168767"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><a href="Academic.html#OneDotSeparated"><span class="hs-identifier hs-type">OneDotSeparated</span></a></span><span class="hs-special">{</span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-85"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168766"><span class="annot"><span class="annottext">path :: FilePath
+</span><a href="#local-6989586621679168766"><span class="hs-identifier hs-var hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;ila/definitions/&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168767"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.png&quot;</span></span><span>
+</span><span id="line-86"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168765"><span class="annot"><span class="annottext">name :: FilePath
+</span><a href="#local-6989586621679168765"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168767"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.png&quot;</span></span><span>
+</span><span id="line-87"></span><span>                </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;Definition &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168765"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168766"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><span id="line-88"></span><span>            </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-89"></span><span>                </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ILA definitions have the format: XX.YY!&quot;</span></span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-92"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168770"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;No definitions found for subject!&quot;</span></span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span class="hs-comment">-- | Lemma.</span><span>
+</span><span id="line-95"></span><span id="local-6989586621679168764"><span class="annot"><a href="Academic.html#lemma"><span class="hs-identifier hs-type">lemma</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168764"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168764"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Command.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168764"><span class="hs-identifier hs-type">m</span></a></span></span><span>
+</span><span id="line-96"></span><span id="lemma"><span class="annot"><span class="annottext">lemma :: Command m
+</span><a href="Academic.html#lemma"><span class="hs-identifier hs-var hs-var">lemma</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Command m -&gt; Command m
+forall (m :: * -&gt; *). Text -&gt; Command m -&gt; Command m
+</span><a href="Command.Command.html#alias"><span class="hs-identifier hs-var">alias</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;lem&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Command m -&gt; Command m) -&gt; Command m -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; (Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;lemma&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m)
+-&gt; (Message -&gt; Text -&gt; TextbookAssetNumber -&gt; m ()) -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679168763"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168763"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679168762"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168762"><span class="hs-identifier hs-var">subject</span></a></span></span><span> </span><span id="local-6989586621679168761"><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168761"><span class="hs-identifier hs-var">number</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-97"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168762"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-98"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ila&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168761"><span class="hs-identifier hs-var">number</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-99"></span><span>            </span><span id="local-6989586621679168760"><span class="annot"><span class="annottext">x :: TextbookAssetNumber
+</span><a href="#local-6989586621679168760"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="annot"><a href="Academic.html#TwoDotSeparated"><span class="hs-identifier hs-type">TwoDotSeparated</span></a></span><span class="hs-special">{</span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-100"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168759"><span class="annot"><span class="annottext">path :: FilePath
+</span><a href="#local-6989586621679168759"><span class="hs-identifier hs-var hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;ila/lemmas/&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168760"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.png&quot;</span></span><span>
+</span><span id="line-101"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679168758"><span class="annot"><span class="annottext">name :: FilePath
+</span><a href="#local-6989586621679168758"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber -&gt; FilePath
+forall a. Show a =&gt; a -&gt; FilePath
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><a href="#local-6989586621679168760"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;.png&quot;</span></span><span>
+</span><span id="line-102"></span><span>                </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168763"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;Lemma &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168758"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679168759"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><span id="line-103"></span><span>            </span><span class="annot"><span class="annottext">TextbookAssetNumber
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-104"></span><span>                </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168763"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ILA lemmas have the format: XX.YY.ZZ!&quot;</span></span><span>
+</span><span id="line-105"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-106"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168763"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;No lemmas found for subject!&quot;</span></span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="hs-comment">-- | Textbook.</span><span>
+</span><span id="line-109"></span><span id="local-6989586621679168920"><span class="annot"><a href="Academic.html#textbook"><span class="hs-identifier hs-type">textbook</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168920"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168920"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Command.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168920"><span class="hs-identifier hs-type">m</span></a></span></span><span>
+</span><span id="line-110"></span><span id="textbook"><span class="annot"><span class="annottext">textbook :: Command m
+</span><a href="Academic.html#textbook"><span class="hs-identifier hs-var hs-var">textbook</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Command m -&gt; Command m
+forall (m :: * -&gt; *). Text -&gt; Command m -&gt; Command m
+</span><a href="Command.Command.html#alias"><span class="hs-identifier hs-var">alias</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;tb&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Command m -&gt; Command m) -&gt; Command m -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; (Message -&gt; Text -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;textbook&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; Text -&gt; m ()) -&gt; Command m)
+-&gt; (Message -&gt; Text -&gt; m ()) -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679168757"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679168756"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168756"><span class="hs-identifier hs-var">subject</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-111"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-112"></span><span>        </span><span class="annot"><span class="annottext">()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168756"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;i1a&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;inf1a&quot;</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-113"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;the-holy-bible-2.png&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;textbooks/i1a-textbook.pdf&quot;</span></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span>        </span><span class="annot"><span class="annottext">()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168756"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;calc&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;cap&quot;</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-116"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; m ()) -&gt; Text -&gt; m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;The textbook can be found here:\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span>
+</span><span id="line-117"></span><span>                </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea&quot;</span></span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span>        </span><span class="annot"><span class="annottext">()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168756"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ila&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-120"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;ila-textbook.pdf&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;textbooks/ila-textbook.pdf&quot;</span></span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span>        </span><span id="local-6989586621679168754"><span class="annot"><span class="annottext">()
+</span><a href="#local-6989586621679168754"><span class="hs-identifier hs-var">otherwse</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-123"></span><span>            </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; m ()
+forall (m :: * -&gt; *). MonadDiscord m =&gt; Message -&gt; Text -&gt; m ()
+</span><a href="Discord.Internal.Monad.html#respond"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168757"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; m ()) -&gt; Text -&gt; m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;No textbook registered for `&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679168756"><span class="hs-identifier hs-var">subject</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;`!&quot;</span></span><span>
+</span><span id="line-124"></span><span>
+</span><span id="line-125"></span><span class="hs-comment">-- | Syllogisms.</span><span>
+</span><span id="line-126"></span><span id="local-6989586621679168753"><span class="annot"><a href="Academic.html#syllogisms"><span class="hs-identifier hs-type">syllogisms</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168753"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168753"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Command.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168753"><span class="hs-identifier hs-type">m</span></a></span></span><span>
+</span><span id="line-127"></span><span id="syllogisms"><span class="annot"><span class="annottext">syllogisms :: Command m
+</span><a href="Academic.html#syllogisms"><span class="hs-identifier hs-var hs-var">syllogisms</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Command m -&gt; Command m
+forall (m :: * -&gt; *). Text -&gt; Command m -&gt; Command m
+</span><a href="Command.Command.html#alias"><span class="hs-identifier hs-var">alias</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;syl&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Command m -&gt; Command m) -&gt; Command m -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; (Message -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;syllogisms&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; m ()) -&gt; Command m) -&gt; (Message -&gt; m ()) -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679168752"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168752"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-128"></span><span>    </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168752"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;id-smash-aristotle.png&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;cl/syllogisms.png&quot;</span></span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span class="hs-comment">-- | Booleans.</span><span>
+</span><span id="line-131"></span><span id="local-6989586621679168751"><span class="annot"><a href="Academic.html#booleans"><span class="hs-identifier hs-type">booleans</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Monad.html#MonadDiscord"><span class="hs-identifier hs-type">MonadDiscord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168751"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadIO</span></span><span> </span><span class="annot"><a href="#local-6989586621679168751"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Command.Command.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679168751"><span class="hs-identifier hs-type">m</span></a></span></span><span>
+</span><span id="line-132"></span><span id="booleans"><span class="annot"><span class="annottext">booleans :: Command m
+</span><a href="Academic.html#booleans"><span class="hs-identifier hs-var hs-var">booleans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Command m -&gt; Command m
+forall (m :: * -&gt; *). Text -&gt; Command m -&gt; Command m
+</span><a href="Command.Command.html#alias"><span class="hs-identifier hs-var">alias</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;bool&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Command m -&gt; Command m) -&gt; Command m -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; (Message -&gt; m ()) -&gt; Command m
+forall (m :: * -&gt; *) h.
+(CommandHandlerType m h, MonadDiscord m) =&gt;
+Text -&gt; h -&gt; Command m
+</span><a href="Command.Command.html#command"><span class="hs-identifier hs-var">command</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;booleans&quot;</span></span><span> </span><span class="annot"><span class="annottext">((Message -&gt; m ()) -&gt; Command m) -&gt; (Message -&gt; m ()) -&gt; Command m
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679168750"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168750"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-133"></span><span>    </span><span class="annot"><span class="annottext">Message -&gt; Text -&gt; FilePath -&gt; m ()
+forall (m :: * -&gt; *).
+(MonadDiscord m, MonadIO m) =&gt;
+Message -&gt; Text -&gt; FilePath -&gt; m ()
+</span><a href="Academic.html#respondAsset"><span class="hs-identifier hs-var">respondAsset</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679168750"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;literally-satan.png&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;cl/Bool.png&quot;</span></span><span>
+</span><span id="line-134"></span><span>
+</span><span id="line-135"></span></pre></body></html>

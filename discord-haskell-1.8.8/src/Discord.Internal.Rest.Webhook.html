@@ -1,0 +1,862 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_HG0WijHgE8x9Xx6x4zfGcv"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE InstanceSigs #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE RecordWildCards #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-comment">-- | Provides actions for Webhook API interactions</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Discord.Internal.Rest.Webhook</span><span>
+</span><span id="line-9"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhookOpts"><span class="hs-identifier">CreateWebhookOpts</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithTokenOpts"><span class="hs-identifier">ExecuteWebhookWithTokenOpts</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier">ModifyWebhookOpts</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContent"><span class="hs-identifier">WebhookContent</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier">WebhookRequest</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BL</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.HTTP.Req</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(/:)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Network.HTTP.Req</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">R</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Network.HTTP.Client</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">RequestBody</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">RequestBodyBS</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Network.HTTP.Client.MultipartFormData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">partBS</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">partFileRequestBody</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html"><span class="hs-identifier">Discord.Internal.Rest.Prelude</span></a></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Discord.Internal.Types.html"><span class="hs-identifier">Discord.Internal.Types</span></a></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span id="local-6989586621679166896"><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#Request"><span class="hs-identifier hs-type">Request</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166896"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-29"></span><span>  </span><span id="local-6989586621679166892"><span class="annot"><span class="annottext">majorRoute :: WebhookRequest a -&gt; String
+</span><a href="Discord.Internal.Rest.Prelude.html#majorRoute"><span class="hs-identifier hs-var hs-var hs-var hs-var">majorRoute</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">WebhookRequest a -&gt; String
+forall a. WebhookRequest a -&gt; String
+</span><a href="Discord.Internal.Rest.Webhook.html#webhookMajorRoute"><span class="hs-identifier hs-var">webhookMajorRoute</span></a></span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679166889"><span class="annot"><span class="annottext">jsonRequest :: WebhookRequest a -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#jsonRequest"><span class="hs-identifier hs-var hs-var hs-var hs-var">jsonRequest</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">WebhookRequest a -&gt; JsonRequest
+forall a. WebhookRequest a -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Webhook.html#webhookJsonRequest"><span class="hs-identifier hs-var">webhookJsonRequest</span></a></span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- | Data constructor for requests. See &lt;https://discord.com/developers/docs/resources/ API&gt;</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">data</span><span> </span><span id="WebhookRequest"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-var">WebhookRequest</span></a></span></span><span> </span><span id="local-6989586621679166886"><span class="annot"><a href="#local-6989586621679166886"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span id="CreateWebhook"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhook"><span class="hs-identifier hs-var">CreateWebhook</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhookOpts"><span class="hs-identifier hs-type">CreateWebhookOpts</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span id="GetChannelWebhooks"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetChannelWebhooks"><span class="hs-identifier hs-var">GetChannelWebhooks</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-36"></span><span>  </span><span id="GetGuildWebhooks"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetGuildWebhooks"><span class="hs-identifier hs-var">GetGuildWebhooks</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-type">GuildId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-37"></span><span>  </span><span id="GetWebhook"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetWebhook"><span class="hs-identifier hs-var">GetWebhook</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span id="GetWebhookWithToken"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetWebhookWithToken"><span class="hs-identifier hs-var">GetWebhookWithToken</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span>
+</span><span id="line-39"></span><span>  </span><span id="ModifyWebhook"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhook"><span class="hs-identifier hs-var">ModifyWebhook</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier hs-type">ModifyWebhookOpts</span></a></span><span>
+</span><span id="line-40"></span><span>                                      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span>
+</span><span id="line-41"></span><span>  </span><span id="ModifyWebhookWithToken"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookWithToken"><span class="hs-identifier hs-var">ModifyWebhookWithToken</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier hs-type">ModifyWebhookOpts</span></a></span><span>
+</span><span id="line-42"></span><span>                                      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="Discord.Internal.Types.User.html#Webhook"><span class="hs-identifier hs-type">Webhook</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span id="DeleteWebhook"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#DeleteWebhook"><span class="hs-identifier hs-var">DeleteWebhook</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>  </span><span id="DeleteWebhookWithToken"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#DeleteWebhookWithToken"><span class="hs-identifier hs-var">DeleteWebhookWithToken</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>  </span><span id="ExecuteWebhookWithToken"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithToken"><span class="hs-identifier hs-var">ExecuteWebhookWithToken</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-type">WebhookId</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithTokenOpts"><span class="hs-identifier hs-type">ExecuteWebhookWithTokenOpts</span></a></span><span>
+</span><span id="line-46"></span><span>                                       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">data</span><span> </span><span id="ModifyWebhookOpts"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier hs-var">ModifyWebhookOpts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ModifyWebhookOpts"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier hs-var">ModifyWebhookOpts</span></a></span></span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="modifyWebhookOptsName"><span class="annot"><span class="annottext">ModifyWebhookOpts -&gt; Maybe Text
+</span><a href="Discord.Internal.Rest.Webhook.html#modifyWebhookOptsName"><span class="hs-identifier hs-var hs-var">modifyWebhookOptsName</span></a></span></span><span>          </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modifyWebhookOptsAvatar"><span class="annot"><span class="annottext">ModifyWebhookOpts -&gt; Maybe Text
+</span><a href="Discord.Internal.Rest.Webhook.html#modifyWebhookOptsAvatar"><span class="hs-identifier hs-var hs-var">modifyWebhookOptsAvatar</span></a></span></span><span>        </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modifyWebhookOptsChannelId"><span class="annot"><span class="annottext">ModifyWebhookOpts -&gt; Maybe ChannelId
+</span><a href="Discord.Internal.Rest.Webhook.html#modifyWebhookOptsChannelId"><span class="hs-identifier hs-var hs-var">modifyWebhookOptsChannelId</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-type">ChannelId</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166862"><span id="local-6989586621679166864"><span id="local-6989586621679166866"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier hs-type">ModifyWebhookOpts</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>  </span><span id="local-6989586621679166860"><span class="annot"><span class="annottext">toJSON :: ModifyWebhookOpts -&gt; Value
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookOpts"><span class="hs-identifier hs-type">ModifyWebhookOpts</span></a></span><span class="hs-special">{</span><span id="local-6989586621679166856"><span id="local-6989586621679166857"><span id="local-6989586621679166858"><span class="annot"><span class="annottext">Maybe Text
+Maybe ChannelId
+modifyWebhookOptsChannelId :: Maybe ChannelId
+modifyWebhookOptsAvatar :: Maybe Text
+modifyWebhookOptsName :: Maybe Text
+modifyWebhookOptsChannelId :: ModifyWebhookOpts -&gt; Maybe ChannelId
+modifyWebhookOptsAvatar :: ModifyWebhookOpts -&gt; Maybe Text
+modifyWebhookOptsName :: ModifyWebhookOpts -&gt; Maybe Text
+</span><a href="#local-6989586621679166856"><span class="hs-glyph hs-var hs-var hs-var hs-var hs-var hs-var">..</span></a></span></span></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
+</span><span class="hs-identifier hs-var">object</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166854"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679166853"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166854"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166854"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679166853"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679166853"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-56"></span><span>                         </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;channel_id&quot;</span></span><span class="hs-special">,</span><span>   </span><span class="annot"><span class="annottext">ChannelId -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(ChannelId -&gt; Value) -&gt; Maybe ChannelId -&gt; Maybe Value
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe ChannelId
+</span><a href="#local-6989586621679166856"><span class="hs-identifier hs-var">modifyWebhookOptsChannelId</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-57"></span><span>                          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;name&quot;</span></span><span class="hs-special">,</span><span>   </span><span class="annot"><span class="annottext">Text -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679166858"><span class="hs-identifier hs-var">modifyWebhookOptsName</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-58"></span><span>                          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;avatar&quot;</span></span><span class="hs-special">,</span><span>  </span><span class="annot"><span class="annottext">Text -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679166857"><span class="hs-identifier hs-var">modifyWebhookOptsAvatar</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">data</span><span> </span><span id="CreateWebhookOpts"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhookOpts"><span class="hs-identifier hs-var">CreateWebhookOpts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CreateWebhookOpts"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhookOpts"><span class="hs-identifier hs-var">CreateWebhookOpts</span></a></span></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="createWebhookOptsName"><span class="annot"><span class="annottext">CreateWebhookOpts -&gt; Text
+</span><a href="Discord.Internal.Rest.Webhook.html#createWebhookOptsName"><span class="hs-identifier hs-var hs-var">createWebhookOptsName</span></a></span></span><span>          </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="createWebhookOptsAvatar"><span class="annot"><span class="annottext">CreateWebhookOpts -&gt; Maybe Text
+</span><a href="Discord.Internal.Rest.Webhook.html#createWebhookOptsAvatar"><span class="hs-identifier hs-var hs-var">createWebhookOptsAvatar</span></a></span></span><span>        </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166842"><span id="local-6989586621679166844"><span id="local-6989586621679166846"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhookOpts"><span class="hs-identifier hs-type">CreateWebhookOpts</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679166841"><span class="annot"><span class="annottext">toJSON :: CreateWebhookOpts -&gt; Value
+</span><a href="#local-6989586621679166841"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhookOpts"><span class="hs-identifier hs-type">CreateWebhookOpts</span></a></span><span class="hs-special">{</span><span id="local-6989586621679166839"><span id="local-6989586621679166840"><span class="annot"><span class="annottext">Maybe Text
+Text
+createWebhookOptsAvatar :: Maybe Text
+createWebhookOptsName :: Text
+createWebhookOptsAvatar :: CreateWebhookOpts -&gt; Maybe Text
+createWebhookOptsName :: CreateWebhookOpts -&gt; Text
+</span><a href="#local-6989586621679166839"><span class="hs-glyph hs-var hs-var hs-var hs-var">..</span></a></span></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
+</span><span class="hs-identifier hs-var">object</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166838"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679166837"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166838"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166838"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679166837"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679166837"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-67"></span><span>                         </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;name&quot;</span></span><span class="hs-special">,</span><span>   </span><span class="annot"><span class="annottext">Text -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Maybe Text
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166840"><span class="hs-identifier hs-var">createWebhookOptsName</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-68"></span><span>                          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;avatar&quot;</span></span><span class="hs-special">,</span><span>  </span><span class="annot"><span class="annottext">Text -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679166839"><span class="hs-identifier hs-var">createWebhookOptsAvatar</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-keyword">data</span><span> </span><span id="ExecuteWebhookWithTokenOpts"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithTokenOpts"><span class="hs-identifier hs-var">ExecuteWebhookWithTokenOpts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ExecuteWebhookWithTokenOpts"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithTokenOpts"><span class="hs-identifier hs-var">ExecuteWebhookWithTokenOpts</span></a></span></span><span>
+</span><span id="line-71"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="executeWebhookWithTokenOptsUsername"><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts -&gt; Maybe Text
+</span><a href="Discord.Internal.Rest.Webhook.html#executeWebhookWithTokenOptsUsername"><span class="hs-identifier hs-var hs-var">executeWebhookWithTokenOptsUsername</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-72"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="executeWebhookWithTokenOptsContent"><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts -&gt; WebhookContent
+</span><a href="Discord.Internal.Rest.Webhook.html#executeWebhookWithTokenOptsContent"><span class="hs-identifier hs-var hs-var">executeWebhookWithTokenOptsContent</span></a></span></span><span>       </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContent"><span class="hs-identifier hs-type">WebhookContent</span></a></span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166828"><span id="local-6989586621679166830"><span id="local-6989586621679166832"><span class="annot"><span class="annottext">Int -&gt; ExecuteWebhookWithTokenOpts -&gt; ShowS
+[ExecuteWebhookWithTokenOpts] -&gt; ShowS
+ExecuteWebhookWithTokenOpts -&gt; String
+(Int -&gt; ExecuteWebhookWithTokenOpts -&gt; ShowS)
+-&gt; (ExecuteWebhookWithTokenOpts -&gt; String)
+-&gt; ([ExecuteWebhookWithTokenOpts] -&gt; ShowS)
+-&gt; Show ExecuteWebhookWithTokenOpts
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [ExecuteWebhookWithTokenOpts] -&gt; ShowS
+$cshowList :: [ExecuteWebhookWithTokenOpts] -&gt; ShowS
+show :: ExecuteWebhookWithTokenOpts -&gt; String
+$cshow :: ExecuteWebhookWithTokenOpts -&gt; String
+showsPrec :: Int -&gt; ExecuteWebhookWithTokenOpts -&gt; ShowS
+$cshowsPrec :: Int -&gt; ExecuteWebhookWithTokenOpts -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166823"><span id="local-6989586621679166825"><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+(ExecuteWebhookWithTokenOpts
+ -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool)
+-&gt; Eq ExecuteWebhookWithTokenOpts
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+$c/= :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+== :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+$c== :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166807"><span id="local-6989586621679166809"><span id="local-6989586621679166811"><span id="local-6989586621679166813"><span id="local-6989586621679166815"><span id="local-6989586621679166817"><span id="local-6989586621679166819"><span class="annot"><span class="annottext">Eq ExecuteWebhookWithTokenOpts
+Eq ExecuteWebhookWithTokenOpts
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; Ordering)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts)
+-&gt; (ExecuteWebhookWithTokenOpts
+    -&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts)
+-&gt; Ord ExecuteWebhookWithTokenOpts
+ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; Ordering
+ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts
+$cmin :: ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts
+max :: ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts
+$cmax :: ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts
+&gt;= :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+$c&gt;= :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+&gt; :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+$c&gt; :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+&lt;= :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+$c&lt;= :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+&lt; :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+$c&lt; :: ExecuteWebhookWithTokenOpts -&gt; ExecuteWebhookWithTokenOpts -&gt; Bool
+compare :: ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; Ordering
+$ccompare :: ExecuteWebhookWithTokenOpts
+-&gt; ExecuteWebhookWithTokenOpts -&gt; Ordering
+$cp1Ord :: Eq ExecuteWebhookWithTokenOpts
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="hs-keyword">data</span><span> </span><span id="WebhookContent"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContent"><span class="hs-identifier hs-var">WebhookContent</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="WebhookContentText"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentText"><span class="hs-identifier hs-var">WebhookContentText</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-77"></span><span>                    </span><span class="hs-glyph">|</span><span> </span><span id="WebhookContentFile"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentFile"><span class="hs-identifier hs-var">WebhookContentFile</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-78"></span><span>                    </span><span class="hs-glyph">|</span><span> </span><span id="WebhookContentEmbeds"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentEmbeds"><span class="hs-identifier hs-var">WebhookContentEmbeds</span></a></span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Discord.Internal.Types.Embed.html#CreateEmbed"><span class="hs-identifier hs-type">CreateEmbed</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166797"><span id="local-6989586621679166799"><span id="local-6989586621679166801"><span class="annot"><span class="annottext">Int -&gt; WebhookContent -&gt; ShowS
+[WebhookContent] -&gt; ShowS
+WebhookContent -&gt; String
+(Int -&gt; WebhookContent -&gt; ShowS)
+-&gt; (WebhookContent -&gt; String)
+-&gt; ([WebhookContent] -&gt; ShowS)
+-&gt; Show WebhookContent
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [WebhookContent] -&gt; ShowS
+$cshowList :: [WebhookContent] -&gt; ShowS
+show :: WebhookContent -&gt; String
+$cshow :: WebhookContent -&gt; String
+showsPrec :: Int -&gt; WebhookContent -&gt; ShowS
+$cshowsPrec :: Int -&gt; WebhookContent -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166793"><span id="local-6989586621679166795"><span class="annot"><span class="annottext">WebhookContent -&gt; WebhookContent -&gt; Bool
+(WebhookContent -&gt; WebhookContent -&gt; Bool)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; Bool) -&gt; Eq WebhookContent
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: WebhookContent -&gt; WebhookContent -&gt; Bool
+$c/= :: WebhookContent -&gt; WebhookContent -&gt; Bool
+== :: WebhookContent -&gt; WebhookContent -&gt; Bool
+$c== :: WebhookContent -&gt; WebhookContent -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166778"><span id="local-6989586621679166780"><span id="local-6989586621679166782"><span id="local-6989586621679166784"><span id="local-6989586621679166786"><span id="local-6989586621679166788"><span id="local-6989586621679166790"><span class="annot"><span class="annottext">Eq WebhookContent
+Eq WebhookContent
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; Ordering)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; Bool)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; Bool)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; Bool)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; Bool)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; WebhookContent)
+-&gt; (WebhookContent -&gt; WebhookContent -&gt; WebhookContent)
+-&gt; Ord WebhookContent
+WebhookContent -&gt; WebhookContent -&gt; Bool
+WebhookContent -&gt; WebhookContent -&gt; Ordering
+WebhookContent -&gt; WebhookContent -&gt; WebhookContent
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: WebhookContent -&gt; WebhookContent -&gt; WebhookContent
+$cmin :: WebhookContent -&gt; WebhookContent -&gt; WebhookContent
+max :: WebhookContent -&gt; WebhookContent -&gt; WebhookContent
+$cmax :: WebhookContent -&gt; WebhookContent -&gt; WebhookContent
+&gt;= :: WebhookContent -&gt; WebhookContent -&gt; Bool
+$c&gt;= :: WebhookContent -&gt; WebhookContent -&gt; Bool
+&gt; :: WebhookContent -&gt; WebhookContent -&gt; Bool
+$c&gt; :: WebhookContent -&gt; WebhookContent -&gt; Bool
+&lt;= :: WebhookContent -&gt; WebhookContent -&gt; Bool
+$c&lt;= :: WebhookContent -&gt; WebhookContent -&gt; Bool
+&lt; :: WebhookContent -&gt; WebhookContent -&gt; Bool
+$c&lt; :: WebhookContent -&gt; WebhookContent -&gt; Bool
+compare :: WebhookContent -&gt; WebhookContent -&gt; Ordering
+$ccompare :: WebhookContent -&gt; WebhookContent -&gt; Ordering
+$cp1Ord :: Eq WebhookContent
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#webhookContentJson"><span class="hs-identifier hs-type">webhookContentJson</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContent"><span class="hs-identifier hs-type">WebhookContent</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-82"></span><span id="webhookContentJson"><span class="annot"><span class="annottext">webhookContentJson :: WebhookContent -&gt; [Pair]
+</span><a href="Discord.Internal.Rest.Webhook.html#webhookContentJson"><span class="hs-identifier hs-var hs-var">webhookContentJson</span></a></span></span><span> </span><span id="local-6989586621679166776"><span class="annot"><span class="annottext">WebhookContent
+</span><a href="#local-6989586621679166776"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">WebhookContent
+</span><a href="#local-6989586621679166776"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-83"></span><span>                      </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentText"><span class="hs-identifier hs-type">WebhookContentText</span></a></span><span> </span><span id="local-6989586621679166775"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166775"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;content&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166775"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-84"></span><span>                      </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentFile"><span class="hs-identifier hs-type">WebhookContentFile</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-85"></span><span>                      </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentEmbeds"><span class="hs-identifier hs-type">WebhookContentEmbeds</span></a></span><span> </span><span id="local-6989586621679166774"><span class="annot"><span class="annottext">[CreateEmbed]
+</span><a href="#local-6989586621679166774"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;embeds&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Embed] -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CreateEmbed -&gt; Embed
+</span><a href="Discord.Internal.Types.Embed.html#createEmbed"><span class="hs-identifier hs-var">createEmbed</span></a></span><span> </span><span class="annot"><span class="annottext">(CreateEmbed -&gt; Embed) -&gt; [CreateEmbed] -&gt; [Embed]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[CreateEmbed]
+</span><a href="#local-6989586621679166774"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166766"><span id="local-6989586621679166768"><span id="local-6989586621679166770"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithTokenOpts"><span class="hs-identifier hs-type">ExecuteWebhookWithTokenOpts</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621679166765"><span class="annot"><span class="annottext">toJSON :: ExecuteWebhookWithTokenOpts -&gt; Value
+</span><a href="#local-6989586621679166765"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithTokenOpts"><span class="hs-identifier hs-type">ExecuteWebhookWithTokenOpts</span></a></span><span class="hs-special">{</span><span id="local-6989586621679166763"><span id="local-6989586621679166764"><span class="annot"><span class="annottext">Maybe Text
+WebhookContent
+executeWebhookWithTokenOptsContent :: WebhookContent
+executeWebhookWithTokenOptsUsername :: Maybe Text
+executeWebhookWithTokenOptsContent :: ExecuteWebhookWithTokenOpts -&gt; WebhookContent
+executeWebhookWithTokenOptsUsername :: ExecuteWebhookWithTokenOpts -&gt; Maybe Text
+</span><a href="#local-6989586621679166763"><span class="hs-glyph hs-var hs-var hs-var hs-var">..</span></a></span></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
+</span><span class="hs-identifier hs-var">object</span></span><span> </span><span class="annot"><span class="annottext">([Pair] -&gt; Value) -&gt; [Pair] -&gt; Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166762"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679166761"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166762"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166762"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679166761"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679166761"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-89"></span><span>                         </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;username&quot;</span></span><span class="hs-special">,</span><span>   </span><span class="annot"><span class="annottext">Text -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; Maybe Text -&gt; Maybe Value
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
+</span><a href="#local-6989586621679166764"><span class="hs-identifier hs-var">executeWebhookWithTokenOptsUsername</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-90"></span><span>                      </span><span class="annot"><span class="annottext">[Pair] -&gt; [Pair] -&gt; [Pair]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">WebhookContent -&gt; [Pair]
+</span><a href="Discord.Internal.Rest.Webhook.html#webhookContentJson"><span class="hs-identifier hs-var">webhookContentJson</span></a></span><span> </span><span class="annot"><span class="annottext">WebhookContent
+</span><a href="#local-6989586621679166763"><span class="hs-identifier hs-var">executeWebhookWithTokenOptsContent</span></a></span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span id="local-6989586621679166760"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#webhookMajorRoute"><span class="hs-identifier hs-type">webhookMajorRoute</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166760"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span></span><span>
+</span><span id="line-93"></span><span id="webhookMajorRoute"><span class="annot"><span class="annottext">webhookMajorRoute :: WebhookRequest a -&gt; String
+</span><a href="Discord.Internal.Rest.Webhook.html#webhookMajorRoute"><span class="hs-identifier hs-var hs-var">webhookMajorRoute</span></a></span></span><span> </span><span id="local-6989586621679166759"><span class="annot"><span class="annottext">WebhookRequest a
+</span><a href="#local-6989586621679166759"><span class="hs-identifier hs-var">ch</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">WebhookRequest a
+</span><a href="#local-6989586621679166759"><span class="hs-identifier hs-var">ch</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhook"><span class="hs-identifier hs-type">CreateWebhook</span></a></span><span> </span><span id="local-6989586621679166758"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166758"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="annot"><span class="annottext">CreateWebhookOpts
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>            </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;aaaaaahook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166758"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetChannelWebhooks"><span class="hs-identifier hs-type">GetChannelWebhooks</span></a></span><span> </span><span id="local-6989586621679166756"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166756"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>         </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;aaaaaahook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166756"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetGuildWebhooks"><span class="hs-identifier hs-type">GetGuildWebhooks</span></a></span><span> </span><span id="local-6989586621679166755"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166755"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>           </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;aaaaaahook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166755"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetWebhook"><span class="hs-identifier hs-type">GetWebhook</span></a></span><span> </span><span id="local-6989586621679166754"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166754"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>                 </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;aaaaaahook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166754"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-98"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetWebhookWithToken"><span class="hs-identifier hs-type">GetWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166753"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166753"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>      </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;getwebhook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166753"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-99"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhook"><span class="hs-identifier hs-type">ModifyWebhook</span></a></span><span> </span><span id="local-6989586621679166752"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166752"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="annot"><span class="annottext">ModifyWebhookOpts
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>            </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;modifyhook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166752"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-100"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookWithToken"><span class="hs-identifier hs-type">ModifyWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166751"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166751"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">ModifyWebhookOpts
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;modifyhook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166751"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#DeleteWebhook"><span class="hs-identifier hs-type">DeleteWebhook</span></a></span><span> </span><span id="local-6989586621679166750"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166750"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>              </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;deletehook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166750"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#DeleteWebhookWithToken"><span class="hs-identifier hs-type">DeleteWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166749"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166749"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>   </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;deletehook &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166749"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-103"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithToken"><span class="hs-identifier hs-type">ExecuteWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166748"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166748"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;executehk &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChannelId -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166748"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span id="local-6989586621679166747"><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#webhookJsonRequest"><span class="hs-identifier hs-type">webhookJsonRequest</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookRequest"><span class="hs-identifier hs-type">WebhookRequest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166747"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Discord.Internal.Rest.Prelude.html#JsonRequest"><span class="hs-identifier hs-type">JsonRequest</span></a></span></span><span>
+</span><span id="line-106"></span><span id="webhookJsonRequest"><span class="annot"><span class="annottext">webhookJsonRequest :: WebhookRequest r -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Webhook.html#webhookJsonRequest"><span class="hs-identifier hs-var hs-var">webhookJsonRequest</span></a></span></span><span> </span><span id="local-6989586621679166746"><span class="annot"><span class="annottext">WebhookRequest r
+</span><a href="#local-6989586621679166746"><span class="hs-identifier hs-var">ch</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">WebhookRequest r
+</span><a href="#local-6989586621679166746"><span class="hs-identifier hs-var">ch</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#CreateWebhook"><span class="hs-identifier hs-type">CreateWebhook</span></a></span><span> </span><span id="local-6989586621679166745"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166745"><span class="hs-identifier hs-var">channel</span></a></span></span><span> </span><span id="local-6989586621679166744"><span class="annot"><span class="annottext">CreateWebhookOpts
+</span><a href="#local-6989586621679166744"><span class="hs-identifier hs-var">patch</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-108"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166743"><span class="annot"><span class="annottext">body :: RestIO (ReqBodyJson CreateWebhookOpts)
+</span><a href="#local-6989586621679166743"><span class="hs-identifier hs-var hs-var">body</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReqBodyJson CreateWebhookOpts
+-&gt; RestIO (ReqBodyJson CreateWebhookOpts)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CreateWebhookOpts -&gt; ReqBodyJson CreateWebhookOpts
+forall a. a -&gt; ReqBodyJson a
+</span><span class="hs-identifier hs-var">R.ReqBodyJson</span></span><span> </span><span class="annot"><span class="annottext">CreateWebhookOpts
+</span><a href="#local-6989586621679166744"><span class="hs-identifier hs-var">patch</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-109"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Url 'Https
+-&gt; RestIO (ReqBodyJson CreateWebhookOpts)
+-&gt; Option 'Https
+-&gt; JsonRequest
+forall a.
+HttpBody a =&gt;
+Url 'Https -&gt; RestIO a -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Post"><span class="hs-identifier hs-var">Post</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;channels&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166745"><span class="hs-identifier hs-var">channel</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">RestIO (ReqBodyJson CreateWebhookOpts)
+</span><a href="#local-6989586621679166743"><span class="hs-identifier hs-var">body</span></a></span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetChannelWebhooks"><span class="hs-identifier hs-type">GetChannelWebhooks</span></a></span><span> </span><span id="local-6989586621679166738"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166738"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-112"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Get"><span class="hs-identifier hs-var">Get</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;channels&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166738"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetGuildWebhooks"><span class="hs-identifier hs-type">GetGuildWebhooks</span></a></span><span> </span><span id="local-6989586621679166736"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166736"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-115"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Get"><span class="hs-identifier hs-var">Get</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;guilds&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166736"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetWebhook"><span class="hs-identifier hs-type">GetWebhook</span></a></span><span> </span><span id="local-6989586621679166735"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166735"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-118"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Get"><span class="hs-identifier hs-var">Get</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166735"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-119"></span><span>
+</span><span id="line-120"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#GetWebhookWithToken"><span class="hs-identifier hs-type">GetWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166734"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166734"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span id="local-6989586621679166733"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166733"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-121"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Get"><span class="hs-identifier hs-var">Get</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166734"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166733"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhook"><span class="hs-identifier hs-type">ModifyWebhook</span></a></span><span> </span><span id="local-6989586621679166732"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166732"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span id="local-6989586621679166731"><span class="annot"><span class="annottext">ModifyWebhookOpts
+</span><a href="#local-6989586621679166731"><span class="hs-identifier hs-var">patch</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-124"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https
+-&gt; RestIO (ReqBodyJson ModifyWebhookOpts)
+-&gt; Option 'Https
+-&gt; JsonRequest
+forall a.
+HttpBody a =&gt;
+Url 'Https -&gt; RestIO a -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Patch"><span class="hs-identifier hs-var">Patch</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166732"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ReqBodyJson ModifyWebhookOpts
+-&gt; RestIO (ReqBodyJson ModifyWebhookOpts)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModifyWebhookOpts -&gt; ReqBodyJson ModifyWebhookOpts
+forall a. a -&gt; ReqBodyJson a
+</span><span class="hs-identifier hs-var">R.ReqBodyJson</span></span><span> </span><span class="annot"><span class="annottext">ModifyWebhookOpts
+</span><a href="#local-6989586621679166731"><span class="hs-identifier hs-var">patch</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-125"></span><span>
+</span><span id="line-126"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ModifyWebhookWithToken"><span class="hs-identifier hs-type">ModifyWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166729"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166729"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span id="local-6989586621679166728"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166728"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679166727"><span class="annot"><span class="annottext">ModifyWebhookOpts
+</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-127"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https
+-&gt; RestIO (ReqBodyJson ModifyWebhookOpts)
+-&gt; Option 'Https
+-&gt; JsonRequest
+forall a.
+HttpBody a =&gt;
+Url 'Https -&gt; RestIO a -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Patch"><span class="hs-identifier hs-var">Patch</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166729"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166728"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ReqBodyJson ModifyWebhookOpts
+-&gt; RestIO (ReqBodyJson ModifyWebhookOpts)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModifyWebhookOpts -&gt; ReqBodyJson ModifyWebhookOpts
+forall a. a -&gt; ReqBodyJson a
+</span><span class="hs-identifier hs-var">R.ReqBodyJson</span></span><span> </span><span class="annot"><span class="annottext">ModifyWebhookOpts
+</span><a href="#local-6989586621679166727"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-128"></span><span>
+</span><span id="line-129"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#DeleteWebhook"><span class="hs-identifier hs-type">DeleteWebhook</span></a></span><span> </span><span id="local-6989586621679166726"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166726"><span class="hs-identifier hs-var">w</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-130"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Delete"><span class="hs-identifier hs-var">Delete</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166726"><span class="hs-identifier hs-var">w</span></a></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-131"></span><span>
+</span><span id="line-132"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#DeleteWebhookWithToken"><span class="hs-identifier hs-type">DeleteWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166724"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166724"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span id="local-6989586621679166723"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166723"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-133"></span><span>    </span><span class="annot"><span class="annottext">Url 'Https -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Delete"><span class="hs-identifier hs-var">Delete</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166724"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166723"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>  </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-134"></span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#ExecuteWebhookWithToken"><span class="hs-identifier hs-type">ExecuteWebhookWithToken</span></a></span><span> </span><span id="local-6989586621679166722"><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166722"><span class="hs-identifier hs-var">w</span></a></span></span><span> </span><span id="local-6989586621679166721"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166721"><span class="hs-identifier hs-var">tok</span></a></span></span><span> </span><span id="local-6989586621679166720"><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts
+</span><a href="#local-6989586621679166720"><span class="hs-identifier hs-var">o</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-136"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts -&gt; WebhookContent
+</span><a href="Discord.Internal.Rest.Webhook.html#executeWebhookWithTokenOptsContent"><span class="hs-identifier hs-var hs-var">executeWebhookWithTokenOptsContent</span></a></span><span> </span><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts
+</span><a href="#local-6989586621679166720"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-137"></span><span>      </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentFile"><span class="hs-identifier hs-type">WebhookContentFile</span></a></span><span> </span><span id="local-6989586621679166719"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166719"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679166718"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166718"><span class="hs-identifier hs-var">text</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-138"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166717"><span class="annot"><span class="annottext">part :: PartM IO
+</span><a href="#local-6989586621679166717"><span class="hs-identifier hs-var hs-var">part</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; String -&gt; RequestBody -&gt; PartM IO
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+Text -&gt; String -&gt; RequestBody -&gt; PartM m
+</span><span class="hs-identifier hs-var">partFileRequestBody</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;file&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166719"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; RequestBody
+</span><span class="hs-identifier hs-var">RequestBodyBS</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166718"><span class="hs-identifier hs-var">text</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>            </span><span id="local-6989586621679166715"><span class="annot"><span class="annottext">body :: RestIO ReqBodyMultipart
+</span><a href="#local-6989586621679166715"><span class="hs-identifier hs-var hs-var">body</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[PartM IO] -&gt; RestIO ReqBodyMultipart
+forall (m :: * -&gt; *). MonadIO m =&gt; [PartM IO] -&gt; m ReqBodyMultipart
+</span><span class="hs-identifier hs-var">R.reqBodyMultipart</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PartM IO
+</span><a href="#local-6989586621679166717"><span class="hs-identifier hs-var">part</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-140"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Url 'Https
+-&gt; RestIO ReqBodyMultipart -&gt; Option 'Https -&gt; JsonRequest
+forall a.
+HttpBody a =&gt;
+Url 'Https -&gt; RestIO a -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Post"><span class="hs-identifier hs-var">Post</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166722"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166721"><span class="hs-identifier hs-var">tok</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">RestIO ReqBodyMultipart
+</span><a href="#local-6989586621679166715"><span class="hs-identifier hs-var">body</span></a></span><span> </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-141"></span><span>      </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentText"><span class="hs-identifier hs-type">WebhookContentText</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-142"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166713"><span class="annot"><span class="annottext">body :: RestIO (ReqBodyJson ExecuteWebhookWithTokenOpts)
+</span><a href="#local-6989586621679166713"><span class="hs-identifier hs-var hs-var">body</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReqBodyJson ExecuteWebhookWithTokenOpts
+-&gt; RestIO (ReqBodyJson ExecuteWebhookWithTokenOpts)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts
+-&gt; ReqBodyJson ExecuteWebhookWithTokenOpts
+forall a. a -&gt; ReqBodyJson a
+</span><span class="hs-identifier hs-var">R.ReqBodyJson</span></span><span> </span><span class="annot"><span class="annottext">ExecuteWebhookWithTokenOpts
+</span><a href="#local-6989586621679166720"><span class="hs-identifier hs-var">o</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Url 'Https
+-&gt; RestIO (ReqBodyJson ExecuteWebhookWithTokenOpts)
+-&gt; Option 'Https
+-&gt; JsonRequest
+forall a.
+HttpBody a =&gt;
+Url 'Https -&gt; RestIO a -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Post"><span class="hs-identifier hs-var">Post</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166722"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166721"><span class="hs-identifier hs-var">tok</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">RestIO (ReqBodyJson ExecuteWebhookWithTokenOpts)
+</span><a href="#local-6989586621679166713"><span class="hs-identifier hs-var">body</span></a></span><span> </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-144"></span><span>      </span><span class="annot"><a href="Discord.Internal.Rest.Webhook.html#WebhookContentEmbeds"><span class="hs-identifier hs-type">WebhookContentEmbeds</span></a></span><span> </span><span id="local-6989586621679166712"><span class="annot"><span class="annottext">[CreateEmbed]
+</span><a href="#local-6989586621679166712"><span class="hs-identifier hs-var">embeds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-145"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166711"><span class="annot"><span class="annottext">mkPart :: (Text, ByteString) -&gt; PartM m
+</span><a href="#local-6989586621679166711"><span class="hs-identifier hs-var hs-var">mkPart</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166710"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166710"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679166709"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166709"><span class="hs-identifier hs-var">content</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; String -&gt; RequestBody -&gt; PartM m
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+Text -&gt; String -&gt; RequestBody -&gt; PartM m
+</span><span class="hs-identifier hs-var">partFileRequestBody</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166710"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166710"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; RequestBody
+</span><span class="hs-identifier hs-var">RequestBodyBS</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166709"><span class="hs-identifier hs-var">content</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-146"></span><span>            </span><span id="local-6989586621679166708"><span class="annot"><span class="annottext">uploads :: CreateEmbed -&gt; [(a, ByteString)]
+</span><a href="#local-6989586621679166708"><span class="hs-identifier hs-var hs-var">uploads</span></a></span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Embed.html#CreateEmbed"><span class="hs-identifier hs-type">CreateEmbed</span></a></span><span class="hs-special">{</span><span id="local-6989586621679166696"><span id="local-6989586621679166697"><span id="local-6989586621679166698"><span id="local-6989586621679166699"><span id="local-6989586621679166700"><span id="local-6989586621679166701"><span id="local-6989586621679166702"><span id="local-6989586621679166703"><span id="local-6989586621679166704"><span id="local-6989586621679166705"><span id="local-6989586621679166706"><span class="annot"><span class="annottext">[EmbedField]
+Maybe CreateEmbedImage
+Text
+createEmbedFooterIcon :: CreateEmbed -&gt; Maybe CreateEmbedImage
+createEmbedFooterText :: CreateEmbed -&gt; Text
+createEmbedImage :: CreateEmbed -&gt; Maybe CreateEmbedImage
+createEmbedFields :: CreateEmbed -&gt; [EmbedField]
+createEmbedDescription :: CreateEmbed -&gt; Text
+createEmbedThumbnail :: CreateEmbed -&gt; Maybe CreateEmbedImage
+createEmbedUrl :: CreateEmbed -&gt; Text
+createEmbedTitle :: CreateEmbed -&gt; Text
+createEmbedAuthorIcon :: CreateEmbed -&gt; Maybe CreateEmbedImage
+createEmbedAuthorUrl :: CreateEmbed -&gt; Text
+createEmbedAuthorName :: CreateEmbed -&gt; Text
+createEmbedFooterIcon :: Maybe CreateEmbedImage
+createEmbedFooterText :: Text
+createEmbedImage :: Maybe CreateEmbedImage
+createEmbedFields :: [EmbedField]
+createEmbedDescription :: Text
+createEmbedThumbnail :: Maybe CreateEmbedImage
+createEmbedUrl :: Text
+createEmbedTitle :: Text
+createEmbedAuthorIcon :: Maybe CreateEmbedImage
+createEmbedAuthorUrl :: Text
+createEmbedAuthorName :: Text
+</span><a href="Discord.Internal.Types.Embed.html#createEmbedFooterIcon"><span class="hs-glyph hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">..</span></a></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679166684"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166683"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166684"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679166684"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Embed.html#CreateEmbedImageUpload"><span class="hs-identifier hs-type">CreateEmbedImageUpload</span></a></span><span> </span><span id="local-6989586621679166683"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679166683"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-147"></span><span>                                          </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><span class="hs-string">&quot;author.png&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe CreateEmbedImage
+</span><a href="#local-6989586621679166704"><span class="hs-identifier hs-var">createEmbedAuthorIcon</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-148"></span><span>                                          </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><span class="hs-string">&quot;thumbnail.png&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe CreateEmbedImage
+</span><a href="#local-6989586621679166701"><span class="hs-identifier hs-var">createEmbedThumbnail</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span>                                          </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><span class="hs-string">&quot;image.png&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe CreateEmbedImage
+</span><a href="#local-6989586621679166698"><span class="hs-identifier hs-var">createEmbedImage</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-150"></span><span>                                          </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><span class="hs-string">&quot;footer.png&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe CreateEmbedImage
+</span><a href="#local-6989586621679166696"><span class="hs-identifier hs-var">createEmbedFooterIcon</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-151"></span><span>            </span><span id="local-6989586621679166681"><span class="annot"><span class="annottext">parts :: [PartM IO]
+</span><a href="#local-6989586621679166681"><span class="hs-identifier hs-var hs-var">parts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">((Text, ByteString) -&gt; PartM IO)
+-&gt; [(Text, ByteString)] -&gt; [PartM IO]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">(Text, ByteString) -&gt; PartM IO
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(Text, ByteString) -&gt; PartM m
+</span><a href="#local-6989586621679166711"><span class="hs-identifier hs-var">mkPart</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(CreateEmbed -&gt; [(Text, ByteString)])
+-&gt; [CreateEmbed] -&gt; [(Text, ByteString)]
+forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
+</span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="annot"><span class="annottext">CreateEmbed -&gt; [(Text, ByteString)]
+forall a. IsString a =&gt; CreateEmbed -&gt; [(a, ByteString)]
+</span><a href="#local-6989586621679166708"><span class="hs-identifier hs-var">uploads</span></a></span><span> </span><span class="annot"><span class="annottext">[CreateEmbed]
+</span><a href="#local-6989586621679166712"><span class="hs-identifier hs-var">embeds</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-152"></span><span>            </span><span id="local-6989586621679166679"><span class="annot"><span class="annottext">partsJson :: [PartM IO]
+</span><a href="#local-6989586621679166679"><span class="hs-identifier hs-var hs-var">partsJson</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text -&gt; ByteString -&gt; PartM IO
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+Text -&gt; ByteString -&gt; PartM m
+</span><span class="hs-identifier hs-var">partBS</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;payload_json&quot;</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; PartM IO) -&gt; ByteString -&gt; PartM IO
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><span class="hs-identifier hs-var">BL.toStrict</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; ByteString
+forall a. ToJSON a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; ByteString) -&gt; Value -&gt; ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Value
+forall a. ToJSON a =&gt; a -&gt; Value
+</span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Value) -&gt; Value -&gt; Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
+</span><span class="hs-identifier hs-var">object</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;embed&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Embed -&gt; Pair
+forall kv v. (KeyValue kv, ToJSON v) =&gt; Text -&gt; v -&gt; kv
+</span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">CreateEmbed -&gt; Embed
+</span><a href="Discord.Internal.Types.Embed.html#createEmbed"><span class="hs-identifier hs-var">createEmbed</span></a></span><span> </span><span class="annot"><span class="annottext">CreateEmbed
+</span><a href="#local-6989586621679166675"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679166675"><span class="annot"><span class="annottext">CreateEmbed
+</span><a href="#local-6989586621679166675"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CreateEmbed]
+</span><a href="#local-6989586621679166712"><span class="hs-identifier hs-var">embeds</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-153"></span><span>            </span><span id="local-6989586621679166674"><span class="annot"><span class="annottext">body :: RestIO ReqBodyMultipart
+</span><a href="#local-6989586621679166674"><span class="hs-identifier hs-var hs-var">body</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[PartM IO] -&gt; RestIO ReqBodyMultipart
+forall (m :: * -&gt; *). MonadIO m =&gt; [PartM IO] -&gt; m ReqBodyMultipart
+</span><span class="hs-identifier hs-var">R.reqBodyMultipart</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[PartM IO]
+</span><a href="#local-6989586621679166679"><span class="hs-identifier hs-var">partsJson</span></a></span><span> </span><span class="annot"><span class="annottext">[PartM IO] -&gt; [PartM IO] -&gt; [PartM IO]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[PartM IO]
+</span><a href="#local-6989586621679166681"><span class="hs-identifier hs-var">parts</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-154"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Url 'Https
+-&gt; RestIO ReqBodyMultipart -&gt; Option 'Https -&gt; JsonRequest
+forall a.
+HttpBody a =&gt;
+Url 'Https -&gt; RestIO a -&gt; Option 'Https -&gt; JsonRequest
+</span><a href="Discord.Internal.Rest.Prelude.html#Post"><span class="hs-identifier hs-var">Post</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Url 'Https
+</span><a href="Discord.Internal.Rest.Prelude.html#baseUrl"><span class="hs-identifier hs-var">baseUrl</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;webhooks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; ChannelId -&gt; Url 'Https
+forall a (scheme :: Scheme).
+Show a =&gt;
+Url scheme -&gt; a -&gt; Url scheme
+</span><a href="Discord.Internal.Rest.Prelude.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">ChannelId
+</span><a href="#local-6989586621679166722"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="annot"><span class="annottext">Url 'Https -&gt; Text -&gt; Url 'Https
+forall (scheme :: Scheme). Url scheme -&gt; Text -&gt; Url scheme
+</span><span class="hs-operator hs-var">/:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166721"><span class="hs-identifier hs-var">tok</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">RestIO ReqBodyMultipart
+</span><a href="#local-6989586621679166674"><span class="hs-identifier hs-var">body</span></a></span><span> </span><span class="annot"><span class="annottext">Option 'Https
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-155"></span></pre></body></html>

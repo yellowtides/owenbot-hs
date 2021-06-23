@@ -1,0 +1,496 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- | Provides base types and utility functions needed for modules in Discord.Internal.Types</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Discord.Internal.Types.Prelude</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bits</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Aeson.Types</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Time.Clock</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Time.Clock.POSIX</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mzero</span></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Compose</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Compose</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Compose</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">getCompose</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">first</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- | Authorization token for the Discord API</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">data</span><span> </span><span id="Auth"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-var">Auth</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Auth"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-var">Auth</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679164077"><span id="local-6989586621679164079"><span id="local-6989586621679164081"><span class="annot"><span class="annottext">Int -&gt; Auth -&gt; ShowS
+[Auth] -&gt; ShowS
+Auth -&gt; String
+(Int -&gt; Auth -&gt; ShowS)
+-&gt; (Auth -&gt; String) -&gt; ([Auth] -&gt; ShowS) -&gt; Show Auth
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Auth] -&gt; ShowS
+$cshowList :: [Auth] -&gt; ShowS
+show :: Auth -&gt; String
+$cshow :: Auth -&gt; String
+showsPrec :: Int -&gt; Auth -&gt; ShowS
+$cshowsPrec :: Int -&gt; Auth -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164072"><span id="local-6989586621679164074"><span class="annot"><span class="annottext">Auth -&gt; Auth -&gt; Bool
+(Auth -&gt; Auth -&gt; Bool) -&gt; (Auth -&gt; Auth -&gt; Bool) -&gt; Eq Auth
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Auth -&gt; Auth -&gt; Bool
+$c/= :: Auth -&gt; Auth -&gt; Bool
+== :: Auth -&gt; Auth -&gt; Bool
+$c== :: Auth -&gt; Auth -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164056"><span id="local-6989586621679164058"><span id="local-6989586621679164060"><span id="local-6989586621679164062"><span id="local-6989586621679164064"><span id="local-6989586621679164066"><span id="local-6989586621679164068"><span class="annot"><span class="annottext">Eq Auth
+Eq Auth
+-&gt; (Auth -&gt; Auth -&gt; Ordering)
+-&gt; (Auth -&gt; Auth -&gt; Bool)
+-&gt; (Auth -&gt; Auth -&gt; Bool)
+-&gt; (Auth -&gt; Auth -&gt; Bool)
+-&gt; (Auth -&gt; Auth -&gt; Bool)
+-&gt; (Auth -&gt; Auth -&gt; Auth)
+-&gt; (Auth -&gt; Auth -&gt; Auth)
+-&gt; Ord Auth
+Auth -&gt; Auth -&gt; Bool
+Auth -&gt; Auth -&gt; Ordering
+Auth -&gt; Auth -&gt; Auth
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Auth -&gt; Auth -&gt; Auth
+$cmin :: Auth -&gt; Auth -&gt; Auth
+max :: Auth -&gt; Auth -&gt; Auth
+$cmax :: Auth -&gt; Auth -&gt; Auth
+&gt;= :: Auth -&gt; Auth -&gt; Bool
+$c&gt;= :: Auth -&gt; Auth -&gt; Bool
+&gt; :: Auth -&gt; Auth -&gt; Bool
+$c&gt; :: Auth -&gt; Auth -&gt; Bool
+&lt;= :: Auth -&gt; Auth -&gt; Bool
+$c&lt;= :: Auth -&gt; Auth -&gt; Bool
+&lt; :: Auth -&gt; Auth -&gt; Bool
+$c&lt; :: Auth -&gt; Auth -&gt; Bool
+compare :: Auth -&gt; Auth -&gt; Ordering
+$ccompare :: Auth -&gt; Auth -&gt; Ordering
+$cp1Ord :: Eq Auth
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- | Get the raw token formatted for use with the websocket gateway</span><span>
+</span><span id="line-25"></span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#authToken"><span class="hs-identifier hs-type">authToken</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-type">Auth</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
+</span><span id="line-26"></span><span id="authToken"><span class="annot"><span class="annottext">authToken :: Auth -&gt; Text
+</span><a href="Discord.Internal.Types.Prelude.html#authToken"><span class="hs-identifier hs-var hs-var">authToken</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Auth"><span class="hs-identifier hs-type">Auth</span></a></span><span> </span><span id="local-6989586621679164053"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679164053"><span class="hs-identifier hs-var">tok</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679164052"><span class="annot"><span class="annottext">token :: Text
+</span><a href="#local-6989586621679164052"><span class="hs-identifier hs-var hs-var">token</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
+</span><span class="hs-identifier hs-var">T.strip</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679164053"><span class="hs-identifier hs-var">tok</span></a></span><span>
+</span><span id="line-27"></span><span>                           </span><span id="local-6989586621679164050"><span class="annot"><span class="annottext">bot :: Text
+</span><a href="#local-6989586621679164050"><span class="hs-identifier hs-var hs-var">bot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;Bot &quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
+</span><span class="hs-operator hs-var">`T.isPrefixOf`</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679164052"><span class="hs-identifier hs-var">token</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;Bot &quot;</span></span><span>
+</span><span id="line-28"></span><span>                       </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679164050"><span class="hs-identifier hs-var">bot</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679164052"><span class="hs-identifier hs-var">token</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- | A unique integer identifier. Can be used to calculate the creation date of an entity.</span><span>
+</span><span id="line-31"></span><span class="hs-keyword">newtype</span><span> </span><span id="Snowflake"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-var">Snowflake</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Snowflake"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-var">Snowflake</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679164033"><span id="local-6989586621679164035"><span id="local-6989586621679164037"><span id="local-6989586621679164039"><span id="local-6989586621679164041"><span id="local-6989586621679164043"><span id="local-6989586621679164045"><span class="annot"><span class="annottext">Eq Snowflake
+Eq Snowflake
+-&gt; (Snowflake -&gt; Snowflake -&gt; Ordering)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Bool)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Bool)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Bool)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Bool)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; Ord Snowflake
+Snowflake -&gt; Snowflake -&gt; Bool
+Snowflake -&gt; Snowflake -&gt; Ordering
+Snowflake -&gt; Snowflake -&gt; Snowflake
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cmin :: Snowflake -&gt; Snowflake -&gt; Snowflake
+max :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cmax :: Snowflake -&gt; Snowflake -&gt; Snowflake
+&gt;= :: Snowflake -&gt; Snowflake -&gt; Bool
+$c&gt;= :: Snowflake -&gt; Snowflake -&gt; Bool
+&gt; :: Snowflake -&gt; Snowflake -&gt; Bool
+$c&gt; :: Snowflake -&gt; Snowflake -&gt; Bool
+&lt;= :: Snowflake -&gt; Snowflake -&gt; Bool
+$c&lt;= :: Snowflake -&gt; Snowflake -&gt; Bool
+&lt; :: Snowflake -&gt; Snowflake -&gt; Bool
+$c&lt; :: Snowflake -&gt; Snowflake -&gt; Bool
+compare :: Snowflake -&gt; Snowflake -&gt; Ordering
+$ccompare :: Snowflake -&gt; Snowflake -&gt; Ordering
+$cp1Ord :: Eq Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164029"><span id="local-6989586621679164031"><span class="annot"><span class="annottext">Snowflake -&gt; Snowflake -&gt; Bool
+(Snowflake -&gt; Snowflake -&gt; Bool)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Bool) -&gt; Eq Snowflake
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Snowflake -&gt; Snowflake -&gt; Bool
+$c/= :: Snowflake -&gt; Snowflake -&gt; Bool
+== :: Snowflake -&gt; Snowflake -&gt; Bool
+$c== :: Snowflake -&gt; Snowflake -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164015"><span id="local-6989586621679164017"><span id="local-6989586621679164019"><span id="local-6989586621679164021"><span id="local-6989586621679164023"><span id="local-6989586621679164025"><span id="local-6989586621679164027"><span class="annot"><span class="annottext">Integer -&gt; Snowflake
+Snowflake -&gt; Snowflake
+Snowflake -&gt; Snowflake -&gt; Snowflake
+(Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake)
+-&gt; (Integer -&gt; Snowflake)
+-&gt; Num Snowflake
+forall a.
+(a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Integer -&gt; a)
+-&gt; Num a
+fromInteger :: Integer -&gt; Snowflake
+$cfromInteger :: Integer -&gt; Snowflake
+signum :: Snowflake -&gt; Snowflake
+$csignum :: Snowflake -&gt; Snowflake
+abs :: Snowflake -&gt; Snowflake
+$cabs :: Snowflake -&gt; Snowflake
+negate :: Snowflake -&gt; Snowflake
+$cnegate :: Snowflake -&gt; Snowflake
+* :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$c* :: Snowflake -&gt; Snowflake -&gt; Snowflake
+- :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$c- :: Snowflake -&gt; Snowflake -&gt; Snowflake
++ :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$c+ :: Snowflake -&gt; Snowflake -&gt; Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163998"><span id="local-6989586621679164000"><span id="local-6989586621679164002"><span id="local-6989586621679164004"><span id="local-6989586621679164006"><span id="local-6989586621679164008"><span id="local-6989586621679164010"><span class="annot"><span class="annottext">Enum Snowflake
+Real Snowflake
+Real Snowflake
+-&gt; Enum Snowflake
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake))
+-&gt; (Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake))
+-&gt; (Snowflake -&gt; Integer)
+-&gt; Integral Snowflake
+Snowflake -&gt; Integer
+Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake)
+Snowflake -&gt; Snowflake -&gt; Snowflake
+forall a.
+Real a
+-&gt; Enum a
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; (a, a))
+-&gt; (a -&gt; a -&gt; (a, a))
+-&gt; (a -&gt; Integer)
+-&gt; Integral a
+toInteger :: Snowflake -&gt; Integer
+$ctoInteger :: Snowflake -&gt; Integer
+divMod :: Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake)
+$cdivMod :: Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake)
+quotRem :: Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake)
+$cquotRem :: Snowflake -&gt; Snowflake -&gt; (Snowflake, Snowflake)
+mod :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cmod :: Snowflake -&gt; Snowflake -&gt; Snowflake
+div :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cdiv :: Snowflake -&gt; Snowflake -&gt; Snowflake
+rem :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$crem :: Snowflake -&gt; Snowflake -&gt; Snowflake
+quot :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cquot :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cp2Integral :: Enum Snowflake
+$cp1Integral :: Real Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Integral</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163981"><span id="local-6989586621679163983"><span id="local-6989586621679163985"><span id="local-6989586621679163987"><span id="local-6989586621679163989"><span id="local-6989586621679163991"><span id="local-6989586621679163993"><span id="local-6989586621679163995"><span class="annot"><span class="annottext">Int -&gt; Snowflake
+Snowflake -&gt; Int
+Snowflake -&gt; [Snowflake]
+Snowflake -&gt; Snowflake
+Snowflake -&gt; Snowflake -&gt; [Snowflake]
+Snowflake -&gt; Snowflake -&gt; Snowflake -&gt; [Snowflake]
+(Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake)
+-&gt; (Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int)
+-&gt; (Snowflake -&gt; [Snowflake])
+-&gt; (Snowflake -&gt; Snowflake -&gt; [Snowflake])
+-&gt; (Snowflake -&gt; Snowflake -&gt; [Snowflake])
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake -&gt; [Snowflake])
+-&gt; Enum Snowflake
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+enumFromThenTo :: Snowflake -&gt; Snowflake -&gt; Snowflake -&gt; [Snowflake]
+$cenumFromThenTo :: Snowflake -&gt; Snowflake -&gt; Snowflake -&gt; [Snowflake]
+enumFromTo :: Snowflake -&gt; Snowflake -&gt; [Snowflake]
+$cenumFromTo :: Snowflake -&gt; Snowflake -&gt; [Snowflake]
+enumFromThen :: Snowflake -&gt; Snowflake -&gt; [Snowflake]
+$cenumFromThen :: Snowflake -&gt; Snowflake -&gt; [Snowflake]
+enumFrom :: Snowflake -&gt; [Snowflake]
+$cenumFrom :: Snowflake -&gt; [Snowflake]
+fromEnum :: Snowflake -&gt; Int
+$cfromEnum :: Snowflake -&gt; Int
+toEnum :: Int -&gt; Snowflake
+$ctoEnum :: Int -&gt; Snowflake
+pred :: Snowflake -&gt; Snowflake
+$cpred :: Snowflake -&gt; Snowflake
+succ :: Snowflake -&gt; Snowflake
+$csucc :: Snowflake -&gt; Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163976"><span class="annot"><span class="annottext">Num Snowflake
+Ord Snowflake
+Num Snowflake
+-&gt; Ord Snowflake -&gt; (Snowflake -&gt; Rational) -&gt; Real Snowflake
+Snowflake -&gt; Rational
+forall a. Num a -&gt; Ord a -&gt; (a -&gt; Rational) -&gt; Real a
+toRational :: Snowflake -&gt; Rational
+$ctoRational :: Snowflake -&gt; Rational
+$cp2Real :: Ord Snowflake
+$cp1Real :: Num Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Real</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163930"><span id="local-6989586621679163932"><span id="local-6989586621679163934"><span id="local-6989586621679163936"><span id="local-6989586621679163938"><span id="local-6989586621679163940"><span id="local-6989586621679163942"><span id="local-6989586621679163944"><span id="local-6989586621679163946"><span id="local-6989586621679163948"><span id="local-6989586621679163950"><span id="local-6989586621679163952"><span id="local-6989586621679163954"><span id="local-6989586621679163956"><span id="local-6989586621679163958"><span id="local-6989586621679163960"><span id="local-6989586621679163962"><span id="local-6989586621679163964"><span id="local-6989586621679163966"><span id="local-6989586621679163968"><span id="local-6989586621679163970"><span id="local-6989586621679163972"><span class="annot"><span class="annottext">Eq Snowflake
+Snowflake
+Eq Snowflake
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; Snowflake
+-&gt; (Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Bool)
+-&gt; (Snowflake -&gt; Maybe Int)
+-&gt; (Snowflake -&gt; Int)
+-&gt; (Snowflake -&gt; Bool)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int -&gt; Snowflake)
+-&gt; (Snowflake -&gt; Int)
+-&gt; Bits Snowflake
+Int -&gt; Snowflake
+Snowflake -&gt; Bool
+Snowflake -&gt; Int
+Snowflake -&gt; Maybe Int
+Snowflake -&gt; Snowflake
+Snowflake -&gt; Int -&gt; Bool
+Snowflake -&gt; Int -&gt; Snowflake
+Snowflake -&gt; Snowflake -&gt; Snowflake
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; a
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; Bool)
+-&gt; (a -&gt; Maybe Int)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; Bool)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; Bits a
+popCount :: Snowflake -&gt; Int
+$cpopCount :: Snowflake -&gt; Int
+rotateR :: Snowflake -&gt; Int -&gt; Snowflake
+$crotateR :: Snowflake -&gt; Int -&gt; Snowflake
+rotateL :: Snowflake -&gt; Int -&gt; Snowflake
+$crotateL :: Snowflake -&gt; Int -&gt; Snowflake
+unsafeShiftR :: Snowflake -&gt; Int -&gt; Snowflake
+$cunsafeShiftR :: Snowflake -&gt; Int -&gt; Snowflake
+shiftR :: Snowflake -&gt; Int -&gt; Snowflake
+$cshiftR :: Snowflake -&gt; Int -&gt; Snowflake
+unsafeShiftL :: Snowflake -&gt; Int -&gt; Snowflake
+$cunsafeShiftL :: Snowflake -&gt; Int -&gt; Snowflake
+shiftL :: Snowflake -&gt; Int -&gt; Snowflake
+$cshiftL :: Snowflake -&gt; Int -&gt; Snowflake
+isSigned :: Snowflake -&gt; Bool
+$cisSigned :: Snowflake -&gt; Bool
+bitSize :: Snowflake -&gt; Int
+$cbitSize :: Snowflake -&gt; Int
+bitSizeMaybe :: Snowflake -&gt; Maybe Int
+$cbitSizeMaybe :: Snowflake -&gt; Maybe Int
+testBit :: Snowflake -&gt; Int -&gt; Bool
+$ctestBit :: Snowflake -&gt; Int -&gt; Bool
+complementBit :: Snowflake -&gt; Int -&gt; Snowflake
+$ccomplementBit :: Snowflake -&gt; Int -&gt; Snowflake
+clearBit :: Snowflake -&gt; Int -&gt; Snowflake
+$cclearBit :: Snowflake -&gt; Int -&gt; Snowflake
+setBit :: Snowflake -&gt; Int -&gt; Snowflake
+$csetBit :: Snowflake -&gt; Int -&gt; Snowflake
+bit :: Int -&gt; Snowflake
+$cbit :: Int -&gt; Snowflake
+zeroBits :: Snowflake
+$czeroBits :: Snowflake
+rotate :: Snowflake -&gt; Int -&gt; Snowflake
+$crotate :: Snowflake -&gt; Int -&gt; Snowflake
+shift :: Snowflake -&gt; Int -&gt; Snowflake
+$cshift :: Snowflake -&gt; Int -&gt; Snowflake
+complement :: Snowflake -&gt; Snowflake
+$ccomplement :: Snowflake -&gt; Snowflake
+xor :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cxor :: Snowflake -&gt; Snowflake -&gt; Snowflake
+.|. :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$c.|. :: Snowflake -&gt; Snowflake -&gt; Snowflake
+.&amp;. :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$c.&amp;. :: Snowflake -&gt; Snowflake -&gt; Snowflake
+$cp1Bits :: Eq Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Bits</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163924"><span id="local-6989586621679163927"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-35"></span><span>  </span><span id="local-6989586621679163923"><span class="annot"><span class="annottext">show :: Snowflake -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span> </span><span id="local-6989586621679163921"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679163921"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679163921"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163914"><span id="local-6989586621679163916"><span id="local-6989586621679163918"><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-38"></span><span>  </span><span id="local-6989586621679163912"><span class="annot"><span class="annottext">readsPrec :: Int -&gt; ReadS Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">readsPrec</span></span></span><span> </span><span id="local-6989586621679163910"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163910"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Compose ((-&gt;) String) [] (Snowflake, String) -&gt; ReadS Snowflake
+forall k1 (f :: k1 -&gt; *) k2 (g :: k2 -&gt; k1) (a :: k2).
+Compose f g a -&gt; f (g a)
+</span><span class="hs-identifier hs-var hs-var">getCompose</span></span><span> </span><span class="annot"><span class="annottext">(Compose ((-&gt;) String) [] (Snowflake, String) -&gt; ReadS Snowflake)
+-&gt; Compose ((-&gt;) String) [] (Snowflake, String) -&gt; ReadS Snowflake
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Word64 -&gt; Snowflake) -&gt; (Word64, String) -&gt; (Snowflake, String)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Snowflake
+</span><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-var">Snowflake</span></a></span><span> </span><span class="annot"><span class="annottext">((Word64, String) -&gt; (Snowflake, String))
+-&gt; Compose ((-&gt;) String) [] (Word64, String)
+-&gt; Compose ((-&gt;) String) [] (Snowflake, String)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; [(Word64, String)])
+-&gt; Compose ((-&gt;) String) [] (Word64, String)
+forall k k1 (f :: k -&gt; *) (g :: k1 -&gt; k) (a :: k1).
+f (g a) -&gt; Compose f g a
+</span><span class="hs-identifier hs-var">Compose</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; String -&gt; [(Word64, String)]
+forall a. Read a =&gt; Int -&gt; ReadS a
+</span><span class="hs-identifier hs-var">readsPrec</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163910"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163902"><span id="local-6989586621679163904"><span id="local-6989586621679163906"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679163900"><span class="annot"><span class="annottext">toJSON :: Snowflake -&gt; Value
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span> </span><span id="local-6989586621679163898"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679163898"><span class="hs-identifier hs-var">snowflake</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value
+</span><span class="hs-identifier hs-var">String</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; (String -&gt; Text) -&gt; String -&gt; Value
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Value) -&gt; String -&gt; Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621679163898"><span class="hs-identifier hs-var">snowflake</span></a></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163892"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621679163890"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Snowflake
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span id="local-6989586621679163888"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163888"><span class="hs-identifier hs-var">snowflake</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Snowflake -&gt; Parser Snowflake
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Snowflake -&gt; Parser Snowflake)
+-&gt; (String -&gt; Snowflake) -&gt; String -&gt; Parser Snowflake
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Snowflake
+forall a. Read a =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">read</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Parser Snowflake) -&gt; String -&gt; Parser Snowflake
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679163888"><span class="hs-identifier hs-var">snowflake</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Snowflake
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a
+</span><span class="hs-identifier hs-var">mzero</span></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">type</span><span> </span><span id="ChannelId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ChannelId"><span class="hs-identifier hs-var">ChannelId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">type</span><span> </span><span id="StageId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#StageId"><span class="hs-identifier hs-var">StageId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-49"></span><span class="hs-keyword">type</span><span> </span><span id="GuildId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#GuildId"><span class="hs-identifier hs-var">GuildId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">type</span><span> </span><span id="MessageId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#MessageId"><span class="hs-identifier hs-var">MessageId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">type</span><span> </span><span id="EmojiId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#EmojiId"><span class="hs-identifier hs-var">EmojiId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-52"></span><span class="hs-keyword">type</span><span> </span><span id="UserId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#UserId"><span class="hs-identifier hs-var">UserId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-53"></span><span class="hs-keyword">type</span><span> </span><span id="OverwriteId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#OverwriteId"><span class="hs-identifier hs-var">OverwriteId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">type</span><span> </span><span id="RoleId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#RoleId"><span class="hs-identifier hs-var">RoleId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-55"></span><span class="hs-keyword">type</span><span> </span><span id="IntegrationId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#IntegrationId"><span class="hs-identifier hs-var">IntegrationId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">type</span><span> </span><span id="WebhookId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#WebhookId"><span class="hs-identifier hs-var">WebhookId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">type</span><span> </span><span id="ParentId"><span class="annot"><a href="Discord.Internal.Types.Prelude.html#ParentId"><span class="hs-identifier hs-var">ParentId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- | Gets a creation date from a snowflake.</span><span>
+</span><span id="line-60"></span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#snowflakeCreationDate"><span class="hs-identifier hs-type">snowflakeCreationDate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#Snowflake"><span class="hs-identifier hs-type">Snowflake</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-61"></span><span id="snowflakeCreationDate"><span class="annot"><span class="annottext">snowflakeCreationDate :: Snowflake -&gt; UTCTime
+</span><a href="Discord.Internal.Types.Prelude.html#snowflakeCreationDate"><span class="hs-identifier hs-var hs-var">snowflakeCreationDate</span></a></span></span><span> </span><span id="local-6989586621679163873"><span class="annot"><span class="annottext">Snowflake
+</span><a href="#local-6989586621679163873"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; UTCTime
+</span><span class="hs-identifier hs-var">posixSecondsToUTCTime</span></span><span> </span><span class="annot"><span class="annottext">(POSIXTime -&gt; UTCTime)
+-&gt; (Snowflake -&gt; POSIXTime) -&gt; Snowflake -&gt; UTCTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Snowflake -&gt; POSIXTime
+forall a b. (Real a, Fractional b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">realToFrac</span></span><span>
+</span><span id="line-62"></span><span>  </span><span class="annot"><span class="annottext">(Snowflake -&gt; UTCTime) -&gt; Snowflake -&gt; UTCTime
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Snowflake
+</span><span class="hs-number">1420070400</span></span><span> </span><span class="annot"><span class="annottext">Snowflake -&gt; Snowflake -&gt; Snowflake
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Snowflake -&gt; Snowflake -&gt; Snowflake
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">quot</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Snowflake -&gt; Int -&gt; Snowflake
+forall a. Bits a =&gt; a -&gt; Int -&gt; a
+</span><span class="hs-identifier hs-var">shiftR</span></span><span> </span><span class="annot"><span class="annottext">Snowflake
+</span><a href="#local-6989586621679163873"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">22</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Snowflake
+</span><span class="hs-number">1000</span></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- | Default timestamp</span><span>
+</span><span id="line-65"></span><span class="annot"><a href="Discord.Internal.Types.Prelude.html#epochTime"><span class="hs-identifier hs-type">epochTime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-66"></span><span id="epochTime"><span class="annot"><span class="annottext">epochTime :: UTCTime
+</span><a href="Discord.Internal.Types.Prelude.html#epochTime"><span class="hs-identifier hs-var hs-var">epochTime</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; UTCTime
+</span><span class="hs-identifier hs-var">posixSecondsToUTCTime</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-67"></span></pre></body></html>

@@ -67,17 +67,16 @@ instance GHC.Exception.Type.Exception Command.Error.CommandError
 module Command.Parser
 
 -- | A <tt>ParsableArgument</tt> is a dataclass that represents arguments
---   that can be parsed from a message. Any datatype that is an instance of
---   this dataclass can be used as function arguments for a command handler
---   in <tt>command</tt>.
+--   that can be parsed from a message text. Any datatype that is an
+--   instance of this dataclass can be used as function arguments for a
+--   command handler in <tt>command</tt>.
 class ParsableArgument a
 
--- | <tt>parserForArg msg</tt> returns a parser that contains the parsed
---   element.
-parserForArg :: ParsableArgument a => Message -> Parser a
+-- | <tt>parserForArg</tt> is a parser that returns the parsed element.
+parserForArg :: ParsableArgument a => Parser a
 
 -- | Datatype wrapper for the remaining text in the input. Handy for
---   capturing everything remaining. The accessor function <tt>getEm</tt>
+--   capturing everything remaining. The accessor function <tt>getDeez</tt>
 --   isn't really meant to be used since pattern matching can do
 --   everything. Open to renaming.
 --   
@@ -89,16 +88,19 @@ parserForArg :: ParsableArgument a => Message -> Parser a
 --       $ \msg newStatus newType (Remaining newName) -&gt; do
 --           ...
 --   </pre>
-data RemainingText
+newtype RemainingText
 Remaining :: Text -> RemainingText
-[getEm] :: RemainingText -> Text
+[getDeez] :: RemainingText -> Text
 
 -- | <tt>manyTill1 p end</tt> is a parser that applies parser <tt>p</tt>
 --   <i>one</i> or more times until parser <tt>end</tt> succeeds. This is a
 --   variation on <a>manyTill</a> from Parsec.
 manyTill1 :: Stream s m t => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+
+-- | <tt>eofOrSpaces</tt> is a parser that parses an end of command, or at
+--   least one space and skips the result.
+endOrSpaces :: Parser ()
 instance Command.Parser.ParsableArgument Command.Parser.RemainingText
-instance Command.Parser.ParsableArgument Discord.Internal.Types.Channel.Message
 instance Command.Parser.ParsableArgument GHC.Base.String
 instance Command.Parser.ParsableArgument Data.Text.Internal.Text
 instance Command.Parser.ParsableArgument [Data.Text.Internal.Text]
@@ -254,7 +256,7 @@ weakOwoify :: Text -> Text
 
 -- | Amateur attempt at command abstraction and polyvariadic magic.
 --   
---   Inspired heavily but calamity-commands, which is provided by Ben Simms
+--   Inspired heavily by calamity-commands, which is provided by Ben Simms
 --   2020 under the MIT license.
 --   
 --   Ideally, this module wouldn't need to be touched after its initial
@@ -264,7 +266,7 @@ weakOwoify :: Text -> Text
 --   <b>As an OwenDev, you do not need to enable any GHC extensions, as
 --   the</b> <b>extensions are used internally within this module only</b>.
 --   
---   <h3><b>Notable extensions used (if you want to know)</b></h3>
+--   <h4><b>Notable extensions used (if you want to know)</b></h4>
 --   
 --   <ul>
 --   <li>ScopedTypeVariables: For using the same type variables in
@@ -290,19 +292,13 @@ weakOwoify :: Text -> Text
 --   <li>NamedFieldPuns: Shorten pattern matching ADT field names.</li>
 --   </ul>
 --   
---   Implementation references:
+--   <h4><b>Implementation references</b></h4>
 --   
 --   <ul>
 --   <li><a>Varargs - Haskell Wiki</a></li>
---   <li><a>Haskell-polyvariadic</a></li>
 --   <li><a>How to create a polyvariadic haskell function?</a></li>
 --   <li><a>How to write a Haskell function that takes a variadic function
 --   as an argument</a></li>
---   </ul>
---   
---   Design references:
---   
---   <ul>
 --   <li><a>calamity-commands</a></li>
 --   </ul>
 module Command.Command
@@ -332,7 +328,7 @@ data Command m
 --   is run in. This means you can call it from <a>DiscordHandler</a> or
 --   any other Monad that satisfies the constraints of <a>MonadDiscord</a>.
 --   
---   <h2><b>Examples:</b></h2>
+--   <h4><b>See some examples</b></h4>
 --   
 --   <tt>pong</tt> below responds to a ping by a pong.
 --   
@@ -341,15 +337,13 @@ data Command m
 --   pong = command "ping" $ \msg -&gt; respond msg "pong!"
 --   </pre>
 --   
---   <tt>pong2</tt> shows that <tt>help</tt> and <tt>runCommand</tt> can be
---   composed to create a normal receiver.
+--   <tt>pong2</tt> shows that <tt>runCommand</tt> can be composed to
+--   create a normal receiver. That is, it takes a Message and returns a
+--   unit action in the desired monad.
 --   
 --   <pre>
 --   pong2 :: (MonadDiscord m) =&gt; Message -&gt; m ()
---   pong2
---       = runCommand
---       . help "Custom help message"
---       . command "ping" $ \msg -&gt; respond msg "pong!"
+--   pong2 = runCommand $ command "ping" $ \msg -&gt; respond msg "pong!"
 --   </pre>
 --   
 --   <tt>weather</tt> below shows having arbitrary arguments in action.
@@ -362,20 +356,16 @@ data Command m
 --   </pre>
 --   
 --   <tt>complex</tt> shows that you can parse any type! (as long as you
---   create an instance declaration of <a>ParsableArgument</a> for it).
---   Ideally this should be placed in <tt>Command/Parser.hs</tt> among all
---   the other parsers.
+--   create an instance declaration of <a>ParsableArgument</a> for it). You
+--   may want to put this in <tt>Command/Parser.hs</tt>.
 --   
 --   <pre>
 --   instance ParsableArgument Int where
---       parserForArg msg = do
---           -- some parsec
---           parsed &lt;- read &lt;$&gt; many digit
---           endOrSpaces
---           pure parsed
+--       parserForArg = read &lt;$&gt; many digit -- some Parsec that returns an Int
 --   
 --   complex :: (MonadDiscord m) =&gt; Command m
---   complex = command "setLimit" $ \i -&gt; do
+--   complex = command "setLimit" $ \m i -&gt; do
+--       respond m $ show (i + 20 / 4 + 78^3) -- i is automatically inferred as Int!
 --       ...
 --   </pre>
 command :: (CommandHandlerType m h, MonadDiscord m) => Text -> h -> Command m
@@ -390,7 +380,7 @@ command :: (CommandHandlerType m h, MonadDiscord m) => Text -> h -> Command m
 --   against the regex.
 --   
 --   For commands registered with <a>parsecCommand</a>, the check will
---   check against the parser.
+--   check for the prefix and the custom parser.
 --   
 --   Any failures during this stage is silently ignored, as it may still be
 --   a valid command elsewhere. After this, the requirements are checked
@@ -398,7 +388,7 @@ command :: (CommandHandlerType m h, MonadDiscord m) => Text -> h -> Command m
 --   Any errors inside the handler is caught and appropriately handled.
 --   
 --   <pre>
---   runCommand pong :: Message -&gt; m ()
+--   runCommand pong :: (MonadDiscord m) =&gt; Message -&gt; m ()
 --   </pre>
 runCommand :: forall m. MonadDiscord m => Command m -> Message -> m ()
 
@@ -415,9 +405,9 @@ runHelp :: MonadDiscord m => Text -> [Command m] -> Message -> m ()
 --   things like "::quotes" because they have special syntax that demands a
 --   special parser.
 --   
---   <a>prefix</a> and <a>alias</a>, if used together, are ignored. Other
---   compoasble functions like <a>help</a>, <a>requires</a>, and
---   <a>onError</a> are still valid.
+--   <a>alias</a>, if used together, is ignored. Other compoasble functions
+--   like <a>help</a>, <a>prefix</a>, <a>requires</a>, and <a>onError</a>
+--   are still valid.
 --   
 --   The handler <b>must</b> take a <a>Message</a> and a <a>String</a> as
 --   argument (nothing more, nothing less), where the latter is the result
@@ -426,10 +416,11 @@ runHelp :: MonadDiscord m => Text -> [Command m] -> Message -> m ()
 --   <pre>
 --   example
 --       = requires moderatorPrivs
---       . parsecCommand (string '::' &gt;&gt; many1 anyChar) $ \msg quoteName -&gt; do
+--       . prefix "~~"
+--       . parsecCommand (string "abc" &gt;&gt; many1 anyChar) $ \msg quoteName -&gt; do
 --           ...
---           -- this is triggered on "::<a>or more chars</a>" where quoteName
---           -- contains the section enclosed in &lt;&gt;
+--            this is triggered on "~~abc&lt;one or more chars&gt;" where quoteName
+--            contains the section enclosed in &lt;&gt;
 --   </pre>
 parsecCommand :: MonadDiscord m => Parser String -> (Message -> String -> m ()) -> Command m
 
@@ -530,13 +521,13 @@ DiscordError :: RestCallErrorCode -> CommandError
 HaskellError :: SomeException -> CommandError
 
 -- | A <tt>ParsableArgument</tt> is a dataclass that represents arguments
---   that can be parsed from a message. Any datatype that is an instance of
---   this dataclass can be used as function arguments for a command handler
---   in <tt>command</tt>.
+--   that can be parsed from a message text. Any datatype that is an
+--   instance of this dataclass can be used as function arguments for a
+--   command handler in <tt>command</tt>.
 class ParsableArgument a
 
 -- | Datatype wrapper for the remaining text in the input. Handy for
---   capturing everything remaining. The accessor function <tt>getEm</tt>
+--   capturing everything remaining. The accessor function <tt>getDeez</tt>
 --   isn't really meant to be used since pattern matching can do
 --   everything. Open to renaming.
 --   
@@ -548,9 +539,9 @@ class ParsableArgument a
 --       $ \msg newStatus newType (Remaining newName) -&gt; do
 --           ...
 --   </pre>
-data RemainingText
+newtype RemainingText
 Remaining :: Text -> RemainingText
-[getEm] :: RemainingText -> Text
+[getDeez] :: RemainingText -> Text
 
 -- | Monads in which <a>IO</a> computations may be embedded. Any monad
 --   built by applying a sequence of monad transformers to the <a>IO</a>
@@ -570,11 +561,31 @@ class Monad m => MonadIO (m :: Type -> Type)
 liftIO :: MonadIO m => IO a -> m a
 instance Control.Monad.Catch.MonadThrow m => Command.Command.CommandHandlerType m (m ())
 instance (Control.Monad.Catch.MonadThrow m, Command.Parser.ParsableArgument a, Command.Command.CommandHandlerType m b) => Command.Command.CommandHandlerType m (a -> b)
+instance (Control.Monad.Catch.MonadThrow m, Command.Command.CommandHandlerType m b) => Command.Command.CommandHandlerType m (Discord.Internal.Types.Channel.Message -> b)
 instance (Control.Monad.Catch.MonadThrow m, Command.Parser.ParsableArgument a) => Command.Command.CommandHandlerType m (a -> m ())
+instance Control.Monad.Catch.MonadThrow m => Command.Command.CommandHandlerType m (Discord.Internal.Types.Channel.Message -> m ())
 
 
 -- | This module simply reexports <a>Command.Command</a>.
 module Command
+
+module Haskell
+receivers :: [Message -> DiscordHandler ()]
+instance GHC.Generics.Generic Haskell.Repo
+instance GHC.Show.Show Haskell.Repo
+instance GHC.Generics.Generic Haskell.HoogleResp
+instance GHC.Show.Show Haskell.HoogleResp
+instance Data.Aeson.Types.FromJSON.FromJSON Haskell.HoogleResp
+instance Data.Aeson.Types.FromJSON.FromJSON Haskell.Repo
+
+module BinancePriceFetcher
+fetchADADetails :: IO (Either String String)
+fetchTicker :: String -> String -> IO (Either String String)
+receivers :: [Message -> DiscordHandler ()]
+instance GHC.Generics.Generic BinancePriceFetcher.Ticker
+instance GHC.Show.Show BinancePriceFetcher.Ticker
+instance Data.Aeson.Types.FromJSON.FromJSON BinancePriceFetcher.Ticker
+instance Data.Aeson.Types.ToJSON.ToJSON BinancePriceFetcher.Ticker
 
 module Status
 
@@ -597,13 +608,7 @@ instance GHC.Read.Read Discord.Internal.Types.Gateway.UpdateStatusType
 instance GHC.Read.Read Discord.Internal.Types.Gateway.ActivityType
 
 module TemplateRE
-oneDot :: Text
-twoDot :: Text
 trailingWS :: Text
-thmRE :: Text
-defRE :: Text
-lemRE :: Text
-textbookRE :: Text
 accoladedArgRE :: Text
 quotedArgRE :: Text
 spaceRE :: Text
@@ -643,6 +648,10 @@ sendMessageDM :: MonadDiscord m => UserId -> Text -> m ()
 --   <a>FilePath</a> in the channel with the provided <a>ChannelId</a>. The
 --   file attachment is annotated by the given <tt>Text</tt>.
 sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> Text -> FilePath -> m ()
+
+-- | <a>sendAssetChan</a> is simply a wrapper for <a>sendFileChan</a> that
+--   perpends the data storage dir to the provided file path.
+sendAssetChan :: (MonadDiscord m, MonadIO m) => ChannelId -> Text -> FilePath -> m ()
 
 -- | <a>addReaction</a> attempts to add a reaction to the given message ID.
 --   Supresses any error message(s), returning <tt>()</tt>.
@@ -727,9 +736,9 @@ isMod :: Message -> DiscordHandler Bool
 --   IDs.
 devIDs :: FilePath
 
--- | The <a>FilePath</a> representing the location of the assets. TODO: Use
---   XDG_DATA_DIR instead of hardcoding ls
-assetDir :: FilePath
+-- | The <a>FilePath</a> representing the location of the assets. TODO:
+--   Move into a saner place than Utils
+assetDir :: IO FilePath
 
 -- | The <a>(=~=)</a> function matches a given <tt>Text</tt> again a regex.
 --   Case-less in terms of owoifying.
@@ -775,8 +784,7 @@ module ModifyEventsChannel
 receivers :: [Message -> DiscordHandler ()]
 
 module Misc
-commandReceivers :: [Message -> DiscordHandler ()]
-miscReceivers :: [Message -> DiscordHandler ()]
+receivers :: [Message -> DiscordHandler ()]
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 
 -- | <a>Joke</a> function to change owen's pronouns randomly in servers on
@@ -798,39 +806,12 @@ instance Data.Aeson.Types.ToJSON.ToJSON MCServer.ServerPlayers
 instance Data.Aeson.Types.FromJSON.FromJSON MCServer.ServerMOTD
 instance Data.Aeson.Types.ToJSON.ToJSON MCServer.ServerMOTD
 
-module Inf1A
-receivers :: [Message -> DiscordHandler ()]
-
-module ILA
-receivers :: [Message -> DiscordHandler ()]
-
 module Helpme
 receivers :: [Message -> DiscordHandler ()]
-
-module Haskell
-receivers :: [Message -> DiscordHandler ()]
-instance GHC.Generics.Generic Haskell.Repo
-instance GHC.Show.Show Haskell.Repo
-instance GHC.Generics.Generic Haskell.HoogleResp
-instance GHC.Show.Show Haskell.HoogleResp
-instance Data.Aeson.Types.FromJSON.FromJSON Haskell.HoogleResp
-instance Data.Aeson.Types.FromJSON.FromJSON Haskell.Repo
 
 module HallOfFame
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 messageReceivers :: [Message -> DiscordHandler ()]
-
-module Calc
-receivers :: [Message -> DiscordHandler ()]
-
-module BinancePriceFetcher
-fetchADADetails :: IO (Either String String)
-fetchTicker :: String -> String -> IO (Either String String)
-receivers :: [Message -> DiscordHandler ()]
-instance GHC.Generics.Generic BinancePriceFetcher.Ticker
-instance GHC.Show.Show BinancePriceFetcher.Ticker
-instance Data.Aeson.Types.FromJSON.FromJSON BinancePriceFetcher.Ticker
-instance Data.Aeson.Types.ToJSON.ToJSON BinancePriceFetcher.Ticker
 
 module AprilFools
 messageReceivers :: [Message -> DiscordHandler ()]
@@ -842,6 +823,11 @@ sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 instance GHC.Classes.Eq Admin.Lock
 instance GHC.Show.Show Admin.Lock
+
+module Academic
+receivers :: [Message -> DiscordHandler ()]
+instance GHC.Show.Show Academic.TextbookAssetNumber
+instance Command.Parser.ParsableArgument Academic.TextbookAssetNumber
 
 module EventHandler
 handleEvent :: Event -> DiscordHandler ()

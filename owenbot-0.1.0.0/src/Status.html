@@ -19,17 +19,17 @@
 </span><span id="line-19"></span><span>
 </span><span id="line-20"></span><span class="hs-comment">-- | These datatypes in discord-haskell do not derive Read, but it's kinda</span><span>
 </span><span id="line-21"></span><span class="hs-comment">-- necessary to do @readMaybe@, so here we go:</span><span>
-</span><span id="line-22"></span><span id="local-6989586621679164839"><span id="local-6989586621679164841"><span id="local-6989586621679164843"><span id="local-6989586621679164845"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UpdateStatusType</span></span></span></span></span></span><span>
-</span><span id="line-23"></span><span id="local-6989586621679164830"><span id="local-6989586621679164832"><span id="local-6989586621679164834"><span id="local-6989586621679164836"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ActivityType</span></span></span></span></span></span><span>
+</span><span id="line-22"></span><span id="local-6989586621679166867"><span id="local-6989586621679166869"><span id="local-6989586621679166871"><span id="local-6989586621679166873"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UpdateStatusType</span></span></span></span></span></span><span>
+</span><span id="line-23"></span><span id="local-6989586621679166858"><span id="local-6989586621679166860"><span id="local-6989586621679166862"><span id="local-6989586621679166864"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ActivityType</span></span></span></span></span></span><span>
 </span><span id="line-24"></span><span>
 </span><span id="line-25"></span><span class="hs-comment">-- | 'updateStatus' updates the status through the Discord gateway.</span><span>
 </span><span id="line-26"></span><span class="hs-comment">-- Therefore, it requires DiscordHandler and is not polymorphic.</span><span>
 </span><span id="line-27"></span><span class="annot"><a href="Status.html#updateStatus"><span class="hs-identifier hs-type">updateStatus</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UpdateStatusType</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ActivityType</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-28"></span><span id="updateStatus"><span class="annot"><span class="annottext">updateStatus :: UpdateStatusType -&gt; ActivityType -&gt; Text -&gt; DiscordHandler ()
-</span><a href="Status.html#updateStatus"><span class="hs-identifier hs-var hs-var">updateStatus</span></a></span></span><span> </span><span id="local-6989586621679164829"><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164829"><span class="hs-identifier hs-var">newStatus</span></a></span></span><span> </span><span id="local-6989586621679164828"><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164828"><span class="hs-identifier hs-var">newType</span></a></span></span><span> </span><span id="local-6989586621679164827"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164827"><span class="hs-identifier hs-var">newName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GatewaySendable -&gt; DiscordHandler ()
+</span><a href="Status.html#updateStatus"><span class="hs-identifier hs-var hs-var">updateStatus</span></a></span></span><span> </span><span id="local-6989586621679166857"><span class="annot"><span class="annottext">UpdateStatusType
+</span><a href="#local-6989586621679166857"><span class="hs-identifier hs-var">newStatus</span></a></span></span><span> </span><span id="local-6989586621679166856"><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679166856"><span class="hs-identifier hs-var">newType</span></a></span></span><span> </span><span id="local-6989586621679166855"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166855"><span class="hs-identifier hs-var">newName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GatewaySendable -&gt; DiscordHandler ()
 </span><span class="hs-identifier hs-var">sendCommand</span></span><span> </span><span class="annot"><span class="annottext">(GatewaySendable -&gt; DiscordHandler ())
 -&gt; GatewaySendable -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -54,10 +54,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-identifier hs-type">Activity</span></span><span>
 </span><span id="line-32"></span><span>            </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">activityName :: Text
 </span><span class="hs-identifier hs-var">activityName</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164827"><span class="hs-identifier hs-var">newName</span></a></span><span>
+</span><a href="#local-6989586621679166855"><span class="hs-identifier hs-var">newName</span></a></span><span>
 </span><span id="line-33"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">activityType :: ActivityType
 </span><span class="hs-identifier hs-var">activityType</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164828"><span class="hs-identifier hs-var">newType</span></a></span><span>
+</span><a href="#local-6989586621679166856"><span class="hs-identifier hs-var">newType</span></a></span><span>
 </span><span id="line-34"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">activityUrl :: Maybe Text
 </span><span class="hs-identifier hs-var">activityUrl</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Text
 forall a. Maybe a
@@ -65,7 +65,7 @@ forall a. Maybe a
 </span><span id="line-35"></span><span>            </span><span class="hs-special">}</span><span>
 </span><span id="line-36"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">updateStatusOptsNewStatus :: UpdateStatusType
 </span><span class="hs-identifier hs-var">updateStatusOptsNewStatus</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164829"><span class="hs-identifier hs-var">newStatus</span></a></span><span>
+</span><a href="#local-6989586621679166857"><span class="hs-identifier hs-var">newStatus</span></a></span><span>
 </span><span id="line-37"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">updateStatusOptsAFK :: Bool
 </span><span class="hs-identifier hs-var">updateStatusOptsAFK</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
@@ -79,8 +79,8 @@ forall a. Maybe a
 </span><span id="line-45"></span><span class="annot"><a href="Status.html#setStatusFromFile"><span class="hs-identifier hs-type">setStatusFromFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DiscordHandler</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span id="setStatusFromFile"><span class="annot"><span class="annottext">setStatusFromFile :: DiscordHandler ()
 </span><a href="Status.html#setStatusFromFile"><span class="hs-identifier hs-var hs-var">setStatusFromFile</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-47"></span><span>    </span><span id="local-6989586621679164816"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164816"><span class="hs-identifier hs-var">line</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [Text] -&gt; ReaderT DiscordHandle IO [Text]
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679166844"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679166844"><span class="hs-identifier hs-var">line</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [Text] -&gt; ReaderT DiscordHandle IO [Text]
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">IO [Text]
 </span><a href="Status.html#readStatusFile"><span class="hs-identifier hs-var">readStatusFile</span></a></span><span>
@@ -89,7 +89,7 @@ forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164816"><span class="hs-identifier hs-var">line</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679166844"><span class="hs-identifier hs-var">line</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(DiscordHandler () -&gt; DiscordHandler ())
@@ -97,10 +97,10 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-49"></span><span>        </span><span class="hs-comment">-- Utilising the Maybe Monad whooo!</span><span>
-</span><span id="line-50"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679164813"><span class="annot"><span class="annottext">mbStuff :: Maybe (UpdateStatusType, ActivityType, Text)
-</span><a href="#local-6989586621679164813"><span class="hs-identifier hs-var hs-var">mbStuff</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-51"></span><span>                </span><span id="local-6989586621679164812"><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164812"><span class="hs-identifier hs-var">statusType</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Maybe UpdateStatusType
+</span><span id="line-50"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166841"><span class="annot"><span class="annottext">mbStuff :: Maybe (UpdateStatusType, ActivityType, Text)
+</span><a href="#local-6989586621679166841"><span class="hs-identifier hs-var hs-var">mbStuff</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-51"></span><span>                </span><span id="local-6989586621679166840"><span class="annot"><span class="annottext">UpdateStatusType
+</span><a href="#local-6989586621679166840"><span class="hs-identifier hs-var">statusType</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Maybe UpdateStatusType
 forall a. Read a =&gt; String -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe UpdateStatusType)
 -&gt; ([Text] -&gt; String) -&gt; [Text] -&gt; Maybe UpdateStatusType
@@ -111,9 +111,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164816"><span class="hs-identifier hs-var">line</span></a></span><span>
-</span><span id="line-52"></span><span>                </span><span id="local-6989586621679164808"><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164808"><span class="hs-identifier hs-var">activityType</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Maybe ActivityType
+</span><a href="#local-6989586621679166844"><span class="hs-identifier hs-var">line</span></a></span><span>
+</span><span id="line-52"></span><span>                </span><span id="local-6989586621679166836"><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679166836"><span class="hs-identifier hs-var">activityType</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Maybe ActivityType
 forall a. Read a =&gt; String -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe ActivityType)
 -&gt; ([Text] -&gt; String) -&gt; [Text] -&gt; Maybe ActivityType
@@ -128,9 +128,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; [Text]
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">tail</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164816"><span class="hs-identifier hs-var">line</span></a></span><span>
-</span><span id="line-53"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679164806"><span class="annot"><span class="annottext">name :: Text
-</span><a href="#local-6989586621679164806"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+</span><a href="#local-6989586621679166844"><span class="hs-identifier hs-var">line</span></a></span><span>
+</span><span id="line-53"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679166834"><span class="annot"><span class="annottext">name :: Text
+</span><a href="#local-6989586621679166834"><span class="hs-identifier hs-var hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.unwords</span></span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Text) -&gt; [Text] -&gt; Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; [Text]
@@ -140,63 +140,61 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; [Text]
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">tail</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164816"><span class="hs-identifier hs-var">line</span></a></span><span>
+</span><a href="#local-6989586621679166844"><span class="hs-identifier hs-var">line</span></a></span><span>
 </span><span id="line-54"></span><span>                </span><span class="annot"><span class="annottext">(UpdateStatusType, ActivityType, Text)
 -&gt; Maybe (UpdateStatusType, ActivityType, Text)
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164812"><span class="hs-identifier hs-var">statusType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164808"><span class="hs-identifier hs-var">activityType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164806"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166840"><span class="hs-identifier hs-var">statusType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679166836"><span class="hs-identifier hs-var">activityType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166834"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-55"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe (UpdateStatusType, ActivityType, Text)
-</span><a href="#local-6989586621679164813"><span class="hs-identifier hs-var">mbStuff</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679166841"><span class="hs-identifier hs-var">mbStuff</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-56"></span><span>            </span><span class="annot"><span class="annottext">Maybe (UpdateStatusType, ActivityType, Text)
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">IO () -&gt; DiscordHandler ()
 forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO () -&gt; DiscordHandler ()) -&gt; IO () -&gt; DiscordHandler ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ()
-</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Incorrect status format, ignoring.&quot;</span></span><span>
-</span><span id="line-57"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679164803"><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164803"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164802"><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164802"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164801"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164801"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UpdateStatusType -&gt; ActivityType -&gt; Text -&gt; DiscordHandler ()
+</span><span id="line-57"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166831"><span class="annot"><span class="annottext">UpdateStatusType
+</span><a href="#local-6989586621679166831"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166830"><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679166830"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166829"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166829"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UpdateStatusType -&gt; ActivityType -&gt; Text -&gt; DiscordHandler ()
 </span><a href="Status.html#updateStatus"><span class="hs-identifier hs-var">updateStatus</span></a></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164803"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164802"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164801"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679166831"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679166830"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166829"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-58"></span><span>
 </span><span id="line-59"></span><span class="hs-comment">-- | @editStatusFile@ puts the status values into &quot;status.csv&quot; by calling</span><span>
 </span><span id="line-60"></span><span class="hs-comment">-- 'show' on them and converting it to 'T.Text'.</span><span>
 </span><span id="line-61"></span><span class="annot"><a href="Status.html#editStatusFile"><span class="hs-identifier hs-type">editStatusFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UpdateStatusType</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ActivityType</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-62"></span><span id="editStatusFile"><span class="annot"><span class="annottext">editStatusFile :: UpdateStatusType -&gt; ActivityType -&gt; Text -&gt; IO ()
-</span><a href="Status.html#editStatusFile"><span class="hs-identifier hs-var hs-var">editStatusFile</span></a></span></span><span> </span><span id="local-6989586621679164800"><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164800"><span class="hs-identifier hs-var">newStatus</span></a></span></span><span> </span><span id="local-6989586621679164799"><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164799"><span class="hs-identifier hs-var">newType</span></a></span></span><span> </span><span id="local-6989586621679164798"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164798"><span class="hs-identifier hs-var">newName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Status.html#editStatusFile"><span class="hs-identifier hs-var hs-var">editStatusFile</span></a></span></span><span> </span><span id="local-6989586621679166828"><span class="annot"><span class="annottext">UpdateStatusType
+</span><a href="#local-6989586621679166828"><span class="hs-identifier hs-var">newStatus</span></a></span></span><span> </span><span id="local-6989586621679166827"><span class="annot"><span class="annottext">ActivityType
+</span><a href="#local-6989586621679166827"><span class="hs-identifier hs-var">newType</span></a></span></span><span> </span><span id="local-6989586621679166826"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166826"><span class="hs-identifier hs-var">newName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-63"></span><span>    </span><span class="annot"><span class="annottext">String -&gt; [[Text]] -&gt; IO ()
 </span><a href="CSV.html#writeCSV"><span class="hs-identifier hs-var">writeCSV</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;status.csv&quot;</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">UpdateStatusType -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">UpdateStatusType
-</span><a href="#local-6989586621679164800"><span class="hs-identifier hs-var">newStatus</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="#local-6989586621679166828"><span class="hs-identifier hs-var">newStatus</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ActivityType -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">ActivityType
-</span><a href="#local-6989586621679164799"><span class="hs-identifier hs-var">newType</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164798"><span class="hs-identifier hs-var">newName</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679166827"><span class="hs-identifier hs-var">newType</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679166826"><span class="hs-identifier hs-var">newName</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
 </span><span id="line-64"></span><span>
 </span><span id="line-65"></span><span class="hs-comment">-- | @readStatusFile@ is a wrapper around 'readCSV' that returns only the first</span><span>
 </span><span id="line-66"></span><span class="hs-comment">-- row, if it exists.</span><span>
 </span><span id="line-67"></span><span class="annot"><a href="Status.html#readStatusFile"><span class="hs-identifier hs-type">readStatusFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
 </span><span id="line-68"></span><span id="readStatusFile"><span class="annot"><span class="annottext">readStatusFile :: IO [Text]
 </span><a href="Status.html#readStatusFile"><span class="hs-identifier hs-var hs-var">readStatusFile</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679164795"><span class="annot"><span class="annottext">[[Text]]
-</span><a href="#local-6989586621679164795"><span class="hs-identifier hs-var">contents</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO [[Text]]
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679166823"><span class="annot"><span class="annottext">[[Text]]
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">contents</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO [[Text]]
 </span><a href="CSV.html#readCSV"><span class="hs-identifier hs-var">readCSV</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;status.csv&quot;</span></span><span>
 </span><span id="line-70"></span><span>    </span><span class="annot"><span class="annottext">[Text] -&gt; IO [Text]
@@ -206,10 +204,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">[[Text]] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
 </span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[[Text]]
-</span><a href="#local-6989586621679164795"><span class="hs-identifier hs-var">contents</span></a></span><span>
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">contents</span></a></span><span>
 </span><span id="line-71"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-72"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[[Text]] -&gt; [Text]
 forall a. [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[[Text]]
-</span><a href="#local-6989586621679164795"><span class="hs-identifier hs-var">contents</span></a></span><span>
+</span><a href="#local-6989586621679166823"><span class="hs-identifier hs-var">contents</span></a></span><span>
 </span><span id="line-73"></span></pre></body></html>

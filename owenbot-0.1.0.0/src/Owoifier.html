@@ -15,17 +15,17 @@
 </span><span id="line-13"></span><span>
 </span><span id="line-14"></span><span class="hs-comment">-- | Maps f over every other element in a list:</span><span>
 </span><span id="line-15"></span><span class="hs-comment">-- e.g. `[f a, a, f a, a]`</span><span>
-</span><span id="line-16"></span><span id="local-6989586621679164335"><span class="annot"><a href="Owoifier.html#alternate"><span class="hs-identifier hs-type">alternate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679164335"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679164335"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679164335"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679164335"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-16"></span><span id="local-6989586621679165983"><span class="annot"><a href="Owoifier.html#alternate"><span class="hs-identifier hs-type">alternate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679165983"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679165983"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679165983"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679165983"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-17"></span><span id="alternate"><span class="annot"><span class="annottext">alternate :: (a -&gt; a) -&gt; [a] -&gt; [a]
-</span><a href="Owoifier.html#alternate"><span class="hs-identifier hs-var hs-var">alternate</span></a></span></span><span> </span><span id="local-6989586621679164315"><span class="annot"><span class="annottext">a -&gt; a
-</span><a href="#local-6989586621679164315"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a -&gt; a) -&gt; a -&gt; a) -&gt; [a -&gt; a] -&gt; [a] -&gt; [a]
+</span><a href="Owoifier.html#alternate"><span class="hs-identifier hs-var hs-var">alternate</span></a></span></span><span> </span><span id="local-6989586621679165963"><span class="annot"><span class="annottext">a -&gt; a
+</span><a href="#local-6989586621679165963"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a -&gt; a) -&gt; a -&gt; a) -&gt; [a -&gt; a] -&gt; [a] -&gt; [a]
 forall a b c. (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]
 </span><span class="hs-identifier hs-var">zipWith</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; a) -&gt; a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">($)</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a -&gt; a] -&gt; [a -&gt; a]
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">cycle</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a -&gt; a
-</span><a href="#local-6989586621679164315"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
+</span><a href="#local-6989586621679165963"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-18"></span><span>
@@ -33,22 +33,22 @@ forall a. a -&gt; a
 </span><span id="line-20"></span><span class="hs-comment">-- e.g. &quot;North ```West```&quot; -&gt; &quot;Nyowth ```West``` owo&quot;</span><span>
 </span><span id="line-21"></span><span class="annot"><a href="Owoifier.html#owoify"><span class="hs-identifier hs-type">owoify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-22"></span><span id="owoify"><span class="annot"><span class="annottext">owoify :: Text -&gt; Text
-</span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var hs-var">owoify</span></a></span></span><span> </span><span id="local-6989586621679164311"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164311"><span class="hs-identifier hs-var">text</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Text
+</span><a href="Owoifier.html#owoify"><span class="hs-identifier hs-var hs-var">owoify</span></a></span></span><span> </span><span id="local-6989586621679165959"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165959"><span class="hs-identifier hs-var">text</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; Text
 </span><span class="hs-identifier hs-var">T.intercalate</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Owoifier.html#owolessDelim"><span class="hs-identifier hs-var">owolessDelim</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; [Text] -&gt; [Text]
 forall a. (a -&gt; a) -&gt; [a] -&gt; [a]
 </span><a href="Owoifier.html#alternate"><span class="hs-identifier hs-var">alternate</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><a href="Owoifier.html#owoifySegment"><span class="hs-identifier hs-var">owoifySegment</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164308"><span class="hs-identifier hs-var">segments</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="#local-6989586621679165956"><span class="hs-identifier hs-var">segments</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot; owo&quot;</span></span><span>
-</span><span id="line-23"></span><span>    </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679164308"><span class="annot"><span class="annottext">segments :: [Text]
-</span><a href="#local-6989586621679164308"><span class="hs-identifier hs-var hs-var">segments</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; [Text]
+</span><span id="line-23"></span><span>    </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679165956"><span class="annot"><span class="annottext">segments :: [Text]
+</span><a href="#local-6989586621679165956"><span class="hs-identifier hs-var hs-var">segments</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; [Text]
 </span><span class="hs-identifier hs-var">T.splitOn</span></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Owoifier.html#owolessDelim"><span class="hs-identifier hs-var">owolessDelim</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164311"><span class="hs-identifier hs-var">text</span></a></span><span>
+</span><a href="#local-6989586621679165959"><span class="hs-identifier hs-var">text</span></a></span><span>
 </span><span id="line-24"></span><span>
 </span><span id="line-25"></span><span class="hs-comment">-- | Implements the weakOwoify over the segments of text</span><span>
 </span><span id="line-26"></span><span class="annot"><a href="Owoifier.html#owoifySegment"><span class="hs-identifier hs-type">owoifySegment</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
@@ -69,38 +69,38 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-33"></span><span class="hs-comment">-- | Substitutes given characters for owoified variants in a string, otherwise `id`</span><span>
 </span><span id="line-34"></span><span class="annot"><a href="Owoifier.html#owoifyChar"><span class="hs-identifier hs-type">owoifyChar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span>
 </span><span id="line-35"></span><span id="owoifyChar"><span class="annot"><span class="annottext">owoifyChar :: Char -&gt; Char
-</span><a href="Owoifier.html#owoifyChar"><span class="hs-identifier hs-var hs-var">owoifyChar</span></a></span></span><span> </span><span id="local-6989586621679164302"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164302"><span class="hs-identifier hs-var">c</span></a></span></span><span>
+</span><a href="Owoifier.html#owoifyChar"><span class="hs-identifier hs-var hs-var">owoifyChar</span></a></span></span><span> </span><span id="local-6989586621679165950"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679165950"><span class="hs-identifier hs-var">c</span></a></span></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164302"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Char] -&gt; Bool
+</span><a href="#local-6989586621679165950"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Char] -&gt; Bool
 forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
 </span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;LR&quot;</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'W'</span></span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164302"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Char] -&gt; Bool
+</span><a href="#local-6989586621679165950"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Char] -&gt; Bool
 forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
 </span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;lr&quot;</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'w'</span></span><span>
 </span><span id="line-38"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>                 </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164302"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><a href="#local-6989586621679165950"><span class="hs-identifier hs-var">c</span></a></span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="hs-comment">-- | Takes the cartesian product of two lists of chars and packs as a Text</span><span>
 </span><span id="line-41"></span><span class="hs-comment">-- e.g. &quot;nmNM &lt;-&gt; &quot;o&quot; returns [&quot;no&quot;, &quot;mo&quot;, &quot;No&quot;, &quot;Mo&quot;]</span><span>
 </span><span id="line-42"></span><span class="annot"><a href="Owoifier.html#%3C-%3E"><span class="hs-operator hs-type">(&lt;-&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
 </span><span id="line-43"></span><span id="%3C-%3E"><span class="annot"><span class="annottext">&lt;-&gt; :: [Char] -&gt; [Char] -&gt; [Text]
-</span><a href="Owoifier.html#%3C-%3E"><span class="hs-operator hs-var hs-var">(&lt;-&gt;)</span></a></span></span><span> </span><span id="local-6989586621679164299"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679164299"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span id="local-6989586621679164298"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679164298"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Char] -&gt; Text
+</span><a href="Owoifier.html#%3C-%3E"><span class="hs-operator hs-var hs-var">(&lt;-&gt;)</span></a></span></span><span> </span><span id="local-6989586621679165947"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679165947"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span id="local-6989586621679165946"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679165946"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Char] -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164296"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164295"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679164296"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164296"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679164299"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164295"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164295"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679164298"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679165944"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679165943"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679165944"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679165944"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679165947"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165943"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679165943"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679165946"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-44"></span><span>
 </span><span id="line-45"></span><span class="hs-comment">-- | Checks if the y added should be lowercase</span><span>
 </span><span id="line-46"></span><span class="annot"><a href="Owoifier.html#segmentsSmallY"><span class="hs-identifier hs-type">segmentsSmallY</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span>
@@ -126,17 +126,17 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span id="line-53"></span><span class="hs-comment">-- | Inserts the wanted symbol in between segments</span><span>
 </span><span id="line-54"></span><span class="annot"><a href="Owoifier.html#mkRules"><span class="hs-identifier hs-type">mkRules</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
 </span><span id="line-55"></span><span id="mkRules"><span class="annot"><span class="annottext">mkRules :: [(Char, [Text])] -&gt; [(Text, Char)]
-</span><a href="Owoifier.html#mkRules"><span class="hs-identifier hs-var hs-var">mkRules</span></a></span></span><span> </span><span id="local-6989586621679164291"><span class="annot"><span class="annottext">[(Char, [Text])]
-</span><a href="#local-6989586621679164291"><span class="hs-identifier hs-var">defs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-56"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679164290"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164290"><span class="hs-identifier hs-var">sym</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164289"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164289"><span class="hs-identifier hs-var">segments</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(Char, [Text])]
-</span><a href="#local-6989586621679164291"><span class="hs-identifier hs-var">defs</span></a></span><span>
+</span><a href="Owoifier.html#mkRules"><span class="hs-identifier hs-var hs-var">mkRules</span></a></span></span><span> </span><span id="local-6989586621679165939"><span class="annot"><span class="annottext">[(Char, [Text])]
+</span><a href="#local-6989586621679165939"><span class="hs-identifier hs-var">defs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-56"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679165938"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679165938"><span class="hs-identifier hs-var">sym</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165937"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679165937"><span class="hs-identifier hs-var">segments</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(Char, [Text])]
+</span><a href="#local-6989586621679165939"><span class="hs-identifier hs-var">defs</span></a></span><span>
 </span><span id="line-57"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-special">,</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164290"><span class="hs-identifier hs-var">sym</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; (Text, Char)) -&gt; [Text] -&gt; [(Text, Char)]
+</span><a href="#local-6989586621679165938"><span class="hs-identifier hs-var">sym</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; (Text, Char)) -&gt; [Text] -&gt; [(Text, Char)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679164289"><span class="hs-identifier hs-var">segments</span></a></span><span>
+</span><a href="#local-6989586621679165937"><span class="hs-identifier hs-var">segments</span></a></span><span>
 </span><span id="line-58"></span><span>
 </span><span id="line-59"></span><span class="hs-comment">-- | Depending on what type of segment it is, it inserts a Y or y</span><span>
 </span><span id="line-60"></span><span class="annot"><a href="Owoifier.html#insertionRules"><span class="hs-identifier hs-type">insertionRules</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
@@ -153,27 +153,27 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span id="line-65"></span><span class="hs-comment">-- | If it the word comes as a tuple with a Y then it is interpersed in the word and then replaces the og</span><span>
 </span><span id="line-66"></span><span class="annot"><a href="Owoifier.html#applyRule"><span class="hs-identifier hs-type">applyRule</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-67"></span><span id="applyRule"><span class="annot"><span class="annottext">applyRule :: (Text, Char) -&gt; Text -&gt; Text
-</span><a href="Owoifier.html#applyRule"><span class="hs-identifier hs-var hs-var">applyRule</span></a></span></span><span> </span><span id="local-6989586621679164285"><span class="annot"><span class="annottext">(Text, Char)
-</span><a href="#local-6989586621679164285"><span class="hs-identifier hs-var">rule</span></a></span></span><span>
-</span><span id="line-68"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679164284"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164284"><span class="hs-identifier hs-var">word</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679164283"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164283"><span class="hs-identifier hs-var">ins</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text, Char)
-</span><a href="#local-6989586621679164285"><span class="hs-identifier hs-var">rule</span></a></span><span>
-</span><span id="line-69"></span><span>          </span><span id="local-6989586621679164282"><span class="annot"><span class="annottext">newWord :: Text
-</span><a href="#local-6989586621679164282"><span class="hs-identifier hs-var hs-var">newWord</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Text -&gt; Text
+</span><a href="Owoifier.html#applyRule"><span class="hs-identifier hs-var hs-var">applyRule</span></a></span></span><span> </span><span id="local-6989586621679165933"><span class="annot"><span class="annottext">(Text, Char)
+</span><a href="#local-6989586621679165933"><span class="hs-identifier hs-var">rule</span></a></span></span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679165932"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165932"><span class="hs-identifier hs-var">word</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679165931"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679165931"><span class="hs-identifier hs-var">ins</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text, Char)
+</span><a href="#local-6989586621679165933"><span class="hs-identifier hs-var">rule</span></a></span><span>
+</span><span id="line-69"></span><span>          </span><span id="local-6989586621679165930"><span class="annot"><span class="annottext">newWord :: Text
+</span><a href="#local-6989586621679165930"><span class="hs-identifier hs-var hs-var">newWord</span></a></span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Text -&gt; Text
 </span><span class="hs-identifier hs-var">T.intersperse</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679164283"><span class="hs-identifier hs-var">ins</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164284"><span class="hs-identifier hs-var">word</span></a></span><span> </span><span class="hs-keyword">in</span><span>
+</span><a href="#local-6989586621679165931"><span class="hs-identifier hs-var">ins</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165932"><span class="hs-identifier hs-var">word</span></a></span><span> </span><span class="hs-keyword">in</span><span>
 </span><span id="line-70"></span><span>    </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text -&gt; Text
 </span><span class="hs-identifier hs-var">T.replace</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164284"><span class="hs-identifier hs-var">word</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164282"><span class="hs-identifier hs-var">newWord</span></a></span><span>
+</span><a href="#local-6989586621679165932"><span class="hs-identifier hs-var">word</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165930"><span class="hs-identifier hs-var">newWord</span></a></span><span>
 </span><span id="line-71"></span><span>
 </span><span id="line-72"></span><span class="hs-comment">-- | Inserts the y-words in the text</span><span>
 </span><span id="line-73"></span><span class="annot"><a href="Owoifier.html#doInserts"><span class="hs-identifier hs-type">doInserts</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span>
 </span><span id="line-74"></span><span id="doInserts"><span class="annot"><span class="annottext">doInserts :: Text -&gt; Text
-</span><a href="Owoifier.html#doInserts"><span class="hs-identifier hs-var hs-var">doInserts</span></a></span></span><span> </span><span id="local-6989586621679164279"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164279"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; (Text, Char) -&gt; Text) -&gt; Text -&gt; [(Text, Char)] -&gt; Text
+</span><a href="Owoifier.html#doInserts"><span class="hs-identifier hs-var hs-var">doInserts</span></a></span></span><span> </span><span id="local-6989586621679165927"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679165927"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; (Text, Char) -&gt; Text) -&gt; Text -&gt; [(Text, Char)] -&gt; Text
 forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
@@ -181,6 +181,6 @@ Foldable t =&gt;
 forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 </span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">(Text, Char) -&gt; Text -&gt; Text
 </span><a href="Owoifier.html#applyRule"><span class="hs-identifier hs-var">applyRule</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679164279"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[(Text, Char)]
+</span><a href="#local-6989586621679165927"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">[(Text, Char)]
 </span><a href="Owoifier.html#insertionRules"><span class="hs-identifier hs-var">insertionRules</span></a></span><span>
 </span><span id="line-75"></span></pre></body></html>
