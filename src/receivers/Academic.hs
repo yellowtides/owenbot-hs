@@ -72,7 +72,7 @@ theorem = alias "thm" $ command "theorem" $ \m subject number -> do
                 let name = show x <> ".png"
                 respondAsset m ("Theorem " <> (T.pack name)) path
             _ ->
-                respond m "Usage: :theorem ila XX.YY.ZZ!"
+                respond m "ILA theorems have the format: XX.YY.ZZ!"
         _ -> 
             respond m "No theorems found for subject!"
 
@@ -86,7 +86,7 @@ definition = alias "def" $ command "definition" $ \m subject number -> do
                 let name = show x <> ".png"
                 respondAsset m ("Definition " <> (T.pack name)) path
             _ ->
-                respond m "Usage: :definition ila XX.YY!"
+                respond m "ILA definitions have the format: XX.YY!"
 
         _ ->
             respond m "No definitions found for subject!"
@@ -101,7 +101,7 @@ lemma = alias "lem" $ command "lemma" $ \m subject number -> do
                 let name = show x <> ".png"
                 respondAsset m ("Lemma " <> (T.pack name)) path
             _ ->
-                respond m "Usage: :lemma ila XX.YY.ZZ!"
+                respond m "ILA lemmas have the format: XX.YY.ZZ!"
         _ ->
             respond m "No lemmas found for subject!"
 
