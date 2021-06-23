@@ -19,7 +19,8 @@ import           Discord
 
 import           Command.Parser
 import           Command
-import           Utils                      ( sendAssetChan )
+import           Utils                      ( sendAssetChan
+                                            , respondAsset )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers = fmap runCommand
@@ -31,11 +32,6 @@ receivers = fmap runCommand
     , booleans 
     ]
 
--- | @respondAsset m name path@ responds to the message @m@ with the file at
--- @path@, with the name overridden as @name@.
-respondAsset :: (MonadDiscord m, MonadIO m) => Message -> T.Text -> FilePath -> m ()
-respondAsset m name path = sendAssetChan (messageChannel m) name path
-
 -- | datatype representing possible textbook asset number formats
 data TextbookAssetNumber
     = TwoDotSeparated Int Int Int
@@ -45,19 +41,21 @@ data TextbookAssetNumber
 -- | used to create the file name
 instance Show TextbookAssetNumber where
     show (TwoDotSeparated a b c) = intercalate "." $ padFirst $ map show [a, b, c]
-    show (OneDotSeparated a b) = intercalate "." $ padFirst $ map show [a, b]
+    show (OneDotSeparated a b)   = intercalate "." $ padFirst $ map show [a, b]
+    show (UnknownSeparation xs)  = show xs
 
 instance ParsableArgument TextbookAssetNumber where
     parserForArg = do
-        a <- (flip label) "dot-separated asset number" $ try $
-            (map read) <$> sepBy1 (many1 digit) (char '.')
-        case a of
-            (x:y:[]) -> pure $ OneDotSeparated x y
-            (x:y:z:[]) -> pure $ TwoDotSeparated x y z
-            xs -> pure $ UnknownSeparation xs
+        a <- flip label "dot-separated asset number" $ try $
+             map read <$> sepBy1 (many1 digit) (char '.')
+        pure $ case a of
+            [x, y]    -> OneDotSeparated x y
+            [x, y, z] -> TwoDotSeparated x y z
+            xs        -> UnknownSeparation xs
 
 padFirst :: [String] -> [String]
-padFirst (x:xs) = (padZeroes 2 x):xs
+padFirst []     = []
+padFirst (x:xs) = padZeroes 2 x : xs
 
 padZeroes :: Int -> String -> String
 padZeroes newLen digits = replicate (newLen - length digits) '0' <> digits
@@ -70,7 +68,7 @@ theorem = alias "thm" $ command "theorem" $ \m subject number -> do
             x@TwoDotSeparated{} -> do
                 let path = "ila/theorems/" <> show x <> ".png"
                 let name = show x <> ".png"
-                respondAsset m ("Theorem " <> (T.pack name)) path
+                respondAsset m ("Theorem " <> T.pack name) path
             _ ->
                 respond m "ILA theorems have the format: XX.YY.ZZ!"
         _ -> 
@@ -84,7 +82,7 @@ definition = alias "def" $ command "definition" $ \m subject number -> do
             x@OneDotSeparated{} -> do
                 let path = "ila/definitions/" <> show x <> ".png"
                 let name = show x <> ".png"
-                respondAsset m ("Definition " <> (T.pack name)) path
+                respondAsset m ("Definition " <> T.pack name) path
             _ ->
                 respond m "ILA definitions have the format: XX.YY!"
 
@@ -99,7 +97,7 @@ lemma = alias "lem" $ command "lemma" $ \m subject number -> do
             x@TwoDotSeparated{} -> do
                 let path = "ila/lemmas/" <> show x <> ".png"
                 let name = show x <> ".png"
-                respondAsset m ("Lemma " <> (T.pack name)) path
+                respondAsset m ("Lemma " <> T.pack name) path
             _ ->
                 respond m "ILA lemmas have the format: XX.YY.ZZ!"
         _ ->
@@ -131,4 +129,3 @@ syllogisms = alias "syl" $ command "syllogisms" $ \m ->
 booleans :: (MonadDiscord m, MonadIO m) => Command m
 booleans = alias "bool" $ command "booleans" $ \m ->
     respondAsset m "literally-satan.png" "cl/Bool.png"
-

@@ -30,8 +30,9 @@ import           Utils                  ( newDevCommand
                                         , captureCommandOutput
                                         , devIDs
                                         , update
-                                        , developerRequirement
-                                        , roleNameRequirement
+                                        , modPerms
+                                        , devPerms
+                                        , roleNameIn
                                         )
 import           Status                 ( editStatusFile
                                         , updateStatus
@@ -41,7 +42,7 @@ import           CSV                    ( readSingleColCSV
                                         )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers = fmap runCommand
+receivers = map runCommand
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen
@@ -79,7 +80,7 @@ isGitRepo = doesPathExist ".git"
 
 sendGitInfo :: Command DiscordHandler
 sendGitInfo
-    = requires developerRequirement
+    = requires devPerms
     . command "repo" $ \m ->
         sendGitInfoChan $ messageChannel m
 
@@ -87,7 +88,7 @@ sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendGitInfoChan chan = do
     inRepo <- liftIO isGitRepo
     if not inRepo then
-        sendMessageChan chan "Not in git repo (sorry)!"
+        sendMessageChan chan $ owoify "Not in git repo (sorry)!"
     else do
         localStatus <- liftIO gitLocal
         liftIO $ captureCommandOutput "git fetch"
@@ -100,8 +101,8 @@ sendGitInfoChan chan = do
 
 sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo
-  = requires developerRequirement
-  . command "instance" $ \m -> 
+    = requires devPerms
+    . command "instance" $ \m -> 
         sendInstanceInfoChan $ messageChannel m
 
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
@@ -114,30 +115,29 @@ sendInstanceInfoChan chan = do
 
 restartOwen :: Command DiscordHandler
 restartOwen
-  = requires developerRequirement
-  . command "restart" $ \m -> do
-        sendMessageChan (messageChannel m) "Restarting"
+    = requires devPerms
+    . command "restart" $ \m -> do
+        respond m  "Restarting..."
         void $ liftIO $ Process.spawnCommand "owenbot-exe"
         stopDiscord
 
 -- | Stops the entire Discord chain.
 stopOwen :: Command DiscordHandler
 stopOwen
-  = requires developerRequirement
+    = requires devPerms
   . command "stop" $ \m -> do
-        sendMessageChan (messageChannel m) "Stopping."
+        respond m "Stopping..."
         stopDiscord
 
 updateOwen :: Command DiscordHandler
 updateOwen
-  = requires developerRequirement
-  . command "update" $ \m -> do
-        respond m "Updating Owen"
+    = requires devPerms
+    . command "update" $ \m -> do
+        respond m "Updating..."
         result <- liftIO update
-        if result then
-            respond m $ owoify "Finished update"
-        else
-            respond m $ owoify "Failed to update! Please check the logs"
+        respond m $ owoify $ if result
+            then "Finished update"
+            else "Failed to update! Please check the logs"
 
 -- DEV COMMANDS
 getDevs :: IO [T.Text]
@@ -148,7 +148,7 @@ setDevs = writeSingleColCSV devIDs
 
 devs :: Command DiscordHandler
 devs
-    = requires developerRequirement
+    = requires devPerms
     . help "List/add/remove registered developer role IDs"
     . command "devs" $ \m maybeActionValue -> do
         contents <- liftIO getDevs
@@ -185,29 +185,29 @@ someComplexThing
     = command "complex"
     $ \msg words -> do
         respond msg $
-            "Length: " <> (T.pack . show . length) words <> "\n" <>
-                "Caught items: \n" <> T.intercalate "\n" words
+            "Length: " <> (T.pack . show . length) words <> "\n"
+            <> "Caught items: \n" <> T.intercalate "\n" words
 
 
 data Lock = Lockdown | Unlock deriving (Show, Eq)
 
 lockdown :: Command DiscordHandler
 lockdown
-    = requires (roleNameRequirement ["Mod", "Moderator"])
+    = requires modPerms
     . command "lockdown" $ \m -> do
         let chan = messageChannel m
-        channel <- getChannel chan
+        channel <- getChannel (messageChannel m)
         case channel of
             ChannelText _ guild _ _ _ _ _ _ _ _ -> do
                 -- Guild is used in place of role ID as guildID == @everyone role ID
                 lockdownChan chan guild Lockdown
                 respond m $ owoify "Locking Channel. To unlock use :unlock"
 
-            _ -> do respond m $ owoify "channel is not a valid Channel"
+            _ -> respond m $ owoify "Channel is not a valid Channel"
 
 unlock :: Command DiscordHandler
 unlock
-  = requires (roleNameRequirement ["Mod", "Moderator"])
+  = requires modPerms
   . command "unlock" $ \m -> do
       let chan = messageChannel m
       channel <- getChannel chan
@@ -233,7 +233,7 @@ lockdownChan chan guild b = do
 --https://discordapi.com/permissions.html#2251673153
 unlockAll :: Command DiscordHandler
 unlockAll
-    = requires (roleNameRequirement ["Mod", "Moderator"])
+    = requires modPerms
     . command "unlockAll" $ \m -> do
         let opts = ModifyGuildRoleOpts Nothing (Just 2251673153) Nothing Nothing Nothing
 
@@ -244,7 +244,7 @@ unlockAll
 -- https://discordapi.com/permissions.html#2251671105
 lockAll :: Command DiscordHandler
 lockAll
-    = requires (roleNameRequirement ["Mod", "Moderator"])
+    = requires modPerms
     . command "lockAll" $ \m -> do
         let opts = ModifyGuildRoleOpts Nothing (Just 2251671105) Nothing Nothing Nothing
 

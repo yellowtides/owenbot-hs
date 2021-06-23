@@ -16,7 +16,7 @@ import           Command
 import           CSV                    ( writeSingleColCSV
                                         , readSingleColCSV
                                         )
-import           Utils                  ( developerRequirement )
+import           Utils                  ( modPerms )
 import           Owoifier               ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
@@ -113,8 +113,8 @@ readServerIP = do
 
 setServer :: (MonadDiscord m, MonadIO m) => Command m
 setServer
-    = requires developerRequirement
-    $ command "setMinecraft" 
+    = requires modPerms
+    $ command "setMinecraft"
     $ \m server_ip -> do
         liftIO $ writeSingleColCSV "mcServer.csv" [server_ip]
         respond m "Success!"

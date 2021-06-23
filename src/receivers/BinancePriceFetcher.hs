@@ -20,7 +20,7 @@ import           Command
 import           Owoifier               ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers = fmap runCommand
+receivers = map runCommand
     [ handleTicker
     , handleAda24h
     ]
@@ -136,10 +136,7 @@ handleTicker = command "binance" $ \m base quote -> do
                                  <> announcement
 
 handleAda24h :: Command DiscordHandler
-handleAda24h =
-    alias "ada24h"
-    . command "ada" $ \m -> do
-    -- owo no indent here needed??? owo???
+handleAda24h = alias "ada24h" . command "ada" $ \m -> do
     adaAnnouncementM <- liftIO fetchADADetails
     case adaAnnouncementM of
         Left err -> do
