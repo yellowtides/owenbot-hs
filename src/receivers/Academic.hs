@@ -6,12 +6,7 @@ import           Control.Monad              ( void )
 import           Data.Char                  ( isDigit )
 import qualified Data.Text as T
 import           Data.List                  ( intercalate )
-import           Text.Parsec.Combinator
-import           Text.Parsec                ( digit
-                                            , (<|>)
-                                            , try
-                                            , char
-                                            )
+import qualified Text.Parsec as P
 import           Text.Read                  ( readMaybe )
 
 import           Discord.Types
@@ -63,14 +58,11 @@ instance Read TextbookAssetNumber where
 
 instance ParsableArgument TextbookAssetNumber where
     parserForArg = do
-        a <- read <$> many1 digit
-        void $ char '.'
-        b <- read <$> many1 digit
-        try (do
-            void $ char '.'
-            c <- read <$> many1 digit
-            pure $ TwoDotSeparated a b c
-            ) <|> (pure $ OneDotSeparated a b)
+        a <- (map read) <$> P.sepBy1 (P.many1 P.digit) (P.char '.')
+        case a of
+            (x:y:[]) -> pure $ OneDotSeparated x y
+            (x:y:z:[]) -> pure $ TwoDotSeparated x y z
+            _ -> P.parserFail "unsupported asset number format"
 
 padFirst :: [String] -> [String]
 padFirst (x:xs) = (padZeroes 2 x):xs
