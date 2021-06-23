@@ -22,13 +22,13 @@ import           Command
 import           Utils                      ( sendAssetChan )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand textbook
-    , runCommand theorem
-    , runCommand definition
-    , runCommand lemma
-    , runCommand syllogisms
-    , runCommand booleans 
+receivers = fmap runCommand
+    [ textbook
+    , theorem
+    , definition
+    , lemma
+    , syllogisms
+    , booleans 
     ]
 
 -- | @respondAsset m name path@ responds to the message @m@ with the file at
