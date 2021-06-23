@@ -391,17 +391,15 @@ parsecCommand parserFunc commandHandler = Command
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
       let
-        parser = do
-            -- consume prefix
-            string (T.unpack $ commandPrefix cmd)
-            -- apply parser
-            parserFunc
+        parser = string (T.unpack $ commandPrefix cmd) *> parserFunc
       in
         case parse parser "" (messageText msg) of
             Left e -> Nothing
             Right result -> Just [T.pack result]
             -- has to be packed and unpacked, which is not really good.
-            -- TODO: find some datatype that can express String, T.Text, and [T.Text]
+            -- TODO: find some datatype that can express the "meaningful part of
+            -- a message text", which can be String, T.Text, and [T.Text]
+            -- depending on parsec, normal command, or regex.
     , commandApplier      = \x y -> commandHandler x (T.unpack $ head y)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
