@@ -294,7 +294,7 @@ data Command m = Command
 --
 -- @
 -- instance ParsableArgument Int where
---     parserForArg msg =
+--     parserForArg =
 --         -- some parsec
 --         read \<$> many digit
 --
@@ -622,7 +622,7 @@ instance (MonadThrow m) => CommandHandlerType m (m ()) where
 -- | For the case where there are multiple arguments to apply. 
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
     applyArgs handler msg input = do
-        let p = (,) <$> (parserForArg msg <* endOrSpaces) <*> getInput
+        let p = (,) <$> (parserForArg <* endOrSpaces) <*> getInput
         case parse p "arguments" input of
             Left e -> throwM $ ArgumentParseError $
                 "Error while parsing argument. " <> showErrAsText e
@@ -640,7 +640,7 @@ instance {-# OVERLAPPING #-} (MonadThrow m, CommandHandlerType m b) => CommandHa
 -- and neither are more specific, so introduce a more specific choice.
 instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandlerType m (a -> m ()) where
     applyArgs handler msg input = do
-        let p = (,) <$> (parserForArg msg <* endOrSpaces) <*> getInput
+        let p = (,) <$> (parserForArg <* endOrSpaces) <*> getInput
         case parse p "arguments" input of
             Left e -> throwM $ ArgumentParseError $
                 "Error while parsing argument. " <> showErrAsText e

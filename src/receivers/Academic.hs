@@ -62,7 +62,7 @@ instance Read TextbookAssetNumber where
         else []
 
 instance ParsableArgument TextbookAssetNumber where
-    parserForArg m = do
+    parserForArg = do
         a <- read <$> many1 digit
         void $ char '.'
         b <- read <$> many1 digit

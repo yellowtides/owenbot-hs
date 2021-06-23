@@ -44,18 +44,18 @@ endOrSpaces :: T.Parser ()
 endOrSpaces = eof <|> skipMany1 space <?> "at least one space between arguments"
 
 -- | A @ParsableArgument@ is a dataclass that represents arguments that can be
--- parsed from a message. Any datatype that is an instance of this dataclass can
--- be used as function arguments for a command handler in 'command'.
+-- parsed from a message text. Any datatype that is an instance of this dataclass
+-- can be used as function arguments for a command handler in 'command'.
 class ParsableArgument a where
-    -- | @parserForArg msg@ returns a parser that contains the parsed element.
-    parserForArg :: Message -> T.Parser a
+    -- | @parserForArg@ is a parser that returns the parsed element.
+    parserForArg :: T.Parser a
 
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
 -- parsed as a single string: 
 -- @\"He said, \\\"Lovely\\\".\"@
 instance ParsableArgument String where
-    parserForArg msg = do
+    parserForArg = do
         -- try quoted text first. if it failed, then normal word
         (quotedText <?> "quoted phrase") <|> (word <?> "word")
       where
@@ -75,18 +75,18 @@ instance ParsableArgument String where
 -- Both are provided so that it can easily be used for arguments in other
 -- functions that only accept one of the types.
 instance ParsableArgument T.Text where
-    parserForArg msg = T.pack <$> parserForArg msg
+    parserForArg = T.pack <$> parserForArg
 
 -- | Zero or more texts. Each one could be quoted or not.
 instance ParsableArgument [T.Text] where
-    parserForArg msg =
+    parserForArg =
         -- if it's the end, return empty (base case).
         (eof >> pure []) <|> do
             -- do the usual text parsing
-            word <- parserForArg msg :: T.Parser T.Text
+            word <- parserForArg :: T.Parser T.Text
             endOrSpaces
             -- recursively do this and append
-            rest <- parserForArg msg :: T.Parser [T.Text]
+            rest <- parserForArg :: T.Parser [T.Text]
             pure $ word:rest
 
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
@@ -106,7 +106,7 @@ newtype RemainingText = Remaining { getDeez :: T.Text }
 -- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
 -- with @Text@. At least one character is required.
 instance ParsableArgument RemainingText where
-    parserForArg msg = do
+    parserForArg = do
         -- Make sure at least one character is present
         -- This is guaranteed to not be a space, because previous parsers
         -- consume trailing spaces.
@@ -120,7 +120,14 @@ instance ParsableArgument RemainingText where
 
 -- | An argument that can or cannot exist. 
 instance (ParsableArgument a) => ParsableArgument (Maybe a) where
-    parserForArg msg = try (Just <$> parserForArg msg) <|> pure Nothing
+    parserForArg =
+        try (Just <$> parserForArg) <|> (do
+            -- artifically put a space so it won't complain about missing
+            -- spaces between arguments.
+            remaining <- getInput
+            setInput $ " " <> remaining
+            pure Nothing
+            )
 
 -- Integer. TODO
 -- instance ParsableArgument Int where
@@ -132,7 +139,7 @@ instance (ParsableArgument a) => ParsableArgument (Maybe a) where
 
 -- | An argument that always has to be followed by another.
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
-    parserForArg msg = (,) <$> (parserForArg msg) <*> (parserForArg msg)
+    parserForArg = (,) <$> parserForArg <*> parserForArg
 
 
 
@@ -142,12 +149,11 @@ instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) whe
 
 
 instance ParsableArgument Snowflake where
-    parserForArg msg =
-        read <$> many1 digit
+    parserForArg = read <$> many1 digit
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where
-    parserForArg msg =
+    parserForArg =
         -- consume either of the following:
         -- (if fail then backtrack using try)
         choice $ map try
@@ -160,7 +166,7 @@ instance ParsableArgument UpdateStatusType where
 -- | Parses "playing", "streaming", "listening to" and "competing in" as
 -- 'ActivityType's.
 instance ParsableArgument ActivityType where
-    parserForArg msg =
+    parserForArg =
         -- consume either of the following:
         -- (if fail then backtrack using try)
         choice $ map try
