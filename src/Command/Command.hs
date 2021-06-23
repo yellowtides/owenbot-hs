@@ -124,7 +124,8 @@ module Command.Command
       -- to import it from (UnliftIO or Control.Monad.IO.Class). The one exported
       -- from this module is from "Control.Monad.IO.Class" which is in @base@.
     , MonadIO(..)
-      -- * Common Errors #commonerrors#
+      -- * Common Errors
+      -- | #commonerrors#
       -- $commonerrors
     ) where
 
@@ -234,15 +235,12 @@ pong :: (MonadDiscord m) => Command m
 pong = command "ping" $ \\msg -> respond msg "pong!"
 @
  
-@pong2@ shows that @help@ and @runCommand@ can be composed to create a normal
-receiver.
+@pong2@ shows that @runCommand@ can be composed to create a normal receiver.
+That is, it takes a Message and returns a unit action in the desired monad.
 
 @
 pong2 :: (MonadDiscord m) => Message -> m ()
-pong2
-    = runCommand
-    . help "Custom help message"
-    . command "ping" $ \\msg -> respond msg "pong!"
+pong2 = runCommand $ command "ping" $ \\msg -> respond msg "pong!"
 @
 
 @weather@ below shows having arbitrary arguments in action. @location@ is
@@ -255,17 +253,16 @@ weather = command "weather" $ \\msg location -> do
 @
 
 @complex@ shows that you can parse any type! (as long as you create an
-instance declaration of 'ParsableArgument' for it). Ideally this should be
-placed in @Command/Parser.hs@ among all the other parsers.
+instance declaration of 'ParsableArgument' for it). You may want to put this in
+@Command/Parser.hs@.
 
 @
 instance ParsableArgument Int where
-    parserForArg =
-        -- some parsec
-        read \<$> many digit
+    parserForArg = read \<$> many digit -- some Parsec that returns an Int
 
 complex :: (MonadDiscord m) => Command m
-complex = command "setLimit" $ \\i -> do
+complex = command "setLimit" $ \\m i -> do
+    respond m $ show (i + 20 / 4 + 78^3) -- i is automatically inferred as Int!
     ...
 @
 -}
@@ -591,7 +588,7 @@ parseCommandName cmd = do
                       -- Polyvariadic argument applier --
 -------------------------------------------------------------------------------
 
-{- @CommandHandlerType@ is a dataclass for all types of arguments that a
+{- | @CommandHandlerType@ is a dataclass for all types of arguments that a
 command handler may have. Its only function is @applyArgs@.
 -}
 class (MonadThrow m) => CommandHandlerType m h | h -> m where
