@@ -6,12 +6,12 @@ import           Control.Monad              ( void )
 import           Data.Char                  ( isDigit )
 import qualified Data.Text as T
 import           Data.List                  ( intercalate )
-import qualified Text.ParserCombinators.ReadP as PC
-                                            hiding ( pfail )
-import qualified Text.ParserCombinators.ReadPrec as PC
-import qualified Text.Parsec as P
-import           Text.Read                  ( readMaybe
-                                            , Read ( readPrec )
+import           Text.Parsec                ( label
+                                            , many1
+                                            , sepBy1
+                                            , digit
+                                            , char
+                                            , try
                                             )
 
 import           Discord.Types
@@ -40,27 +40,21 @@ respondAsset m name path = sendAssetChan (messageChannel m) name path
 data TextbookAssetNumber
     = TwoDotSeparated Int Int Int
     | OneDotSeparated Int Int
+    | UnknownSeparation [Int]
 
+-- | used to create the file name
 instance Show TextbookAssetNumber where
     show (TwoDotSeparated a b c) = intercalate "." $ padFirst $ map show [a, b, c]
     show (OneDotSeparated a b) = intercalate "." $ padFirst $ map show [a, b]
 
-instance Read TextbookAssetNumber where
-    readPrec = do
-        a <- PC.lift $ (map read) <$>
-            PC.sepBy1 (PC.many1 (PC.satisfy isDigit)) (PC.char '.')
-        case a of
-            (x:y:[]) -> pure $ OneDotSeparated x y
-            (x:y:z:[]) -> pure $ TwoDotSeparated x y z
-            _ -> PC.pfail
-
 instance ParsableArgument TextbookAssetNumber where
     parserForArg = do
-        a <- (map read) <$> P.sepBy1 (P.many1 P.digit) (P.char '.')
+        a <- (flip label) "dot-separated asset number" $ try $
+            (map read) <$> sepBy1 (many1 digit) (char '.')
         case a of
             (x:y:[]) -> pure $ OneDotSeparated x y
             (x:y:z:[]) -> pure $ TwoDotSeparated x y z
-            _ -> P.parserFail "unsupported asset number format"
+            xs -> pure $ UnknownSeparation xs
 
 padFirst :: [String] -> [String]
 padFirst (x:xs) = (padZeroes 2 x):xs
@@ -72,8 +66,8 @@ padZeroes newLen digits = replicate (newLen - length digits) '0' <> digits
 theorem :: (MonadDiscord m, MonadIO m) => Command m
 theorem = alias "thm" $ command "theorem" $ \m subject number -> do
     case (subject :: T.Text) of
-        "ila" -> case readMaybe number of
-            Just x@TwoDotSeparated{} -> do
+        "ila" -> case number of
+            x@TwoDotSeparated{} -> do
                 let path = "ila/theorems/" <> show x <> ".png"
                 let name = show x <> ".png"
                 respondAsset m ("Theorem " <> (T.pack name)) path
@@ -86,8 +80,8 @@ theorem = alias "thm" $ command "theorem" $ \m subject number -> do
 definition :: (MonadDiscord m, MonadIO m) => Command m
 definition = alias "def" $ command "definition" $ \m subject number -> do
     case (subject :: T.Text) of
-        "ila" -> case readMaybe number of
-            Just x@OneDotSeparated{} -> do
+        "ila" -> case number of
+            x@OneDotSeparated{} -> do
                 let path = "ila/definitions/" <> show x <> ".png"
                 let name = show x <> ".png"
                 respondAsset m ("Definition " <> (T.pack name)) path
@@ -101,8 +95,8 @@ definition = alias "def" $ command "definition" $ \m subject number -> do
 lemma :: (MonadDiscord m, MonadIO m) => Command m
 lemma = alias "lem" $ command "lemma" $ \m subject number -> do
     case (subject :: T.Text) of
-        "ila" -> case readMaybe number of
-            Just x@TwoDotSeparated{} -> do
+        "ila" -> case number of
+            x@TwoDotSeparated{} -> do
                 let path = "ila/lemmas/" <> show x <> ".png"
                 let name = show x <> ".png"
                 respondAsset m ("Lemma " <> (T.pack name)) path
