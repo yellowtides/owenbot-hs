@@ -35,13 +35,13 @@ import              Utils                   ( sendMessageChan
 import              Owoifier                ( owoify )
 
 receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand owoifyIfPossible
-    , runCommand fortune
-    , runCommand godIsDead
-    , runCommand thatcherIsDead
-    , runCommand thatcherIsAlive
-    , runCommand dadJokeIfPossible
+receivers = map runCommand
+    [ owoifyIfPossible
+    , fortune
+    , godIsDead
+    , thatcherIsDead
+    , thatcherIsAlive
+    , dadJokeIfPossible
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -150,7 +150,8 @@ fortuneCow = do
         else fortuneCowFiles !! max 0 roll
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
 
--- | "Joke" function to change owen's pronouns randomly in servers on startup, cause owen is our favourite genderfluid icon
+-- | "Joke" function to change owen's pronouns randomly in servers on startup,
+-- cause owen is our favourite genderfluid icon.
 changePronouns :: (MonadDiscord m, MonadIO m) => m ()
 changePronouns = do
     u <- getCurrentUser
