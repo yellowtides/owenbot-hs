@@ -6,8 +6,13 @@ import           Control.Monad              ( void )
 import           Data.Char                  ( isDigit )
 import qualified Data.Text as T
 import           Data.List                  ( intercalate )
+import qualified Text.ParserCombinators.ReadP as PC
+                                            hiding ( pfail )
+import qualified Text.ParserCombinators.ReadPrec as PC
 import qualified Text.Parsec as P
-import           Text.Read                  ( readMaybe )
+import           Text.Read                  ( readMaybe
+                                            , Read ( readPrec )
+                                            )
 
 import           Discord.Types
 import           Discord
@@ -41,20 +46,13 @@ instance Show TextbookAssetNumber where
     show (OneDotSeparated a b) = intercalate "." $ padFirst $ map show [a, b]
 
 instance Read TextbookAssetNumber where
-    readsPrec _ input =
-      let
-        (a, xs) = span isDigit input
-        (dot1 : xs') = xs
-        (b, xs'') = span isDigit xs'
-      in
-        if dot1 == '.' then
-            case xs'' of
-                ('.' : xs''') ->
-                    let (c, xs'''') = span isDigit xs'''
-                    in  [(TwoDotSeparated (read a) (read b) (read c), xs'''')]
-                _ ->
-                    [(OneDotSeparated (read a) (read b), xs'')]
-        else []
+    readPrec = do
+        a <- PC.lift $ (map read) <$>
+            PC.sepBy1 (PC.many1 (PC.satisfy isDigit)) (PC.char '.')
+        case a of
+            (x:y:[]) -> pure $ OneDotSeparated x y
+            (x:y:z:[]) -> pure $ TwoDotSeparated x y z
+            _ -> PC.pfail
 
 instance ParsableArgument TextbookAssetNumber where
     parserForArg = do
