@@ -57,8 +57,13 @@ dadJokeChance = 1
 owoifiedEmoji :: T.Text
 owoifiedEmoji = "✅"
 
+-- | Generates a random Int from 1 to n
 roll :: Int -> IO Int
 roll n = getStdRandom $ randomR (1, n)
+
+-- | Selects an item from a list at random
+select :: [a] -> IO a
+select xs = (xs !!) . subtract 1 <$> roll (length xs)
 
 owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 owoifyIfPossible
@@ -145,10 +150,10 @@ fortuneCow :: IO String
 fortuneCow = do
     base <- assetDir
     f <- T.pack <$> fortuneProc
-    roll <- roll $ length fortuneCowFiles
-    let file = if roll == 1
+    r <- roll $ length fortuneCowFiles
+    let file = if r == 1
         then base <> "freddy.cow"
-        else fortuneCowFiles !! max 0 roll
+        else fortuneCowFiles !! (r - 1)
     SP.readProcess "cowsay" ["-f", file] . T.unpack $ owoify f
 
 -- | "Joke" function to change owen's pronouns randomly in servers on startup,
@@ -188,3 +193,32 @@ changePronouns = do
         randomChoice [] = return Nothing
         randomChoice l = sequence $ Just $ (l !!) <$> randomRIO (0, length l - 1)
 
+-- | List of magic 8-ball responses
+-- (from https://en.wikipedia.org/wiki/Magic_8-Ball#Possible_answers)
+ballAnswers :: [T.Text]
+ballAnswers = [ "It is Certain."
+                , "It is decidedly so."
+                , "Without a doubt."
+                , "Yes definitely."
+                , "You may rely on it."
+                , "As I see it, yes."
+                , "Most likely."
+                , "Outlook good."
+                , "Yes."
+                , "Signs point to yes."
+
+                , "Reply hazy, try again."
+                , "Ask again later."
+                , "Better not tell you now."
+                , "Cannot predict now."
+                , "Concentrate and ask again."
+
+                , "Don't count on it."
+                , "My reply is no."
+                , "My sources say no."
+                , "Outlook not so good."
+                , "Very doubtful. "
+                ]
+
+magic8ball :: (MonadDiscord m, MonadIO m) => Command m
+magic8ball = command "8ball" $ \m -> liftIO (select ballAnswers) >>= respond m
