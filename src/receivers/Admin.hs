@@ -60,13 +60,20 @@ receivers = map runCommand
 rstrip :: T.Text -> T.Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
--- captureCommandOutput appends newlines automatically
-gitLocal, gitRemote, commitsAhead :: IO T.Text
-gitLocal = captureCommandOutput "git rev-parse HEAD"
-gitRemote = captureCommandOutput "git fetch"
-  >> captureCommandOutput "git rev-parse origin/main"
-commitsAhead = captureCommandOutput "git fetch"
-  >> captureCommandOutput "git rev-list --count HEAD..origin/main"
+gitLocal :: IO T.Text
+gitLocal = do
+    -- can't use captureCommandOutput because --format would be broken into
+    -- separate args (as it splits on space).
+    let args = [ "log"
+               , "-n", "1"
+               , "--format=format:`%h` %ar by **%an**: %s"
+               , "--date=short"
+               , "HEAD"
+               ]
+    T.pack <$> Process.readCreateProcess
+        ((Process.proc "git" args) { Process.cwd = Just "." }) ""
+commitsAhead :: IO T.Text
+commitsAhead = captureCommandOutput "git rev-list --count HEAD..origin/main"
 
 isGitRepo :: IO Bool
 isGitRepo = doesPathExist ".git"
@@ -83,13 +90,14 @@ sendGitInfoChan chan = do
     if not inRepo then
         sendMessageChan chan $ owoify "Not in git repo (sorry)!"
     else do
-        loc <- liftIO gitLocal
-        remote <- liftIO gitRemote
+        localStatus <- liftIO gitLocal
+        liftIO $ captureCommandOutput "git fetch"
         commits <- liftIO commitsAhead
-        sendMessageChan chan ("Git Status Info: \n" <>
-                              "Local at: "  <> loc <>
-                              "Remote at: " <> remote <>
-                              "Remote is "  <> rstrip commits <> " commits ahead")
+        -- git always has echoes an empty line at the end, so no need
+        case rstrip commits of
+            "0" -> sendMessageChan chan $ "*Git: All caught up!* \n" <> localStatus
+            x   -> sendMessageChan chan $ "*Git: Upstream is " <> x <>
+                " commits ahead.* \n" <> localStatus
 
 sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo
