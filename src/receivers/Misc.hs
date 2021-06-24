@@ -222,4 +222,4 @@ ballAnswers = [ "It is Certain."
                 ]
 
 magic8ball :: (MonadDiscord m, MonadIO m) => Command m
-magic8ball = regexCommand "8ball.*" $ \m _ -> liftIO (select ballAnswers) >>= respond m
+magic8ball = regexCommand "^:8ball.*" $ \m _ -> liftIO (select ballAnswers) >>= respond m
