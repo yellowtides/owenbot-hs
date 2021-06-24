@@ -43,6 +43,7 @@ receivers = map runCommand
     , thatcherIsDead
     , thatcherIsAlive
     , dadJokeIfPossible
+    , magic8ball
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
