@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Misc (receivers, reactionReceivers, changePronouns) where
+module Misc (commands, reactionReceivers, changePronouns) where
 
 import              Control.Monad           ( when
                                             , unless
@@ -35,8 +35,8 @@ import              Utils                   ( sendMessageChan
                                             )
 import              Owoifier                ( owoify )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = map runCommand
+commands :: [Command DiscordHandler]
+commands =
     [ owoifyIfPossible
     , fortune
     , godIsDead

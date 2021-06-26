@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module ModifyEventsChannel (receivers) where
+module ModifyEventsChannel (commands) where
 
 import Discord
 import Discord.Types
@@ -12,8 +12,8 @@ import Command
 
 import Owoifier ( owoify )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = [ runCommand moveEventsChannel ]
+commands :: [Command DiscordHandler]
+commands = [ moveEventsChannel ]
 
 eventsChannelId :: ChannelId
 eventsChannelId = 837700461192151120

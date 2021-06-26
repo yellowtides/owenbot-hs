@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Academic (receivers) where
+module Academic ( commands ) where
 
 import           Control.Monad              ( void )
 import           Data.Char                  ( isDigit )
@@ -22,8 +22,8 @@ import           Command
 import           Utils                      ( sendAssetChan
                                             , respondAsset )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = fmap runCommand
+commands :: [Command DiscordHandler]
+commands =
     [ textbook
     , theorem
     , definition

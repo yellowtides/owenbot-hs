@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 
 module Haskell (
-    receivers
+    commands
 ) where
 
 import           Data.Aeson              ( FromJSON
@@ -25,11 +25,11 @@ import           Network.HTTP.Simple     ( httpLBS
 import           Pointfree               ( pointfree' )
 import           UnliftIO                ( liftIO )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand pointfree
-    , runCommand doc
-    , runCommand hoogle
+commands :: [Command DiscordHandler]
+commands =
+    [ pointfree
+    , doc
+    , hoogle
     ]
 
 -- | Maximum number of items to return from a Hoogle search

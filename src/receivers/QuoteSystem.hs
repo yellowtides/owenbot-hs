@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module QuoteSystem ( receivers ) where
+module QuoteSystem ( commands ) where
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
@@ -21,8 +21,8 @@ import           Text.Parsec    ( many1
                                 , anyChar
                                 )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = map runCommand [ receiveQuote, receiveQuoteShorthand, addQuote, rmQuote ]
+commands :: [Command DiscordHandler]
+commands = [ receiveQuote, receiveQuoteShorthand, addQuote, rmQuote ]
 
 quotePath :: FilePath
 quotePath = "registeredQuotes.csv"

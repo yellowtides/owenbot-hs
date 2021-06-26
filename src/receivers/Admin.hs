@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin ( receivers, sendGitInfoChan, sendInstanceInfoChan ) where
+module Admin ( commands, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types
@@ -39,8 +39,8 @@ import           CSV                    ( readSingleColCSV
                                         , writeSingleColCSV
                                         )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = map runCommand
+commands :: [Command DiscordHandler]
+commands =
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen

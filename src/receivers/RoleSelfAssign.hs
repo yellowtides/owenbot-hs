@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers, receivers ) where
+module RoleSelfAssign ( reactionAddReceivers, reactionRemReceivers, commands ) where
 
 import           Control.Monad          ( guard
                                         , unless
@@ -53,10 +53,10 @@ reactionAddReceivers = [ attemptRoleAssign ]
 reactionRemReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionRemReceivers = [ handleRoleRemove ]
 
-receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand createAssignStation
-    , runCommand addRoleToStation
+commands :: [Command DiscordHandler]
+commands =
+    [ createAssignStation
+    , addRoleToStation
     ]
 
 assignFilePath :: FilePath

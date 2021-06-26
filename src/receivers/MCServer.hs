@@ -1,6 +1,6 @@
 {-# language OverloadedStrings, DeriveGeneric #-}
 
-module MCServer ( receivers ) where
+module MCServer ( commands ) where
     
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
@@ -19,10 +19,10 @@ import           CSV                    ( writeSingleColCSV
 import           Utils                  ( modPerms )
 import           Owoifier               ( owoify )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers =
-    [ runCommand getStatus
-    , runCommand setServer
+commands :: [Command DiscordHandler]
+commands =
+    [ getStatus
+    , setServer
     ]
 
 data ServerStatus = ServerStatus {

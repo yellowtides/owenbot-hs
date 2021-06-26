@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module HallOfFame ( reactionReceivers, messageReceivers ) where
+module HallOfFame ( reactionReceivers, commands ) where
 
 import           Control.Monad      ( when )
 import qualified Data.Text as T
@@ -29,8 +29,8 @@ import           DB                 ( fetch
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ attemptHallOfFame ]
 
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = [ runCommand reactLimit ]
+commands :: [Command DiscordHandler]
+commands = [ reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r =

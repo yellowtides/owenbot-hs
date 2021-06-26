@@ -79,11 +79,11 @@ module Command.Command
     , command
     , runCommand
     , runCommands
-    , runHelp
       -- ** Custom command parsing
       -- | Parsec and Regex options are available.
     , parsecCommand
     , regexCommand
+    , helpCommand
       -- ** Compsable Functions
       -- | These can be composed onto 'command' to overwrite default functionality.
     , help
@@ -143,6 +143,7 @@ import           Control.Monad.IO.Class     ( MonadIO )
 import           Control.Monad              ( void
                                             , guard
                                             , unless
+                                            , when
                                             )
 import           Data.Maybe                 ( catMaybes )
 import           Data.List                  ( nub )
@@ -213,7 +214,7 @@ data Command m = Command
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
     , commandHelp         :: T.Text
-    -- ^ The help for this command. Displayed when 'runHelp' is used.
+    -- ^ The help for this command. Displayed when 'helpCommand' is used.
     , commandRequires     :: [Message -> m (Maybe T.Text)]
     -- ^ A list of requirements that need to pass (Nothing) for the command to
     -- be processed. Just contains the reason. They will be passed to
@@ -391,7 +392,7 @@ parsecCommand
     -- ^ The handler for the command.
     -> Command m
 parsecCommand parserFunc commandHandler = Command
-    { commandName         = "<custom parser>"
+    { commandName         = "<<custom parser>>"
     , commandPrefix       = ""
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
@@ -433,7 +434,7 @@ regexCommand
     -> (Message -> [T.Text] -> m ())
     -> Command m
 regexCommand regex commandHandler = Command
-    { commandName         = "<regex>"
+    { commandName         = "<<custom regex>>"
     , commandPrefix       = ""
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
@@ -512,25 +513,45 @@ runCommands
     -> m ()
 runCommands = flip (mapM_ . flip runCommand)
 
-{- | @runHelp@ creates a super duper simple help command that just lists
-each command's names together with their help text.
+{- | @helpCommand@ creates a help command that has an optional argument to specify
+a specific command to view the help for. If the argument is empty, the user-
+provided handler is called. If there is an argument, it is matched against all
+registered commands and responds with a formatted help text.
 -}
-runHelp
+helpCommand
     :: (MonadDiscord m)
     => T.Text
+    -- ^ The help command name
     -> [Command m]
-    -> Message
-    -> m ()
-runHelp name cmds
-    = runCommand
-    . command name $ \msg -> do
-        chan <- createDM (userId $ messageAuthor msg)
-        void $ createMessage (channelId chan) $
-            "```" <> T.intercalate "\n" (map createCommandHelp cmds) <> "```"
+    -> (Message -> m ())
+    -> Command m
+helpCommand helpName cmds onEmptyHandler
+    = help ("Usage: :" <> helpName <> " (command name)")
+    $ command helpName
+    $ \msg mbName -> do
+        let normalCmds = filter isOrthodoxCommand cmds
+        case mbName of
+            Nothing -> onEmptyHandler msg
+            Just name -> do
+                let helps = (map createCommandHelp . filter (nameMatches name)) normalCmds
+                unless (null helps) $ do
+                    respond msg $ T.intercalate "\n" helps
+                
   where
+    grabHelp :: Command m -> T.Text
+    grabHelp Command{ commandHelp } = commandHelp
+
+    nameMatches :: T.Text -> Command m -> Bool
+    nameMatches t Command{ commandName } = t `T.isInfixOf` commandName
+
+    isOrthodoxCommand :: Command m -> Bool
+    isOrthodoxCommand Command{ commandName } = not $
+        ("<<custom regex>>" `T.isInfixOf` commandName) || 
+        ("<<custom parser>>" `T.isInfixOf` commandName)
+
     createCommandHelp :: Command m -> T.Text
     createCommandHelp Command{ commandPrefix, commandName, commandHelp } =
-        "# " <> commandPrefix <> commandName <> "\n" <> commandHelp
+        "**" <> commandPrefix <> commandName <> "**\n" <> commandHelp
 
 
 
@@ -552,7 +573,7 @@ defaultErrorHandler
 defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
-            respond m x
+            respond m $ x <> "\nCheck if `:helpme (command name without prefix)` can help you!"
         RequirementError x ->
             unless (x == "") $ do
                 chan <- createDM (userId $ messageAuthor m)
