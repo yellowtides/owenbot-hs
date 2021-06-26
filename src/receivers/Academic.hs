@@ -19,8 +19,7 @@ import           Discord
 
 import           Command.Parser
 import           Command
-import           Utils                      ( sendAssetChan
-                                            , respondAsset )
+import           Utils                      ( respondAsset )
 
 receivers :: [Message -> DiscordHandler ()]
 receivers = fmap runCommand

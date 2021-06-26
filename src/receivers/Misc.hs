@@ -25,7 +25,6 @@ import              Discord
 import              Command
 import              Utils                   ( sendMessageChan
                                             , sendReply
-                                            , sendAssetChan
                                             , respondAsset
                                             , addReaction
                                             , messageFromReaction

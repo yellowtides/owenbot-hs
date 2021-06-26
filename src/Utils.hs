@@ -11,7 +11,6 @@ module Utils ( emojiToUsableText
              , sendMessageChanPingsDisabled
              , sendMessageDM
              , sendFileChan
-             , sendAssetChan
              , respondAsset
              , addReaction
              , messageFromReaction
@@ -271,17 +270,12 @@ sendFileChan c name fp = do
     fileContent <- liftIO $ B.readFile fp
     void $ createMessageUploadFile c name fileContent
 
--- | `sendAssetChan` is simply a wrapper for `sendFileChan` that perpends the data storage dir
--- to the provided file path.
-sendAssetChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
-sendAssetChan c name path = do
-    base <- liftIO assetDir
-    sendFileChan c name (base <> path)
-
 -- | @respondAsset m name path@ responds to the message @m@ with the file at
 -- @path@, with the name overridden as @name@.
 respondAsset :: (MonadDiscord m, MonadIO m) => Message -> T.Text -> FilePath -> m ()
-respondAsset = sendAssetChan . messageChannel
+respondAsset m name path = do
+    base <- liftIO assetDir
+    sendFileChan (messageChannel m) name (base <> path)
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
@@ -295,13 +289,6 @@ addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 -- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
 isMod :: Message -> DiscordHandler Bool
 isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
-
--- | `isNotMutExWith` checks whether the two given lists are not mutually exclusive. That is, if the
--- two given lists contain at least one common element (with equality being determined by their `Eq`
--- class instantiation).
-isNotMutExWith :: Eq a => [a] -> [a] -> Bool
-isNotMutExWith x y = or $ (==) <$> x <*> y
--- the cartesian product of two lists, but constructed with pairwise `(==)` instead of `(,)`.
 
 -- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
 -- the provided `Text` exactly.
@@ -326,7 +313,7 @@ hasRoleByID m r = case messageGuild m of
 checkAllIDs :: (MonadDiscord m) => Message -> IO [m Bool]
 checkAllIDs m = do
     devFile <- readSingleColCSV devIDs
-    let devRoleIDs = ((read . T.unpack) :: (T.Text -> RoleId)) <$> devFile
+    let devRoleIDs = read . T.unpack <$> devFile
     pure $ map (hasRoleByID m) devRoleIDs
 
 -- | `isSenderDeveloper` checks whether the provided message's author is a developer.
@@ -367,13 +354,13 @@ getRolesOfUserInGuild :: (MonadDiscord m) => UserId -> GuildId -> m [Role]
 getRolesOfUserInGuild uid g = do
     allGuildRoles <- getGuildRoles g
     user <- getGuildMember g uid
-    let userRolesInGuild = filter (\x -> roleId x `elem` memberRoles user) allGuildRoles
-    pure userRolesInGuild
+    pure $ filter ((`elem` memberRoles user) . roleId) allGuildRoles
 
 -- | `getTimestampFromMessages` returns the given message's timestamp as `Text`, in the format
 -- `yyyy-mm-dd | hh:mm:ss`.
 getTimestampFromMessage :: Message -> T.Text
-getTimestampFromMessage m = T.pack $ TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z" (messageTimestamp m)
+getTimestampFromMessage =
+    T.pack. TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z" . messageTimestamp
 
 -- | `captureCommandOutput` creates a new process from the desired command provided as a `String`.
 -- Then, it waits for the command to finish executing, returning its output as a `Text`.
