@@ -207,17 +207,17 @@ data Command m = Command
     -- 3. Arguments after a normal command name (T.Text: fed into the parser)
     , commandApplier      :: Message -> [T.Text] -> m ()
     -- ^ The function used to apply the arguments into a handler. It needs to
-    -- take a 'Message' that triggered the command, the input text, and produce
-    -- an action in the monad @m@.
+    -- take a 'Message' that triggered the command and the result of
+    -- commandInitialMatch, and produce an action in the monad @m@.
     , commandErrorHandler :: Message -> CommandError -> m ()
     -- ^ The function called when a 'CommandError' is raised during the handling
     -- of a command.
     , commandHelp         :: T.Text
-    -- ^ The help for this command.
+    -- ^ The help for this command. Displayed when 'runHelp' is used.
     , commandRequires     :: [Message -> m (Maybe T.Text)]
     -- ^ A list of requirements that need to pass (Nothing) for the command to
-    -- be processed. If any fails, the reason will be passed to
-    -- commandErrorHandler.
+    -- be processed. Just contains the reason. They will be passed to
+    -- commandErrorHandler as a 'RequirementError'.
     }
 
 
@@ -649,13 +649,14 @@ match both @a -> m ()@ and @Message -> b@, neither are more specific.
 instance {-# OVERLAPPING #-} (MonadThrow m) => CommandHandlerType m (Message -> m ()) where
     applyArgs handler msg input = applyArgs (handler msg) msg input
 
-{- The default 'Show' instance for ParseError contains the error position,
+{- | The default 'Show' instance for ParseError contains the error position,
 which only adds clutter in a Discord message. This copies most of it (from 
-https://hackage.haskell.org/package/parsec-3.1.14.0/docs/src/Text.Parsec.Error.html#showErrorMessages
-) but makes it a bit more customised for owen.
+https://hackage.haskell.org/package/parsec-3.1.14.0/docs/Text-Parsec-Error.html)
+but makes it a bit more customised for owen.
 
 Unfortunately there isn't really a cleaner way to do this, because Parsec doesn't
-export any helpers for this (it's marked as TODO in their code).
+export any helpers for this (it's marked as TODO in their code). It's also very
+sparsely documented....
 -}
 showErrAsText :: ParseError -> T.Text
 showErrAsText err
@@ -668,10 +669,10 @@ showErrAsText err
     (expect,rem3)      = span ((PE.Expect      "") ==) rem2
 
     showExpect      = showMany "I wanted " expect
-    showUnExpect    = showMany "but I got " unExpect
+    showUnExpect    = showMany "but my organs didn't want " unExpect
     showSysUnExpect | not (null unExpect) || null sysUnExpect = ""
                     | T.null firstMsg = "but you stopped too early!"
-                    | otherwise       = "but I got " <> firstMsg <> "!"
+                    | otherwise       = "but I stumbled on " <> firstMsg <> "!"
     
     firstMsg = T.pack $ messageString $ head sysUnExpect
 
