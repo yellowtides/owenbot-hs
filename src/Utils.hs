@@ -165,7 +165,7 @@ discordEmojiTextToId emojiT
 -- guild (or is a default emoji). Case insensitive.
 isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
-    Right guild <- restCall $ R.GetGuild gid
+    guild <- getGuild gid
     let emojis = guildEmojis guild
     let emojiID = discordEmojiTextToId emojiT
     let matchingEmojis = filter ((emojiID ==) . fromJust . emojiId) emojis

@@ -33,6 +33,7 @@ import           Utils                  ( sendMessageDM
                                         , isRoleInGuild
                                         , sendMessageChan
                                         , addReaction
+                                        , modPerms
                                         )
 import           CSV                    ( readCSV
                                         , readSingleColCSV
@@ -61,14 +62,14 @@ reactionRemReceivers = [ handleRoleRemove ]
 receivers :: [Message -> DiscordHandler ()]
 receivers =
     [ createAssignStation
-    , addRoleToStation
+    , runCommand addRoleToStation
     ]
 
 assignFilePath :: FilePath
 assignFilePath = "idAssign.csv"
 
 serverID :: GuildId
-serverID = 755798054455738489
+serverID = 765660106259562498
 -- the number is the fixed Guild/Server ID.
 -- TODO: put the number in a config file.
 -- Currently set to the testing server's.
@@ -77,10 +78,6 @@ createAssignStationSyntax :: T.Text
 createAssignStationSyntax = "Syntax: `:createSelfAssign \"<prependText>\" \"<appendText>\" " <>
                             "{\"emoji1\": \"roleText1\", \"emoji2\": \"roleText2\", ...}`"
 
-addRoleToStationSyntax :: T.Text
-addRoleToStationSyntax = "Syntax: `:addRoleToStation \"<prependText>\" \"<appendText>\" " <>
-                            "\"<stationID>\" \"<channelID>\" \"<emoji>\" \"<roleText>\"`"
-
 -- | Warning: Unsafe, as it does not cover cases where the matrix is not two-dimensional.
 twoDimMatrixToMap :: Functor f => f [a] -> f (a, a)
 twoDimMatrixToMap = fmap (\[x, y] -> (x, y))
@@ -88,49 +85,45 @@ twoDimMatrixToMap = fmap (\[x, y] -> (x, y))
 mapToMatrix :: Functor f => f (a, a) -> f [a]
 mapToMatrix = fmap (\(x, y) -> [x, y])
 
-addRoleToStation :: Message -> DiscordHandler ()
-addRoleToStation m = newModCommand m ("addRoleToStation" <> spaceRE             -- command name
-                                          <> quotedArgRE <> spaceRE             -- prepended text
-                                          <> quotedArgRE <> spaceRE             -- appended text
-                                          <> quotedArgRE <> spaceRE             -- station ID
-                                          <> quotedArgRE <> spaceRE             -- channel ID
-                                          <> quotedArgRE <> spaceRE             -- emoji
-                                          <> quotedArgRE) $ \captures -> do     -- role
-    let [prependT, appendT, stationID, channelID, emoji, role] = captures
-    doesEmojiExist <- isEmojiValid emoji serverID
-    unless doesEmojiExist
-        (sendMessageChan (messageChannel m)
-        "The emoji provided is invalid. Perhaps you used one from another server?")
-    guard doesEmojiExist
-    -- Emoji's fine!
+addRoleToStation :: Command DiscordHandler
+addRoleToStation
+    = requires modPerms
+    $ help ("Syntax: `:addRoleToStation <prependText> <appendText>\" " <>
+        "<stationID> <channelID> <emoji> <roleText>`")
+    $ command "addRoleToStation"
+    $ \m prependT appendT stationId channelId emoji role -> do
+        doesEmojiExist <- isEmojiValid emoji serverID
+        unless doesEmojiExist
+            (respond m
+            "The emoji provided is invalid. Perhaps you used one from another server?")
+        guard doesEmojiExist
+        -- Emoji's fine!
 
-    roleIDM <- isRoleInGuild role serverID
-    let doesRoleExist = isJust roleIDM
-    unless doesRoleExist
-        (sendMessageChan (messageChannel m)
-        "The role provided is invalid. Please make sure you use the role's name!")
-    guard doesRoleExist
-    -- Role's fine!
+        roleIDM <- isRoleInGuild role serverID
+        let doesRoleExist = isJust roleIDM
+        unless doesRoleExist
+            (respond m
+            "The role provided is invalid. Please make sure you use the role's name!")
+        guard doesRoleExist
+        -- Role's fine!
 
-    let (stationIDStr, channelIDStr) = (T.unpack stationID, T.unpack channelID)
-    let (stationIDNum, channelIDNum) = (read stationIDStr, read channelIDStr)
-    let Just roleID = roleIDM
-    let assignFilePath = getAssignFile' stationIDStr
+        let Just roleID = roleIDM
+        let assignFilePath = getAssignFile' (show stationId)
 
-    -- The old emote role mapping, read from the CSV.
-    roleEmoteMatrix <- liftIO $ readCSV assignFilePath
-    -- The new emote role map! Cons the emoji and role at the front.
-    let emojiRoleIDMap = (emoji, roleID) : map (read . T.unpack <$>) (twoDimMatrixToMap roleEmoteMatrix)
+        -- The old emote role mapping, read from the CSV.
+        roleEmoteMatrix <- liftIO $ readCSV assignFilePath
+        -- The new emote role map! Cons the emoji and role at the front.
+        let emojiRoleIDMap = (emoji, roleID) : map (read . T.unpack <$>) (twoDimMatrixToMap roleEmoteMatrix)
 
-    -- Edit said message to the new one.
-    assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
-    _ <- editMessage (channelIDNum, stationIDNum) assignStationT Nothing
+        -- Edit said message to the new one.
+        assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
+        _ <- editMessage (channelId, stationId) assignStationT Nothing
 
-    -- Write the new mapping to the old CSV
-    _ <- liftIO . writeCSV assignFilePath . mapToMatrix $ fmap (T.pack . show) <$> emojiRoleIDMap
+        -- Write the new mapping to the old CSV
+        _ <- liftIO . writeCSV assignFilePath . mapToMatrix $ fmap (T.pack . show) <$> emojiRoleIDMap
 
-    -- React!
-    addReaction channelIDNum stationIDNum emoji
+        -- React!
+        addReaction channelId stationId emoji
 
 getAssignFile :: MessageId -> FilePath
 getAssignFile = getAssignFile' . show
