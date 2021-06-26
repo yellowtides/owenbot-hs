@@ -197,7 +197,7 @@ changePronouns = do
 -- | List of magic 8-ball responses
 -- (from https://en.wikipedia.org/wiki/Magic_8-Ball#Possible_answers)
 ballAnswers :: [T.Text]
-ballAnswers = map ("🎱 " `T.append`)
+ballAnswers = map ("🎱 " <>)
     -- Positive responses
     [ "It is Certain."
     , "It is decidedly so."
