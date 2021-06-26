@@ -517,6 +517,8 @@ runCommands = flip (mapM_ . flip runCommand)
 a specific command to view the help for. If the argument is empty, the user-
 provided handler is called. If there is an argument, it is matched against all
 registered commands and responds with a formatted help text.
+
+Only supports the default prefix (caus its own meta-help is hardcoded).
 -}
 helpCommand
     :: (MonadDiscord m)
@@ -532,22 +534,21 @@ helpCommand helpName cmds onEmptyHandler
         case mbName of
             Nothing -> onEmptyHandler msg
             Just name -> do
-                if name == helpName then
+                if (name == helpName || name == ":" <> helpName) then
                     respond msg $ "**:" <> helpName <> "**\n" <>
                         "Send this help message. Usage: `:" <> helpName <>
                         " (optional command name without prefix)`"
                 else do
-                    let helps = (map createCommandHelp . filter (nameMatches name)) normalCmds
-                    unless (null helps) $ do
-                        respond msg $ T.intercalate "\n" helps
+                    let helps = (map createCommandHelp . filter (cmdMatches name)) normalCmds
+                    unless (null helps) $ respond msg $ T.intercalate "\n" helps
                 
   where
     grabHelp :: Command m -> T.Text
     grabHelp Command{ commandHelp } = commandHelp
 
-    nameMatches :: T.Text -> Command m -> Bool
-    nameMatches t Command{ commandName, commandAliases } =
-        any (t `T.isInfixOf`) (commandName : commandAliases)
+    cmdMatches :: T.Text -> Command m -> Bool
+    cmdMatches t Command{ commandPrefix, commandName, commandAliases } =
+        any (t `T.isInfixOf`) $ [id, (commandPrefix <>)] <*> (commandName : commandAliases)
 
     isOrthodoxCommand :: Command m -> Bool
     isOrthodoxCommand Command{ commandName } = not $
