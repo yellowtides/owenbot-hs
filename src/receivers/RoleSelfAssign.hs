@@ -40,11 +40,6 @@ import           CSV                    ( readCSV
                                         , writeCSV
                                         )
 
-import           TemplateRE             ( accoladedArgRE
-                                        , quotedArgRE
-                                        , spaceRE
-                                        )
-
 type EmojiRoleMap = [(String, RoleId)]
 -- emoji --> snowflake.
 -- Note: Only supports default emojis.

@@ -71,7 +71,6 @@ import           Text.Regex.TDFA        ( (=~) )
 import           Owoifier               ( owoify
                                         , weakOwoify
                                         )
-import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
 import           Data.Maybe             ( fromJust )
