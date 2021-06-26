@@ -2,6 +2,8 @@
 
 module DB
     ( dbDir
+    , readDB
+    , writeDB
     ) where
 
 import GHC.Generics
