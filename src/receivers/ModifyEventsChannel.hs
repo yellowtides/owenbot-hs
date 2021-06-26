@@ -2,20 +2,10 @@
 
 module ModifyEventsChannel (receivers) where
 
-import Discord ( DiscordHandler
-               , restCall )
+import Discord
 import Discord.Types
-    ( Channel(ChannelGuildCategory)
-    , Message(messageChannel)
-    , ChannelId )
-
 import Discord.Requests as R
-    ( ChannelPermissionsOpts(ChannelPermissionsOpts,
-                             channelPermissionsOptsAllow, channelPermissionsOptsDeny,
-                             channelPermissionsOptsType)
-    , ChannelPermissionsOptsType ( ChannelPermissionsOptsRole )
-    , ChannelRequest ( EditChannelPermissions, GetChannel ) )
-import Utils ( sendMessageChan, newModCommand, moveChannel )
+import Utils ( sendMessageChan, moveChannel )
 import UnliftIO ( MonadIO(liftIO) )
 import Data.Text as T ()
 import Command
