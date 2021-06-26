@@ -50,6 +50,10 @@ class ParsableArgument a where
     -- | @parserForArg@ is a parser that returns the parsed element.
     parserForArg :: T.Parser a
 
+----------------------------------------------------------------------------
+    -- Ubiquitous types not related to Discord
+----------------------------------------------------------------------------
+
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
 -- parsed as a single string: 
@@ -154,11 +158,13 @@ instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) whe
 
 
 
-
+-----------------------------------------------------------------------------
+    -- Discord specific types
+-----------------------------------------------------------------------------
 
 
 instance ParsableArgument Snowflake where
-    parserForArg = read <$> many1 digit
+    parserForArg = read <$> (many1 digit <?> "a snowflake ID")
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where
