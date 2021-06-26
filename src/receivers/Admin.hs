@@ -95,7 +95,7 @@ sendGitInfoChan chan = do
         case rstrip commits of
             "0" -> sendMessageChan chan $ "*Git: All caught up!* \n" <> localStatus
             x   -> sendMessageChan chan $ "*Git: Upstream is " <> x <>
-                " commits ahead.* \n" <> localStatus
+                " commits ahead. Current local HEAD is:* \n" <> localStatus
 
 sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo
