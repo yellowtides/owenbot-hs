@@ -444,5 +444,5 @@ snowflakeToInt :: Snowflake -> Integer
 snowflakeToInt (Snowflake w) = toInteger w
 
 -- | Moves channel position in guild
-moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
-moveChannel guild chan location = void $ restCall $ R.ModifyGuildChannelPositions guild [(chan, location)]
+moveChannel :: (MonadDiscord m) => GuildId -> ChannelId -> Int -> m ()
+moveChannel guild chan location = void $ modifyGuildChannelPositions guild [(chan, location)]
