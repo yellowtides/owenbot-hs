@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Helpme ( receivers ) where
+module Helpme where
 
 import           Discord.Types
 import           Discord            ( DiscordHandler )
