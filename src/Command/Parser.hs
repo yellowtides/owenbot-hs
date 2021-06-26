@@ -111,20 +111,29 @@ instance ParsableArgument Int where
 -- @
 newtype RemainingText = Remaining { getDeez :: T.Text }
 
--- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
--- with @Text@. At least one character is required.
+-- | The rest of the arguments. It may be quoted in its entirety. Spaces are
+-- preserved as-is, unlike concatting after parsing [@Text@].
+-- At least one character is required within the quotes, or on its own.
 instance ParsableArgument RemainingText where
-    parserForArg = do
-        -- Make sure at least one character is present
-        -- This is guaranteed to not be a space, because previous parsers
-        -- consume trailing spaces.
-        firstChar <- anyChar
-        -- Get the rest of the input.
-        -- This is more convenient than doing "many anyChar" because it doesn't
-        -- need to parse anything for the remaining input.
-        remaining <- getInput
-        setInput ""
-        pure (Remaining $ T.cons firstChar remaining)
+    parserForArg =
+        -- try quoted text first. if it failed, then return input
+        Remaining <$> ((quotedText <?> "quoted") <|> (normal <?> "unquoted text"))
+      where
+        quotedText = try $ do -- backtrack if failed
+            char '"'
+            -- consume everything but quotes, unless it is escaped
+            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
+            char '"'
+            pure $ T.pack content
+        normal = do
+            -- First char is guaranteed to not be a space, because previous parsers
+            -- consume trailing spaces.
+            firstChar <- anyChar
+            -- getInput is more convenient than doing "many anyChar" because it doesn't
+            -- need to parse anything for the remaining input.
+            remaining <- getInput
+            setInput ""
+            pure $ T.cons firstChar remaining
 
 -- | An argument that can or cannot exist. 
 instance (ParsableArgument a) => ParsableArgument (Maybe a) where
