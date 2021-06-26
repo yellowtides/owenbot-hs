@@ -145,11 +145,13 @@ import           Control.Monad              ( void
                                             , unless
                                             )
 import           Data.Maybe                 ( catMaybes )
+import           Data.List                  ( nub )
 import qualified Data.Text as T
 import           Text.Parsec.Combinator
 import           Text.Parsec.Error          ( errorMessages
-                                            , showErrorMessages
+                                            , messageString
                                             )
+import qualified Text.Parsec.Error as PE    ( Message(..) )
 import qualified Text.Parsec.Text as T
 import           Text.Parsec                ( parse
                                             , eof
@@ -172,7 +174,9 @@ import           Command.Parser             ( ParsableArgument(..)
                                             , manyTill1
                                             , endOrSpaces
                                             )
-import           Owoifier                   ( owoify )
+import           Owoifier                   ( owoify
+                                            , weakOwoify
+                                            )
 
 {- | A @Command@ is a datatype containing the metadata for a user-registered
 command. 
@@ -607,7 +611,7 @@ instance (MonadThrow m) => CommandHandlerType m (m ()) where
     applyArgs handler msg input =
         case parse eof "" input of
             Left e -> throwM $ ArgumentParseError $
-                "Too many arguments! " <> showErrAsText e
+                weakOwoify "Too many arguments! " <> showErrAsText e
             Right _ -> handler
 
 {- | For the case where there are multiple arguments to apply. -}
@@ -616,7 +620,7 @@ instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHa
         let p = (,) <$> (parserForArg <* endOrSpaces) <*> getInput
         case parse p "arguments" input of
             Left e -> throwM $ ArgumentParseError $
-                "Error while parsing argument. " <> showErrAsText e
+                weakOwoify "Sorry! ･ﾟ･(>﹏<)･ﾟﾟ･ " <> showErrAsText e
             Right (x, remaining) -> applyArgs (handler x) msg remaining
 
 {- | For applying the message that invoked this command.
@@ -636,7 +640,7 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
         let p = (,) <$> (parserForArg <* endOrSpaces) <*> getInput
         case parse p "arguments" input of
             Left e -> throwM $ ArgumentParseError $
-                "Error while parsing argument. " <> showErrAsText e
+                weakOwoify "Sorry! ･ﾟ･(>﹏<)･ﾟﾟ･. " <> showErrAsText e
             Right (x, remaining) -> applyArgs (handler x) msg remaining
 
 {- | And its corresponding Message-specific one. Otherwise Message -> m () would
@@ -646,12 +650,46 @@ instance {-# OVERLAPPING #-} (MonadThrow m) => CommandHandlerType m (Message -> 
     applyArgs handler msg input = applyArgs (handler msg) msg input
 
 {- The default 'Show' instance for ParseError contains the error position,
-which only adds clutter in a Discord message. This defines a much
-simpler string representation.
+which only adds clutter in a Discord message. This copies most of it (from 
+https://hackage.haskell.org/package/parsec-3.1.14.0/docs/src/Text.Parsec.Error.html#showErrorMessages
+) but makes it a bit more customised for owen.
+
+Unfortunately there isn't really a cleaner way to do this, because Parsec doesn't
+export any helpers for this (it's marked as TODO in their code).
 -}
 showErrAsText :: ParseError -> T.Text
-showErrAsText err = T.tail $ T.pack $ showErrorMessages "or" "unknown parse error"
-    "Expecting" "Unexpected" "end of message" (errorMessages err)
+showErrAsText err
+    | null (errorMessages err) = "Unknown parse error occured!"
+    | otherwise = T.intercalate " " $ clean $
+        [showExpect, showSysUnExpect, showUnExpect, showOtherMessages]
+  where
+    (sysUnExpect,rem1) = span ((PE.SysUnExpect "") ==) (errorMessages err)
+    (unExpect,rem2)    = span ((PE.UnExpect    "") ==) rem1
+    (expect,rem3)      = span ((PE.Expect      "") ==) rem2
+
+    showExpect      = showMany "I wanted " expect
+    showUnExpect    = showMany "but I got " unExpect
+    showSysUnExpect | not (null unExpect) || null sysUnExpect = ""
+                    | T.null firstMsg = "but you stopped too early!"
+                    | otherwise       = "but I got " <> firstMsg <> "!"
+    
+    firstMsg = T.pack $ messageString $ head sysUnExpect
+
+    showOtherMessages = showMany "" rem3
+
+    -- helpers
+    showMany pre msgs3 =
+        case clean (map (T.pack . messageString) msgs3) of
+            [] -> ""
+            ms -> pre <> commasOr ms
+
+    commasOr []  = ""
+    commasOr [m] = m
+    commasOr ms  = commaSep (init ms) <> " or " <> last ms
+
+    commaSep = T.intercalate ", " . clean
+
+    clean = nub . filter (not . T.null)
 
 {- $commonerrors
 
