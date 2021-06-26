@@ -68,7 +68,7 @@ assignFilePath :: FilePath
 assignFilePath = "idAssign.csv"
 
 serverID :: GuildId
-serverID = 765660106259562498
+serverID = 755798054455738489
 -- the number is the fixed Guild/Server ID.
 -- TODO: put the number in a config file.
 -- Currently set to the testing server's.
