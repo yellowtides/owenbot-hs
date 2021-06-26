@@ -526,23 +526,28 @@ helpCommand
     -> (Message -> m ())
     -> Command m
 helpCommand helpName cmds onEmptyHandler
-    = help ("Usage: :" <> helpName <> " (command name)")
-    $ command helpName
+    = command helpName
     $ \msg mbName -> do
         let normalCmds = filter isOrthodoxCommand cmds
         case mbName of
             Nothing -> onEmptyHandler msg
             Just name -> do
-                let helps = (map createCommandHelp . filter (nameMatches name)) normalCmds
-                unless (null helps) $ do
-                    respond msg $ T.intercalate "\n" helps
+                if name == helpName then
+                    respond msg $ "**:" <> helpName <> "**\n" <>
+                        "Send this help message. Usage: `:" <> helpName <>
+                        " (optional command name without prefix)`"
+                else do
+                    let helps = (map createCommandHelp . filter (nameMatches name)) normalCmds
+                    unless (null helps) $ do
+                        respond msg $ T.intercalate "\n" helps
                 
   where
     grabHelp :: Command m -> T.Text
     grabHelp Command{ commandHelp } = commandHelp
 
     nameMatches :: T.Text -> Command m -> Bool
-    nameMatches t Command{ commandName } = t `T.isInfixOf` commandName
+    nameMatches t Command{ commandName, commandAliases } =
+        any (t `T.isInfixOf`) (commandName : commandAliases)
 
     isOrthodoxCommand :: Command m -> Bool
     isOrthodoxCommand Command{ commandName } = not $
