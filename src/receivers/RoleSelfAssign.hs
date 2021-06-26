@@ -28,7 +28,6 @@ import           Discord
 import           Command
 import           Owoifier               ( owoify )
 import           Utils                  ( sendMessageDM
-                                        , newModCommand
                                         , isEmojiValid
                                         , isRoleInGuild
                                         , sendMessageChan
