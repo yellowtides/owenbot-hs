@@ -89,6 +89,7 @@ module Command.Command
     , help
     , alias
     , onError
+    , prefix
     , defaultErrorHandler
     , requires
       -- ** Errors
