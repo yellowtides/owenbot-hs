@@ -533,11 +533,11 @@ helpCommand helpName cmds onEmptyHandler
         let normalCmds = filter isOrthodoxCommand cmds
         case mbName of
             Nothing -> onEmptyHandler msg
-            Just name -> do
+            Just name ->
                 if (name == helpName || name == ":" <> helpName) then
                     respond msg $ "**:" <> helpName <> "**\n" <>
                         "Send this help message. Usage: `:" <> helpName <>
-                        " (optional command name without prefix)`"
+                        " (optional command name)`"
                 else do
                     let helps = (map createCommandHelp . filter (cmdMatches name)) normalCmds
                     unless (null helps) $ respond msg $ T.intercalate "\n" helps
