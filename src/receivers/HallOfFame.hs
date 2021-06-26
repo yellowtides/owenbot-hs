@@ -4,41 +4,20 @@ module HallOfFame ( reactionReceivers, messageReceivers ) where
 
 import           Control.Monad      ( when )
 import qualified Data.Text as T
-import           Discord            ( DiscordHandler
-                                    , RestCallErrorCode
-                                    )
-import           Discord.Types      ( ChannelId
-                                    , Attachment ( attachmentUrl )
-                                    , Emoji ( emojiName )
-                                    , Message ( messageReactions
-                                              , messageId
-                                              , messageText
-                                              , messageChannel
-                                              , messageAttachments
-                                              , messageChannel
-                                              )
-                                    , MessageReaction ( messageReactionCount
-                                                      , messageReactionEmoji
-                                                      )
-                                    , CreateEmbed ( CreateEmbed )
-                                    , CreateEmbedImage ( CreateEmbedImageUrl )
-                                    , ReactionInfo ( reactionEmoji
-                                                   , reactionChannelId
-                                                   )
-                                    )
-import           Text.Read          ( readMaybe )
+import           Discord
+import           Discord.Types
 import           UnliftIO           ( liftIO )
 
 import           Owoifier           ( owoify )
-import           Utils              ( sendMessageChan
-                                    , pingAuthorOf
+import           Utils              ( pingAuthorOf
                                     , messageFromReaction
                                     , linkChannel
                                     , getMessageLink
                                     , sendMessageChanEmbed
                                     , getTimestampFromMessage
-                                    , newDevCommand
+                                    , devPerms
                                     )
+import           Command
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
@@ -144,7 +123,7 @@ reactLimit = requires devPerms $ command "reactLimit" $ \m mbI -> do
             respond m $ owoify $ "Current limit is at " <> T.pack (show i)
         Just i -> do
             liftIO $ setLimit i
-            respond m $ owoify "New Limit Set as " <> T.pack (show i)
+            respond m $ owoify $ "New Limit Set as " <> T.pack (show i)
 
 setLimit :: Int -> IO ()
 setLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]
