@@ -51,7 +51,7 @@ reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ attemptHallOfFame ]
 
 messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = [ reactLimit ]
+messageReceivers = [ runCommand reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r =
@@ -121,8 +121,7 @@ createHallOfFameEmbed m = do
         embedDescription = createDescription m
                 <> "\n\n[Original Message](" <> messLink <> ")"
         embedFields      = []
-        embedImage       = Just $
-                CreateEmbedImageUrl $ getImageFromMessage m
+        embedImage       = Just $ CreateEmbedImageUrl $ getImageFromMessage m
         embedFooterText  = getTimestampFromMessage m
         embedFooterIcon  = Nothing
     pure $ CreateEmbed authorName
@@ -137,17 +136,15 @@ createHallOfFameEmbed m = do
                        embedFooterText
                        embedFooterIcon
 
-reactLimit :: Message -> DiscordHandler ()
-reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
-    let parsed = readMaybe (T.unpack $ head captures)
-    case parsed of
+reactLimit :: (MonadDiscord m, MonadIO m) => Command m
+reactLimit = requires devPerms $ command "reactLimit" $ \m mbI -> do
+    case mbI of
         Nothing -> do
             i <- liftIO readLimit
-            sendMessageChan (messageChannel m)
-                $ owoify $ "Current limit is at " <> T.pack (show i)
+            respond m $ owoify $ "Current limit is at " <> T.pack (show i)
         Just i -> do
             liftIO $ setLimit i
-            sendMessageChan (messageChannel m) $ owoify "New Limit Set"
+            respond m $ owoify "New Limit Set as " <> T.pack (show i)
 
 setLimit :: Int -> IO ()
 setLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]

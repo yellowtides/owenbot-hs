@@ -89,6 +89,14 @@ instance ParsableArgument [T.Text] where
             rest <- parserForArg :: T.Parser [T.Text]
             pure $ word:rest
 
+-- Integer.
+instance ParsableArgument Int where
+    parserForArg = read <$> many1 digit
+
+-- Float. TODO don't even know if we need this.
+-- instance ParsableArgument Float where
+--     parserForArg msg =
+
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
 -- everything remaining. The accessor function @getDeez@ isn't really meant to be
 -- used since pattern matching can do everything. Open to renaming.
@@ -128,14 +136,6 @@ instance (ParsableArgument a) => ParsableArgument (Maybe a) where
             setInput $ " " <> remaining
             pure Nothing
             )
-
--- Integer. TODO
--- instance ParsableArgument Int where
---     parserForArg msg =
-
--- Float. TODO don't even know if we need this.
--- instance ParsableArgument Float where
---     parserForArg msg =
 
 -- | An argument that always has to be followed by another.
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
