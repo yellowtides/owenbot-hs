@@ -24,9 +24,7 @@ import qualified System.Process as Process
 import           Command
 import           Owoifier               ( owoify )
 
-import           Utils                  ( newDevCommand
-                                        , newModCommand
-                                        , sendMessageChan
+import           Utils                  ( sendMessageChan
                                         , captureCommandOutput
                                         , devIDs
                                         , update
