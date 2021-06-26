@@ -57,7 +57,7 @@ class ParsableArgument a where
 instance ParsableArgument String where
     parserForArg = do
         -- try quoted text first. if it failed, then normal word
-        (quotedText <?> "quoted phrase") <|> (word <?> "word")
+        (quotedText <?> "a quoted phrase") <|> (word <?> "a word")
       where
         quotedText = try $ do -- backtrack if failed, parse as normal word
             -- consume opening quote
@@ -91,7 +91,7 @@ instance ParsableArgument [T.Text] where
 
 -- Integer.
 instance ParsableArgument Int where
-    parserForArg = read <$> many1 digit
+    parserForArg = read <$> (many1 digit <?> "a number")
 
 -- Float. TODO don't even know if we need this.
 -- instance ParsableArgument Float where
@@ -117,7 +117,7 @@ newtype RemainingText = Remaining { getDeez :: T.Text }
 instance ParsableArgument RemainingText where
     parserForArg =
         -- try quoted text first. if it failed, then return input
-        Remaining <$> ((quotedText <?> "quoted") <|> (normal <?> "unquoted text"))
+        Remaining <$> ((quotedText <?> "some quoted") <|> (normal <?> "unquoted text"))
       where
         quotedText = try $ do -- backtrack if failed
             char '"'
