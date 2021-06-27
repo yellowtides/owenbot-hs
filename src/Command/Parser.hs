@@ -21,11 +21,7 @@ module Command.Parser
     , endOrSpaces
     ) where
 
-import           Control.Applicative        ( liftA2
-                                            )
-import           Control.Monad              ( void
-                                            , guard
-                                            )
+import           Control.Monad              ( void )
 import qualified Data.Text as T
 import           Text.Parsec.Combinator
 import qualified Text.Parsec.Text as T
@@ -56,7 +52,7 @@ class ParsableArgument a where
 
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
--- parsed as a single string: 
+-- parsed as a single string:
 -- @\"He said, \\\"Lovely\\\".\"@
 instance ParsableArgument String where
     parserForArg = do
@@ -67,7 +63,7 @@ instance ParsableArgument String where
             -- consume opening quote
             char '"'
             -- consume everything but quotes, unless it is escaped
-            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
+            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\""
             -- consume closing quote
             char '"'
             pure content
@@ -126,7 +122,7 @@ instance ParsableArgument RemainingText where
         quotedText = try $ do -- backtrack if failed
             char '"'
             -- consume everything but quotes, unless it is escaped
-            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
+            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\""
             char '"'
             pure $ T.pack content
         normal = do
@@ -139,11 +135,11 @@ instance ParsableArgument RemainingText where
             setInput ""
             pure $ T.cons firstChar remaining
 
--- | An argument that can or cannot exist. 
+-- | An argument that can or cannot exist.
 instance (ParsableArgument a) => ParsableArgument (Maybe a) where
     parserForArg =
         try (Just <$> parserForArg) <|> (do
-            -- artifically put a space so it won't complain about missing
+            -- artificially put a space so it won't complain about missing
             -- spaces between arguments.
             remaining <- getInput
             setInput $ " " <> remaining
@@ -152,7 +148,7 @@ instance (ParsableArgument a) => ParsableArgument (Maybe a) where
 
 -- | An argument that always has to be followed by another.
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
-    parserForArg = (,) <$> parserForArg <*> parserForArg
+    parserForArg = (,) <$> (parserForArg <* endOrSpaces) <*> parserForArg
 
 
 

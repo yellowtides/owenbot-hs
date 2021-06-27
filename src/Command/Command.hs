@@ -15,7 +15,7 @@ Description : Everything commands :)
 Amateur attempt at command abstraction and polyvariadic magic.
 
 Inspired heavily by calamity-commands, which is provided by Ben Simms 2020
-under the MIT license. 
+under the MIT license.
 
 Ideally, this module wouldn't need to be touched after its initial creation
 (and hence quite the jump in complex GHC extensions compared to other modules),
@@ -33,7 +33,7 @@ __extensions are used internally within this module only__.
     [Read more]
     (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/instances.html#extension-FlexibleInstances)
     * FunctionalDependencies: To write that @m@ can be determined from @h@ in
-    @CommandHandlerType@. It makes logical sense to tell GHC this because @h@ 
+    @CommandHandlerType@. It makes logical sense to tell GHC this because @h@
     must be in the @m@ monad (otherwise, @h@ may be in another monad).
     [Read more]
     (https://en.wikibooks.org/wiki/Haskell/Advanced_type_classes)
@@ -49,7 +49,7 @@ __extensions are used internally within this module only__.
     instance so I say it is safe. [Read more]
     (https://www.reddit.com/r/haskell/comments/5zjwym/when_is_undecidableinstances_okay_to_use/)
     * NamedFieldPuns: Shorten pattern matching ADT field names.
-    
+
 ==== __Implementation references__
 
     * [Varargs - Haskell Wiki]
@@ -64,9 +64,9 @@ __extensions are used internally within this module only__.
 module Command.Command
     ( -- * Troubleshooting
       -- | See the [Common Errors](#commonerrors) section.
-  
+
       -- * The fundamentals
-      -- | These offer the core functionality for Commands. The most imporatnt
+      -- | These offer the core functionality for Commands. The most important
       -- functions are 'command' and 'runCommand'.
       --
       --     * 'command' creates a 'Command'
@@ -106,10 +106,10 @@ module Command.Command
     , RemainingText(..)
       -- * Exported classes
       -- | Here are the monad dataclasses exported from this module.
-    
+
       -- ** The MonadDiscord class
       -- | MonadDiscord is the underlying Monad class for all interactions to the
-      -- Discord REST API. 
+      -- Discord REST API.
       --
       -- This is a common way to design abstraction so you can mock them. Same as
       -- Java interfaces, C++ virtual functions. Source that I based this design on:
@@ -180,7 +180,7 @@ import           Owoifier                   ( owoify
                                             )
 
 {- | A @Command@ is a datatype containing the metadata for a user-registered
-command. 
+command.
 
 @Command m@ is a command that runs in the monad @m@, which when triggered
 will run a polyvariadic handler function. The handler *must* run in the
@@ -195,7 +195,7 @@ data Command m = Command
     { commandName         :: T.Text
     -- ^ The name of the command.
     , commandPrefix       :: T.Text
-    -- ^ The prefix for the command. 
+    -- ^ The prefix for the command.
     , commandAliases      :: [T.Text]
     -- ^ Any alias names for the command.
     , commandInitialMatch :: Message -> Command m -> Maybe [T.Text]
@@ -231,7 +231,7 @@ instances of 'ParsableArgument'.
 The Command that this function creates is polymorphic in the Monad it is run
 in. This means you can call it from 'DiscordHandler' or any other
 Monad that satisfies the constraints of 'MonadDiscord'.
- 
+
 ==== __See some examples__
 
 @pong@ below responds to a ping by a pong.
@@ -240,7 +240,7 @@ Monad that satisfies the constraints of 'MonadDiscord'.
 pong :: (MonadDiscord m) => Command m
 pong = command "ping" $ \\msg -> respond msg "pong!"
 @
- 
+
 @pong2@ shows that @runCommand@ can be composed to create a normal receiver.
 That is, it takes a Message and returns a unit action in the desired monad.
 
@@ -368,7 +368,7 @@ alias newAlias cmd = cmd
 parser that begins from the start of a message. It can help things like
 "::quotes" because they have special syntax that demands a special parser.
 
-'alias', if used together, is ignored. Other compoasble functions like 'help',
+'alias', if used together, is ignored. Other composable functions like 'help',
 'prefix', 'requires', and 'onError' are still valid.
 
 The handler __must__ take a 'Message' and a 'String' as argument (nothing
@@ -456,7 +456,7 @@ and the name.
 For commands registered with 'regexCommand', the check will check against the
 regex.
 
-For commands registered with 'parsecCommand', the check will check for the 
+For commands registered with 'parsecCommand', the check will check for the
 prefix and the custom parser.
 
 Any failures during this stage is silently ignored, as it may still be a valid
@@ -487,7 +487,7 @@ runCommand cmd@Command{ commandInitialMatch, commandApplier, commandErrorHandler
             if null failedChecks then
                 -- Apply the arguments on the handler
                 commandApplier msg results
-                    -- Asynchrnous errors are not caught as the `catch`
+                    -- Asynchronous errors are not caught as the `catch`
                     -- comes from Control.Exception.Safe. This is good.
                     `catch` basicErrorCatcher
                     `catch` allErrorCatcher
@@ -541,7 +541,7 @@ helpCommand helpName cmds onEmptyHandler
                 else do
                     let helps = (map createCommandHelp . filter (cmdMatches name)) normalCmds
                     unless (null helps) $ respond msg $ T.intercalate "\n" helps
-                
+
   where
     grabHelp :: Command m -> T.Text
     grabHelp Command{ commandHelp } = commandHelp
@@ -552,7 +552,7 @@ helpCommand helpName cmds onEmptyHandler
 
     isOrthodoxCommand :: Command m -> Bool
     isOrthodoxCommand Command{ commandName } = not $
-        ("<<custom regex>>" `T.isInfixOf` commandName) || 
+        ("<<custom regex>>" `T.isInfixOf` commandName) ||
         ("<<custom parser>>" `T.isInfixOf` commandName)
 
     createCommandHelp :: Command m -> T.Text
@@ -579,7 +579,7 @@ defaultErrorHandler
 defaultErrorHandler m e =
     case e of
         ArgumentParseError x ->
-            respond m $ x <> "\nCheck if `:helpme (command name without prefix)` can help you!"
+            respond m $ x <> "\nCheck if `:helpme (optional command name)` can help you!"
         RequirementError x ->
             unless (x == "") $ do
                 chan <- createDM (userId $ messageAuthor m)
@@ -677,7 +677,7 @@ instance {-# OVERLAPPING #-} (MonadThrow m) => CommandHandlerType m (Message -> 
     applyArgs handler msg input = applyArgs (handler msg) msg input
 
 {- | The default 'Show' instance for ParseError contains the error position,
-which only adds clutter in a Discord message. This copies most of it (from 
+which only adds clutter in a Discord message. This copies most of it (from
 https://hackage.haskell.org/package/parsec-3.1.14.0/docs/Text-Parsec-Error.html)
 but makes it a bit more customised for owen.
 
@@ -696,11 +696,11 @@ showErrAsText err
     (expect,rem3)      = span ((PE.Expect      "") ==) rem2
 
     showExpect      = showMany "I wanted " expect
-    showUnExpect    = showMany "but my organs didn't want " unExpect
+    showUnExpect    = showMany "and not " unExpect
     showSysUnExpect | not (null unExpect) || null sysUnExpect = ""
                     | T.null firstMsg = "but you stopped too early!"
                     | otherwise       = "but I stumbled on " <> firstMsg <> "!"
-    
+
     firstMsg = T.pack $ messageString $ head sysUnExpect
 
     showOtherMessages = showMany "" rem3
@@ -750,7 +750,7 @@ Could not deduce (MonadIO m) arising from the use of \'liftIO'.
     it's better to explicitly signify which actions you're going to use
     in the constraints than to add a catch-all constraint into the
     definition of @MonadDiscord@.
- 
-If an error is super duper cryptic, it may be a bug in the Commands 
+
+If an error is super duper cryptic, it may be a bug in the Commands
 module itself, in which case we may need a rewrite.
 -}
