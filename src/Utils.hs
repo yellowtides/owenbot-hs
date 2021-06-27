@@ -335,10 +335,12 @@ channelRequirement cid msg = if messageChannel msg == read cid
     then pure Nothing
     else pure $ Just "need to be in channel"
 
--- | Command requirement for role names, matched with OR. For and, just compose 
+-- | Command requirement for role names, matched with OR. For and, just compose
 -- multiple of this.
 roleNameIn :: (MonadDiscord m) => [T.Text] -> Message -> m (Maybe T.Text)
 roleNameIn names msg = do
+    -- this will take a while because it needs to get roles
+    triggerTypingIndicator (messageChannel msg)
     check <- or <$> mapM (hasRoleByName msg) names
     pure $ if check
               then Nothing
