@@ -38,10 +38,18 @@ dependencies:
 - split
 - time # comes with discord-haskell
 - text
-- unix
 - unliftio # comes with discord-haskell
 - unordered-containers # comes with discord-haskell
 - vector # comes with discord-haskell
+when:
+  - condition: os(windows)
+    then:
+      dependencies:
+        - Win32
+      cpp-options: -DWINDOWS
+    else:
+      dependencies:
+        - unix
 
 library:
   source-dirs:
@@ -62,15 +70,18 @@ executables:
 tests:
   owenbot-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:
+      - test
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     - -W
+    - -Wno-missing-fields
     dependencies:
     - owenbot
     - QuickCheck
     - quickcheck-instances # required for arbitrary Text
     - hspec
+    - HMock
 

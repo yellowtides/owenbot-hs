@@ -21,11 +21,7 @@ module Command.Parser
     , endOrSpaces
     ) where
 
-import           Control.Applicative        ( liftA2
-                                            )
-import           Control.Monad              ( void
-                                            , guard
-                                            )
+import           Control.Monad              ( void )
 import qualified Data.Text as T
 import           Text.Parsec.Combinator
 import qualified Text.Parsec.Text as T
@@ -50,20 +46,24 @@ class ParsableArgument a where
     -- | @parserForArg@ is a parser that returns the parsed element.
     parserForArg :: T.Parser a
 
+----------------------------------------------------------------------------
+    -- Ubiquitous types not related to Discord
+----------------------------------------------------------------------------
+
 -- | Any number of non-space characters. If quoted, spaces are allowed.
 -- Quotes in quoted phrases can be escaped with a backslash. The following is
--- parsed as a single string: 
+-- parsed as a single string:
 -- @\"He said, \\\"Lovely\\\".\"@
 instance ParsableArgument String where
     parserForArg = do
         -- try quoted text first. if it failed, then normal word
-        (quotedText <?> "quoted phrase") <|> (word <?> "word")
+        (quotedText <?> "a quoted phrase") <|> (word <?> "a word")
       where
         quotedText = try $ do -- backtrack if failed, parse as normal word
             -- consume opening quote
             char '"'
             -- consume everything but quotes, unless it is escaped
-            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\"" 
+            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\""
             -- consume closing quote
             char '"'
             pure content
@@ -89,6 +89,14 @@ instance ParsableArgument [T.Text] where
             rest <- parserForArg :: T.Parser [T.Text]
             pure $ word:rest
 
+-- Integer.
+instance ParsableArgument Int where
+    parserForArg = read <$> (many1 digit <?> "a number")
+
+-- Float. TODO don't even know if we need this.
+-- instance ParsableArgument Float where
+--     parserForArg msg =
+
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
 -- everything remaining. The accessor function @getDeez@ isn't really meant to be
 -- used since pattern matching can do everything. Open to renaming.
@@ -103,53 +111,60 @@ instance ParsableArgument [T.Text] where
 -- @
 newtype RemainingText = Remaining { getDeez :: T.Text }
 
--- | The rest of the arguments. Spaces and quotes are preserved as-is, unlike
--- with @Text@. At least one character is required.
+-- | The rest of the arguments. It may be quoted in its entirety. Spaces are
+-- preserved as-is, unlike concatting after parsing [@Text@].
+-- At least one character is required within the quotes, or on its own.
 instance ParsableArgument RemainingText where
-    parserForArg = do
-        -- Make sure at least one character is present
-        -- This is guaranteed to not be a space, because previous parsers
-        -- consume trailing spaces.
-        firstChar <- anyChar
-        -- Get the rest of the input.
-        -- This is more convenient than doing "many anyChar" because it doesn't
-        -- need to parse anything for the remaining input.
-        remaining <- getInput
-        setInput ""
-        pure (Remaining $ T.cons firstChar remaining)
+    parserForArg =
+        -- try quoted text first. if it failed, then return input
+        Remaining <$> ((quotedText <?> "some quoted") <|> (normal <?> "unquoted text"))
+      where
+        quotedText = try $ do -- backtrack if failed
+            char '"'
+            -- consume everything but quotes, unless it is escaped
+            content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\""
+            char '"'
+            -- ensure it is at eof
+            -- this means `"ababababa" cdcdcd` is treated as a normal string
+            -- without eof, it will throw an error about an unexpected cdcdcd
+            eof
+            pure $ T.pack content
+        normal = do
+            -- First char is guaranteed to not be a space, because previous parsers
+            -- consume trailing spaces.
+            firstChar <- anyChar
+            -- getInput is more convenient than doing "many anyChar" because it doesn't
+            -- need to parse anything for the remaining input.
+            remaining <- getInput
+            setInput ""
+            pure $ T.cons firstChar remaining
 
--- | An argument that can or cannot exist. 
+-- | An argument that can or cannot exist.
 instance (ParsableArgument a) => ParsableArgument (Maybe a) where
     parserForArg =
         try (Just <$> parserForArg) <|> (do
-            -- artifically put a space so it won't complain about missing
+            -- artificially put a space so it won't complain about missing
             -- spaces between arguments.
             remaining <- getInput
             setInput $ " " <> remaining
             pure Nothing
             )
 
--- Integer. TODO
--- instance ParsableArgument Int where
---     parserForArg msg =
-
--- Float. TODO don't even know if we need this.
--- instance ParsableArgument Float where
---     parserForArg msg =
-
 -- | An argument that always has to be followed by another.
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
-    parserForArg = (,) <$> parserForArg <*> parserForArg
+    parserForArg = (,) <$> (parserForArg <* endOrSpaces) <*> parserForArg
 
 
 
 
 
-
+-----------------------------------------------------------------------------
+    -- Discord specific types
+-----------------------------------------------------------------------------
 
 
 instance ParsableArgument Snowflake where
-    parserForArg = read <$> many1 digit
+    parserForArg = read <$> (many1 digit <?> "a snowflake ID")
 
 -- | Parses "online" "dnd" "idle" and "invisible" as 'UpdateStatusType's
 instance ParsableArgument UpdateStatusType where

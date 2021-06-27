@@ -1,44 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module HallOfFame ( reactionReceivers, messageReceivers ) where
+module HallOfFame ( reactionReceivers, commands ) where
 
 import           Control.Monad      ( when )
 import qualified Data.Text as T
-import           Discord            ( DiscordHandler
-                                    , RestCallErrorCode
-                                    )
-import           Discord.Types      ( ChannelId
-                                    , Attachment ( attachmentUrl )
-                                    , Emoji ( emojiName )
-                                    , Message ( messageReactions
-                                              , messageId
-                                              , messageText
-                                              , messageChannel
-                                              , messageAttachments
-                                              , messageChannel
-                                              )
-                                    , MessageReaction ( messageReactionCount
-                                                      , messageReactionEmoji
-                                                      )
-                                    , CreateEmbed ( CreateEmbed )
-                                    , CreateEmbedImage ( CreateEmbedImageUrl )
-                                    , ReactionInfo ( reactionEmoji
-                                                   , reactionChannelId
-                                                   )
-                                    )
-import           Text.Read          ( readMaybe )
+import           Discord
+import           Discord.Types
 import           UnliftIO           ( liftIO )
 
 import           Owoifier           ( owoify )
-import           Utils              ( sendMessageChan
-                                    , pingAuthorOf
+import           Utils              ( pingAuthorOf
                                     , messageFromReaction
                                     , linkChannel
                                     , getMessageLink
                                     , sendMessageChanEmbed
                                     , getTimestampFromMessage
-                                    , newDevCommand
+                                    , devPerms
                                     )
+import           Command
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
@@ -50,8 +29,8 @@ import           DB                 ( readDB
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [ attemptHallOfFame ]
 
-messageReceivers :: [Message -> DiscordHandler ()]
-messageReceivers = [ reactLimit ]
+commands :: [Command DiscordHandler]
+commands = [ reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r =
@@ -120,8 +99,7 @@ createHallOfFameEmbed m = do
         embedDescription = createDescription m
                 <> "\n\n[Original Message](" <> messLink <> ")"
         embedFields      = []
-        embedImage       = Just $
-                CreateEmbedImageUrl $ getImageFromMessage m
+        embedImage       = Just $ CreateEmbedImageUrl $ getImageFromMessage m
         embedFooterText  = getTimestampFromMessage m
         embedFooterIcon  = Nothing
     pure $ CreateEmbed authorName
@@ -136,17 +114,15 @@ createHallOfFameEmbed m = do
                        embedFooterText
                        embedFooterIcon
 
-reactLimit :: Message -> DiscordHandler ()
-reactLimit m = newDevCommand m "reactLimit *([0-9]{1,3})?" $ \captures -> do
-    let parsed = readMaybe (T.unpack $ head captures)
-    case parsed of
+reactLimit :: (MonadDiscord m, MonadIO m) => Command m
+reactLimit = requires devPerms $ command "reactLimit" $ \m mbI -> do
+    case mbI of
         Nothing -> do
             i <- liftIO readLimit
-            sendMessageChan (messageChannel m)
-                $ owoify $ "Current limit is at " <> T.pack (show i)
+            respond m $ owoify $ "Current limit is at " <> T.pack (show i)
         Just i -> do
             liftIO $ setLimit i
-            sendMessageChan (messageChannel m) $ owoify "New Limit Set"
+            respond m $ owoify $ "New Limit Set as " <> T.pack (show i)
 
 setLimit :: Int -> IO ()
 setLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]

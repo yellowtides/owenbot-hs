@@ -46,8 +46,11 @@ extra-deps:
   - git: https://github.com/aquarial/discord-haskell.git
     commit: 83cbc89e006ad91648a5f6f6d04c73ea758d028b
   - emoji-0.1.0.2
-  - hspec-2.7.4
+  - hspec-2.7.8
   - pointfree-1.1.1.8
+  - HMock-0.2.0.0
+  - unliftio-0.2.18 # this is higher than what is included in stackage for 17.14, but is required for HMock
+  - constraints-0.13 # same here
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Academic (receivers) where
+module Academic ( commands ) where
 
 import           Control.Monad              ( void )
 import           Data.Char                  ( isDigit )
@@ -21,14 +21,14 @@ import           Command.Parser
 import           Command
 import           Utils                      ( respondAsset )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = fmap runCommand
+commands :: [Command DiscordHandler]
+commands =
     [ textbook
     , theorem
     , definition
     , lemma
     , syllogisms
-    , booleans 
+    , booleans
     ]
 
 -- | datatype representing possible textbook asset number formats
@@ -45,8 +45,8 @@ instance Show TextbookAssetNumber where
 
 instance ParsableArgument TextbookAssetNumber where
     parserForArg = do
-        a <- flip label "dot-separated asset number" $ try $
-             map read <$> sepBy1 (many1 digit) (char '.')
+        a <- flip label "an asset number" $ try $
+            sepBy1 parserForArg (char '.')
         pure $ case a of
             [x, y]    -> OneDotSeparated x y
             [x, y, z] -> TwoDotSeparated x y z
@@ -70,7 +70,7 @@ theorem = alias "thm" $ command "theorem" $ \m subject number -> do
                 respondAsset m ("Theorem " <> T.pack name) path
             _ ->
                 respond m "ILA theorems have the format: XX.YY.ZZ!"
-        _ -> 
+        _ ->
             respond m "No theorems found for subject!"
 
 -- | Definition.
@@ -110,7 +110,7 @@ textbook = alias "tb" $ command "textbook" $ \m subject ->
             respondAsset m "the-holy-bible-2.png" "textbooks/i1a-textbook.pdf"
 
         _ | subject `elem` ["calc", "cap"] ->
-            respond m $ "The textbook can be found here:\n" <> 
+            respond m $ "The textbook can be found here:\n" <>
                 "http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea"
 
         _ | subject == "ila" ->

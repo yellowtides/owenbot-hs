@@ -2,7 +2,7 @@
 
 module BinancePriceFetcher ( fetchADADetails
                            , fetchTicker
-                           , receivers
+                           , commands
                            ) where
 
 import           Data.Aeson
@@ -19,8 +19,8 @@ import           UnliftIO               ( liftIO )
 import           Command
 import           Owoifier               ( owoify )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = map runCommand
+commands :: [Command DiscordHandler]
+commands =
     [ handleTicker
     , handleAda24h
     ]

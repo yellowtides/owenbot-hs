@@ -23,12 +23,12 @@ packages:
   original:
     hackage: emoji-0.1.0.2
 - completed:
-    hackage: hspec-2.7.4@sha256:8d0430e4a7ba8fa1482a1766fd4973f0c5e7c5adf512bded7358269bb9486c9e,1692
+    hackage: hspec-2.7.8@sha256:d9c8e3a8ff5f8d38eb7ab95aac0b50215def0071de091335dcab2f6e0324f226,1709
     pantry-tree:
-      size: 532
-      sha256: 6a6ba1798090ee6245f5995303b6ccf1afea26c73d4e69b95330c8914056d420
+      size: 583
+      sha256: 68cfb48dcf32e6a12ed9abb36a15e54c94c46f32e665f771ea3642dbf4ba2a7d
   original:
-    hackage: hspec-2.7.4
+    hackage: hspec-2.7.8
 - completed:
     hackage: pointfree-1.1.1.8@sha256:733b5e4148359679e8b313dda794099f31901fc6071dd4b2423c764911eef9ce,2209
     pantry-tree:
@@ -36,6 +36,27 @@ packages:
       sha256: e0de815e79eadae876f4ef4b3afd296ee1a7eaa68eff8927d4b4604a2f615109
   original:
     hackage: pointfree-1.1.1.8
+- completed:
+    hackage: HMock-0.2.0.0@sha256:9b340a4924cdbc7c6187a617a15a7e46a5638b269063d5048a292b1bdcbdd2be,3903
+    pantry-tree:
+      size: 2054
+      sha256: 7d7a4f425a7c026ac705811928fce634d5b845d3d8f9a33932f914a765f07ddc
+  original:
+    hackage: HMock-0.2.0.0
+- completed:
+    hackage: unliftio-0.2.18@sha256:87fb541127d21939d3efc49ed9bc3df6eadc9eb06ffa7755fc857f62e15daf20,3395
+    pantry-tree:
+      size: 2423
+      sha256: 05c77d0992eb1a9008f0fb9aa5a8b6869881cccca8b9b531faab172f426960b5
+  original:
+    hackage: unliftio-0.2.18
+- completed:
+    hackage: constraints-0.13@sha256:d341eb4adbf712f928706928d23a173fb3d0976f0dfaf6a274958975d5fc9e75,2338
+    pantry-tree:
+      size: 867
+      sha256: 1c77e76df6d1e569be38a305a07db1139cb071d866f25a4cee9b84bf7ab2e7a1
+  original:
+    hackage: constraints-0.13
 snapshots:
 - completed:
     size: 567677

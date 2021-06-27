@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Admin ( receivers, sendGitInfoChan, sendInstanceInfoChan ) where
+module Admin ( commands, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types
@@ -18,15 +18,12 @@ import           Network.BSD            ( getHostName )
 import           Text.Regex.TDFA        ( (=~) )
 
 import           System.Directory       ( doesPathExist )
-import           System.Posix.Process   ( getProcessID )
 import qualified System.Process as Process
 
 import           Command
 import           Owoifier               ( owoify )
 
-import           Utils                  ( newDevCommand
-                                        , newModCommand
-                                        , sendMessageChan
+import           Utils                  ( sendMessageChan
                                         , captureCommandOutput
                                         , devIDs
                                         , update
@@ -34,6 +31,7 @@ import           Utils                  ( newDevCommand
                                         , devPerms
                                         , roleNameIn
                                         )
+import           Process                ( getMyProcessId )
 import           Status                 ( editStatusFile
                                         , updateStatus
                                         )
@@ -41,8 +39,8 @@ import           CSV                    ( readSingleColCSV
                                         , writeSingleColCSV
                                         )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = map runCommand
+commands :: [Command DiscordHandler]
+commands =
     [ sendGitInfo
     , sendInstanceInfo
     , restartOwen
@@ -97,18 +95,18 @@ sendGitInfoChan chan = do
         case rstrip commits of
             "0" -> sendMessageChan chan $ "*Git: All caught up!* \n" <> localStatus
             x   -> sendMessageChan chan $ "*Git: Upstream is " <> x <>
-                " commits ahead.* \n" <> localStatus
+                " commits ahead. Current local HEAD is:* \n" <> localStatus
 
 sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo
     = requires devPerms
-    . command "instance" $ \m -> 
+    . command "instance" $ \m ->
         sendInstanceInfoChan $ messageChannel m
 
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
-    pid  <- liftIO getProcessID
+    pid  <- liftIO getMyProcessId
     sendMessageChan chan ("Instance Info: \n" <>
                           "Host: "            <> T.pack host <> "\n" <>
                           "Process ID: "      <> T.pack (show pid))

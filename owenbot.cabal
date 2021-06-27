@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b8f8a7a618bd3f48570d37088992026598ad894acafea299eedbfd26e8201763
+-- hash: 3c4a54e4117a1ea331aa8d42a759c2b964c6d45e53380145677a4e14c6057e7f
 
 name:           owenbot
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       Discord.Internal.Monad
       EventHandler
       Owoifier
+      Process
       Status
       Utils
       Academic
@@ -44,13 +45,11 @@ library
       BinancePriceFetcher
       HallOfFame
       Haskell
-      Helpme
       MCServer
       Misc
       ModifyEventsChannel
       QuoteSystem
       RoleSelfAssign
-      TemplateRE
   other-modules:
       Paths_owenbot
   hs-source-dirs:
@@ -78,10 +77,16 @@ library
     , split
     , text
     , time
-    , unix
     , unliftio
     , unordered-containers
     , vector
+  if os(windows)
+    cpp-options: -DWINDOWS
+    build-depends:
+        Win32
+  else
+    build-depends:
+        unix
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -114,10 +119,16 @@ executable owenbot-exe
     , split
     , text
     , time
-    , unix
     , unliftio
     , unordered-containers
     , vector
+  if os(windows)
+    cpp-options: -DWINDOWS
+    build-depends:
+        Win32
+  else
+    build-depends:
+        unix
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -125,13 +136,16 @@ test-suite owenbot-test
   main-is: Spec.hs
   other-modules:
       CSVSpec
+      HelpmeSpec
+      MonadDiscordMock
       OwoifierSpec
       Paths_owenbot
   hs-source-dirs:
       test
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -W
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -W -Wno-missing-fields
   build-depends:
-      QuickCheck
+      HMock
+    , QuickCheck
     , aeson
     , base >=4.7 && <5
     , bytestring
@@ -156,8 +170,14 @@ test-suite owenbot-test
     , split
     , text
     , time
-    , unix
     , unliftio
     , unordered-containers
     , vector
+  if os(windows)
+    cpp-options: -DWINDOWS
+    build-depends:
+        Win32
+  else
+    build-depends:
+        unix
   default-language: Haskell2010

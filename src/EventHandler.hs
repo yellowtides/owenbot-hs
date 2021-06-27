@@ -3,15 +3,16 @@ module EventHandler ( handleEvent ) where
 import           Control.Applicative    ( (<|>) )
 import           Control.Monad          ( unless )
 import           Data.Foldable          ( for_ )
-import qualified Data.Text as T         ( head )
+import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import           Discord.Types
 import           Discord
+import           UnliftIO               ( liftIO )
 
 import qualified Academic
 import qualified Admin
 import qualified BinancePriceFetcher
 import qualified Misc
-import qualified Helpme
 import qualified Haskell
 import qualified HallOfFame
 import qualified RoleSelfAssign
@@ -20,21 +21,34 @@ import qualified QuoteSystem
 import qualified ModifyEventsChannel
 --import qualified AprilFools
 
-commandReceivers :: [Message -> DiscordHandler ()]
-commandReceivers = concat
-     [  -- AprilFools.messageReceivers      -- the AprilFools message receivers MUST be first if active
-       Admin.receivers
-     , Academic.receivers
-     , BinancePriceFetcher.receivers
-     , Misc.receivers
-     , Helpme.receivers
-     , Haskell.receivers
-     , HallOfFame.messageReceivers
-     , MCServer.receivers
-     , QuoteSystem.receivers
-     , ModifyEventsChannel.receivers
-     , RoleSelfAssign.receivers
+import           Command
+import           Owoifier               ( owoify )
+import           Utils                  ( sendMessageDM )
+
+commands :: [Command DiscordHandler]
+commands = concat
+     [ Admin.commands
+     , Academic.commands
+     , BinancePriceFetcher.commands
+     , Misc.commands
+     , Haskell.commands
+     , HallOfFame.commands
+     , MCServer.commands
+     , QuoteSystem.commands
+     , ModifyEventsChannel.commands
+     , RoleSelfAssign.commands
      ]
+
+-- | This command executes the handler if there are no arguments. If there are
+-- arguments, it replies with the help message set in each command.
+generatedHelp :: Command DiscordHandler
+generatedHelp = helpCommand (T.pack "helpme") commands $ \m ->
+    liftIO (TIO.readFile "./src/assets/help.txt")
+        >>= sendMessageDM (userId $ messageAuthor m) . owoify
+
+messageReceivers :: [Message -> DiscordHandler ()]
+messageReceivers = concat []
+    -- [ AprilFools.messageReceivers ]
 
 reactionAddReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionAddReceivers = concat
@@ -56,7 +70,9 @@ isFromBot m = userIsBot (messageAuthor m)
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
     MessageCreate m ->
-        unless (isFromBot m) $ for_ commandReceivers ($ m)
+        unless (isFromBot m) $ do
+            for_ messageReceivers ($ m) <|> pure ()
+            runCommands (generatedHelp : commands) m
     MessageReactionAdd r ->
         for_ reactionAddReceivers ($ r) <|> pure ()
     MessageReactionRemove r ->

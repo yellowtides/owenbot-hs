@@ -19,9 +19,6 @@ module Utils ( emojiToUsableText
              , pingAuthorOf
              , pingWithUsername
              , stripAllPings
-             , newCommand
-             , newDevCommand
-             , newModCommand
              , linkChannel
              , getMessageLink
              , hasRoleByName
@@ -73,7 +70,6 @@ import           Text.Regex.TDFA        ( (=~) )
 import           Owoifier               ( owoify
                                         , weakOwoify
                                         )
-import           TemplateRE             ( trailingWS )
 import           CSV                    ( readSingleColCSV )
 
 import           Data.Maybe             ( fromJust )
@@ -164,7 +160,7 @@ discordEmojiTextToId emojiT
 -- guild (or is a default emoji). Case insensitive.
 isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
-    Right guild <- restCall $ R.GetGuild gid
+    guild <- getGuild gid
     let emojis = guildEmojis guild
     let emojiID = discordEmojiTextToId emojiT
     let matchingEmojis = filter ((emojiID ==) . fromJust . emojiId) emojis
@@ -381,55 +377,10 @@ update = do
          ExitSuccess   -> True
          ExitFailure _ -> False
 
--- | `newCommand` should be used in the creation of a new Owen command. Given a `T.Text` command regex
--- (lacking the `:` prefix and the trailing whitespace), along with a function that can handle the
--- regex captures, the command can be used to create `Message -> DiscordHandler ()` message receivers.
-newCommand :: Message                               -- ^ a message that needs to be handled
-              -> T.Text                             -- ^ the new command regex
-              -> ([T.Text] -> DiscordHandler ())    -- ^ a function used to handle each message portion
-                                                    -- captured by the command regex
-              -> DiscordHandler ()                  -- ^ the over-all result of handling the message
-newCommand msg cmd funct = unless (shouldNotBeEmpty == "") $ funct captures
-  where
-    match :: ( T.Text
-             , T.Text   -- the first match of the regex against the message
-             , T.Text
-             , [T.Text] -- every message portion identified by the regex capture groups
-             )
-    match@(_, shouldNotBeEmpty, _, captures) = messageText msg =~ ("^:" <> cmd <> trailingWS)
-
--- | `newDevCommand` should be used in the creation of a new Owen dev command. Acts in the same way as `newCommand`,
--- with the distinction that it constructs handlers that require the message author to be a developer. If they
--- are not, the message author is messaged directly and reprimanded so harshly that they will never attempt to use a
--- dev command ever again.
-newDevCommand :: Message
-                -> T.Text
-                -> ([T.Text] -> DiscordHandler ())
-                -> DiscordHandler ()
-newDevCommand msg cmd fun = newCommand msg cmd $ \captures -> do
-    isDev <- isSenderDeveloper msg
-    if isDev
-        then fun captures
-        else sendPrivError msg
-
--- | Similar to newDev command, however looks up the Moderator role name instead of using ID to determine the message authors role.
-newModCommand :: Message
-                -> T.Text
-                -> ([T.Text ] -> DiscordHandler ())
-                -> DiscordHandler ()
-newModCommand msg cmd fun = newCommand msg cmd $ \captures -> do
-    isMod <- isMod msg
-    if isMod
-        then fun captures
-        else sendPrivError msg
-
-sendPrivError :: Message -> DiscordHandler ()
-sendPrivError msg = sendMessageDM (userId $ messageAuthor msg) $ owoify "Insufficient privileges!"
-
 -- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer
 snowflakeToInt (Snowflake w) = toInteger w
 
 -- | Moves channel position in guild
-moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
-moveChannel guild chan location = void $ restCall $ R.ModifyGuildChannelPositions guild [(chan, location)]
+moveChannel :: (MonadDiscord m) => GuildId -> ChannelId -> Int -> m ()
+moveChannel guild chan location = void $ modifyGuildChannelPositions guild [(chan, location)]

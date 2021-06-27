@@ -1,14 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module QuoteSystem ( receivers ) where
+module QuoteSystem ( commands ) where
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
-import           Discord.Types  ( Message ( messageChannel
-                                          , messageGuild
-                                          )
-                                )
-import           Discord        ( DiscordHandler )
+import           Discord.Types
+import           Discord
 import           UnliftIO       ( liftIO )
 
 import           CSV            ( addToCSV
@@ -17,12 +14,15 @@ import           CSV            ( addToCSV
                                 )
 import           Owoifier       ( owoify )
 import           Utils          ( sendMessageChan
-                                , newCommand
-                                , newDevCommand
+                                , modPerms
+                                )
+import           Command
+import           Text.Parsec    ( many1
+                                , anyChar
                                 )
 
-receivers :: [Message -> DiscordHandler ()]
-receivers = [ receiveQuote, addQuote, rmQuote ]
+commands :: [Command DiscordHandler]
+commands = [ receiveQuote, receiveQuoteShorthand, addQuote, rmQuote ]
 
 quotePath :: FilePath
 quotePath = "registeredQuotes.csv"
@@ -52,54 +52,44 @@ removeQuote name = do
     newTable <- HM.delete name <$> quoteTable
     writeHashMapToCSV quotePath newTable
 
-receiveQuoteRE :: T.Text
-receiveQuoteRE = "(:|quote +)\"?" <> nameRE <> "\"?"
+receiveQuoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
+receiveQuoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name -> do
+    runCommand receiveQuote $ m { messageText = ":quote " <> T.pack name }
 
-receiveQuote :: Message -> DiscordHandler ()
-receiveQuote msg = newCommand msg receiveQuoteRE $ \quote -> do
-    let name = (head . tail) quote
+
+receiveQuote :: (MonadDiscord m, MonadIO m) => Command m
+receiveQuote = command "quote" $ \m name -> do
     textM <- liftIO $ fetchQuote name
-    sendMessageChan (messageChannel msg) $ case textM of
+    respond m $ case textM of
         Nothing   -> owoify $ T.concat [
                 "Nope, nothing there. ",
-                "Maybe consider `:addquote \"[quote]\" \"[quote_message]\"`"
+                "Maybe consider `:addquote [quote] [quote_message]`"
             ]
         Just text -> text
 
-
--- | `addQuoteRE` is the regex for the quote addition command. Quote texts and names *must* be wrapped in
--- double quotes when adding.
-addQuoteRE :: T.Text
-addQuoteRE = "addquote +\"" <> nameRE <> "\" +\"(.{1,})\""
-
-addQuote :: Message -> DiscordHandler ()
-addQuote msg = newCommand msg addQuoteRE $ \quote ->
-    case messageGuild msg of
-        Nothing ->
-            sendMessageChan (messageChannel msg) "Only possible in a server!"
+addQuote :: (MonadDiscord m, MonadIO m) => Command m
+addQuote = command "addquote" $ \m name (Remaining content) ->
+    case messageGuild m of
+        Nothing -> respond m "Only possible in a server!"
         Just _  -> do
-            let [name, content] = quote
             textM <- liftIO $ fetchQuote name
             case textM of
-                Nothing -> do
-                    liftIO $ storeQuote name content
-                    sendMessageChan (messageChannel msg)
-                        $ "New quote registered under `:quote " <> name <> "`."
-                Just _  -> sendMessageChan (messageChannel msg) . owoify
+                Nothing -> if T.length name <= maxNameLen
+                    -- do a length check because this is no longer regex
+                    then do
+                        liftIO $ storeQuote name content
+                        respond m $ "New quote registered under `:quote " <> name <> "`."
+                    else
+                        respond m "Please make the name less than 32 chars!"
+                Just _  -> respond m . owoify
                     $ "Quote already exists my dude, try `:quote " <> name <> "`."
 
-
-rmQuoteRE :: T.Text
-rmQuoteRE = "rmquote +\"?" <> nameRE <> "\"?"
-
-rmQuote :: Message -> DiscordHandler ()
-rmQuote msg = newDevCommand msg rmQuoteRE $ \quote -> do
-    let name = head quote
+rmQuote :: (MonadDiscord m, MonadIO m) => Command m
+rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
     textM <- liftIO $ fetchQuote name
     case textM of
-        Nothing -> sendMessageChan (messageChannel msg)
-                       $ owoify "Cannot remove that which doesn't exist."
+        Nothing -> respond m $ owoify "Cannot remove that which doesn't exist."
         Just _  -> do
             liftIO $ removeQuote name
-            sendMessageChan (messageChannel msg) . owoify
+            respond m . owoify
                 $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."
