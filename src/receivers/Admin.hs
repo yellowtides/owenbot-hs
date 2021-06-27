@@ -4,9 +4,7 @@ module Admin ( commands, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types
-import           Discord                ( DiscordHandler
-                                        , stopDiscord, restCall
-                                        )
+import           Discord
 import           Discord.Requests as R
 import           UnliftIO               ( liftIO )
 import           Data.Char              ( isSpace )
@@ -15,7 +13,6 @@ import           Control.Monad          ( unless
                                         , void
                                         )
 import           Network.BSD            ( getHostName )
-import           Text.Regex.TDFA        ( (=~) )
 
 import           System.Directory       ( doesPathExist )
 import qualified System.Process as Process
@@ -29,7 +26,6 @@ import           Utils                  ( sendMessageChan
                                         , update
                                         , modPerms
                                         , devPerms
-                                        , roleNameIn
                                         )
 import           Process                ( getMyProcessId )
 import           Status                 ( editStatusFile
@@ -116,8 +112,8 @@ restartOwen
     = requires devPerms
     . command "restart" $ \m -> do
         respond m  "Restarting..."
-        void $ liftIO $ Process.spawnCommand "owenbot-exe"
         stopDiscord
+        void $ liftIO $ Process.spawnCommand "owenbot-exe"
 
 -- | Stops the entire Discord chain.
 stopOwen :: Command DiscordHandler
@@ -162,12 +158,7 @@ devs
                 respond m "Removed!"
             Just _ -> respond m "Usage: `:devs {add|remove} <roleId>"
 
-statusRE :: T.Text
-statusRE = "(online|idle|dnd|invisible) "
-           <> "(playing|streaming|competing|listening to) "
-           <> "(.*)"
-
--- | This can't be polymoprhic because updateStatus requires gateway specific
+-- | This can't be polymorphic because updateStatus requires gateway specific
 -- things.
 setStatus :: Command DiscordHandler
 setStatus
