@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4989f2f4950cc20bc3472168b82fccd6c10cefe359d62c404c6ed5452a035cf0
+-- hash: 3c4a54e4117a1ea331aa8d42a759c2b964c6d45e53380145677a4e14c6057e7f
 
 name:           owenbot
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       Discord.Internal.Monad
       EventHandler
       Owoifier
+      Process
       Status
       Utils
       Academic
@@ -76,10 +77,16 @@ library
     , split
     , text
     , time
-    , unix
     , unliftio
     , unordered-containers
     , vector
+  if os(windows)
+    cpp-options: -DWINDOWS
+    build-depends:
+        Win32
+  else
+    build-depends:
+        unix
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -112,10 +119,16 @@ executable owenbot-exe
     , split
     , text
     , time
-    , unix
     , unliftio
     , unordered-containers
     , vector
+  if os(windows)
+    cpp-options: -DWINDOWS
+    build-depends:
+        Win32
+  else
+    build-depends:
+        unix
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -157,8 +170,14 @@ test-suite owenbot-test
     , split
     , text
     , time
-    , unix
     , unliftio
     , unordered-containers
     , vector
+  if os(windows)
+    cpp-options: -DWINDOWS
+    build-depends:
+        Win32
+  else
+    build-depends:
+        unix
   default-language: Haskell2010

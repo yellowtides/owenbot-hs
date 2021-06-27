@@ -18,7 +18,6 @@ import           Network.BSD            ( getHostName )
 import           Text.Regex.TDFA        ( (=~) )
 
 import           System.Directory       ( doesPathExist )
-import           System.Posix.Process   ( getProcessID )
 import qualified System.Process as Process
 
 import           Command
@@ -32,6 +31,7 @@ import           Utils                  ( sendMessageChan
                                         , devPerms
                                         , roleNameIn
                                         )
+import           Process                ( getMyProcessId )
 import           Status                 ( editStatusFile
                                         , updateStatus
                                         )
@@ -100,13 +100,13 @@ sendGitInfoChan chan = do
 sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo
     = requires devPerms
-    . command "instance" $ \m -> 
+    . command "instance" $ \m ->
         sendInstanceInfoChan $ messageChannel m
 
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
-    pid  <- liftIO getProcessID
+    pid  <- liftIO getMyProcessId
     sendMessageChan chan ("Instance Info: \n" <>
                           "Host: "            <> T.pack host <> "\n" <>
                           "Process ID: "      <> T.pack (show pid))
