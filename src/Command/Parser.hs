@@ -124,6 +124,10 @@ instance ParsableArgument RemainingText where
             -- consume everything but quotes, unless it is escaped
             content <- many1 $ try (string "\\\"" >> pure '"') <|> noneOf "\""
             char '"'
+            -- ensure it is at eof
+            -- this means `"ababababa" cdcdcd` is treated as a normal string
+            -- without eof, it will throw an error about an unexpected cdcdcd
+            eof
             pure $ T.pack content
         normal = do
             -- First char is guaranteed to not be a space, because previous parsers
