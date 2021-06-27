@@ -42,8 +42,8 @@ import           Utils              ( sendMessageChan
 import           CSV                ( readSingleColCSV
                                     , writeSingleColCSV
                                     )
-import           DB                 ( fetch
-                                    , store
+import           DB                 ( readDB
+                                    , writeDB
                                     )
 
 
@@ -56,8 +56,9 @@ messageReceivers = [ reactLimit ]
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r =
     when (isHallOfFameEmote r && notInHallOfFameChannel r) $ do
-        eligible <- isEligibleForHallOfFame r
-        when eligible $ putInHallOfFame r
+        m <- messageFromReaction r
+        eligible <- isEligibleForHallOfFame m
+        when eligible $ putInHallOfFame m
 
 hallOfFameEmotes :: [T.Text]
 hallOfFameEmotes = T.toUpper <$>
@@ -80,24 +81,22 @@ existsInHOF m = do
     msgIdList <- liftIO $ readSingleColCSV "fame.csv"
     return $ show (messageId m) `elem` (T.unpack <$> msgIdList)
 
-isEligibleForHallOfFame :: ReactionInfo -> DiscordHandler Bool
-isEligibleForHallOfFame r = do
-    mess <- messageFromReaction r
+isEligibleForHallOfFame :: Message -> DiscordHandler Bool
+isEligibleForHallOfFame m = do
     limit <- liftIO readLimit
-    exists <- liftIO $ existsInHOF mess
-    let reactions   = messageReactions mess
+    exists <- liftIO $ existsInHOF m
+    let reactions   = messageReactions m
     let fulfillCond = \x ->
             T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
             && messageReactionCount x >= limit
             && not exists
     pure $ any fulfillCond reactions
 
-putInHallOfFame :: ReactionInfo -> DiscordHandler ()
-putInHallOfFame r = do
-    mess <- messageFromReaction r --gets contents of message that was reacted to.
-    embed <- createHallOfFameEmbed mess
+putInHallOfFame :: Message -> DiscordHandler ()
+putInHallOfFame m = do
+    embed <- createHallOfFameEmbed m
     msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId mess):msgIdList)
+    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId m):msgIdList)
     --adds the message id to the csv to make sure we dont add it multiple times.
     sendMessageChanEmbed hallOfFameChannel "" embed
 
