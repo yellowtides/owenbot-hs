@@ -119,8 +119,8 @@ restartOwen
     . help "Kills the bot and starts a new instance."
     . command "restart" $ \m -> do
         respond m  "Restarting..."
-        stopDiscord
         void $ liftIO $ Process.spawnCommand "owenbot-exe"
+        stopDiscord
 
 -- | Safely kills the bot without restarting it.
 -- Any in-progress actions (file writing) should complete, but may not respond
