@@ -4,9 +4,7 @@ module Admin ( commands, sendGitInfoChan, sendInstanceInfoChan ) where
 
 import qualified Data.Text as T
 import           Discord.Types
-import           Discord                ( DiscordHandler
-                                        , stopDiscord, restCall
-                                        )
+import           Discord
 import           Discord.Requests as R
 import           UnliftIO               ( liftIO )
 import           Data.Char              ( isSpace )
@@ -15,7 +13,6 @@ import           Control.Monad          ( unless
                                         , void
                                         )
 import           Network.BSD            ( getHostName )
-import           Text.Regex.TDFA        ( (=~) )
 
 import           System.Directory       ( doesPathExist )
 import qualified System.Process as Process
@@ -29,7 +26,6 @@ import           Utils                  ( sendMessageChan
                                         , update
                                         , modPerms
                                         , devPerms
-                                        , roleNameIn
                                         )
 import           Process                ( getMyProcessId )
 import           Status                 ( editStatusFile
@@ -47,7 +43,6 @@ commands =
     , stopOwen
     , updateOwen
     , setStatus
-    , someComplexThing
     , devs
     , lockdown
     , unlock
@@ -124,8 +119,8 @@ restartOwen
     . help "Kills the bot and starts a new instance."
     . command "restart" $ \m -> do
         respond m  "Restarting..."
-        void $ liftIO $ Process.spawnCommand "owenbot-exe"
         stopDiscord
+        void $ liftIO $ Process.spawnCommand "owenbot-exe"
 
 -- | Safely kills the bot without restarting it.
 -- Any in-progress actions (file writing) should complete, but may not respond
@@ -185,7 +180,7 @@ devs
                 respond m "Removed!"
             Just _ -> respond m "Usage: `:devs {add|remove} <roleId>"
 
--- | This can't be polymoprhic because updateStatus requires gateway specific
+-- | This can't be polymorphic because updateStatus requires gateway specific
 -- things.
 setStatus :: Command DiscordHandler
 setStatus
@@ -231,7 +226,7 @@ unlock
               respond m $ owoify "Unlocking channel, GLHF!"
           _ -> do respond m $ owoify "channel is not a valid Channel (How the fuck did you pull that off?)"
 
-
+-- | Toggles the locking of a specified channel
 lockdownChan :: (MonadDiscord m) => ChannelId -> OverwriteId -> Lock -> m ()
 lockdownChan chan guild b = do
     let switch  = case b of Lockdown -> fst; Unlock -> snd
