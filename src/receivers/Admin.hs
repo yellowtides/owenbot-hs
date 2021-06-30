@@ -154,7 +154,7 @@ upgradeOwen
     = requires devPerms
     . help "Updates and restarts the bot in one go."
     . command "upgrade" $ \m -> do
-        runCommand updateOwen $ m { messageText = ":update" }
+        runCommand updateOwen  $ m { messageText = ":update"  }
         runCommand restartOwen $ m { messageText = ":restart" }
 
 ------- DEV COMMANDS

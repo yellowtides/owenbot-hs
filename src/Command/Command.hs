@@ -534,7 +534,7 @@ helpCommand helpName cmds onEmptyHandler
         case mbName of
             Nothing -> onEmptyHandler msg
             Just (Remaining name) ->
-                if (name == helpName || name == ":" <> helpName) then
+                if name == helpName || name == ":" <> helpName then
                     respond msg $ "**:" <> helpName <> "**\n" <>
                         "Send this help message. Usage: `:" <> helpName <>
                         " (optional command name)`"
@@ -688,12 +688,12 @@ sparsely documented....
 showErrAsText :: ParseError -> T.Text
 showErrAsText err
     | null (errorMessages err) = "Unknown parse error occured!"
-    | otherwise = T.intercalate " " $ clean $
+    | otherwise = T.intercalate " " $ clean
         [showExpect, showSysUnExpect, showUnExpect, showOtherMessages]
   where
-    (sysUnExpect,rem1) = span ((PE.SysUnExpect "") ==) (errorMessages err)
-    (unExpect,rem2)    = span ((PE.UnExpect    "") ==) rem1
-    (expect,rem3)      = span ((PE.Expect      "") ==) rem2
+    (sysUnExpect,rem1) = span (PE.SysUnExpect "" ==) (errorMessages err)
+    (unExpect,rem2)    = span (PE.UnExpect    "" ==) rem1
+    (expect,rem3)      = span (PE.Expect      "" ==) rem2
 
     showExpect      = showMany "I wanted " expect
     showUnExpect    = showMany "and not " unExpect
