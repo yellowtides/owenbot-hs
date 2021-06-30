@@ -42,6 +42,7 @@ commands =
     , restartOwen
     , stopOwen
     , updateOwen
+    , upgradeOwen
     , setStatus
     , devs
     , lockdown
