@@ -147,6 +147,15 @@ updateOwen
             then "Finished update"
             else "Failed to update! Please check the logs"
 
+-- | Simple hack to run :update and :restart in one go.
+upgradeOwen :: Command DiscordHandler
+upgradeOwen
+    = requires devPerms
+    . help "Updates and restarts the bot in one go."
+    . command "upgrade" $ \m -> do
+        runCommand restartOwen $ m { messageText = ":restart" }
+        runCommand updateOwen $ m { messageText = ":update" }
+
 ------- DEV COMMANDS
 -- | Gets the list of developer role IDs
 getDevs :: IO [T.Text]
