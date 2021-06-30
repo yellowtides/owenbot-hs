@@ -154,8 +154,8 @@ upgradeOwen
     = requires devPerms
     . help "Updates and restarts the bot in one go."
     . command "upgrade" $ \m -> do
-        runCommand restartOwen $ m { messageText = ":restart" }
         runCommand updateOwen $ m { messageText = ":update" }
+        runCommand restartOwen $ m { messageText = ":restart" }
 
 ------- DEV COMMANDS
 -- | Gets the list of developer role IDs
