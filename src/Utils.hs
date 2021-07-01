@@ -72,7 +72,7 @@ import           Owoifier               ( owoify
                                         )
 import           CSV                    ( readSingleColCSV )
 
-import           Data.Maybe             ( fromJust )
+import           Data.Maybe             ( fromJust, listToMaybe )
 
 import           Data.Char              ( isDigit )
 import           Command
@@ -94,6 +94,9 @@ assetDir = liftIO $ getXdgDirectory XdgData "owen/assets/"
 -- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
 (=~=) :: T.Text -> T.Text -> Bool
 (=~=) = (=~) `on` weakOwoify
+
+toMaybe :: Bool -> a -> Maybe a
+toMaybe cond a = if cond then Just a else Nothing
 
 -- | `pingUser` constructs a minimal `Text` pinging the given user.
 pingUser :: User -> T.Text
@@ -117,14 +120,13 @@ pingWithUsername uname gid = do
     -- "Nothing" seems to default to (Just 1)
     membersM <- restCall $ R.ListGuildMembers gid timing
     let members = case membersM of
-            Right success -> success
-            Left  _       -> []
+            Right ms -> ms
+            Left  _  -> []
     let users = memberUser <$> members
     --_ <- liftIO $ print (userName <$> users)
-    let usersWithUsername = filter (\u -> userName u == uname) users
+    let usersWithUsername = filter ((uname ==) . userName) users
     --_ <- liftIO $ print usersWithUsername
     pure $ case usersWithUsername of
-        []  -> ""
         [u] -> pingUser u
         _   -> ""
 
@@ -132,8 +134,7 @@ pingWithUsername uname gid = do
 -- Really weak check.
 isUnicodeEmoji :: T.Text -> Bool
 isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
-    where
-        isInEmojiBlock c = c >= '\x00A9' && c <= '\x1FADF'
+    where isInEmojiBlock c = c >= '\x00A9' && c <= '\x1FADF'
 
 -- | `isRoleInGuild` determines whether a role containing the given text exists
 -- in the guild (case insensitive). If it does, then it returns the role's ID.
@@ -141,27 +142,25 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 isRoleInGuild :: (MonadDiscord m) => T.Text -> GuildId -> m (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
     roles <- getGuildRoles gid
-    let matchingRoles = filter (\role -> T.toUpper roleFragment `T.isInfixOf` T.toUpper (roleName role)) roles
-    pure $ case matchingRoles of
-        []      -> Nothing
-        role:rs -> Just $ roleId role
+    let matchingRoles = filter ((T.toUpper roleFragment `T.isInfixOf`) . T.toUpper . roleName) roles
+    pure $ roleId <$> listToMaybe matchingRoles
 
 -- | `discordEmojiTextToId` takes a Text ending in a Discord <::0-9> formatted emoji string
 -- and extracts the ID. On unsuccessful extraction, returns 0. Given Text can be trailed by
 -- spaces.
 discordEmojiTextToId :: T.Text -> EmojiId
-discordEmojiTextToId emojiT
-    = case T.unpack . T.reverse . T.takeWhile isDigit . T.drop 1
-                    . T.dropWhile (== ' ') $ T.reverse emojiT of
-            ""  -> 0
-            num -> read num
+discordEmojiTextToId emojiT = case idT of
+        ""  -> 0
+        num -> read num
+    where idT = T.unpack . T.reverse . T.takeWhile isDigit . T.drop 1
+              . T.dropWhile (== ' ') $ T.reverse emojiT
 
 -- | `isEmojiValid` determines whether an emoji (provided in Discord <::0-9> format) exists in the
 -- guild (or is a default emoji). Case insensitive.
 isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
     guild <- getGuild gid
-    let emojis = guildEmojis guild
+    let emojis  = guildEmojis guild
     let emojiID = discordEmojiTextToId emojiT
     let matchingEmojis = filter ((emojiID ==) . fromJust . emojiId) emojis
     -- _ <- liftIO $ print matchingEmojis
@@ -170,7 +169,7 @@ isEmojiValid emojiT gid = do
             ("", _) -> True
             (_, []) -> not $ isUnicodeEmoji emojiT
             _       -> False
-    pure . not $ isInvalid
+    pure $ not isInvalid
 
 -- | `converge` applies a function to a variable until the result converges.
 converge :: Eq a => (a -> a) -> a -> a
@@ -211,11 +210,10 @@ getMessageLink m = do
 
 -- | `emojiToUsableText` converts a given emoji to a text which can be used to display it in Discord.
 emojiToUsableText :: Emoji -> T.Text
-emojiToUsableText r = do
-    let name = emojiName r
-    case emojiId r of
+emojiToUsableText r = case emojiId r of
         Nothing -> name
         Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
+    where name = emojiName r
 
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
@@ -225,15 +223,14 @@ sendMessageChan c xs = void $ createMessage c xs
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
 sendMessageChanPingsDisabled :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
-sendMessageChanPingsDisabled cid t = do
-    let opts = def { R.messageDetailedContent = t
-                   , R.messageDetailedAllowedMentions = Just
-                        $ def { R.mentionEveryone = False
-                              , R.mentionUsers    = False
-                              , R.mentionRoles    = False
-                              }
-                   }
-    void $ createMessageDetailed cid opts
+sendMessageChanPingsDisabled cid t = void $ createMessageDetailed cid
+    def { R.messageDetailedContent = t
+        , R.messageDetailedAllowedMentions = Just
+            $ def { R.mentionEveryone = False
+                    , R.mentionUsers  = False
+                    , R.mentionRoles  = False
+                    }
+        }
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
@@ -255,16 +252,13 @@ sendMessageChanEmbed c xs e = void $ createMessageEmbed c xs e
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
 sendMessageDM :: (MonadDiscord m) => UserId -> T.Text -> m ()
-sendMessageDM u t = do
-    chan <- createDM u
-    sendMessageChan (channelId chan) t
+sendMessageDM u t = createDM u >>= (flip sendMessageChan t . channelId)
 
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`.
 sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
-sendFileChan c name fp = do
-    fileContent <- liftIO $ B.readFile fp
-    void $ createMessageUploadFile c name fileContent
+sendFileChan c name fp = liftIO (B.readFile fp)
+                         >>= (void . createMessageUploadFile c name)
 
 -- | @respondAsset m name path@ responds to the message @m@ with the file at
 -- @path@, with the name overridden as @name@.
@@ -286,31 +280,29 @@ addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
 isMod :: Message -> DiscordHandler Bool
 isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 
--- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
--- the provided `Text` exactly.
-hasRoleByName :: (MonadDiscord m) => Message -> T.Text -> m Bool
-hasRoleByName m r = case messageGuild m of
+-- | `hasRole` checks whether the provided message was sent by a user that has
+-- a role matching the value from the provided checking function
+hasRole :: (MonadDiscord m, Eq a) => (Role -> a) -> Message -> a -> m Bool
+hasRole f m r = case messageGuild m of
     Nothing -> pure False
     Just g -> do
         filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
-        return $ r `elem` map roleName filtered
+        return $ r `elem` map f filtered
+
+-- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
+-- the provided `Text` exactly.
+hasRoleByName :: (MonadDiscord m) => Message -> T.Text -> m Bool
+hasRoleByName = hasRole roleName
 
 -- | `hasRoleByID` checks whether the provided message was sent by a user that has a role matching
 -- the provided `RoleId`.
 hasRoleByID :: (MonadDiscord m) => Message -> RoleId -> m Bool
-hasRoleByID m r = case messageGuild m of
-    Nothing -> pure False
-    Just g -> do
-        filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
-        return $ r `elem` map roleId filtered
+hasRoleByID = hasRole roleId
 
 -- | `checkAllIDs` checks every role of the provided message's author against every role in the
 -- global `devIDs` file, returning an exhaustive list of booleans as a result.
 checkAllIDs :: (MonadDiscord m) => Message -> IO [m Bool]
-checkAllIDs m = do
-    devFile <- readSingleColCSV devIDs
-    let devRoleIDs = read . T.unpack <$> devFile
-    pure $ map (hasRoleByID m) devRoleIDs
+checkAllIDs m = fmap (hasRoleByID m . read . T.unpack) <$> readSingleColCSV devIDs
 
 -- | `isSenderDeveloper` checks whether the provided message's author is a developer.
 isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
@@ -318,33 +310,25 @@ isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
 channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
-channelRequirement cid msg = if messageChannel msg == read cid
-    then pure Nothing
-    else pure $ Just "need to be in channel"
+channelRequirement cid msg = pure $ toMaybe (messageChannel msg == read cid)
+                                    "need to be in channel"
 
--- | Command requirement for role names, matched with OR. For and, just compose
--- multiple of this.
-roleNameIn :: (MonadDiscord m) => [T.Text] -> Message -> m (Maybe T.Text)
-roleNameIn names msg = do
-    -- this will take a while because it needs to get roles
-    triggerTypingIndicator (messageChannel msg)
-    check <- or <$> mapM (hasRoleByName msg) names
-    pure $ if check
-              then Nothing
-              else Just $ "need to have one of: " <> (T.pack . show) names
+-- | Command requirement for sender being a registered developer.
+permCheck :: (MonadDiscord m, MonadIO m) => m Bool -> T.Text -> Message -> m (Maybe T.Text)
+permCheck check help msg = triggerTypingIndicator (messageChannel msg) >>
+    flip toMaybe help . not <$> check
 
-modPerms :: (MonadDiscord m) => Message -> m (Maybe T.Text)
+roleNameIn :: (MonadDiscord m, MonadIO m) => [T.Text] -> Message -> m (Maybe T.Text)
+roleNameIn names msg = permCheck (or <$> mapM (hasRoleByName msg) names)
+                              ("Need to have one of: " <> (T.pack . show) names)
+                              msg
+
+modPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
 modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
 
 -- | Command requirement for sender being a registered developer.
 devPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
-devPerms msg = do
-    -- this will take a while, so put this here
-    triggerTypingIndicator (messageChannel msg)
-    check <- isSenderDeveloper msg
-    pure $ if check
-              then Nothing
-              else Just "need to be a developer"
+devPerms msg = permCheck (isSenderDeveloper msg) "Need to be an OwenDev" msg
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.
@@ -363,21 +347,16 @@ getTimestampFromMessage =
 -- | `captureCommandOutput` creates a new process from the desired command provided as a `String`.
 -- Then, it waits for the command to finish executing, returning its output as a `Text`.
 captureCommandOutput :: String -> IO T.Text
-captureCommandOutput command = do
-    let (executable:args) = splitOn " " command
-    output <- Process.readCreateProcess ((Process.proc executable args) {
+captureCommandOutput command =
+    T.pack <$> Process.readCreateProcess ((Process.proc executable args) {
         cwd = Just "."
     }) ""
-    return $ T.pack output
+    where (executable:args) = splitOn " " command
 
 -- | `update` calls a shell script that updates the bot's repo
-update :: IO Bool
-update = do
-    process <- Process.spawnCommand ("cd " <> repoDir <> " && git reset --hard @{u} && git pull && stack install")
-    exitcode <- Process.waitForProcess process
-    pure $ case exitcode of
-         ExitSuccess   -> True
-         ExitFailure _ -> False
+update :: IO ExitCode
+update = Process.spawnCommand ("cd " <> repoDir <> " && git reset --hard @{u} && git pull && stack install")
+     >>= Process.waitForProcess
 
 -- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer

@@ -16,6 +16,8 @@ import           Network.BSD            ( getHostName )
 
 import           System.Directory       ( doesPathExist )
 import qualified System.Process as Process
+import           System.Exit            ( ExitCode  ( ExitSuccess
+                                                    , ExitFailure )
 
 import           Command
 import           Owoifier               ( owoify )
@@ -144,9 +146,9 @@ updateOwen
     . command "update" $ \m -> do
         respond m "Updating..."
         result <- liftIO update
-        respond m $ owoify $ if result
-            then "Finished update"
-            else "Failed to update! Please check the logs"
+        respond m $ owoify $ case result of
+            ExitSuccess   -> "Finished update"
+            ExitFailure _ -> "Failed to update! Please check the logs"
 
 -- | Simple hack to run :update and :restart in one go.
 upgradeOwen :: Command DiscordHandler
