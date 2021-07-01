@@ -17,7 +17,7 @@ import           Network.BSD            ( getHostName )
 import           System.Directory       ( doesPathExist )
 import qualified System.Process as Process
 import           System.Exit            ( ExitCode  ( ExitSuccess
-                                                    , ExitFailure )
+                                                    , ExitFailure ))
 
 import           Command
 import           Owoifier               ( owoify )
