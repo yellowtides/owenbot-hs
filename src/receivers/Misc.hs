@@ -52,7 +52,7 @@ reactionReceivers =
 -- TODO: put these in config so they can be changed at runtime
 owoifyChance, dadJokeChance :: Int
 owoifyChance  = 500
-dadJokeChance = 1
+dadJokeChance = 5
 
 owoifiedEmoji :: T.Text
 owoifiedEmoji = "✅"
