@@ -75,7 +75,7 @@ owoifyIfPossible
     $ regexCommand "[lLrR]|[nNmM][oO]"
     $ \m _ -> do
         -- authenticity.
-        liftIO $ threadDelay (10 * 10^(6 :: Int))
+        liftIO $ threadDelay (5 * 10^(6 :: Int))
         triggerTypingIndicator (messageChannel m)
         liftIO $ threadDelay (8 * 10^(6 :: Int))
         sendReply m True $ owoify (messageText m)
@@ -131,11 +131,7 @@ dadJokeIfPossible =
         )
     $ regexCommand "^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)"
     $ \m (name:_) ->
-        when (T.length name >= 3) $ do
-            -- organic.
-            liftIO $ threadDelay (4 * 10^(6 :: Int))
-            triggerTypingIndicator (messageChannel m)
-            liftIO $ threadDelay (5 * 10^(6 :: Int))
+        when (T.length name >= 3) $
             respond m $ owoify ("hello " <> name <> ", i'm owen")
 
 fortune :: (MonadDiscord m, MonadIO m) => Command m
