@@ -2,6 +2,7 @@
 
 module Misc (commands, reactionReceivers, changePronouns) where
 
+import              Control.Concurrent      ( threadDelay )
 import              Control.Monad           ( when
                                             , unless
                                             , forM_ )
@@ -72,7 +73,12 @@ owoifyIfPossible
         pure $ if r == 1 then Nothing else Just ""
         )
     $ regexCommand "[lLrR]|[nNmM][oO]"
-    $ \m _ -> sendReply m True $ owoify (messageText m)
+    $ \m _ -> do
+        -- authenticity.
+        liftIO $ threadDelay (10 * 10^(6 :: Int))
+        triggerTypingIndicator (messageChannel m)
+        liftIO $ threadDelay (8 * 10^(6 :: Int))
+        sendReply m True $ owoify (messageText m)
 
 -- | Emote names for which to trigger force owoify on. Use All Caps.
 forceOwoifyEmotes :: [T.Text]
@@ -125,7 +131,11 @@ dadJokeIfPossible =
         )
     $ regexCommand "^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)"
     $ \m (name:_) ->
-        when (T.length name >= 3) $
+        when (T.length name >= 3) $ do
+            -- organic.
+            liftIO $ threadDelay (4 * 10^(6 :: Int))
+            triggerTypingIndicator (messageChannel m)
+            liftIO $ threadDelay (5 * 10^(6 :: Int))
             respond m $ owoify ("hello " <> name <> ", i'm owen")
 
 fortune :: (MonadDiscord m, MonadIO m) => Command m
