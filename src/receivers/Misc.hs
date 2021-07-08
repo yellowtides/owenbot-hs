@@ -74,10 +74,6 @@ owoifyIfPossible
         )
     $ regexCommand "[lLrR]|[nNmM][oO]"
     $ \m _ -> do
-        -- authenticity.
-        liftIO $ threadDelay (5 * 10^(6 :: Int))
-        triggerTypingIndicator (messageChannel m)
-        liftIO $ threadDelay (8 * 10^(6 :: Int))
         sendReply m True $ owoify (messageText m)
 
 -- | Emote names for which to trigger force owoify on. Use All Caps.
