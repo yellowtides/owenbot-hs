@@ -14,8 +14,10 @@ import Control.Monad              ( liftM )
 import Data.Maybe                 ( fromMaybe
                                   , fromJust
                                   , isNothing )
-import Data.ByteString.Lazy as BS ( ByteString
-                                  , readFile
+import Data.ByteString.Lazy as BL ( ByteString
+                                  , fromStrict
+                                  , toStrict )
+import Data.ByteString      as BS ( readFile
                                   , writeFile )
 import Data.Aeson                 ( FromJSON
                                   , ToJSON
@@ -50,11 +52,11 @@ readDB :: FromJSON a => String -> IO (Maybe a)
 readDB file = do
     fp <- mkPath file
     json <- BS.readFile fp
-    return $ decode json
+    return $ decode $ BL.fromStrict json
 
 -- | Takes a filename (with no suffix) and a data structure, and writes a json
 -- file to that location.
 writeDB :: ToJSON a => String -> a -> IO ()
 writeDB file db = do
     fp <- mkPath file
-    BS.writeFile fp $ encode db
+    BS.writeFile fp $ BL.toStrict $ encode db
