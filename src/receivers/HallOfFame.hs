@@ -34,7 +34,7 @@ commands = [ reactLimit ]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r =
-    when (isHallOfFameEmote r && notInHallOfFameChannel r) $ do
+    when (isHallOfFameEmote (reactionEmoji r) && notInHallOfFameChannel r) $ do
         m <- messageFromReaction r
         eligible <- isEligibleForHallOfFame m
         when eligible $ putInHallOfFame m
@@ -52,8 +52,8 @@ hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
 notInHallOfFameChannel :: ReactionInfo -> Bool
 notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
 
-isHallOfFameEmote :: ReactionInfo -> Bool
-isHallOfFameEmote r = T.toUpper (emojiName (reactionEmoji r)) `elem` hallOfFameEmotes
+isHallOfFameEmote :: Emoji -> Bool
+isHallOfFameEmote e = T.toUpper (emojiName e) `elem` hallOfFameEmotes
 
 existsInHOF :: Message -> IO Bool
 existsInHOF m = do
@@ -65,9 +65,9 @@ isEligibleForHallOfFame m = do
     limit <- liftIO readLimit
     exists <- liftIO $ existsInHOF m
     let reactions   = messageReactions m
-    let fulfillCond = \x ->
-            T.toUpper (emojiName $ messageReactionEmoji x) `elem` hallOfFameEmotes
-            && messageReactionCount x >= limit
+    let fulfillCond = \r ->
+            isHallOfFameEmote (messageReactionEmoji r)
+            && messageReactionCount r >= limit
             && not exists
     pure $ any fulfillCond reactions
 
@@ -80,12 +80,17 @@ putInHallOfFame m = do
     sendMessageChanEmbed hallOfFameChannel "" embed
 
 createDescription :: Message -> T.Text
-createDescription m = messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel (messageChannel m)
+createDescription m = messageText m
+                   <> "\n- "
+                   <> pingAuthorOf m
+                   <> " in "
+                   <> linkChannel (messageChannel m)
 
 getImageFromMessage :: Message -> T.Text
 getImageFromMessage m
-  | not . null $ messageAttachments m = attachmentUrl (head $ messageAttachments m)
-  | otherwise                         = ""
+    | not . null $ attachments = attachmentUrl $ head attachments
+    | otherwise                  = ""
+    where attachments = messageAttachments m
 
 createHallOfFameEmbed :: Message -> DiscordHandler CreateEmbed
 createHallOfFameEmbed m = do
