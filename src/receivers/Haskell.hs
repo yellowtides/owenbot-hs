@@ -84,7 +84,11 @@ codeblock lang = (("```" ++ lang ++ "\n") ++) . (++ "```")
 pointfree :: (MonadDiscord m) => Command m
 pointfree = command "pf" $ \m (Remaining code) ->
     respond m $ pf code
-    where pf = T.pack . inlineCode . fromMaybe "" . pointfree' . T.unpack
+    where pf = T.pack
+             . inlineCode
+             . fromMaybe "Couldn't format this code!"
+             . pointfree'
+             . T.unpack
           -- TODO: Strip double back-ticks to allow nicely formatted input
 
 
