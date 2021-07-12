@@ -68,7 +68,7 @@ select :: [a] -> IO a
 select xs = (xs !!) . subtract 1 <$> roll (length xs)
 
 rollCheck :: MonadIO m => Int -> m (Maybe T.Text)
-rollCheck chance = (`toMaybe` "") <$> ((==1) <$> liftIO (roll chance))
+rollCheck chance = (`toMaybe` "") <$> ((/=1) <$> liftIO (roll chance))
 
 owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 owoifyIfPossible
