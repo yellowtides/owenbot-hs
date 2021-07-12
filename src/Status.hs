@@ -45,14 +45,14 @@ updateStatus newStatus newType newName = sendCommand $
 setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     line <- liftIO readStatusFile
-    when (length line >= 3) $ do
+    when (length line == 3) $ do
         -- Utilising the Maybe Monad whooo!
-        let mbStuff = do
-                statusType <- (readMaybe . T.unpack . head) line
+        let statusInfo = do
+                statusType   <- (readMaybe . T.unpack . head) line
                 activityType <- (readMaybe . T.unpack . head . tail) line
-                let name = T.unwords $ (tail . tail) line
+                let name = head $ tail $ tail line
                 pure (statusType, activityType, name)
-        case mbStuff of
+        case statusInfo of
             Nothing -> liftIO $ putStrLn "Incorrect status format, ignoring."
             Just (s, a, n) -> updateStatus s a n
 
