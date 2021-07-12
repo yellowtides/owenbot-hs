@@ -80,10 +80,9 @@ import           Data.Maybe             ( fromJust
 import           Data.Char              ( isDigit )
 import           Command
 
--- | The `FilePath` representing the repo for the bot.
--- TODO: chuck in a config file, handle not having a repo
-repoDir :: FilePath
-repoDir = "~/owenbot-hs/"
+-- | A db file containing the git repo for the bot. Used for live updating.
+getRepoDir :: IO (Maybe FilePath)
+getRepoDir = readDB "repo"
 
 -- | The `FilePath` representing the location of the assets.
 -- TODO: Move into a saner place than Utils
@@ -359,8 +358,14 @@ captureCommandOutput command =
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO ExitCode
-update = Process.spawnCommand ("cd " <> repoDir <> " && git reset --hard @{u} && git pull && stack install")
-     >>= Process.waitForProcess
+update = do
+    repoDir <- getRepoDir
+    case repoDir of
+        Nothing  -> return $ ExitFailure 0
+        Just dir -> Process.waitForProcess =<< Process.spawnCommand
+                    ("cd "
+                  <> dir
+                  <> " && git reset --hard @{u} && git pull && stack install")
 
 -- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer
