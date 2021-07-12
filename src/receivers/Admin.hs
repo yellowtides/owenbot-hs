@@ -24,7 +24,6 @@ import           Owoifier               ( owoify )
 
 import           Utils                  ( sendMessageChan
                                         , captureCommandOutput
-                                        , devIDs
                                         , update
                                         , modPerms
                                         , devPerms
@@ -35,6 +34,9 @@ import           Status                 ( writeStatusFile
                                         )
 import           CSV                    ( readSingleColCSV
                                         , writeSingleColCSV
+                                        )
+import           DB                     ( readDB
+                                        , writeDB
                                         )
 
 commands :: [Command DiscordHandler]
@@ -161,14 +163,15 @@ upgradeOwen
 
 ------- DEV COMMANDS
 -- | Gets the list of developer role IDs
-getDevs :: IO [T.Text]
-getDevs = readSingleColCSV devIDs
+getDevs :: IO (Maybe [T.Text])
+getDevs = readDB "devs"
 
 -- | Updates the list of developer role IDs
 setDevs :: [T.Text] -> IO ()
-setDevs = writeSingleColCSV devIDs
+setDevs = writeDB "devs"
 
 -- | Allows manipulating the list of dev roles without restarting the bot.
+-- If the format is wrong, the bot will crash from `fromJust`
 devs :: Command DiscordHandler
 devs
     = requires devPerms
@@ -179,7 +182,7 @@ devs
         <> "To get role IDs, enable Developer Mode in Discord options "
         <> "and right-click a role.")
     . command "devs" $ \m maybeActionValue -> do
-        contents <- liftIO getDevs
+        contents <- fromJust <$> liftIO getDevs
         case maybeActionValue :: Maybe (T.Text, RoleId) of
             Nothing -> do
                 unless (null contents) $

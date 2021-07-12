@@ -28,7 +28,6 @@ module Utils ( emojiToUsableText
              , modPerms
              , devPerms
              , isMod
-             , devIDs
              , assetDir
              , (=~=)
              , getTimestampFromMessage
@@ -72,15 +71,14 @@ import           Owoifier               ( owoify
                                         , weakOwoify
                                         )
 import           CSV                    ( readSingleColCSV )
+import           DB                     ( readDB )
 
-import           Data.Maybe             ( fromJust, listToMaybe )
+import           Data.Maybe             ( fromJust
+                                        , listToMaybe
+                                        , fromMaybe )
 
 import           Data.Char              ( isDigit )
 import           Command
-
--- | The `FilePath` to the configuration file listing OwenDev role IDs.
-devIDs :: FilePath
-devIDs = "devs.csv"
 
 -- | The `FilePath` representing the repo for the bot.
 -- TODO: chuck in a config file, handle not having a repo
@@ -303,11 +301,16 @@ hasRoleByID = hasRole roleId
 -- | `checkAllIDs` checks every role of the provided message's author against every role in the
 -- global `devIDs` file, returning an exhaustive list of booleans as a result.
 checkAllIDs :: (MonadDiscord m) => Message -> IO [m Bool]
-checkAllIDs m = fmap (hasRoleByID m . read . T.unpack) <$> readSingleColCSV devIDs
+checkAllIDs m = fmap (hasRoleByID m . read . T.unpack) <$> (fromJust <$> readDB "devs")
 
--- | `isSenderDeveloper` checks whether the provided message's author is a developer.
+-- | Gets the list of dev roles from the db.
+getDevs :: IO [RoleId]
+getDevs = fromMaybe [] <$> readDB "devs"
+
+-- | `isSenderDeveloper` checks whether the provided message's author is a dev.
 isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
-isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
+--isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
+isSenderDeveloper m = liftIO getDevs >>= fmap or . mapM (hasRoleByID m)
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
 channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
