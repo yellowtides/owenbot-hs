@@ -22,7 +22,8 @@ import           System.Exit            ( ExitCode  ( ExitSuccess
 import           Command
 import           Owoifier               ( owoify )
 
-import           Utils                  ( sendMessageChan
+import           Utils                  ( getRepoDir
+                                        , sendMessageChan
                                         , captureCommandOutput
                                         , update
                                         , modPerms
@@ -58,8 +59,8 @@ commands =
 rstrip :: T.Text -> T.Text
 rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
-gitLocal :: IO T.Text
-gitLocal = do
+gitInfo :: FilePath -> IO T.Text
+gitInfo dir = do
     -- can't use captureCommandOutput because --format would be broken into
     -- separate args (as it splits on space).
     let args = [ "log"
@@ -69,29 +70,32 @@ gitLocal = do
                , "HEAD"
                ]
     T.pack <$> Process.readCreateProcess
-        ((Process.proc "git" args) { Process.cwd = Just "." }) ""
-commitsAhead :: IO T.Text
-commitsAhead = captureCommandOutput "git rev-list --count HEAD..origin/main"
+        ((Process.proc "git" args) { Process.cwd = Just dir }) ""
 
--- | Checks if the bot is running inside of a git repo
-isGitRepo :: IO Bool
-isGitRepo = doesPathExist ".git"
+gitFetch :: FilePath -> IO T.Text
+gitFetch dir = T.pack <$> Process.readCreateProcess
+                            ((Process.proc "git" ["fetch"])
+                            {Process.cwd = Just dir}) ""
+
+commitsAhead :: FilePath -> IO T.Text
+commitsAhead dir = captureCommandOutput $ "cd " <> dir
+                        <> " && git rev-list --count HEAD..origin/main"
 
 -- | Sends the git info to a specific channel
 sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendGitInfoChan chan = do
-    inRepo <- liftIO isGitRepo
-    if not inRepo then
-        sendMessageChan chan $ owoify "Not in git repo (sorry)!"
-    else do
-        localStatus <- liftIO gitLocal
-        liftIO $ captureCommandOutput "git fetch"
-        commits <- liftIO commitsAhead
-        -- git always has echoes an empty line at the end, so no need
-        case rstrip commits of
-            "0" -> sendMessageChan chan $ "*Git: All caught up!* \n" <> localStatus
-            x   -> sendMessageChan chan $ "*Git: Upstream is " <> x <>
-                " commits ahead. Current local HEAD is:* \n" <> localStatus
+    repo <- liftIO getRepoDir
+    case repo of
+         Nothing -> sendMessageChan chan $ owoify "No git repo specified in the config!"
+         Just dir -> do
+            localStatus <- liftIO $ gitInfo dir
+            liftIO $ gitFetch dir
+            commits <- liftIO $ commitsAhead dir
+            -- git always has echoes an empty line at the end, so no need
+            case rstrip commits of
+                "0" -> sendMessageChan chan $ "*Git: All caught up!* \n" <> localStatus
+                x   -> sendMessageChan chan $ "*Git: Upstream is " <> x <>
+                    " commits ahead. Current local HEAD is:* \n" <> localStatus
 
 -- | Responds to a message with the git info
 sendGitInfo :: Command DiscordHandler
@@ -204,8 +208,8 @@ setStatus
     $ \msg newStatus newType (Remaining newName) -> do
         updateStatus newStatus newType newName
         liftIO $ writeStatusFile newStatus newType newName
-        respond msg
-            "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
+        respond msg ("Status updated :) Keep in mind it may take up to a "
+                  <> "minute for your client to refresh.")
 
 ------ LOCKDOWN COMMANDS
 data Lock = Lockdown | Unlock deriving (Show, Eq)
@@ -214,13 +218,14 @@ data Lock = Lockdown | Unlock deriving (Show, Eq)
 lockdown :: Command DiscordHandler
 lockdown
     = requires modPerms
-    . help "`:lockdown` locks posting permissions for the `everyone` role in this channel."
+    . help ("`:lockdown` locks posting permissions for the `everyone` role in "
+         <> "this channel.")
     . command "lockdown" $ \m -> do
         let chan = messageChannel m
         channel <- getChannel (messageChannel m)
         case channel of
             ChannelText _ guild _ _ _ _ _ _ _ _ -> do
-                -- Guild is used in place of role ID as guildID == @everyone role ID
+                -- Guild is used in place of role ID as guildID == @everyone rID
                 lockdownChan chan guild Lockdown
                 respond m $ owoify "Locking Channel. To unlock use :unlock"
 
@@ -236,7 +241,7 @@ unlock
       channel <- getChannel chan
       case channel of
           ChannelText _ guild _ _ _ _ _ _ _ _ -> do
-              -- Guild is used in place of role ID as guildID == @everyone role ID
+              -- Guild is used in place of role ID as guildID == @everyone rID
               lockdownChan chan guild Unlock
               respond m $ owoify "Unlocking channel, GLHF!"
           _ -> do respond m $ owoify "channel is not a valid Channel (How the fuck did you pull that off?)"

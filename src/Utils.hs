@@ -4,7 +4,8 @@
     Module:     : Utils
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
-module Utils ( emojiToUsableText
+module Utils ( getRepoDir
+             , emojiToUsableText
              , sendMessageChan
              , sendReply
              , sendMessageChanEmbed
