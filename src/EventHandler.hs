@@ -46,6 +46,7 @@ generatedHelp = helpCommand (T.pack "helpme") commands $ \m ->
     liftIO (TIO.readFile "./src/assets/help.txt")
         >>= sendMessageDM (userId $ messageAuthor m) . owoify
 
+{-# ANN messageReceivers "HLint: ignore Evaluate" #-}
 messageReceivers :: [Message -> DiscordHandler ()]
 messageReceivers = concat []
     -- [ AprilFools.messageReceivers ]
