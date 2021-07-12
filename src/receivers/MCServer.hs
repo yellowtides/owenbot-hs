@@ -59,7 +59,8 @@ instance ToJSON ServerPlayers
 
 playersPrefix :: String -> String
 playersPrefix "players_online" = "online"
-playersPrefix "players_max" = "max"
+playersPrefix "players_max"    = "max"
+playersPrefix _ = error "invalid player prefix! someone fucked up"
 
 jsonURL :: String
 jsonURL = "https://api.mcsrvstat.us/2/"
@@ -100,7 +101,7 @@ getStatus :: (MonadDiscord m, MonadIO m) => Command m
 getStatus = command "minecraft" $ \m -> do
     server_ip <- liftIO readServerIP
     deets <- liftIO $ fetchServerDetails server_ip
-    case deets of 
+    case deets of
         Left err   -> liftIO (print err) >> respond m (T.pack err)
         Right nice -> respond m $ owoify $ T.pack nice
 
