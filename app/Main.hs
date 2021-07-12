@@ -23,7 +23,7 @@ import           Admin                  ( sendGitInfoChan
                                         , sendInstanceInfoChan )
 import           Status                 ( setStatusFromFile )
 import           Utils                  ( sendMessageChan )
-import           Misc                   (changePronouns)
+import           Misc                   ( changePronouns )
 import UnliftIO
 
 -- | Channel to post startup message into
@@ -43,7 +43,7 @@ owen t = do
 startHandler :: DiscordHandler ()
 startHandler = do
     owenId <- getCurrentUser
-    createMessage startupChan $ T.pack $ "Hewwo, I am bawck! UwU"
+    createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
     sendGitInfoChan startupChan
     sendInstanceInfoChan startupChan
     changePronouns

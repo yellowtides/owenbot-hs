@@ -30,7 +30,7 @@ import           Utils                  ( sendMessageChan
                                         , devPerms
                                         )
 import           Process                ( getMyProcessId )
-import           Status                 ( editStatusFile
+import           Status                 ( writeStatusFile
                                         , updateStatus
                                         )
 import           CSV                    ( readSingleColCSV
@@ -200,7 +200,7 @@ setStatus
     . command "status"
     $ \msg newStatus newType (Remaining newName) -> do
         updateStatus newStatus newType newName
-        liftIO $ editStatusFile newStatus newType newName
+        liftIO $ writeStatusFile newStatus newType newName
         respond msg
             "Status updated :) Keep in mind it may take up to a minute for your client to refresh."
 

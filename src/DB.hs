@@ -2,6 +2,7 @@
 
 module DB
     ( dbDir
+    , mkPath
     , readDB
     , writeDB
     ) where
@@ -33,6 +34,9 @@ import           System.Directory ( createDirectoryIfMissing
 dbDir :: IO FilePath
 dbDir = getXdgDirectory XdgData "owen/db/"
 
+mkPath :: String -> IO FilePath
+mkPath name = (<> name <> ".json") <$> dbDir
+
 -- | Locks a file for thread-safety
 lockFile :: FilePath -> IO ()
 lockFile file = return ()  -- TODO: Replace stub with working impl.
@@ -41,13 +45,16 @@ lockFile file = return ()  -- TODO: Replace stub with working impl.
 isFileLocked :: FilePath -> IO Bool
 isFileLocked file = return False  -- TODO: Replace stub with working impl.
 
-readDB :: FromJSON a => FilePath -> IO a
+-- | Takes a filename and reads json from it into a data structure.
+readDB :: FromJSON a => String -> IO (Maybe a)
 readDB file = do
-    base <- dbDir
-    json <- BS.readFile $ base <> file
-    return $ fromJust $ decode json
+    fp <- mkPath file
+    json <- BS.readFile fp
+    return $ decode json
 
-writeDB :: ToJSON a => FilePath -> a -> IO ()
+-- | Takes a filename (with no suffix) and a data structure, and writes a json
+-- file to that location.
+writeDB :: ToJSON a => String -> a -> IO ()
 writeDB file db = do
-    base <- dbDir
-    BS.writeFile (base <> file) $ encode db
+    fp <- mkPath file
+    BS.writeFile fp $ encode db
