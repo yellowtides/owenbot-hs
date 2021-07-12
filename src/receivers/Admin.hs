@@ -78,8 +78,11 @@ gitFetch dir = T.pack <$> Process.readCreateProcess
                             {Process.cwd = Just dir}) ""
 
 commitsAhead :: FilePath -> IO T.Text
-commitsAhead dir = captureCommandOutput $ "cd " <> dir
-                        <> " && git rev-list --count HEAD..origin/main"
+commitsAhead dir = T.pack <$> Process.readCreateProcess
+                            ((Process.proc "git" [ "rev-list"
+                                                 , "--count"
+                                                 , "HEAD..origin/main" ])
+                            {Process.cwd = Just dir}) ""
 
 -- | Sends the git info to a specific channel
 sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
