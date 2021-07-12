@@ -58,7 +58,7 @@ receiveQuoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name ->
 
 
 receiveQuote :: (MonadDiscord m, MonadIO m) => Command m
-receiveQuote = command "quote" $ \m name -> do
+receiveQuote = command "quote" $ \m (Remaining name) -> do
     textM <- liftIO $ fetchQuote name
     respond m $ case textM of
         Nothing   -> owoify $ T.concat [

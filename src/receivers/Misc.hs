@@ -2,6 +2,7 @@
 
 module Misc (commands, reactionReceivers, changePronouns) where
 
+import              Control.Concurrent      ( threadDelay )
 import              Control.Monad           ( when
                                             , unless
                                             , forM_ )
@@ -52,7 +53,7 @@ reactionReceivers =
 -- TODO: put these in config so they can be changed at runtime
 owoifyChance, dadJokeChance :: Int
 owoifyChance  = 500
-dadJokeChance = 1
+dadJokeChance = 5
 
 owoifiedEmoji :: T.Text
 owoifiedEmoji = "✅"
@@ -72,7 +73,8 @@ owoifyIfPossible
         pure $ if r == 1 then Nothing else Just ""
         )
     $ regexCommand "[lLrR]|[nNmM][oO]"
-    $ \m _ -> sendReply m True $ owoify (messageText m)
+    $ \m _ -> do
+        sendReply m True $ owoify (messageText m)
 
 -- | Emote names for which to trigger force owoify on. Use All Caps.
 forceOwoifyEmotes :: [T.Text]
