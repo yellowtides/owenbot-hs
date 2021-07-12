@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings
            , StandaloneDeriving
-           , DeriveAnyClass
            , DeriveGeneric #-}
 
 module Status(writeStatusFile, setStatusFromFile, updateStatus) where
@@ -25,18 +24,14 @@ import           CSV                    ( readCSV
 import           Command
 import           DB
 
--- | These datatypes in discord-haskell do not derive Read, but it's kinda
--- necessary to do @readMaybe@, so here we go:
-deriving instance Read UpdateStatusType
-deriving instance Read ActivityType
+-- | Instances to allow us to read/write these ADTs
+deriving instance Generic UpdateStatusType
+instance ToJSON           UpdateStatusType
+instance FromJSON         UpdateStatusType
 
-deriving instance Generic  UpdateStatusType
-deriving instance FromJSON UpdateStatusType
-deriving instance ToJSON   UpdateStatusType
-
-deriving instance Generic  ActivityType
-deriving instance FromJSON ActivityType
-deriving instance ToJSON   ActivityType
+deriving instance Generic ActivityType
+instance ToJSON           ActivityType
+instance FromJSON         ActivityType
 
 -- | 'updateStatus' updates the status through the Discord gateway.
 -- Therefore, it requires DiscordHandler and is not polymorphic.
@@ -53,49 +48,22 @@ updateStatus newStatus newType newName = sendCommand $
         , updateStatusOptsAFK = False
         }
 
--- | @setStatusFromFile@ reads "status.csv" from the Config directory, and
--- reads in the 3 columns as 'UpdateStatusType', 'ActivityType', and 'T.Text'.
--- The values are used to call 'updateStatus'. 
+-- | @setStatusFromFile@ reads from the status db, and gets the 3 values for
+-- 'UpdateStatusType', 'ActivityType', and 'T.Text'.
+-- The values are used to call 'updateStatus'.
 --
--- Incorrect formats (read parse errors) are ignored.
-setStatusFromFileOld :: DiscordHandler ()
-setStatusFromFileOld = do
-    line <- liftIO readStatusFile
-    when (length line == 3) $ do
-        -- Utilising the Maybe Monad whooo!
-        let statusInfo = do
-                statusType   <- (readMaybe . T.unpack . head) line
-                activityType <- (readMaybe . T.unpack . head . tail) line
-                let name = head $ tail $ tail line
-                pure (statusType, activityType, name)
-        case statusInfo of
-            Nothing -> liftIO $ putStrLn "Incorrect status format, ignoring."
-            Just (s, a, n) -> updateStatus s a n
-
+-- Incorrect formats (read parse errors) are ignored and reported.
 setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
-    status <- liftIO rdStatusFile
+    status <- liftIO readStatusFile
     case status of
          Nothing -> liftIO $ putStrLn "Incorrect status format, ignoring."
          Just (s, a, n) -> updateStatus s a n
 
--- | @editStatusFile@ puts the status values into "status.csv" by calling
--- 'show' on them and converting it to 'T.Text'.
-editStatusFile :: UpdateStatusType -> ActivityType -> T.Text -> IO ()
-editStatusFile newStatus newType newName =
-    writeCSV "status.csv" [[T.pack (show newStatus), T.pack (show newType), newName]]
-
+-- | @writeStatusFile@ puts the status values into the status db.
 writeStatusFile :: UpdateStatusType -> ActivityType -> T.Text -> IO ()
 writeStatusFile status activity name = writeDB "status" (status, activity, name)
 
-rdStatusFile :: IO (Maybe (UpdateStatusType, ActivityType, T.Text))
-rdStatusFile = readDB "status"
-
--- | @readStatusFile@ is a wrapper around 'readCSV' that returns only the first
--- row, if it exists.
-readStatusFile :: IO [T.Text]
-readStatusFile = do
-    contents <- readCSV "status.csv"
-    pure $ if null contents
-        then []
-        else head contents
+-- | @readStatusFile@ gets the saved status info from the db.
+readStatusFile :: IO (Maybe (UpdateStatusType, ActivityType, T.Text))
+readStatusFile = readDB "status"
