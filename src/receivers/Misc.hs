@@ -32,6 +32,7 @@ import              Utils                   ( sendMessageChan
                                             , (=~=)
                                             , assetDir
                                             , isRoleInGuild
+                                            , toMaybe
                                             )
 import              Owoifier                ( owoify )
 
@@ -66,12 +67,12 @@ roll n = getStdRandom $ randomR (1, n)
 select :: [a] -> IO a
 select xs = (xs !!) . subtract 1 <$> roll (length xs)
 
+rollCheck :: MonadIO m => Int -> m (Maybe T.Text)
+rollCheck chance = (`toMaybe` "") <$> ((==1) <$> liftIO (roll chance))
+
 owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 owoifyIfPossible
-    = requires (\m -> do
-        r <- liftIO $ roll owoifyChance
-        pure $ if r == 1 then Nothing else Just ""
-        )
+    = requires (const $ rollCheck owoifyChance)
     $ regexCommand "[lLrR]|[nNmM][oO]"
     $ \m _ -> do
         sendReply m True $ owoify (messageText m)
@@ -121,10 +122,7 @@ thatcherIsAlive = regexCommand (thatcherRE <> "[Aa]live") $ \m _ ->
 
 dadJokeIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 dadJokeIfPossible =
-    requires (\m -> do
-        r <- liftIO $ roll dadJokeChance
-        pure $ if r == 1 then Nothing else Just ""
-        )
+    requires (const $ rollCheck dadJokeChance)
     $ regexCommand "^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)"
     $ \m (name:_) ->
         when (T.length name >= 3) $
@@ -180,7 +178,7 @@ changePronouns = do
 
     -- remove current pronoun roles
     let simplifiedMap = concat $ sequence <$> guildPronounMap
-    forM_ simplifiedMap (\(g, r) -> removeGuildMemberRole g (userId u) r)
+    forM_ simplifiedMap (uncurry (`removeGuildMemberRole` userId u))
 
     chosenPronouns <- sequence $ do
         (gid, roles) <- guildPronounMap
@@ -188,12 +186,12 @@ changePronouns = do
             Just role <- liftIO $ randomChoice roles
             pure (gid, role)
 
-    forM_ chosenPronouns (\(g, r) -> addGuildMemberRole g (userId u) r)
+    forM_ chosenPronouns (uncurry (`addGuildMemberRole` userId u))
 
     where
         randomChoice :: [a] -> IO (Maybe a)
         randomChoice [] = return Nothing
-        randomChoice l = sequence $ Just $ (l !!) <$> randomRIO (0, length l - 1)
+        randomChoice l  = sequence $ Just $ (l !!) <$> randomRIO (0, length l - 1)
 
 -- | List of magic 8-ball responses
 -- (from https://en.wikipedia.org/wiki/Magic_8-Ball#Possible_answers)

@@ -38,6 +38,7 @@ module Utils ( emojiToUsableText
              , moveChannel
              , isEmojiValid
              , isRoleInGuild
+             , toMaybe
              ) where
 
 import qualified Discord.Requests as R
