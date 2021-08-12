@@ -22,7 +22,7 @@ import           Text.Parsec    ( many1
                                 )
 
 commands :: [Command DiscordHandler]
-commands = [ receiveQuote, receiveQuoteShorthand, addQuote, rmQuote ]
+commands = [ receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
 
 quotePath :: FilePath
 quotePath = "registeredQuotes.csv"
@@ -93,3 +93,8 @@ rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
             liftIO $ removeQuote name
             respond m . owoify
                 $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."
+
+listQuotes :: (MonadDiscord m, MonadIO m) => Command m
+listQuotes = requires modPerms $ help "Lists all quotes" $ command "listquotes" $ \m -> do
+    quoteNames <- liftIO $ HM.keys <$> quoteTable
+    respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames
