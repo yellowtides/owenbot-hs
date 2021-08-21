@@ -58,12 +58,12 @@ packages:
     version: 1.0.0
     git: https://github.com/yutotakano/discord-haskell-monad.git
     pantry-tree:
-      size: 504
-      sha256: 303e8fa5a5d97ac869828e14a5a9938c486c367720012b6d320d46fd66a10ea4
-    commit: 8c643e16336435896c91b7ecbf17db16462806b1
+      size: 505
+      sha256: a9831472f10101414f0256eadd5d2a6a30899ee041107c3a41e5faad20149109
+    commit: dc847f0a82c1da7f284d81debd14f225b832ba3f
   original:
     git: https://github.com/yutotakano/discord-haskell-monad.git
-    commit: 8c643e16336435896c91b7ecbf17db16462806b1
+    commit: dc847f0a82c1da7f284d81debd14f225b832ba3f
 snapshots:
 - completed:
     size: 567677

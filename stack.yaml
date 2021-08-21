@@ -50,7 +50,7 @@ extra-deps:
   - unliftio-0.2.18 # this is higher than what is included in stackage for 17.14, but is required for HMock
   - constraints-0.13 # same here
   - git: https://github.com/yutotakano/discord-haskell-monad.git
-    commit: 8c643e16336435896c91b7ecbf17db16462806b1
+    commit: dc847f0a82c1da7f284d81debd14f225b832ba3f
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
