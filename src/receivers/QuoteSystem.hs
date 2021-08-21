@@ -1,28 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module QuoteSystem ( commands ) where
+module QuoteSystem (commands) where
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
-import           Discord.Types
-import           Discord
-import           UnliftIO       ( liftIO )
+import Discord.Types
+import Discord
+import UnliftIO (liftIO)
 
-import           CSV            ( addToCSV
-                                , readCSV
-                                , writeHashMapToCSV
-                                )
-import           Owoifier       ( owoify )
-import           Utils          ( sendMessageChan
-                                , modPerms
-                                )
-import           Command
-import           Text.Parsec    ( many1
-                                , anyChar
-                                )
+import CSV (addToCSV, readCSV, writeHashMapToCSV)
+import Owoifier (owoify)
+import Utils (sendMessageChan, modPerms)
+import Command
+import Text.Parsec (many1, anyChar)
 
 commands :: [Command DiscordHandler]
-commands = [ receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
+commands = [receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
 
 quotePath :: FilePath
 quotePath = "registeredQuotes.csv"
@@ -38,7 +31,7 @@ quoteTable :: IO (HM.HashMap T.Text T.Text)
 quoteTable = do
     quote2DArray <- readCSV quotePath
     let compatibleLines = filter (\line -> length line == 2) quote2DArray
-    let listMap = map (\[key, value] -> (key, value)) compatibleLines
+    let listMap         = map (\[key, value] -> (key, value)) compatibleLines
     return $ HM.fromList listMap
 
 storeQuote :: T.Text -> T.Text -> IO ()
@@ -61,28 +54,32 @@ receiveQuote :: (MonadDiscord m, MonadIO m) => Command m
 receiveQuote = command "quote" $ \m (Remaining name) -> do
     textM <- liftIO $ fetchQuote name
     respond m $ case textM of
-        Nothing   -> owoify $ T.concat [
-                "Nope, nothing there. ",
-                "Maybe consider `:addquote [quote] [quote_message]`"
-            ]
+        Nothing ->
+            owoify
+                $ T.concat
+                    [ "Nope, nothing there. "
+                    , "Maybe consider `:addquote [quote] [quote_message]`"
+                    ]
         Just text -> text
 
 addQuote :: (MonadDiscord m, MonadIO m) => Command m
-addQuote = command "addquote" $ \m name (Remaining content) ->
-    case messageGuild m of
-        Nothing -> respond m "Only possible in a server!"
-        Just _  -> do
-            textM <- liftIO $ fetchQuote name
-            case textM of
-                Nothing -> if T.length name <= maxNameLen
-                    -- do a length check because this is no longer regex
-                    then do
-                        liftIO $ storeQuote name content
-                        respond m $ "New quote registered under `:quote " <> name <> "`."
-                    else
-                        respond m "Please make the name less than 32 chars!"
-                Just _  -> respond m . owoify
-                    $ "Quote already exists my dude, try `:quote " <> name <> "`."
+addQuote = command "addquote" $ \m name (Remaining content) -> case messageGuild m of
+    Nothing -> respond m "Only possible in a server!"
+    Just _  -> do
+        textM <- liftIO $ fetchQuote name
+        case textM of
+            Nothing -> if T.length name <= maxNameLen
+                -- do a length check because this is no longer regex
+                then do
+                    liftIO $ storeQuote name content
+                    respond m $ "New quote registered under `:quote " <> name <> "`."
+                else respond m "Please make the name less than 32 chars!"
+            Just _ ->
+                respond m
+                    .  owoify
+                    $  "Quote already exists my dude, try `:quote "
+                    <> name
+                    <> "`."
 
 rmQuote :: (MonadDiscord m, MonadIO m) => Command m
 rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
@@ -91,10 +88,14 @@ rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
         Nothing -> respond m $ owoify "Cannot remove that which doesn't exist."
         Just _  -> do
             liftIO $ removeQuote name
-            respond m . owoify
-                $ "All done! Forgot all about `" <> name <> "`, was super bad anyways."
+            respond m
+                .  owoify
+                $  "All done! Forgot all about `"
+                <> name
+                <> "`, was super bad anyways."
 
 listQuotes :: (MonadDiscord m, MonadIO m) => Command m
-listQuotes = requires modPerms $ help "Lists all quotes" $ command "listquotes" $ \m -> do
-    quoteNames <- liftIO $ HM.keys <$> quoteTable
-    respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames
+listQuotes =
+    requires modPerms $ help "Lists all quotes" $ command "listquotes" $ \m -> do
+        quoteNames <- liftIO $ HM.keys <$> quoteTable
+        respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames

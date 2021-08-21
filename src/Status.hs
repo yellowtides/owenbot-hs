@@ -2,27 +2,22 @@
            , StandaloneDeriving
            , DeriveGeneric #-}
 
-module Status(writeStatusFile, setStatusFromFile, updateStatus) where
+module Status (writeStatusFile, setStatusFromFile, updateStatus) where
 
-import           Control.Monad          ( when )
-import           Control.Exception.Safe ( onException )
+import Control.Monad (when)
+import Control.Exception.Safe (onException)
 import qualified Data.Text as T
-import           GHC.Generics
-import           Text.Read              ( readMaybe )
+import GHC.Generics
+import Text.Read (readMaybe)
 
-import           Data.Aeson             ( FromJSON
-                                        , ToJSON )
-import           Discord.Types
-import           Discord                ( sendCommand
-                                        , DiscordHandler
-                                        )
-import           UnliftIO               ( liftIO )
+import Data.Aeson (FromJSON, ToJSON)
+import Discord.Types
+import Discord (sendCommand, DiscordHandler)
+import UnliftIO (liftIO)
 
-import           CSV                    ( readCSV
-                                        , writeCSV
-                                        )
-import           Command
-import           DB
+import CSV (readCSV, writeCSV)
+import Command
+import DB
 
 -- | Instances to allow us to read/write these ADTs
 deriving instance Generic UpdateStatusType
@@ -36,17 +31,16 @@ instance FromJSON         ActivityType
 -- | 'updateStatus' updates the status through the Discord gateway.
 -- Therefore, it requires DiscordHandler and is not polymorphic.
 updateStatus :: UpdateStatusType -> ActivityType -> T.Text -> DiscordHandler ()
-updateStatus newStatus newType newName = sendCommand $
-    UpdateStatus $ UpdateStatusOpts
-        { updateStatusOptsSince = Nothing
-        , updateStatusOptsGame = Just $ Activity
-            { activityName = newName
-            , activityType = newType
-            , activityUrl = Nothing
-            }
-        , updateStatusOptsNewStatus = newStatus
-        , updateStatusOptsAFK = False
+updateStatus newStatus newType newName = sendCommand $ UpdateStatus $ UpdateStatusOpts
+    { updateStatusOptsSince     = Nothing
+    , updateStatusOptsGame      = Just $ Activity
+        { activityName = newName
+        , activityType = newType
+        , activityUrl  = Nothing
         }
+    , updateStatusOptsNewStatus = newStatus
+    , updateStatusOptsAFK       = False
+    }
 
 -- | @setStatusFromFile@ reads from the status db, and gets the 3 values for
 -- 'UpdateStatusType', 'ActivityType', and 'T.Text'.
@@ -57,8 +51,8 @@ setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     status <- liftIO readStatusFile
     case status of
-         Nothing -> liftIO $ putStrLn "Incorrect status format, ignoring."
-         Just (s, a, n) -> updateStatus s a n
+        Nothing        -> liftIO $ putStrLn "Incorrect status format, ignoring."
+        Just (s, a, n) -> updateStatus s a n
 
 -- | @writeStatusFile@ puts the status values into the status db.
 writeStatusFile :: UpdateStatusType -> ActivityType -> T.Text -> IO ()

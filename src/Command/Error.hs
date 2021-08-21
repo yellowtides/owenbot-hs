@@ -7,17 +7,13 @@ Provides the errors for Commands.
 Its usage is mainly internal, to be used from "Command.Command".
 
 -}
-module Command.Error
-    ( CommandError(..)
-    ) where
+module Command.Error (CommandError(..)) where
 
 import qualified Data.Text as T
-import           Control.Exception.Safe     ( SomeException
-                                            , Exception
-                                            )
-import           Text.Parsec.Error          ( ParseError )
+import Control.Exception.Safe (SomeException, Exception)
+import Text.Parsec.Error (ParseError)
 
-import           Discord                    ( RestCallErrorCode )
+import Discord (RestCallErrorCode)
 
 -- | This represents any error that can arise from an invocation of a command.
 -- Some are thrown by the system (such as ArgumentParseError), however you can 

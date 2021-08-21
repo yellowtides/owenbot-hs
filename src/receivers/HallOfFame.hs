@@ -1,50 +1,48 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module HallOfFame ( reactionReceivers, commands ) where
+module HallOfFame (reactionReceivers, commands) where
 
-import           Control.Monad      ( when )
+import Control.Monad (when)
 import qualified Data.Text as T
-import           Discord
-import           Discord.Types
-import           UnliftIO           ( liftIO )
+import Discord
+import Discord.Types
+import UnliftIO (liftIO)
 
-import           Owoifier           ( owoify )
-import           Utils              ( pingAuthorOf
-                                    , messageFromReaction
-                                    , linkChannel
-                                    , getMessageLink
-                                    , sendMessageChanEmbed
-                                    , getTimestampFromMessage
-                                    , devPerms
-                                    )
-import           Command
-import           CSV                ( readSingleColCSV
-                                    , writeSingleColCSV
-                                    )
-import           DB                 ( readDB
-                                    , writeDB
-                                    )
+import Owoifier (owoify)
+import Utils
+    ( pingAuthorOf
+    , messageFromReaction
+    , linkChannel
+    , getMessageLink
+    , sendMessageChanEmbed
+    , getTimestampFromMessage
+    , devPerms
+    )
+import Command
+import CSV (readSingleColCSV, writeSingleColCSV)
+import DB (readDB, writeDB)
 
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
-reactionReceivers = [ attemptHallOfFame ]
+reactionReceivers = [attemptHallOfFame]
 
 commands :: [Command DiscordHandler]
-commands = [ reactLimit ]
+commands = [reactLimit]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
 attemptHallOfFame r =
     when (isHallOfFameEmote (reactionEmoji r) && notInHallOfFameChannel r) $ do
-        m <- messageFromReaction r
+        m        <- messageFromReaction r
         eligible <- isEligibleForHallOfFame m
         when eligible $ putInHallOfFame m
 
 hallOfFameEmotes :: [T.Text]
-hallOfFameEmotes = T.toUpper <$>
-    [ "XREE"
-    , "KEKW"
-    , "\11088" -- star
-    ] -- These are matched case-insensitively
+hallOfFameEmotes =
+    T.toUpper
+        <$> [ "XREE"
+            , "KEKW"
+            , "\11088" -- star
+            ] -- These are matched case-insensitively
 
 hallOfFameChannel :: ChannelId
 hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
@@ -62,62 +60,62 @@ existsInHOF m = do
 
 isEligibleForHallOfFame :: Message -> DiscordHandler Bool
 isEligibleForHallOfFame m = do
-    limit <- liftIO readLimit
+    limit  <- liftIO readLimit
     exists <- liftIO $ existsInHOF m
-    let reactions   = messageReactions m
+    let reactions = messageReactions m
     let fulfillCond = \r ->
             isHallOfFameEmote (messageReactionEmoji r)
-            && messageReactionCount r >= limit
-            && not exists
+                && messageReactionCount r
+                >= limit
+                && not exists
     pure $ any fulfillCond reactions
 
 putInHallOfFame :: Message -> DiscordHandler ()
 putInHallOfFame m = do
-    embed <- createHallOfFameEmbed m
+    embed     <- createHallOfFameEmbed m
     msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId m):msgIdList)
+    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId m) : msgIdList)
     --adds the message id to the csv to make sure we dont add it multiple times.
     sendMessageChanEmbed hallOfFameChannel "" embed
 
 createDescription :: Message -> T.Text
-createDescription m = messageText m
-                   <> "\n- "
-                   <> pingAuthorOf m
-                   <> " in "
-                   <> linkChannel (messageChannel m)
+createDescription m =
+    messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel
+        (messageChannel m)
 
 getImageFromMessage :: Message -> T.Text
 getImageFromMessage m
     | not . null $ attachments = attachmentUrl $ head attachments
-    | otherwise                  = ""
+    | otherwise                = ""
     where attachments = messageAttachments m
 
 createHallOfFameEmbed :: Message -> DiscordHandler CreateEmbed
 createHallOfFameEmbed m = do
     messLink <- getMessageLink m
-    let authorName       = ""
-        authorUrl        = ""
-        authorIcon       = Nothing
-        embedTitle       = "👑 best of ouw buwwshit"
-        embedUrl         = ""
-        embedThumbnail   = Nothing
-        embedDescription = createDescription m
-                <> "\n\n[Original Message](" <> messLink <> ")"
-        embedFields      = []
-        embedImage       = Just $ CreateEmbedImageUrl $ getImageFromMessage m
-        embedFooterText  = getTimestampFromMessage m
-        embedFooterIcon  = Nothing
-    pure $ CreateEmbed authorName
-                       authorUrl
-                       authorIcon
-                       embedTitle
-                       embedUrl
-                       embedThumbnail
-                       embedDescription
-                       embedFields
-                       embedImage
-                       embedFooterText
-                       embedFooterIcon
+    let authorName     = ""
+        authorUrl      = ""
+        authorIcon     = Nothing
+        embedTitle     = "👑 best of ouw buwwshit"
+        embedUrl       = ""
+        embedThumbnail = Nothing
+        embedDescription =
+            createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
+        embedFields     = []
+        embedImage      = Just $ CreateEmbedImageUrl $ getImageFromMessage m
+        embedFooterText = getTimestampFromMessage m
+        embedFooterIcon = Nothing
+    pure $ CreateEmbed
+        authorName
+        authorUrl
+        authorIcon
+        embedTitle
+        embedUrl
+        embedThumbnail
+        embedDescription
+        embedFields
+        embedImage
+        embedFooterText
+        embedFooterIcon
 
 reactLimit :: (MonadDiscord m, MonadIO m) => Command m
 reactLimit = requires devPerms $ command "reactLimit" $ \m mbI -> do

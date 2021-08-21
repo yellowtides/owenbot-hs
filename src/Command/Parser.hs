@@ -19,20 +19,24 @@ module Command.Parser
     , RemainingText(..)
     , manyTill1
     , endOrSpaces
-    ) where
+    )
+where
 
-import           Control.Monad              ( void )
+import Control.Monad (void)
 import qualified Data.Text as T
-import           Text.Parsec.Combinator
+import Text.Parsec.Combinator
 import qualified Text.Parsec.Text as T
-import           Text.Parsec
+import Text.Parsec
 
-import           Discord.Types
+import Discord.Types
 
 -- | @manyTill1 p end@ is a parser that applies parser @p@ /one/ or more times
 -- until parser @end@ succeeds. This is a variation on 'manyTill' from Parsec.
 manyTill1 :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
-manyTill1 p end = do { x <- p; xs <- manyTill p end; return (x:xs) }
+manyTill1 p end = do
+    x  <- p
+    xs <- manyTill p end
+    return (x : xs)
 
 -- | @eofOrSpaces@ is a parser that parses an end of command, or at least one
 -- space and skips the result.
@@ -81,13 +85,13 @@ instance ParsableArgument T.Text where
 instance ParsableArgument [T.Text] where
     parserForArg =
         -- if it's the end, return empty (base case).
-        (eof >> pure []) <|> do
+                   (eof >> pure []) <|> do
             -- do the usual text parsing
-            word <- parserForArg :: T.Parser T.Text
-            endOrSpaces
-            -- recursively do this and append
-            rest <- parserForArg :: T.Parser [T.Text]
-            pure $ word:rest
+        word <- parserForArg :: T.Parser T.Text
+        endOrSpaces
+        -- recursively do this and append
+        rest <- parserForArg :: T.Parser [T.Text]
+        pure $ word : rest
 
 -- Integer.
 instance ParsableArgument Int where
@@ -142,13 +146,14 @@ instance ParsableArgument RemainingText where
 -- | An argument that can or cannot exist.
 instance (ParsableArgument a) => ParsableArgument (Maybe a) where
     parserForArg =
-        try (Just <$> parserForArg) <|> (do
+        try (Just <$> parserForArg)
+            <|> (do
             -- artificially put a space so it won't complain about missing
             -- spaces between arguments.
-            remaining <- getInput
-            setInput $ " " <> remaining
-            pure Nothing
-            )
+                    remaining <- getInput
+                    setInput $ " " <> remaining
+                    pure Nothing
+                )
 
 -- | An argument that always has to be followed by another.
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
@@ -171,12 +176,13 @@ instance ParsableArgument UpdateStatusType where
     parserForArg =
         -- consume either of the following:
         -- (if fail then backtrack using try)
-        choice $ map try
-            [ string "online" >> pure UpdateStatusOnline
-            , string "dnd" >> pure UpdateStatusDoNotDisturb
-            , string "idle" >> pure UpdateStatusAwayFromKeyboard
-            , string "invisible" >> pure UpdateStatusInvisibleOffline
-            ]
+                   choice $ map
+        try
+        [ string "online" >> pure UpdateStatusOnline
+        , string "dnd" >> pure UpdateStatusDoNotDisturb
+        , string "idle" >> pure UpdateStatusAwayFromKeyboard
+        , string "invisible" >> pure UpdateStatusInvisibleOffline
+        ]
 
 -- | Parses "playing", "streaming", "listening to" and "competing in" as
 -- 'ActivityType's.
@@ -184,10 +190,11 @@ instance ParsableArgument ActivityType where
     parserForArg =
         -- consume either of the following:
         -- (if fail then backtrack using try)
-        choice $ map try
-            [ string "playing" >> pure ActivityTypeGame
-            , string "streaming" >> pure ActivityTypeStreaming
-            , string "listening to" >> pure ActivityTypeListening
-            , string "competing in" >> pure ActivityTypeCompeting
-            ]
+                   choice $ map
+        try
+        [ string "playing" >> pure ActivityTypeGame
+        , string "streaming" >> pure ActivityTypeStreaming
+        , string "listening to" >> pure ActivityTypeListening
+        , string "competing in" >> pure ActivityTypeCompeting
+        ]
 

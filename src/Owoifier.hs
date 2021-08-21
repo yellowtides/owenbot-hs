@@ -1,9 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
-module Owoifier ( owoify
-                , weakOwoify
-                ) where
+module Owoifier (owoify, weakOwoify) where
 
 import qualified Data.Text as T
 
@@ -40,7 +38,7 @@ owoifyChar c
 -- | Takes the cartesian product of two lists of chars and packs as a Text
 -- e.g. "nmNM <-> "o" returns ["no", "mo", "No", "Mo"]
 (<->) :: [Char] -> [Char] -> [T.Text]
-(<->) as bs = [T.pack [a,b] | a <- as, b <- bs]
+(<->) as bs = [ T.pack [a, b] | a <- as, b <- bs ]
 
 -- | Checks if the y added should be lowercase
 segmentsSmallY :: [T.Text]
@@ -58,16 +56,14 @@ mkRules defs = do
 
 -- | Depending on what type of segment it is, it inserts a Y or y
 insertionRules :: [(T.Text, Char)]
-insertionRules = mkRules
-    [ ('y', segmentsSmallY)
-    , ('Y', segmentsBigY)
-    ]
+insertionRules = mkRules [('y', segmentsSmallY), ('Y', segmentsBigY)]
 -- | If it the word comes as a tuple with a Y then it is interpersed in the word and then replaces the og
 applyRule :: (T.Text, Char) -> T.Text -> T.Text
-applyRule rule
-    = let (word, ins) = rule
-          newWord     = T.intersperse ins word in
-    T.replace word newWord
+applyRule rule =
+    let
+        (word, ins) = rule
+        newWord     = T.intersperse ins word
+    in T.replace word newWord
 
 -- | Inserts the y-words in the text
 doInserts :: T.Text -> T.Text

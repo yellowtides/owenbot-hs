@@ -1,0 +1,15 @@
+conf_layout:
+  # https://github.com/lspitzner/brittany/blob/master/src/Language/Haskell/Brittany/Internal/Config/Types.hs
+
+  # Column width.
+  lconfig_cols: 88
+  # Indentation amount.
+  lconfig_indentAmount: 4
+  # idk but it helps
+  lconfig_indentPolicy: IndentPolicyMultiple
+  # break alignment if there are multiple lines in between
+  lconfig_alignmentBreakOnMultiline: true
+  # put long type signature ::'s on a new line instead of relative indent
+  lconfig_hangingTypeSignature: False
+  # if it fits, export list will be on single line
+  lconfig_allowSingleLineExportList: True

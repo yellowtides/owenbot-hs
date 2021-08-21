@@ -128,56 +128,32 @@ module Command.Command
       -- * Common Errors
       -- | #commonerrors#
       -- $commonerrors
-    ) where
+    )
+where
 
-import           Control.Applicative        ( Alternative(..)
-                                            )
-import           Control.Exception.Safe     ( catch
-                                            , throwM
-                                            , MonadCatch
-                                            , MonadThrow
-                                            , Exception
-                                            , SomeException
-                                            )
-import           Control.Monad.IO.Class     ( MonadIO )
-import           Control.Monad              ( void
-                                            , guard
-                                            , unless
-                                            , when
-                                            )
-import           Data.Maybe                 ( catMaybes )
-import           Data.List                  ( nub )
+import Control.Applicative (Alternative(..))
+import Control.Exception.Safe
+    (catch, throwM, MonadCatch, MonadThrow, Exception, SomeException)
+import Control.Monad.IO.Class (MonadIO)
+import Control.Monad (void, guard, unless, when)
+import Data.Maybe (catMaybes)
+import Data.List (nub)
 import qualified Data.Text as T
-import           Text.Parsec.Combinator
-import           Text.Parsec.Error          ( errorMessages
-                                            , messageString
-                                            )
-import qualified Text.Parsec.Error as PE    ( Message(..) )
+import Text.Parsec.Combinator
+import Text.Parsec.Error (errorMessages, messageString)
+import qualified Text.Parsec.Error as PE (Message(..))
 import qualified Text.Parsec.Text as T
-import           Text.Parsec                ( parse
-                                            , eof
-                                            , ParseError
-                                            , space
-                                            , anyChar
-                                            , string
-                                            , getInput
-                                            )
-import           Text.Regex.TDFA            ( (=~) )
-import           UnliftIO                   ( liftIO )
+import Text.Parsec (parse, eof, ParseError, space, anyChar, string, getInput)
+import Text.Regex.TDFA ((=~))
+import UnliftIO (liftIO)
 
-import           Discord.Internal.Monad
-import           Discord.Types
-import           Discord
+import Discord.Internal.Monad
+import Discord.Types
+import Discord
 
-import           Command.Error              ( CommandError(..) )
-import           Command.Parser             ( ParsableArgument(..)
-                                            , RemainingText(..)
-                                            , manyTill1
-                                            , endOrSpaces
-                                            )
-import           Owoifier                   ( owoify
-                                            , weakOwoify
-                                            )
+import Command.Error (CommandError(..))
+import Command.Parser (ParsableArgument(..), RemainingText(..), manyTill1, endOrSpaces)
+import Owoifier (owoify, weakOwoify)
 
 {- | A @Command@ is a datatype containing the metadata for a user-registered
 command.
@@ -273,7 +249,7 @@ complex = command "setLimit" $ \\m i -> do
 @
 -}
 command
-    :: (CommandHandlerType m h , MonadDiscord m)
+    :: (CommandHandlerType m h, MonadDiscord m)
     => T.Text
     -- ^ The name of the command.
     -> h
@@ -286,7 +262,7 @@ command name commandHandler = Command
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
         case parse (parseCommandName cmd) "" (messageText msg) of
-            Left e -> Nothing
+            Left  e    -> Nothing
             Right args -> Just [args]
     , commandApplier      = \x y -> applyArgs commandHandler x (head y)
     , commandErrorHandler = defaultErrorHandler
@@ -310,9 +286,7 @@ onError
     -- and the error itself. It runs in the same monad as the command handlers.
     -> Command m
     -> Command m
-onError errorHandler cmd = cmd
-    { commandErrorHandler = errorHandler
-    }
+onError errorHandler cmd = cmd { commandErrorHandler = errorHandler }
 
 {- | @prefix@ overwrites the default command prefix ":" of a command with a
 custom one. This is ignored if a regex parser is used, however it is still
@@ -325,13 +299,8 @@ example
         ...
 @
 -}
-prefix
-    :: T.Text
-    -> Command m
-    -> Command m
-prefix newPrefix cmd = cmd
-    { commandPrefix = newPrefix
-    }
+prefix :: T.Text -> Command m -> Command m
+prefix newPrefix cmd = cmd { commandPrefix = newPrefix }
 
 {- | @requires@ adds a requirement to the command. The requirement is a function
 that takes a 'Message' and either returns @'Nothing'@ (no problem) or
@@ -341,17 +310,13 @@ any additional information from Discord as necessary.
 Commands default to having no requirements.
 -}
 requires :: (Message -> m (Maybe T.Text)) -> Command m -> Command m
-requires requirement cmd = cmd
-    { commandRequires = requirement : commandRequires cmd
-    }
+requires requirement cmd = cmd { commandRequires = requirement : commandRequires cmd }
 
 {- | @help@ sets the help message for the command. The default is "Help not
 available."
 -}
 help :: T.Text -> Command m -> Command m
-help newHelp cmd = cmd
-    { commandHelp = newHelp
-    }
+help newHelp cmd = cmd { commandHelp = newHelp }
 
 {- | @alias@ adds an alias for the command's name. This is ignored if a custom
 parser like 'regexCommand' or 'parsecCommand' is used.
@@ -360,9 +325,7 @@ Functionally, this is equivalent to defining a new command with the same
 handler, however the aliases may not appear on help pages.
 -}
 alias :: T.Text -> Command m -> Command m
-alias newAlias cmd = cmd
-    { commandAliases = newAlias : commandAliases cmd
-    }
+alias newAlias cmd = cmd { commandAliases = newAlias : commandAliases cmd }
 
 {- | @parsecCommand@ defines a command that has no name, and has a custom
 parser that begins from the start of a message. It can help things like
@@ -396,12 +359,11 @@ parsecCommand parserFunc commandHandler = Command
     , commandPrefix       = ""
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
-      let
-        parser = string (T.unpack $ commandPrefix cmd) *> parserFunc
-      in
-        case parse parser "" (messageText msg) of
-            Left e -> Nothing
-            Right result -> Just [T.pack result]
+        let parser = string (T.unpack $ commandPrefix cmd) *> parserFunc
+        in
+            case parse parser "" (messageText msg) of
+                Left  e      -> Nothing
+                Right result -> Just [T.pack result]
             -- has to be packed and unpacked, which is not really good.
             -- TODO: find some datatype that can express the "meaningful part of
             -- a message text", which can be String, T.Text, and [T.Text]
@@ -428,19 +390,14 @@ thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ \\msg caps -> do
 ...
 @
 -}
-regexCommand
-    :: (MonadDiscord m)
-    => T.Text
-    -> (Message -> [T.Text] -> m ())
-    -> Command m
+regexCommand :: (MonadDiscord m) => T.Text -> (Message -> [T.Text] -> m ()) -> Command m
 regexCommand regex commandHandler = Command
     { commandName         = "<<custom regex>>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandInitialMatch = \msg cmd ->
-        case messageText msg =~ regex :: [[T.Text]] of
-            [] -> Nothing
-            xs -> Just $ concatMap tail xs
+    , commandInitialMatch = \msg cmd -> case messageText msg =~ regex :: [[T.Text]] of
+        [] -> Nothing
+        xs -> Just $ concatMap tail xs
     , commandApplier      = commandHandler
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
@@ -469,31 +426,32 @@ runCommand pong :: (MonadDiscord m) => Message -> m ()
 @
 -}
 runCommand
-    :: forall m.
-    (MonadDiscord m)
+    :: forall m
+     . (MonadDiscord m)
     => Command m
     -- ^ The command to run against.
     -> Message
     -- ^ The message to run the command with.
     -> m ()
-runCommand cmd@Command{ commandInitialMatch, commandApplier, commandErrorHandler, commandRequires } msg =
-    case commandInitialMatch msg cmd of
-        Nothing -> pure ()
+runCommand cmd@Command { commandInitialMatch, commandApplier, commandErrorHandler, commandRequires } msg
+    = case commandInitialMatch msg cmd of
+        Nothing      -> pure ()
         Just results -> do
             -- Check for requirements. checks will be a list of Maybes
             checks <- mapM ($ msg) commandRequires
             -- only get the Justs
             let failedChecks = catMaybes checks
-            if null failedChecks then
+            if null failedChecks
+                then
                 -- Apply the arguments on the handler
-                commandApplier msg results
+                    commandApplier msg results
                     -- Asynchronous errors are not caught as the `catch`
                     -- comes from Control.Exception.Safe. This is good.
                     `catch` basicErrorCatcher
                     `catch` allErrorCatcher
-            else
+                else
                 -- give the first requirement error to the error handler
-                basicErrorCatcher (RequirementError $ head failedChecks)
+                     basicErrorCatcher (RequirementError $ head failedChecks)
   where
     -- | Catch CommandErrors and handle them with the handler
     basicErrorCatcher :: CommandError -> m ()
@@ -506,11 +464,7 @@ runCommand cmd@Command{ commandInitialMatch, commandApplier, commandErrorHandler
 {- | @runCommands@ calls runCommand for all the Commands, and folds them with
 the Monadic bind ('>>').
 -}
-runCommands
-    :: (MonadDiscord m, Alternative m)
-    => [Command m]
-    -> Message
-    -> m ()
+runCommands :: (MonadDiscord m, Alternative m) => [Command m] -> Message -> m ()
 runCommands = flip (mapM_ . flip runCommand)
 
 {- | @helpCommand@ creates a help command that has an optional argument to specify
@@ -527,36 +481,42 @@ helpCommand
     -> [Command m]
     -> (Message -> m ())
     -> Command m
-helpCommand helpName cmds onEmptyHandler
-    = command helpName
-    $ \msg mbName -> do
-        let normalCmds = filter isOrthodoxCommand cmds
-        case mbName of
-            Nothing -> onEmptyHandler msg
-            Just (Remaining name) ->
-                if name == helpName || name == ":" <> helpName then
-                    respond msg $ "**:" <> helpName <> "**\n" <>
-                        "Send this help message. Usage: `:" <> helpName <>
-                        " (optional command name)`"
-                else do
-                    let helps = (map createCommandHelp . filter (cmdMatches name)) normalCmds
-                    unless (null helps) $ respond msg $ T.intercalate "\n" helps
+helpCommand helpName cmds onEmptyHandler = command helpName $ \msg mbName -> do
+    let normalCmds = filter isOrthodoxCommand cmds
+    case mbName of
+        Nothing               -> onEmptyHandler msg
+        Just (Remaining name) -> if name == helpName || name == ":" <> helpName
+            then
+                respond msg
+                $  "**:"
+                <> helpName
+                <> "**\n"
+                <> "Send this help message. Usage: `:"
+                <> helpName
+                <> " (optional command name)`"
+            else do
+                let helps =
+                        (map createCommandHelp . filter (cmdMatches name)) normalCmds
+                unless (null helps) $ respond msg $ T.intercalate "\n" helps
 
   where
     grabHelp :: Command m -> T.Text
-    grabHelp Command{ commandHelp } = commandHelp
+    grabHelp Command { commandHelp } = commandHelp
 
     cmdMatches :: T.Text -> Command m -> Bool
-    cmdMatches t Command{ commandPrefix, commandName, commandAliases } =
-        any (t `T.isInfixOf`) $ [id, (commandPrefix <>)] <*> (commandName : commandAliases)
+    cmdMatches t Command { commandPrefix, commandName, commandAliases } =
+        any (t `T.isInfixOf`)
+            $   [id, (commandPrefix <>)]
+            <*> (commandName : commandAliases)
 
     isOrthodoxCommand :: Command m -> Bool
-    isOrthodoxCommand Command{ commandName } = not $
-        ("<<custom regex>>" `T.isInfixOf` commandName) ||
-        ("<<custom parser>>" `T.isInfixOf` commandName)
+    isOrthodoxCommand Command { commandName } =
+        not
+            $  ("<<custom regex>>" `T.isInfixOf` commandName)
+            || ("<<custom parser>>" `T.isInfixOf` commandName)
 
     createCommandHelp :: Command m -> T.Text
-    createCommandHelp Command{ commandPrefix, commandName, commandHelp } =
+    createCommandHelp Command { commandPrefix, commandName, commandHelp } =
         "**" <> commandPrefix <> commandName <> "**\n" <> commandHelp
 
 
@@ -571,25 +531,21 @@ for legibility.
 [On a Discord request failure] It calls 'respond' with the error.
 [On a Runtime/Haskell error] It calls 'respond' with the error, owoified.
 -}
-defaultErrorHandler
-    :: (MonadDiscord m)
-    => Message
-    -> CommandError
-    -> m ()
-defaultErrorHandler m e =
-    case e of
-        ArgumentParseError x ->
-            respond m $ x <> "\nCheck if `:helpme (optional command name)` can help you!"
-        RequirementError x ->
-            unless (x == "") $ do
-                chan <- createDM (userId $ messageAuthor m)
-                void $ createMessage (channelId chan) x
-        ProcessingError x ->
-            respond m x
-        DiscordError x ->
-            respond m $ T.pack $ "Discord request failed with a " <> show x
-        HaskellError x ->
-            respond m $ owoify $ T.pack $ "Runtime error (contact OwenDev, this is a bug): " <> show x
+defaultErrorHandler :: (MonadDiscord m) => Message -> CommandError -> m ()
+defaultErrorHandler m e = case e of
+    ArgumentParseError x ->
+        respond m $ x <> "\nCheck if `:helpme (optional command name)` can help you!"
+    RequirementError x -> unless (x == "") $ do
+        chan <- createDM (userId $ messageAuthor m)
+        void $ createMessage (channelId chan) x
+    ProcessingError x -> respond m x
+    DiscordError    x -> respond m $ T.pack $ "Discord request failed with a " <> show x
+    HaskellError x ->
+        respond m
+            $  owoify
+            $  T.pack
+            $  "Runtime error (contact OwenDev, this is a bug): "
+            <> show x
 
 {- | @parseCommandName@ returns a parser that tries to consume the prefix,
 Command name, appropriate amount of spaces, and returns the arguments.
@@ -635,19 +591,24 @@ class (MonadThrow m) => CommandHandlerType m h | h -> m where
 
 {- | For the case when all arguments have been applied. Base case. -}
 instance (MonadThrow m) => CommandHandlerType m (m ()) where
-    applyArgs handler msg input =
-        case parse eof "" input of
-            Left e -> throwM $ ArgumentParseError $
-                weakOwoify "Too many arguments! " <> showErrAsText e
-            Right _ -> handler
+    applyArgs handler msg input = case parse eof "" input of
+        Left e ->
+            throwM
+                $  ArgumentParseError
+                $  weakOwoify "Too many arguments! "
+                <> showErrAsText e
+        Right _ -> handler
 
 {- | For the case where there are multiple arguments to apply. -}
 instance (MonadThrow m, ParsableArgument a, CommandHandlerType m b) => CommandHandlerType m (a -> b) where
     applyArgs handler msg input = do
         let p = (,) <$> (parserForArg <* endOrSpaces) <*> getInput
         case parse p "arguments" input of
-            Left e -> throwM $ ArgumentParseError $
-                weakOwoify "Sorry! ･ﾟ･(>﹏<)･ﾟﾟ･ " <> showErrAsText e
+            Left e ->
+                throwM
+                    $  ArgumentParseError
+                    $  weakOwoify "Sorry! ･ﾟ･(>﹏<)･ﾟﾟ･ "
+                    <> showErrAsText e
             Right (x, remaining) -> applyArgs (handler x) msg remaining
 
 {- | For applying the message that invoked this command.
@@ -666,8 +627,11 @@ instance {-# OVERLAPPING #-} (MonadThrow m, ParsableArgument a) => CommandHandle
     applyArgs handler msg input = do
         let p = (,) <$> (parserForArg <* endOrSpaces) <*> getInput
         case parse p "arguments" input of
-            Left e -> throwM $ ArgumentParseError $
-                weakOwoify "Sorry! ･ﾟ･(>﹏<)･ﾟﾟ･. " <> showErrAsText e
+            Left e ->
+                throwM
+                    $  ArgumentParseError
+                    $  weakOwoify "Sorry! ･ﾟ･(>﹏<)･ﾟﾟ･. "
+                    <> showErrAsText e
             Right (x, remaining) -> applyArgs (handler x) msg remaining
 
 {- | And its corresponding Message-specific one. Otherwise Message -> m () would
@@ -688,28 +652,28 @@ sparsely documented....
 showErrAsText :: ParseError -> T.Text
 showErrAsText err
     | null (errorMessages err) = "Unknown parse error occured!"
-    | otherwise = T.intercalate " " $ clean
-        [showExpect, showSysUnExpect, showUnExpect, showOtherMessages]
+    | otherwise = T.intercalate " "
+    $ clean [showExpect, showSysUnExpect, showUnExpect, showOtherMessages]
   where
-    (sysUnExpect,rem1) = span (PE.SysUnExpect "" ==) (errorMessages err)
-    (unExpect,rem2)    = span (PE.UnExpect    "" ==) rem1
-    (expect,rem3)      = span (PE.Expect      "" ==) rem2
+    (sysUnExpect, rem1) = span (PE.SysUnExpect "" ==) (errorMessages err)
+    (unExpect   , rem2) = span (PE.UnExpect "" ==) rem1
+    (expect     , rem3) = span (PE.Expect "" ==) rem2
 
-    showExpect      = showMany "I wanted " expect
-    showUnExpect    = showMany "and not " unExpect
-    showSysUnExpect | not (null unExpect) || null sysUnExpect = ""
-                    | T.null firstMsg = "but you stopped too early!"
-                    | otherwise       = "but I stumbled on " <> firstMsg <> "!"
+    showExpect          = showMany "I wanted " expect
+    showUnExpect        = showMany "and not " unExpect
+    showSysUnExpect
+        | not (null unExpect) || null sysUnExpect = ""
+        | T.null firstMsg = "but you stopped too early!"
+        | otherwise = "but I stumbled on " <> firstMsg <> "!"
 
-    firstMsg = T.pack $ messageString $ head sysUnExpect
+    firstMsg          = T.pack $ messageString $ head sysUnExpect
 
     showOtherMessages = showMany "" rem3
 
     -- helpers
-    showMany pre msgs3 =
-        case clean (map (T.pack . messageString) msgs3) of
-            [] -> ""
-            ms -> pre <> commasOr ms
+    showMany pre msgs3 = case clean (map (T.pack . messageString) msgs3) of
+        [] -> ""
+        ms -> pre <> commasOr ms
 
     commasOr []  = ""
     commasOr [m] = m
@@ -717,7 +681,7 @@ showErrAsText err
 
     commaSep = T.intercalate ", " . clean
 
-    clean = nub . filter (not . T.null)
+    clean    = nub . filter (not . T.null)
 
 {- $commonerrors
 

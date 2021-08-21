@@ -1,29 +1,21 @@
 {-# language OverloadedStrings, DeriveGeneric #-}
 
-module BinancePriceFetcher ( fetchADADetails
-                           , fetchTicker
-                           , commands
-                           ) where
+module BinancePriceFetcher (fetchADADetails, fetchTicker, commands) where
 
-import           Data.Aeson
+import Data.Aeson
 import qualified Data.ByteString.Lazy as B
-import           GHC.Generics
-import           Network.HTTP.Conduit   ( simpleHttp )
-import qualified Data.Text as T         ( pack
-                                        , unpack )
-import           Discord                ( DiscordHandler )
-import           Discord.Types          ( Message
-                                        , messageChannel )
-import           UnliftIO               ( liftIO )
+import GHC.Generics
+import Network.HTTP.Conduit (simpleHttp)
+import qualified Data.Text as T (pack, unpack)
+import Discord (DiscordHandler)
+import Discord.Types (Message, messageChannel)
+import UnliftIO (liftIO)
 
-import           Command
-import           Owoifier               ( owoify )
+import Command
+import Owoifier (owoify)
 
 commands :: [Command DiscordHandler]
-commands =
-    [ handleTicker
-    , handleAda24h
-    ]
+commands = [handleTicker, handleAda24h]
 
 data Ticker = Ticker {
     symbol              :: String,
@@ -57,7 +49,8 @@ adaEmoji = "<:ada:805934431071371305>"
 -- TODO: allow server to choose emoji through :config
 
 jsonURL :: String -> String -> String
-jsonURL base quote = "https://api.binance.com/api/v3/ticker/24hr?symbol=" <> base <> quote
+jsonURL base quote =
+    "https://api.binance.com/api/v3/ticker/24hr?symbol=" <> base <> quote
 
 sign :: String -> String
 sign "BUSD"  = "$"
@@ -103,24 +96,42 @@ fetchTicker :: String -> String -> IO (Either String String)
 fetchTicker base quote = do
     detailsM <- (eitherDecode <$> getJSON base quote) :: IO (Either String Ticker)
     pure $ case detailsM of
-        Left err       -> Left err
+        Left  err     -> Left err
         Right details -> do
             let percentChangeD = read (priceChangePercent details) :: Double
-                curPriceD      = read (lastPrice          details) :: Double
-                lowPriceD      = read (lowPrice           details) :: Double
-                highPriceD     = read (highPrice          details) :: Double
-            Right $ tickerAnnounce base quote percentChangeD curPriceD lowPriceD highPriceD
+                curPriceD      = read (lastPrice details) :: Double
+                lowPriceD      = read (lowPrice details) :: Double
+                highPriceD     = read (highPrice details) :: Double
+            Right $ tickerAnnounce
+                base
+                quote
+                percentChangeD
+                curPriceD
+                lowPriceD
+                highPriceD
 
 tickerAnnounce :: String -> String -> Double -> Double -> Double -> Double -> String
-tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat [
-      "**", if percentChange < 0 then "down 💢" else "up 🚀🚀", "** "
-    , "**", show (abs percentChange), "%** in the past 24 hours, "
-    , "currently sitting at **", sign base, "1** = **"
-    , sign quote, show curPrice, "** per unit.\n"
-
-    , "Lowest price in the past 24h: **", sign quote, show lowPrice, "**.\n"
-
-    , "Highest price in the past 24h: **", sign quote, show highPrice, "**."
+tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat
+    [ "**"
+    , if percentChange < 0 then "down 💢" else "up 🚀🚀"
+    , "** "
+    , "**"
+    , show (abs percentChange)
+    , "%** in the past 24 hours, "
+    , "currently sitting at **"
+    , sign base
+    , "1** = **"
+    , sign quote
+    , show curPrice
+    , "** per unit.\n"
+    , "Lowest price in the past 24h: **"
+    , sign quote
+    , show lowPrice
+    , "**.\n"
+    , "Highest price in the past 24h: **"
+    , sign quote
+    , show highPrice
+    , "**."
     ]
 
 
@@ -128,12 +139,11 @@ handleTicker :: Command DiscordHandler
 handleTicker = command "binance" $ \m base quote -> do
     announcementM <- liftIO $ fetchTicker base quote
     case announcementM of
-         Left err -> do
+        Left err -> do
             liftIO $ putStrLn $ "[DEBUG] Cannot get ticker from Binance: " ++ err
             respond m $ owoify "Couldn't get the data! Sorry!"
-         Right announcement ->
-            respond m $ owoify . T.pack $ base <> "/" <> quote <> " is "
-                                 <> announcement
+        Right announcement ->
+            respond m $ owoify . T.pack $ base <> "/" <> quote <> " is " <> announcement
 
 handleAda24h :: Command DiscordHandler
 handleAda24h = alias "ada24h" . command "ada" $ \m -> do
@@ -142,5 +152,4 @@ handleAda24h = alias "ada24h" . command "ada" $ \m -> do
         Left err -> do
             liftIO $ putStrLn $ "[DEBUG] Cannot fetch ADA details from Binance: " ++ err
             respond m $ owoify "Couldn't get the data! Sorry!"
-        Right announcement ->
-            respond m $ owoify $ T.pack announcement
+        Right announcement -> respond m $ owoify $ T.pack announcement

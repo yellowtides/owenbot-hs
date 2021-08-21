@@ -4,82 +4,71 @@
     Module:     : Utils
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
-module Utils ( getRepoDir
-             , emojiToUsableText
-             , sendMessageChan
-             , sendReply
-             , sendMessageChanEmbed
-             , sendMessageChanPingsDisabled
-             , sendMessageDM
-             , sendFileChan
-             , respondAsset
-             , addReaction
-             , messageFromReaction
-             , pingUser
-             , pingRole
-             , pingAuthorOf
-             , pingWithUsername
-             , stripAllPings
-             , linkChannel
-             , getMessageLink
-             , hasRoleByName
-             , hasRoleByID
-             , channelRequirement
-             , roleNameIn
-             , modPerms
-             , devPerms
-             , isMod
-             , assetDir
-             , (=~=)
-             , getTimestampFromMessage
-             , captureCommandOutput
-             , update
-             , snowflakeToInt
-             , moveChannel
-             , isEmojiValid
-             , isRoleInGuild
-             , toMaybe
-             ) where
+module Utils
+    ( getRepoDir
+    , emojiToUsableText
+    , sendMessageChan
+    , sendReply
+    , sendMessageChanEmbed
+    , sendMessageChanPingsDisabled
+    , sendMessageDM
+    , sendFileChan
+    , respondAsset
+    , addReaction
+    , messageFromReaction
+    , pingUser
+    , pingRole
+    , pingAuthorOf
+    , pingWithUsername
+    , stripAllPings
+    , linkChannel
+    , getMessageLink
+    , hasRoleByName
+    , hasRoleByID
+    , channelRequirement
+    , roleNameIn
+    , modPerms
+    , devPerms
+    , isMod
+    , assetDir
+    , (=~=)
+    , getTimestampFromMessage
+    , captureCommandOutput
+    , update
+    , snowflakeToInt
+    , moveChannel
+    , isEmojiValid
+    , isRoleInGuild
+    , toMaybe
+    )
+where
 
 import qualified Discord.Requests as R
-import           Discord.Types
-import           Discord
-import           Control.Exception      ( catch
-                                        , IOException
-                                        )
-import           Control.Monad          ( unless
-                                        , join
-                                        , void
-                                        )
+import Discord.Types
+import Discord
+import Control.Exception (catch, IOException)
+import Control.Monad (unless, join, void)
 import qualified Data.ByteString as B
-import           Data.Function          ( on )
-import           Data.List.Split        ( splitOn )
+import Data.Function (on)
+import Data.List.Split (splitOn)
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
 
-import           System.Directory       ( getXdgDirectory
-                                        , XdgDirectory ( XdgData )
-                                        )
-import           System.Exit            ( ExitCode  ( ExitSuccess
-                                                    , ExitFailure )
-                                        )
-import           System.Process as Process
-import           UnliftIO               ( liftIO )
+import System.Directory (getXdgDirectory, XdgDirectory(XdgData))
+import System.Exit (ExitCode(ExitSuccess, ExitFailure))
+import System.Process as Process
+import UnliftIO (liftIO)
 
-import           Text.Regex.TDFA        ( (=~) )
+import Text.Regex.TDFA ((=~))
 
-import           Owoifier               ( owoify
-                                        , weakOwoify
-                                        )
-import           CSV                    ( readSingleColCSV )
-import           DB                     ( readDB )
+import Owoifier (owoify, weakOwoify)
+import CSV (readSingleColCSV)
+import DB (readDB)
 
-import           Data.Maybe             ( fromJust
-                                        , listToMaybe
-                                        , fromMaybe )
+import Data.Maybe (fromJust, listToMaybe, fromMaybe)
 
-import           Data.Char              ( isDigit )
-import           Command
+import Data.Char (isDigit)
+import Command
 
 -- | A db file containing the git repo for the bot. Used for live updating.
 getRepoDir :: IO (Maybe FilePath)
@@ -99,7 +88,7 @@ toMaybe cond a = if cond then Just a else Nothing
 
 -- | `pingUser` constructs a minimal `Text` pinging the given user.
 pingUser :: User -> T.Text
-pingUser u =  "<@" <> T.pack (show $ userId u) <> ">"
+pingUser u = "<@" <> T.pack (show $ userId u) <> ">"
 
 -- | `pingRole` constructs a minimal `Text` pinging the given role id.
 pingRole :: RoleId -> T.Text
@@ -121,7 +110,7 @@ pingWithUsername uname gid = do
     let members = case membersM of
             Right ms -> ms
             Left  _  -> []
-    let users = memberUser <$> members
+    let users             = memberUser <$> members
     --_ <- liftIO $ print (userName <$> users)
     let usersWithUsername = filter ((uname ==) . userName) users
     --_ <- liftIO $ print usersWithUsername
@@ -141,7 +130,8 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 isRoleInGuild :: (MonadDiscord m) => T.Text -> GuildId -> m (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
     roles <- getGuildRoles gid
-    let matchingRoles = filter ((T.toUpper roleFragment `T.isInfixOf`) . T.toUpper . roleName) roles
+    let matchingRoles =
+            filter ((T.toUpper roleFragment `T.isInfixOf`) . T.toUpper . roleName) roles
     pure $ roleId <$> listToMaybe matchingRoles
 
 -- | `discordEmojiTextToId` takes a Text ending in a Discord <::0-9> formatted emoji string
@@ -149,25 +139,31 @@ isRoleInGuild roleFragment gid = do
 -- spaces.
 discordEmojiTextToId :: T.Text -> EmojiId
 discordEmojiTextToId emojiT = case idT of
-        ""  -> 0
-        num -> read num
-    where idT = T.unpack . T.reverse . T.takeWhile isDigit . T.drop 1
-              . T.dropWhile (== ' ') $ T.reverse emojiT
+    ""  -> 0
+    num -> read num
+  where
+    idT =
+        T.unpack
+            . T.reverse
+            . T.takeWhile isDigit
+            . T.drop 1
+            . T.dropWhile (== ' ')
+            $ T.reverse emojiT
 
 -- | `isEmojiValid` determines whether an emoji (provided in Discord <::0-9> format) exists in the
 -- guild (or is a default emoji). Case insensitive.
 isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
     guild <- getGuild gid
-    let emojis  = guildEmojis guild
-    let emojiID = discordEmojiTextToId emojiT
+    let emojis         = guildEmojis guild
+    let emojiID        = discordEmojiTextToId emojiT
     let matchingEmojis = filter ((emojiID ==) . fromJust . emojiId) emojis
     -- _ <- liftIO $ print matchingEmojis
     -- _ <- liftIO $ print emojiTID
     let isInvalid = case (emojiT, matchingEmojis) of
-            ("", _) -> True
-            (_, []) -> not $ isUnicodeEmoji emojiT
-            _       -> False
+            ("", _ ) -> True
+            (_ , []) -> not $ isUnicodeEmoji emojiT
+            _        -> False
     pure $ not isInvalid
 
 -- | `converge` applies a function to a variable until the result converges.
@@ -177,19 +173,18 @@ converge = (>>= (==)) >>= until
 -- | `stripAllPings` removes all pings from a given `Text` message.
 stripAllPings :: T.Text -> T.Text
 stripAllPings = T.pack . converge stripOnePing . T.unpack
-    where
-        pingRE :: String
-        pingRE = "^@[&!]?[0-9]{8,}>"
-        stripOnePing :: String -> String
-        stripOnePing []           = []
-        stripOnePing [ch]         = [ch]
-        stripOnePing ('<':xs) = if xs =~ pingRE
-                                    then drop 1 $ dropWhile (/= '>') xs
-                                    else '<':xs
-        stripOnePing (x:xs)       = x : stripOnePing xs
+  where
+    pingRE :: String
+    pingRE = "^@[&!]?[0-9]{8,}>"
+    stripOnePing :: String -> String
+    stripOnePing []   = []
+    stripOnePing [ch] = [ch]
+    stripOnePing ('<' : xs) =
+        if xs =~ pingRE then drop 1 $ dropWhile (/= '>') xs else '<' : xs
+    stripOnePing (x : xs) = x : stripOnePing xs
 
 -- | `linkChannel` constructs a minimal `Text` linking the channel with the provided ID.
-linkChannel :: ChannelId  -> T.Text
+linkChannel :: ChannelId -> T.Text
 linkChannel c = "<#" <> T.pack (show c) <> ">"
 
 -- | `getMessageLink` attempts to construct the Discord URL of the given message, as a `Text`.
@@ -202,16 +197,21 @@ getMessageLink m = do
     let channelIDT = T.pack . show $ messageChannel m
     -- the messageID, as a `Text`
     let messageIDT = T.pack . show $ messageId m
-    pure $ T.concat [ "https://discord.com/channels/",
-                    serverIDT, "/",
-                    channelIDT, "/",
-                    messageIDT ]
+    pure
+        $ T.concat
+            [ "https://discord.com/channels/"
+            , serverIDT
+            , "/"
+            , channelIDT
+            , "/"
+            , messageIDT
+            ]
 
 -- | `emojiToUsableText` converts a given emoji to a text which can be used to display it in Discord.
 emojiToUsableText :: Emoji -> T.Text
 emojiToUsableText r = case emojiId r of
-        Nothing -> name
-        Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
+    Nothing -> name
+    Just id -> "<:" <> name <> ":" <> T.pack (show id) <> ">"
     where name = emojiName r
 
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
@@ -222,26 +222,26 @@ sendMessageChan c xs = void $ createMessage c xs
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
 sendMessageChanPingsDisabled :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
-sendMessageChanPingsDisabled cid t = void $ createMessageDetailed cid
-    def { R.messageDetailedContent = t
-        , R.messageDetailedAllowedMentions = Just
-            $ def { R.mentionEveryone = False
-                    , R.mentionUsers  = False
-                    , R.mentionRoles  = False
-                    }
+sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
+    cid
+    def
+        { R.messageDetailedContent         = t
+        , R.messageDetailedAllowedMentions = Just $ def
+            { R.mentionEveryone = False
+            , R.mentionUsers    = False
+            , R.mentionRoles    = False
+            }
         }
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
 sendReply :: (MonadDiscord m) => Message -> Bool -> T.Text -> m ()
-sendReply m mention xs =
-    void $ createMessageDetailed (messageChannel m)
-        $ def { R.messageDetailedContent = xs
-              , R.messageDetailedReference = Just
-                $ def { referenceMessageId = Just $ messageId m }
-              , R.messageDetailedAllowedMentions = Just
-                $ def { R.mentionRepliedUser = mention }
-              }
+sendReply m mention xs = void $ createMessageDetailed (messageChannel m) $ def
+    { R.messageDetailedContent         = xs
+    , R.messageDetailedReference       = Just
+        $ def { referenceMessageId = Just $ messageId m }
+    , R.messageDetailedAllowedMentions = Just $ def { R.mentionRepliedUser = mention }
+    }
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
@@ -256,8 +256,8 @@ sendMessageDM u t = createDM u >>= (flip sendMessageChan t . channelId)
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`.
 sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
-sendFileChan c name fp = liftIO (B.readFile fp)
-                         >>= (void . createMessageUploadFile c name)
+sendFileChan c name fp =
+    liftIO (B.readFile fp) >>= (void . createMessageUploadFile c name)
 
 -- | @respondAsset m name path@ responds to the message @m@ with the file at
 -- @path@, with the name overridden as @name@.
@@ -284,7 +284,7 @@ isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 hasRole :: (MonadDiscord m, Eq a) => (Role -> a) -> Message -> a -> m Bool
 hasRole f m r = case messageGuild m of
     Nothing -> pure False
-    Just g -> do
+    Just g  -> do
         filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
         return $ r `elem` map f filtered
 
@@ -314,18 +314,20 @@ isSenderDeveloper m = liftIO getDevs >>= fmap or . mapM (hasRoleByID m)
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
 channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
-channelRequirement cid msg = pure $ toMaybe (messageChannel msg == read cid)
-                                    "need to be in channel"
+channelRequirement cid msg =
+    pure $ toMaybe (messageChannel msg == read cid) "need to be in channel"
 
 -- | Command requirement for sender being a registered developer.
-permCheck :: (MonadDiscord m, MonadIO m) => m Bool -> T.Text -> Message -> m (Maybe T.Text)
-permCheck check help msg = triggerTypingIndicator (messageChannel msg) >>
-    flip toMaybe help . not <$> check
+permCheck
+    :: (MonadDiscord m, MonadIO m) => m Bool -> T.Text -> Message -> m (Maybe T.Text)
+permCheck check help msg =
+    triggerTypingIndicator (messageChannel msg) >> flip toMaybe help . not <$> check
 
 roleNameIn :: (MonadDiscord m, MonadIO m) => [T.Text] -> Message -> m (Maybe T.Text)
-roleNameIn names msg = permCheck (or <$> mapM (hasRoleByName msg) names)
-                              ("Need to have one of: " <> (T.pack . show) names)
-                              msg
+roleNameIn names msg = permCheck
+    (or <$> mapM (hasRoleByName msg) names)
+    ("Need to have one of: " <> (T.pack . show) names)
+    msg
 
 modPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
 modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
@@ -339,23 +341,23 @@ devPerms msg = permCheck (isSenderDeveloper msg) "Need to be an OwenDev" msg
 getRolesOfUserInGuild :: (MonadDiscord m) => UserId -> GuildId -> m [Role]
 getRolesOfUserInGuild uid g = do
     allGuildRoles <- getGuildRoles g
-    user <- getGuildMember g uid
+    user          <- getGuildMember g uid
     pure $ filter ((`elem` memberRoles user) . roleId) allGuildRoles
 
 -- | `getTimestampFromMessages` returns the given message's timestamp as `Text`, in the format
 -- `yyyy-mm-dd | hh:mm:ss`.
 getTimestampFromMessage :: Message -> T.Text
 getTimestampFromMessage =
-    T.pack. TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z" . messageTimestamp
+    T.pack
+        . TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z"
+        . messageTimestamp
 
 -- | `captureCommandOutput` creates a new process from the desired command provided as a `String`.
 -- Then, it waits for the command to finish executing, returning its output as a `Text`.
 captureCommandOutput :: String -> IO T.Text
-captureCommandOutput command =
-    T.pack <$> Process.readCreateProcess ((Process.proc executable args) {
-        cwd = Just "."
-    }) ""
-    where (executable:args) = splitOn " " command
+captureCommandOutput command = T.pack
+    <$> Process.readCreateProcess ((Process.proc executable args) { cwd = Just "." }) ""
+    where (executable : args) = splitOn " " command
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO ExitCode
@@ -364,9 +366,7 @@ update = do
     case repoDir of
         Nothing  -> return $ ExitFailure 0
         Just dir -> Process.waitForProcess =<< Process.spawnCommand
-                    ("cd "
-                  <> dir
-                  <> " && git reset --hard @{u} && git pull && stack install")
+            ("cd " <> dir <> " && git reset --hard @{u} && git pull && stack install")
 
 -- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer
@@ -374,4 +374,5 @@ snowflakeToInt (Snowflake w) = toInteger w
 
 -- | Moves channel position in guild
 moveChannel :: (MonadDiscord m) => GuildId -> ChannelId -> Int -> m ()
-moveChannel guild chan location = void $ modifyGuildChannelPositions guild [(chan, location)]
+moveChannel guild chan location =
+    void $ modifyGuildChannelPositions guild [(chan, location)]

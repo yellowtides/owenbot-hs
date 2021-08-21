@@ -1,35 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module DB
-    ( dbDir
-    , mkPath
-    , readDB
-    , writeDB
-    ) where
+module DB (dbDir, mkPath, readDB, writeDB) where
 
 import GHC.Generics
 
-import Control.Monad              ( liftM )
+import Control.Monad (liftM)
 
-import Data.Maybe                 ( fromMaybe
-                                  , fromJust
-                                  , isNothing )
-import Data.ByteString.Lazy as BL ( ByteString
-                                  , fromStrict
-                                  , toStrict )
-import Data.ByteString      as BS ( readFile
-                                  , writeFile )
-import Data.Aeson                 ( FromJSON
-                                  , ToJSON
-                                  , encode
-                                  , decode
-                                  )
+import Data.Maybe (fromMaybe, fromJust, isNothing)
+import Data.ByteString.Lazy as BL (ByteString, fromStrict, toStrict)
+import Data.ByteString as BS (readFile, writeFile)
+import Data.Aeson (FromJSON, ToJSON, encode, decode)
 import Data.Text as T
 import Data.Vector as V
-import           System.Directory ( createDirectoryIfMissing
-                                  , getXdgDirectory
-                                  , XdgDirectory ( XdgData )
-                                  )
+import System.Directory
+    (createDirectoryIfMissing, getXdgDirectory, XdgDirectory(XdgData))
 
 -- | Directory to store KeyValues in: ~/.local/share/owen/db on UNIX,
 -- %APPDATA% on Windows. Controlled by XDG_DATA environment variable.
@@ -50,7 +34,7 @@ isFileLocked file = return False  -- TODO: Replace stub with working impl.
 -- | Takes a filename and reads json from it into a data structure.
 readDB :: FromJSON a => String -> IO (Maybe a)
 readDB file = do
-    fp <- mkPath file
+    fp   <- mkPath file
     json <- BS.readFile fp
     return $ decode $ BL.fromStrict json
 

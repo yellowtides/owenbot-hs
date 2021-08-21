@@ -1,34 +1,32 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module CSV ( configDir
-           , readCSV
-           , readSingleColCSV
-           , writeCSV
-           , writeSingleColCSV
-           , addToCSV
-           , writeHashMapToCSV
-           ) where
+module CSV
+    ( configDir
+    , readCSV
+    , readSingleColCSV
+    , writeCSV
+    , writeSingleColCSV
+    , addToCSV
+    , writeHashMapToCSV
+    )
+where
 
-import           Control.Applicative        ( (<|>) )
-import           Control.Exception          ( handle
-                                            , IOException
-                                            )
-import           Control.Monad              ( void )
-import           Data.Bifunctor             ( bimap )
-import           Data.Functor               ( (<&>) )
+import Control.Applicative ((<|>))
+import Control.Exception (handle, IOException)
+import Control.Monad (void)
+import Data.Bifunctor (bimap)
+import Data.Functor ((<&>))
 import qualified Data.HashMap.Strict as HM
-import           Data.List                  ( transpose )
-import           Data.Maybe                 ( fromMaybe )
+import Data.List (transpose)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import           System.Directory           ( createDirectoryIfMissing
-                                            , getXdgDirectory
-                                            , XdgDirectory( XdgConfig )
-                                            )
+import System.Directory
+    (createDirectoryIfMissing, getXdgDirectory, XdgDirectory(XdgConfig))
 
-import           System.IO                  ( stderr )
-import           Text.ParserCombinators.Parsec hiding ( (<|>))
-import           Text.Parsec.Text hiding    ( GenParser )
+import System.IO (stderr)
+import Text.ParserCombinators.Parsec hiding ((<|>))
+import Text.Parsec.Text hiding (GenParser)
 
 configDir :: IO FilePath
 configDir = getXdgDirectory XdgConfig "owen/"
@@ -53,14 +51,15 @@ quotedChar :: GenParser Char st Char
 quotedChar = noneOf "\"" <|> try (string "\"\"" >> return '"')
 
 escapeQuotes :: T.Text -> T.Text
-escapeQuotes x =  "\"" <> T.replace "\"" "\"\"" x <> "\""
+escapeQuotes x = "\"" <> T.replace "\"" "\"\"" x <> "\""
 
 eol :: GenParser Char st String
-eol = try (string "\n\r")
-    <|> try (string "\r\n")
-    <|> string "\n"
-    <|> string "\r"
-    <?> "end of line"
+eol =
+    try (string "\n\r")
+        <|> try (string "\r\n")
+        <|> string "\n"
+        <|> string "\r"
+        <?> "end of line"
 
 errStrLn :: String -> IO ()
 errStrLn = TIO.hPutStrLn stderr . T.pack
@@ -69,24 +68,24 @@ errStrLn = TIO.hPutStrLn stderr . T.pack
 -- file with empty contents and returns []
 readCSV :: FilePath -> IO [[T.Text]]
 readCSV path = do
-    base <- configDir
-    contents <- handle
-        (\e -> do
-            let err = show (e :: IOException)
-            errStrLn $ "[CSV] Error reading " <> base <> path
-            errStrLn err
-            pure "")
-        $ readFile (base <> path)
+    base     <- configDir
+    contents <-
+        handle
+                (\e -> do
+                    let err = show (e :: IOException)
+                    errStrLn $ "[CSV] Error reading " <> base <> path
+                    errStrLn err
+                    pure ""
+                )
+            $ readFile (base <> path)
     case parse csvFile path contents of
-        Left e       -> print e >> pure []
+        Left  e      -> print e >> pure []
         Right result -> pure $ (T.pack <$>) <$> result
 
 readSingleColCSV :: FilePath -> IO [T.Text]
 readSingleColCSV path = do
     contents <- transpose <$> readCSV path
-    if null contents
-        then pure []
-        else pure $ head contents
+    if null contents then pure [] else pure $ head contents
 
 -- | Write CSV from 2-D T.Text list
 writeCSV :: FilePath -> [[T.Text]] -> IO ()
@@ -94,10 +93,11 @@ writeCSV path contents = do
     base <- configDir
     createDirectoryIfMissing True base
     handle
-        (\e -> do
-            let err = show (e :: IOException)
-            errStrLn $ "[CSV] Error writing to " <> base <> path
-            void $ errStrLn err)
+            (\e -> do
+                let err = show (e :: IOException)
+                errStrLn $ "[CSV] Error writing to " <> base <> path
+                void $ errStrLn err
+            )
         $ TIO.writeFile (base <> path)
         $ T.unlines
         $ fmap (T.intercalate "," . fmap escapeQuotes) contents
@@ -116,4 +116,4 @@ addToCSV path contents = do
     writeCSV path $ oldData <> contents
 
 writeSingleColCSV :: FilePath -> [T.Text] -> IO ()
-writeSingleColCSV path = writeCSV path . fmap (:[])
+writeSingleColCSV path = writeCSV path . fmap (: [])
