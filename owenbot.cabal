@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 60620f92033f3f12e1ef404d24e3a05d3757cc608fdf4cdf27f64124689b8f06
+-- hash: 1f503305af7d69052a9b725b0eabb8b219e6ba8a8a4c41b6a81e5029cd1140ea
 
 name:           owenbot
 version:        0.1.0.0
@@ -58,12 +58,10 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
-    , cassava
     , containers
     , directory
     , discord-haskell
     , discord-haskell-monad
-    , hashable
     , http-conduit
     , http-types
     , mtl
@@ -101,12 +99,10 @@ executable owenbot-exe
       aeson
     , base >=4.7 && <5
     , bytestring
-    , cassava
     , containers
     , directory
     , discord-haskell
     , discord-haskell-monad
-    , hashable
     , http-conduit
     , http-types
     , mtl
@@ -152,12 +148,10 @@ test-suite owenbot-test
     , aeson
     , base >=4.7 && <5
     , bytestring
-    , cassava
     , containers
     , directory
     , discord-haskell
     , discord-haskell-monad
-    , hashable
     , hspec
     , http-conduit
     , http-types
