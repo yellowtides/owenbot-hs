@@ -171,7 +171,7 @@ changePronouns = do
     chosenPronouns <- sequence $ do
         (gid, roles) <- guildPronounMap
         pure $ do
-            Just role <- liftIO $ randomChoice roles
+            role <- liftIO $ M.fromJust <$> randomChoice roles
             pure (gid, role)
 
     forM_ chosenPronouns (uncurry (`addGuildMemberRole` userId u))

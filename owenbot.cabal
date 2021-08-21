@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9471fe2ca21468bb79b1c48bfe8c72f0e8c5ebc287a9e9d3a8cc4f730d3b6777
+-- hash: 60620f92033f3f12e1ef404d24e3a05d3757cc608fdf4cdf27f64124689b8f06
 
 name:           owenbot
 version:        0.1.0.0
@@ -33,7 +33,6 @@ library
       Config
       CSV
       DB
-      Discord.Internal.Monad
       EventHandler
       Owoifier
       Process
@@ -63,6 +62,7 @@ library
     , containers
     , directory
     , discord-haskell
+    , discord-haskell-monad
     , hashable
     , http-conduit
     , http-types
@@ -105,6 +105,7 @@ executable owenbot-exe
     , containers
     , directory
     , discord-haskell
+    , discord-haskell-monad
     , hashable
     , http-conduit
     , http-types
@@ -155,6 +156,7 @@ test-suite owenbot-test
     , containers
     , directory
     , discord-haskell
+    , discord-haskell-monad
     , hashable
     , hspec
     , http-conduit

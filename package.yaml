@@ -23,6 +23,7 @@ dependencies:
 - cassava
 - containers # comes with discord-haskell
 - discord-haskell
+- discord-haskell-monad
 - directory
 - hashable
 - http-conduit
