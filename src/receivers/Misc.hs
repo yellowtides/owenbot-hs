@@ -8,8 +8,10 @@ import              Control.Monad           ( when
                                             , forM_ )
 import              Data.Char               ( toUpper )
 import qualified    Data.Maybe as M
+import qualified    Data.Text.Encoding as E
 import qualified    Data.Text.IO as TIO
 import qualified    Data.Text as T
+import qualified    Network.HTTP.Types as W ( renderQuery )
 import              UnliftIO                ( liftIO, UnliftIO (unliftIO) )
 import              Text.Regex.TDFA         ( (=~) )
 import qualified    System.Process as SP
@@ -45,6 +47,7 @@ commands =
     , thatcherIsAlive
     , dadJokeIfPossible
     , magic8ball
+    , texRender
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -226,3 +229,13 @@ ballAnswers = map ("🎱 " <>)
 
 magic8ball :: (MonadDiscord m, MonadIO m) => Command m
 magic8ball = regexCommand "^:8ball.*" $ \m _ -> liftIO (select ballAnswers) >>= respond m
+
+texRender :: (MonadDiscord m) => Command m
+texRender = prefix "=" $ command "tex" $ \m (Remaining text) ->
+    respond m $ (<>) "https://chart.googleapis.com/chart" $ E.decodeUtf8 $ W.renderQuery True
+        [ ("cht", Just "tx")
+        , ("chl", Just $ E.encodeUtf8 text)
+        , ("chs", Just "100")
+        , ("chf", Just "bg,s,00000000")
+        , ("chco", Just "d17b46")
+        ]

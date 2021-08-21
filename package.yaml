@@ -26,6 +26,7 @@ dependencies:
 - directory
 - hashable
 - http-conduit
+- http-types # comes with http-conduit
 - mtl # comes with discord-haskell
 - network-bsd
 - parsec
