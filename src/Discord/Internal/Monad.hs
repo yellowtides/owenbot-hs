@@ -7,13 +7,14 @@ Description : The DiscordMonad class and its instances.
 
 This module contains the 'MonadDiscord' data class, which abstracts away all
 the possible REST interactions with Discord. It also defines instances for
-'DiscordHandler' and 'ReaderT Auth IO'.
+'DiscordHandler' and 'ReaderT Auth IO'. Finally, it declares RestCallErrorCode
+as an instance of Exception, which can be thrown in MonadDiscord.
 
 -}
 module Discord.Internal.Monad (MonadDiscord(..)) where
 
 import Control.Concurrent (threadDelay)
-import Control.Exception.Safe (MonadThrow, MonadMask, SomeException, throwM, try)
+import Control.Exception.Safe (Exception, MonadThrow, MonadMask, SomeException, throwM)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad (void)
 import Control.Monad.Reader (ReaderT, ask)
@@ -23,9 +24,7 @@ import qualified Data.ByteString as B
 import Data.Ix (inRange)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text as T
-import Data.Time.Clock.POSIX (POSIXTime, getPOSIXTime)
 import qualified Network.HTTP.Req as Req
-import Text.Read (readMaybe)
 
 import Discord.Internal.Rest.Prelude
 import Discord.Internal.Rest.HTTP
@@ -34,13 +33,12 @@ import qualified Discord.Requests as R
 import Discord.Types
 import Discord
 
-import Command.Error (CommandError(..))
+instance Exception RestCallErrorCode
 
 -- | @MonadDiscord@ is a data class of Monads that can interact with Discord.
--- It requires MonadThrow to throw possible errors like HTTP errors, MonadMask
--- as a helper for common operations paired with errors (like `finally`), and
--- MonadFail to allow convenient pattern-matching in do-notation (not necessary,
--- but helps a lot with our code style).
+-- It requires MonadThrow to throw RestCallErrorCode, MonadMask as a helper for
+-- common operations paired with errors (like `finally`), and MonadFail to allow
+-- convenient pattern-matching in do-notation.
 class (Monad m, MonadThrow m, MonadMask m, MonadFail m) => MonadDiscord m where
     -- Channels
     getChannel :: ChannelId -> m Channel
@@ -178,7 +176,7 @@ instance MonadDiscord DiscordHandler where
     listGuildEmojis         = restCallAndHandle . R.ListGuildEmojis
     getGuildEmoji           = (restCallAndHandle .) . R.GetGuildEmoji
     createGuildEmoji g t b = case R.parseEmojiImage b of
-        Left  x -> throwM $ ProcessingError x
+        Left  x -> fail $ T.unpack x
         Right x -> restCall (R.CreateGuildEmoji g t x) >>= handleDiscordResult
     modifyGuildEmoji            = ((restCallAndHandle .) .) . R.ModifyGuildEmoji
     deleteGuildEmoji            = (restCallAndHandle .) . R.DeleteGuildEmoji
@@ -257,7 +255,7 @@ restCallAndHandle req = restCall req >>= handleDiscordResult
 -- and throws a 'DiscordError' if the call errored.
 handleDiscordResult :: Either RestCallErrorCode a -> DiscordHandler a
 handleDiscordResult result = case result of
-    Left  e -> throwM $ DiscordError e
+    Left  e -> throwM e
     Right x -> pure x
 
 -- | Unfortunately, IO cannot be an instance of MonadDiscord because it needs
@@ -266,9 +264,10 @@ handleDiscordResult result = case result of
 --
 -- [Usage:]
 -- @
--- import Control.Monad.Reader ( runReaderT )
+-- import Control.Monad.Reader (runReaderT)
+-- import Control.Monad (void)
 -- someFunc :: IO ()
--- someFunc = runReaderT (createMessage 1234 "text" >> pure ()) (Auth "tokenhere")
+-- someFunc = runReaderT (void $ createMessage 1234 "text") (Auth "tokenhere")
 -- @
 instance MonadDiscord (ReaderT Auth IO) where
     getChannel              = callRestIO . R.GetChannel
@@ -303,7 +302,7 @@ instance MonadDiscord (ReaderT Auth IO) where
     listGuildEmojis         = callRestIO . R.ListGuildEmojis
     getGuildEmoji           = (callRestIO .) . R.GetGuildEmoji
     createGuildEmoji g t b = case R.parseEmojiImage b of
-        Left  x -> throwM $ ProcessingError x
+        Left  x -> fail $ T.unpack x
         Right x -> callRestIO $ R.CreateGuildEmoji g t x
     modifyGuildEmoji            = ((callRestIO .) .) . R.ModifyGuildEmoji
     deleteGuildEmoji            = (callRestIO .) . R.DeleteGuildEmoji
@@ -377,12 +376,6 @@ instance MonadDiscord (ReaderT Auth IO) where
 -- the following is a GIGANTIC mess basically cut and pasted from discord-haskell's
 -- internals and simplified, because it's alas, not exported.
 
-data RequestResponse
-    = ResponseTryAgain
-    | ResponseByteString BL.ByteString
-    | ResponseErrorCode Int B.ByteString B.ByteString
-    deriving (Show)
-
 -- | Do an IO call to get the result of the request, and throw errors
 -- whenever some error occurs. A simplified version of the logic within
 -- discord-haskell's Discord.Internal.Rest.HTTP module, as it doesn't need to
@@ -409,9 +402,9 @@ callRestIO req = do
                 Right o  -> pure o
                 Left  er -> do
                     let formaterr = T.pack $ "Response could not be parsed " <> er
-                    throwM $ DiscordError $ RestCallErrorCode code "err" formaterr
+                    throwM $ RestCallErrorCode code "err" formaterr
         _ | otherwise -> do
-            throwM $ DiscordError $ RestCallErrorCode
+            throwM $ RestCallErrorCode
                 code
                 status
                 (TE.decodeUtf8 $ BL.toStrict body)

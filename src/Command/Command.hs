@@ -437,22 +437,22 @@ runCommand cmd@Command { commandInitialMatch, commandApplier, commandErrorHandle
     = case commandInitialMatch msg cmd of
         Nothing      -> pure ()
         Just results -> do
-            -- Check for requirements. checks will be a list of Maybes
-            checks <- mapM ($ msg) commandRequires
-            -- only get the Justs
-            let failedChecks = catMaybes checks
+            -- Check for requirements, keep only Just values
+            failedChecks <- catMaybes <$> mapM ($ msg) commandRequires
             if null failedChecks
                 then
                 -- Apply the arguments on the handler
                     commandApplier msg results
-                    -- Asynchronous errors are not caught as the `catch`
-                    -- comes from Control.Exception.Safe. This is good.
+                    -- Asynchronous errors are not caught (they are propagated)
+                    -- because this `catch` comes from Control.Exception.Safe.
+                    `catch` discordErrorCatcher
                     `catch` basicErrorCatcher
                     `catch` allErrorCatcher
-                else
-                -- give the first requirement error to the error handler
-                     basicErrorCatcher (RequirementError $ head failedChecks)
+                else basicErrorCatcher (RequirementError $ head failedChecks)
   where
+    discordErrorCatcher :: RestCallErrorCode -> m ()
+    discordErrorCatcher = commandErrorHandler msg . DiscordError
+
     -- | Catch CommandErrors and handle them with the handler
     basicErrorCatcher :: CommandError -> m ()
     basicErrorCatcher = commandErrorHandler msg
@@ -651,7 +651,7 @@ sparsely documented....
 -}
 showErrAsText :: ParseError -> T.Text
 showErrAsText err
-    | null (errorMessages err) = "Unknown parse error occured!"
+    | null (errorMessages err) = "Unknown parse error occurred!"
     | otherwise = T.intercalate " "
     $ clean [showExpect, showSysUnExpect, showUnExpect, showOtherMessages]
   where
