@@ -91,12 +91,17 @@ textbook = alias "tb" $ command "textbook" $ \m subject -> case () of
     _ | subject `elem` ["calc", "cap"] ->
         respond m
             $ "The textbook can be found here:\n"
-            <> "http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea"
+            <> "||http://gen.lib.rus.ec/book/index.php?md5=13ecb7a2ed943dcb4a302080d2d8e6ea||"
 
     _ | subject == "ila" ->
         respondAsset m "ila-textbook.pdf" "textbooks/ila-textbook.pdf"
 
-    otherwse -> respond m $ "No textbook registered for `" <> subject <> "`!"
+    _ | subject == "dmp" ->
+        respond m
+            $ "The textbook can be found here:\n"
+            <> "||https://gen.lib.rus.ec/book/index.php?md5=45624cd7153af9bd024f64305e8b7be0||"
+
+    _ -> respond m $ "No textbook registered for `" <> subject <> "`!"
 
 -- | Syllogisms.
 syllogisms :: (MonadDiscord m, MonadIO m) => Command m
