@@ -505,8 +505,8 @@ helpCommand helpName cmds onEmptyHandler = command helpName $ \msg mbName -> do
 
     cmdMatches :: T.Text -> Command m -> Bool
     cmdMatches t Command { commandPrefix, commandName, commandAliases } =
-        any (t `T.isInfixOf`)
-            $   [id, (commandPrefix <>)]
+        any (T.toLower t `T.isInfixOf`)
+            $   [T.toLower, (commandPrefix <>) . T.toLower]
             <*> (commandName : commandAliases)
 
     isOrthodoxCommand :: Command m -> Bool
