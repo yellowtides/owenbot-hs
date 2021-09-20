@@ -96,6 +96,6 @@ rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
 
 listQuotes :: (MonadDiscord m, MonadIO m) => Command m
 listQuotes =
-    requires modPerms $ help "Lists all quotes" $ command "listquotes" $ \m -> do
+    help "Lists all quotes" $ command "listQuotes" $ \m -> do
         quoteNames <- liftIO $ HM.keys <$> quoteTable
         respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames
