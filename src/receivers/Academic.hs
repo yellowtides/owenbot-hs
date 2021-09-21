@@ -101,6 +101,12 @@ textbook = alias "tb" $ command "textbook" $ \m subject -> case () of
             $ "The textbook can be found here:\n"
             <> "||https://gen.lib.rus.ec/book/index.php?md5=45624cd7153af9bd024f64305e8b7be0||"
 
+    _ | subject == "inf2c" ->
+        respond m
+            $ "Someone has posted the PDF here:\n"
+            <> "https://discord.com/channels/755798054455738489/887640828128952330/889898467852427345\n"
+            <> "And the EPUB here:\n"
+            <> "https://discord.com/channels/755798054455738489/887640828128952330/889898536852934676"
     _ -> respond m $ "No textbook registered for `" <> subject <> "`!"
 
 -- | Syllogisms.
