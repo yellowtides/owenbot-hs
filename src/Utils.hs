@@ -29,6 +29,7 @@ module Utils
     , roleNameIn
     , modPerms
     , devPerms
+    , sentInServer
     , isMod
     , assetDir
     , (=~=)
@@ -335,6 +336,9 @@ modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
 -- | Command requirement for sender being a registered developer.
 devPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
 devPerms msg = permCheck (isSenderDeveloper msg) "Need to be an OwenDev" msg
+
+sentInServer :: (MonadDiscord m) => Message -> m (Maybe T.Text)
+sentInServer msg = pure $ maybe (Just "Need to be sent in server!") (const Nothing) $ messageGuild msg
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.
