@@ -218,7 +218,7 @@ magic8ball =
     regexCommand "^:8ball.*" $ \m _ -> liftIO (select ballAnswers) >>= respond m
 
 texRender :: (MonadDiscord m) => Command m
-texRender = prefix "=" $ command "tex" $ \m (Remaining text) ->
+texRender = command "tex" $ \m (Remaining text) ->
     respond m $ (<>) "https://chart.googleapis.com/chart" $ E.decodeUtf8 $ W.renderQuery
         True
         [ ("cht" , Just "tx")
