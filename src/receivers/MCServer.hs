@@ -15,7 +15,7 @@ import UnliftIO (liftIO)
 import Command
 import DB
 import Owoifier (owoify)
-import Utils (modPerms)
+import Utils (modPerms, sentInServer)
 
 commands :: [Command DiscordHandler]
 commands = [getStatus, setServer]
@@ -110,15 +110,13 @@ alwaysHead []       = ""
 alwaysHead (a : as) = a
 
 getStatus :: (MonadDiscord m, MonadIO m) => Command m
-getStatus = command "minecraft" $ \m -> do
-    case messageGuild m of
-        Nothing  -> respond m "You have to be in a server to do this!"
-        Just gid -> do
-            server_ip <- liftIO $ readServerIP gid
-            deets     <- liftIO $ fetchServerDetails server_ip
-            case deets of
-                Left  err  -> liftIO (print err) >> respond m (T.pack err)
-                Right nice -> respond m $ owoify $ T.pack nice
+getStatus = requires sentInServer $ command "minecraft" $ \m -> do
+    let gid = fromJust (messageGuild m)
+    server_ip <- liftIO $ readServerIP gid
+    deets     <- liftIO $ fetchServerDetails server_ip
+    case deets of
+        Left  err  -> liftIO (print err) >> respond m (T.pack err)
+        Right nice -> respond m $ owoify $ T.pack nice
 
 readServerIP :: GuildId -> IO T.Text
 readServerIP gid = do
@@ -129,9 +127,11 @@ readServerIP gid = do
         else pure $ head server_ip
 
 setServer :: (MonadDiscord m, MonadIO m) => Command m
-setServer = requires modPerms $ command "setMinecraft" $ \m server_ip -> do
-    case messageGuild m of
-        Nothing  -> respond m "You have to be in a server to do this!"
-        Just gid -> do
+setServer =
+    requires sentInServer
+        $ requires modPerms
+        $ command "setMinecraft"
+        $ \m server_ip -> do
+            let gid = fromJust (messageGuild m)
             liftIO $ writeListDB (GuildDB gid "mcServer") [server_ip]
             respond m "Success!"

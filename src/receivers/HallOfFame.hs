@@ -3,6 +3,7 @@
 module HallOfFame (reactionReceivers, commands) where
 
 import Control.Monad (when)
+import Data.Maybe (fromJust)
 import qualified Data.Text as T
 import Discord
 import Discord.Types
@@ -19,6 +20,7 @@ import Utils
     , messageFromReaction
     , pingAuthorOf
     , sendMessageChanEmbed
+    , sentInServer
     )
 
 
@@ -130,18 +132,17 @@ createHallOfFameEmbed m = do
         embedFooterIcon
 
 reactLimit :: (MonadDiscord m, MonadIO m) => Command m
-reactLimit = requires devPerms $ command "reactLimit" $ \m mbI -> do
-    case messageGuild m of
-        Nothing  -> respond m "This command needs to be sent in a server!"
-        Just gid -> do
-            let limitTable = GuildDB gid "reactLimit"
-            case mbI of
-                Nothing -> do
-                    i <- liftIO $ readLimit limitTable
-                    respond m $ owoify $ "Current limit is at " <> T.pack (show i)
-                Just i -> do
-                    liftIO $ setLimit limitTable i
-                    respond m $ owoify $ "New Limit Set as " <> T.pack (show i)
+reactLimit =
+    requires sentInServer $ requires devPerms $ command "reactLimit" $ \m mbI -> do
+        let gid        = fromJust (messageGuild m)
+        let limitTable = GuildDB gid "reactLimit"
+        case mbI of
+            Nothing -> do
+                i <- liftIO $ readLimit limitTable
+                respond m $ owoify $ "Current limit is at " <> T.pack (show i)
+            Just i -> do
+                liftIO $ setLimit limitTable i
+                respond m $ owoify $ "New Limit Set as " <> T.pack (show i)
 
 setLimit :: DBTable -> Int -> IO ()
 setLimit limitTable i = writeListDB limitTable [T.pack $ show i]
@@ -154,13 +155,12 @@ readLimit limitTable = do
         else pure $ read $ T.unpack $ head contents
 
 setFameChan :: (MonadDiscord m, MonadIO m) => Command m
-setFameChan = requires devPerms $ command "setFameChan" $ \m chanId -> do
-    case messageGuild m of
-        Nothing  -> respond m "This command can only be used in a server!"
-        Just gid -> do
-            c <- getChannel chanId
-            createMessage
-                chanId
-                "This channel will be used as the Hall of Fame from now on!"
-            liftIO $ writeListDB (GuildDB gid "fameChannel") [T.pack $ show chanId]
-            respond m $ "Set the hall of fame channel to " <> channelName c
+setFameChan =
+    requires sentInServer $ requires devPerms $ command "setFameChan" $ \m chanId -> do
+        let gid = fromJust (messageGuild m)
+        c <- getChannel chanId
+        createMessage
+            chanId
+            "This channel will be used as the Hall of Fame from now on!"
+        liftIO $ writeListDB (GuildDB gid "fameChannel") [T.pack $ show chanId]
+        respond m $ "Set the hall of fame channel to " <> channelName c
