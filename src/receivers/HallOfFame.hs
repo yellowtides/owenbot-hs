@@ -46,9 +46,10 @@ attemptHallOfFame r = case reactionGuildId r of
                 check3 <- isEligibleForHallOfFame fameTable limitTable m
                 when (check1 && check2 && check3)
                     $ putInHallOfFame fameTable hofChanId m
-            _ -> respond
-                m
-                "Hall of Fame has not been set up in this server! Use :setFameChan to set a channel ID."
+            _ ->
+                respond m
+                    $  "Hall of Fame has not been set up in this server! "
+                    <> "Use :setFameChan to set a channel ID."
 
 
 hallOfFameEmotes :: [T.Text]
