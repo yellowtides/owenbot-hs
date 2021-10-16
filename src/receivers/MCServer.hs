@@ -73,9 +73,11 @@ fetchServerDetails server_ip = do
         Left  err         -> Left err
         Right serverDeets -> do
             let serverStatus = concat
-                    [ ":pick: The Minecraft server is "
+                    [ ":pick: The Minecraft server for this Discord is "
                     , "**"
-                    , if online serverDeets then "online" else "offline"
+                    , if online serverDeets
+                        then "online"
+                        else "offline `" <> T.unpack server_ip <> "`"
                     , "**. "
                     ]
             if not (online serverDeets)

@@ -14,13 +14,11 @@ import System.Directory
 import Discord.Types (ChannelId)
 
 -- | OwenConfig represents the configuration of Owenbot!
--- These are read from config.json on startup, and never read nor written to
--- after.
 data OwenConfig = OwenConfig
     { owenConfigToken       :: T.Text
     , owenConfigDevs        :: [T.Text]
-    , owenConfigOwoFreq     :: Int
-    , owenConfigDadFreq     :: Int
+    , owenConfigOwoFreq     :: Int -- these two don't do anything yet
+    , owenConfigDadFreq     :: Int -- because reading values every time is slow and a solution can't be thought of
     , owenConfigRepoDir     :: Maybe FilePath
     , owenConfigStartupChan :: ChannelId
     }
