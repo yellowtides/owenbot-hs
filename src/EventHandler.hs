@@ -5,21 +5,23 @@ import Control.Monad (unless)
 import Data.Foldable (for_)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Discord.Types
 import Discord
+import Discord.Types
 import UnliftIO (liftIO)
 
+import qualified DB
+
+--import qualified AprilFools
 import qualified Academic
 import qualified Admin
 import qualified BinancePriceFetcher
-import qualified Misc
-import qualified Haskell
 import qualified HallOfFame
-import qualified RoleSelfAssign
+import qualified Haskell
 import qualified MCServer
-import qualified QuoteSystem
+import qualified Misc
 import qualified ModifyEventsChannel
---import qualified AprilFools
+import qualified QuoteSystem
+import qualified RoleSelfAssign
 
 import Command
 import Owoifier (owoify)
@@ -69,6 +71,8 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
+    GuildCreate guild guildInfo ->
+        liftIO $ DB.initGuildSpecificDatabase (guildId guild)
     MessageCreate m -> unless (isFromBot m) $ do
         for_ messageReceivers ($ m) <|> pure ()
         runCommands (generatedHelp : commands) m

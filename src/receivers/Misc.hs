@@ -3,36 +3,36 @@
 module Misc (commands, reactionReceivers, changePronouns) where
 
 import Control.Concurrent (threadDelay)
-import Control.Monad (when, unless, forM_)
+import Control.Monad (forM_, unless, when)
 import Data.Char (toUpper)
 import qualified Data.Maybe as M
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Data.Text.IO as TIO
-import qualified Data.Text as T
 import qualified Network.HTTP.Types as W (renderQuery)
-import UnliftIO (liftIO, UnliftIO(unliftIO))
-import Text.Regex.TDFA ((=~))
 import qualified System.Process as SP
-import System.Random (randomR, getStdRandom, randomRIO)
+import System.Random (getStdRandom, randomR, randomRIO)
+import Text.Regex.TDFA ((=~))
+import UnliftIO (UnliftIO(unliftIO), liftIO)
 
-import qualified Text.Parsec.Text as T
-import Text.Parsec
-import Discord.Types
 import Discord
+import Discord.Types
+import Text.Parsec
+import qualified Text.Parsec.Text as T
 
 import Command
+import Owoifier (owoify)
 import Utils
-    ( sendMessageChan
-    , sendReply
-    , respondAsset
+    ( (=~=)
     , addReaction
-    , messageFromReaction
-    , (=~=)
     , assetDir
     , isRoleInGuild
+    , messageFromReaction
+    , respondAsset
+    , sendMessageChan
+    , sendReply
     , toMaybe
     )
-import Owoifier (owoify)
 
 commands :: [Command DiscordHandler]
 commands =

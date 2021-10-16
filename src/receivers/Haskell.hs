@@ -2,17 +2,17 @@
 
 module Haskell (commands) where
 
-import Data.Aeson (FromJSON, eitherDecode, parseJSON, withObject, (.:))
+import Data.Aeson ((.:), FromJSON, eitherDecode, parseJSON, withObject)
 import Data.Maybe (fromMaybe)
-import Data.Text.Encoding (encodeUtf8)
 import qualified Data.Text as T
+import Data.Text.Encoding (encodeUtf8)
 
 import Command
 import Discord (DiscordHandler)
 import Discord.Types (Message)
 import GHC.Generics
 import Network.HTTP.Simple
-    (httpLBS, setRequestQueryString, parseRequest, getResponseBody)
+    (getResponseBody, httpLBS, parseRequest, setRequestQueryString)
 import Pointfree (pointfree')
 import UnliftIO (liftIO)
 
@@ -30,20 +30,22 @@ hoogleURL n =
         <> "&hoogle="
 
 data Repo = Repo
-    { repoUrl  :: String
-    , name     :: String
-    } deriving (Show, Generic)
+    { repoUrl :: String
+    , name    :: String
+    }
+    deriving (Show, Generic)
 instance FromJSON Repo where
     parseJSON = withObject "Repo" $ \v -> Repo <$> v .: "url" <*> v .: "name"
 
 data HoogleResp = HoogleResp
-    { url    :: String
-    , mdl    :: Repo
-    , pkg    :: Repo
-    , item   :: String
-    , t      :: String
-    , docs   :: String
-    } deriving (Show, Generic)
+    { url  :: String
+    , mdl  :: Repo
+    , pkg  :: Repo
+    , item :: String
+    , t    :: String
+    , docs :: String
+    }
+    deriving (Show, Generic)
 instance FromJSON HoogleResp where
     parseJSON = withObject "HoogleResp" $ \v ->
         HoogleResp

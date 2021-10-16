@@ -3,14 +3,13 @@
 module ModifyEventsChannel (commands) where
 
 import Discord
-import Discord.Types
 import Discord.Requests as R
-import Utils (sendMessageChan, moveChannel)
+import Discord.Types
 import UnliftIO (MonadIO(liftIO))
-import Data.Text as T ()
-import Command
 
+import Command
 import Owoifier (owoify)
+import Utils (moveChannel, sendMessageChan)
 
 commands :: [Command DiscordHandler]
 commands = [moveEventsChannel]
@@ -19,7 +18,6 @@ eventsChannelId :: ChannelId
 eventsChannelId = 837700461192151120
 
 -- | Move a registered events channel to the top of the server.
--- TODO: utilise Either monad
 moveEventsChannel :: (MonadDiscord m) => Command m
 moveEventsChannel = command "showEvents" $ \m -> do
     respond m $ owoify "Moving Events Channel."

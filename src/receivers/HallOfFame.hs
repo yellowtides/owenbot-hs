@@ -8,33 +8,48 @@ import Discord
 import Discord.Types
 import UnliftIO (liftIO)
 
+import Command
+import DB
 import Owoifier (owoify)
 import Utils
-    ( pingAuthorOf
-    , messageFromReaction
-    , linkChannel
+    ( devPerms
     , getMessageLink
-    , sendMessageChanEmbed
     , getTimestampFromMessage
-    , devPerms
+    , linkChannel
+    , messageFromReaction
+    , pingAuthorOf
+    , sendMessageChanEmbed
     )
-import Command
-import CSV (readSingleColCSV, writeSingleColCSV)
-import DB (readDB, writeDB)
 
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionReceivers = [attemptHallOfFame]
 
 commands :: [Command DiscordHandler]
-commands = [reactLimit]
+commands = [reactLimit, setFameChan]
 
 attemptHallOfFame :: ReactionInfo -> DiscordHandler ()
-attemptHallOfFame r =
-    when (isHallOfFameEmote (reactionEmoji r) && notInHallOfFameChannel r) $ do
-        m        <- messageFromReaction r
-        eligible <- isEligibleForHallOfFame m
-        when eligible $ putInHallOfFame m
+attemptHallOfFame r = case reactionGuildId r of
+    Nothing  -> pure ()
+    Just gid -> do
+        let fameTable  = GuildDB gid "hallOfFame"
+            limitTable = GuildDB gid "reactLimit"
+        hofChannel <- liftIO $ readListDB $ GuildDB gid "fameChannel"
+        m          <- messageFromReaction r
+        case hofChannel of
+            [chan] -> do
+                let hofChanId = read $ T.unpack chan
+                    check1    = isHallOfFameEmote (reactionEmoji r)
+                    check2    = reactionChannelId r /= hofChanId
+                check3 <- isEligibleForHallOfFame fameTable limitTable m
+                respond m $ "checks: " <> (T.pack . concatMap show)
+                    [check1, check2, check3]
+                when (check1 && check2 && check3)
+                    $ putInHallOfFame fameTable hofChanId m
+            _ -> respond
+                m
+                "Hall of Fame has not been set up in this server! Use :setFameChan to set a channel ID."
+
 
 hallOfFameEmotes :: [T.Text]
 hallOfFameEmotes =
@@ -47,21 +62,18 @@ hallOfFameEmotes =
 hallOfFameChannel :: ChannelId
 hallOfFameChannel = 790936269382615082 --the channel id for the hall of fame
 
-notInHallOfFameChannel :: ReactionInfo -> Bool
-notInHallOfFameChannel r = reactionChannelId r /= hallOfFameChannel
-
 isHallOfFameEmote :: Emoji -> Bool
 isHallOfFameEmote e = T.toUpper (emojiName e) `elem` hallOfFameEmotes
 
-existsInHOF :: Message -> IO Bool
-existsInHOF m = do
-    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
+existsInHOF :: DBTable -> Message -> IO Bool
+existsInHOF table m = do
+    msgIdList <- liftIO $ readListDB table
     return $ show (messageId m) `elem` (T.unpack <$> msgIdList)
 
-isEligibleForHallOfFame :: Message -> DiscordHandler Bool
-isEligibleForHallOfFame m = do
-    limit  <- liftIO readLimit
-    exists <- liftIO $ existsInHOF m
+isEligibleForHallOfFame :: DBTable -> DBTable -> Message -> DiscordHandler Bool
+isEligibleForHallOfFame fameTable limitTable m = do
+    limit  <- liftIO $ readLimit limitTable
+    exists <- liftIO $ existsInHOF fameTable m
     let reactions = messageReactions m
     let fulfillCond = \r ->
             isHallOfFameEmote (messageReactionEmoji r)
@@ -70,13 +82,13 @@ isEligibleForHallOfFame m = do
                 && not exists
     pure $ any fulfillCond reactions
 
-putInHallOfFame :: Message -> DiscordHandler ()
-putInHallOfFame m = do
+putInHallOfFame :: DBTable -> ChannelId -> Message -> DiscordHandler ()
+putInHallOfFame table hofChan m = do
     embed     <- createHallOfFameEmbed m
-    msgIdList <- liftIO $ readSingleColCSV "fame.csv"
-    liftIO $ writeSingleColCSV "fame.csv" (T.pack (show $ messageId m) : msgIdList)
+    msgIdList <- liftIO $ readListDB table
+    liftIO $ writeListDB table (T.pack (show $ messageId m) : msgIdList)
     --adds the message id to the csv to make sure we dont add it multiple times.
-    sendMessageChanEmbed hallOfFameChannel "" embed
+    sendMessageChanEmbed hofChan "" embed
 
 createDescription :: Message -> T.Text
 createDescription m =
@@ -119,20 +131,36 @@ createHallOfFameEmbed m = do
 
 reactLimit :: (MonadDiscord m, MonadIO m) => Command m
 reactLimit = requires devPerms $ command "reactLimit" $ \m mbI -> do
-    case mbI of
-        Nothing -> do
-            i <- liftIO readLimit
-            respond m $ owoify $ "Current limit is at " <> T.pack (show i)
-        Just i -> do
-            liftIO $ setLimit i
-            respond m $ owoify $ "New Limit Set as " <> T.pack (show i)
+    case messageGuild m of
+        Nothing  -> respond m "This command needs to be sent in a server!"
+        Just gid -> do
+            let limitTable = GuildDB gid "reactLimit"
+            case mbI of
+                Nothing -> do
+                    i <- liftIO $ readLimit limitTable
+                    respond m $ owoify $ "Current limit is at " <> T.pack (show i)
+                Just i -> do
+                    liftIO $ setLimit limitTable i
+                    respond m $ owoify $ "New Limit Set as " <> T.pack (show i)
 
-setLimit :: Int -> IO ()
-setLimit i = writeSingleColCSV "reactLim.csv" [T.pack $ show i]
+setLimit :: DBTable -> Int -> IO ()
+setLimit limitTable i = writeListDB limitTable [T.pack $ show i]
 
-readLimit :: IO Int
-readLimit = do
-    contents <- readSingleColCSV "reactLim.csv"
+readLimit :: DBTable -> IO Int
+readLimit limitTable = do
+    contents <- readListDB limitTable
     if null contents
-        then writeSingleColCSV "reactLim.csv" ["1"] >> pure 1
+        then writeListDB limitTable ["1"] >> pure 1
         else pure $ read $ T.unpack $ head contents
+
+setFameChan :: (MonadDiscord m, MonadIO m) => Command m
+setFameChan = requires devPerms $ command "setFameChan" $ \m chanId -> do
+    case messageGuild m of
+        Nothing  -> respond m "This command can only be used in a server!"
+        Just gid -> do
+            c <- getChannel chanId
+            createMessage
+                chanId
+                "This channel will be used as the Hall of Fame from now on!"
+            liftIO $ writeListDB (GuildDB gid "fameChannel") [T.pack $ show chanId]
+            respond m $ "Set the hall of fame channel to " <> channelName c

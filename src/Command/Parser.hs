@@ -19,20 +19,20 @@ module Command.Parser
     , RemainingText(..)
     , manyTill1
     , endOrSpaces
-    )
-where
+    ) where
 
 import Control.Monad (void)
 import qualified Data.Text as T
+import Text.Parsec
 import Text.Parsec.Combinator
 import qualified Text.Parsec.Text as T
-import Text.Parsec
 
 import Discord.Types
 
 -- | @manyTill1 p end@ is a parser that applies parser @p@ /one/ or more times
 -- until parser @end@ succeeds. This is a variation on 'manyTill' from Parsec.
-manyTill1 :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+manyTill1
+    :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
 manyTill1 p end = do
     x  <- p
     xs <- manyTill p end

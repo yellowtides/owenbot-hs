@@ -4,21 +4,21 @@ module QuoteSystem (commands) where
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
-import Discord.Types
 import Discord
+import Discord.Types
 import UnliftIO (liftIO)
 
-import CSV (addToCSV, readCSV, writeHashMapToCSV)
-import Owoifier (owoify)
-import Utils (sendMessageChan, modPerms)
 import Command
-import Text.Parsec (many1, anyChar)
+import DB
+import Owoifier (owoify)
+import Text.Parsec (anyChar, many1)
+import Utils (modPerms, sendMessageChan)
 
 commands :: [Command DiscordHandler]
 commands = [receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
 
-quotePath :: FilePath
-quotePath = "registeredQuotes.csv"
+quotesTable :: DBTable
+quotesTable = GlobalDB "registeredQuotes"
 
 maxNameLen :: Int
 maxNameLen = 32
@@ -26,29 +26,20 @@ maxNameLen = 32
 nameRE :: T.Text
 nameRE = "(.{1," <> T.pack (show maxNameLen) <> "})"
 
--- | `quoteTable` maps quotes to their text.
-quoteTable :: IO (HM.HashMap T.Text T.Text)
-quoteTable = do
-    quote2DArray <- readCSV quotePath
-    let compatibleLines = filter (\line -> length line == 2) quote2DArray
-    let listMap         = map (\[key, value] -> (key, value)) compatibleLines
-    return $ HM.fromList listMap
-
 storeQuote :: T.Text -> T.Text -> IO ()
-storeQuote name content = addToCSV quotePath [[name, content]]
+storeQuote name content = appendDB quotesTable [[name, content]]
 
 fetchQuote :: T.Text -> IO (Maybe T.Text)
-fetchQuote name = HM.lookup name <$> quoteTable
+fetchQuote name = HM.lookup name <$> readHashMapDB quotesTable
 
 removeQuote :: T.Text -> IO ()
 removeQuote name = do
-    newTable <- HM.delete name <$> quoteTable
-    writeHashMapToCSV quotePath newTable
+    newTable <- HM.delete name <$> readHashMapDB quotesTable
+    writeHashMapDB quotesTable newTable
 
 receiveQuoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
 receiveQuoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name -> do
     runCommand receiveQuote $ m { messageText = ":quote " <> T.pack name }
-
 
 receiveQuote :: (MonadDiscord m, MonadIO m) => Command m
 receiveQuote = command "quote" $ \m (Remaining name) -> do
@@ -95,7 +86,6 @@ rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
                 <> "`, was super bad anyways."
 
 listQuotes :: (MonadDiscord m, MonadIO m) => Command m
-listQuotes =
-    help "Lists all quotes" $ command "listQuotes" $ \m -> do
-        quoteNames <- liftIO $ HM.keys <$> quoteTable
-        respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames
+listQuotes = help "Lists all quotes" $ command "listQuotes" $ \m -> do
+    quoteNames <- liftIO $ HM.keys <$> readHashMapDB quotesTable
+    respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames

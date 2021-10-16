@@ -128,31 +128,30 @@ module Command.Command
       -- * Common Errors
       -- | #commonerrors#
       -- $commonerrors
-    )
-where
+    ) where
 
 import Control.Applicative (Alternative(..))
 import Control.Exception.Safe
-    (catch, throwM, MonadCatch, MonadThrow, Exception, SomeException)
+    (Exception, MonadCatch, MonadThrow, SomeException, catch, throwM)
+import Control.Monad (guard, unless, void, when)
 import Control.Monad.IO.Class (MonadIO)
-import Control.Monad (void, guard, unless, when)
-import Data.Maybe (catMaybes)
 import Data.List (nub)
+import Data.Maybe (catMaybes)
 import qualified Data.Text as T
+import Text.Parsec (ParseError, anyChar, eof, getInput, parse, space, string)
 import Text.Parsec.Combinator
 import Text.Parsec.Error (errorMessages, messageString)
 import qualified Text.Parsec.Error as PE (Message(..))
 import qualified Text.Parsec.Text as T
-import Text.Parsec (parse, eof, ParseError, space, anyChar, string, getInput)
 import Text.Regex.TDFA ((=~))
 import UnliftIO (liftIO)
 
+import Discord
 import Discord.Monad
 import Discord.Types
-import Discord
 
 import Command.Error (CommandError(..))
-import Command.Parser (ParsableArgument(..), RemainingText(..), manyTill1, endOrSpaces)
+import Command.Parser (ParsableArgument(..), RemainingText(..), endOrSpaces, manyTill1)
 import Owoifier (owoify, weakOwoify)
 
 {- | A @Command@ is a datatype containing the metadata for a user-registered
@@ -390,7 +389,8 @@ thatcher = regexCommand "thatcher [Ii]s ([Dd]ead|[Aa]live)" $ \\msg caps -> do
 ...
 @
 -}
-regexCommand :: (MonadDiscord m) => T.Text -> (Message -> [T.Text] -> m ()) -> Command m
+regexCommand
+    :: (MonadDiscord m) => T.Text -> (Message -> [T.Text] -> m ()) -> Command m
 regexCommand regex commandHandler = Command
     { commandName         = "<<custom regex>>"
     , commandPrefix       = ""

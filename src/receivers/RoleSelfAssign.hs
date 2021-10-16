@@ -2,26 +2,26 @@
 {-# LANGUAGE TupleSections #-}
 module RoleSelfAssign (reactionAddReceivers, reactionRemReceivers, commands) where
 
-import Control.Monad (guard, unless, forM_)
-import UnliftIO (liftIO)
+import Control.Monad (forM_, guard, unless)
 import Data.Aeson (eitherDecode)
-import Data.Bifunctor (first, bimap)
+import Data.Bifunctor (bimap, first)
 import Data.Char (isDigit)
 import Data.Map (Map, toList)
 import Data.Maybe (fromJust, isJust, isNothing)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
+import UnliftIO (liftIO)
 
 import Data.ByteString.Lazy (fromStrict)
 
-import Discord.Types
 import Discord
+import Discord.Types
 
 import Command
+import DB
 import Owoifier (owoify)
 import Utils
-    (sendMessageDM, isEmojiValid, isRoleInGuild, sendMessageChan, addReaction, modPerms)
-import CSV (readCSV, readSingleColCSV, addToCSV, writeCSV)
+    (addReaction, isEmojiValid, isRoleInGuild, modPerms, sendMessageChan, sendMessageDM)
 
 type EmojiRoleMap = [(String, RoleId)]
 -- emoji --> snowflake.
@@ -39,9 +39,6 @@ reactionRemReceivers = [handleRoleRemove]
 commands :: [Command DiscordHandler]
 commands = [createAssignStation, addRoleToStation]
 
-assignFilePath :: FilePath
-assignFilePath = "idAssign.csv"
-
 serverID :: GuildId
 serverID = 755798054455738489
 -- the number is the fixed Guild/Server ID.
@@ -54,6 +51,9 @@ twoDimMatrixToMap = fmap (\[x, y] -> (x, y))
 
 mapToMatrix :: Functor f => f (a, a) -> f [a]
 mapToMatrix = fmap (\(x, y) -> [x, y])
+
+assignOverviewDB :: DBTable
+assignOverviewDB = GuildDB serverID "idAssign"
 
 addRoleToStation :: Command DiscordHandler
 addRoleToStation =
@@ -83,7 +83,7 @@ addRoleToStation =
                     let assignFilePath = getAssignFile' (show stationId)
 
                     -- The old emote role mapping, read from the CSV.
-                    roleEmoteMatrix <- liftIO $ readCSV assignFilePath
+                    roleEmoteMatrix <- liftIO $ readDB assignOverviewDB
                     -- The new emote role map! Cons the emoji and role at the front.
                     let emojiRoleIDMap = (emoji, roleID) : map
                             (read . T.unpack <$>)
@@ -99,7 +99,7 @@ addRoleToStation =
                     -- Write the new mapping to the old CSV
                     _ <-
                         liftIO
-                        .   writeCSV assignFilePath
+                        .   writeDB (GuildDB serverID "idAssign")
                         .   mapToMatrix
                         $   fmap (T.pack . show)
                         <$> emojiRoleIDMap
@@ -200,7 +200,7 @@ handleRoleMapping prependT appendT m emojiRoleIDMap = do
     -- Write the mapping to the newly added CSV
     _ <-
         liftIO
-        .   writeCSV newFileName
+        .   writeDB (GuildDB serverID newFileName)
         $   (\(key, value) -> [key, T.pack $ show value])
         <$> emojiRoleIDMap
 
@@ -209,10 +209,9 @@ handleRoleMapping prependT appendT m emojiRoleIDMap = do
     forM_ emojiList (addReaction (messageChannel newMessage) assignStationID)
 
     -- Add the new assign file to the CSV
-    _ <- liftIO $ addToCSV
-        assignFilePath
+    liftIO $ appendDB
+        assignOverviewDB
         [[T.pack $ show assignStationID, T.pack newFileName]]
-    pure ()
 
 isOnAssignMessage :: ReactionInfo -> DiscordHandler Bool
 isOnAssignMessage r = do
@@ -269,7 +268,7 @@ handleRoleRemove r = do
 -- ID. This has to be wrapped in IO.
 getRoleMap :: T.Text -> IO [(T.Text, RoleId)]
 getRoleMap dir = do
-    contents <- readCSV $ T.unpack dir
+    contents <- readDB (GuildDB serverID $ T.unpack dir)
     pure $ do
         line <- contents
         pure (head line, (read . T.unpack . head . tail) line)
@@ -281,7 +280,7 @@ getRoleMap dir = do
 -- a config file for the message that is attached to the given reaction.
 getRoleListIndex :: ReactionInfo -> IO (Maybe T.Text)
 getRoleListIndex r = do
-    contents <- readCSV assignFilePath
+    contents <- readDB assignOverviewDB
     pure . lookup (reactionMessageId r) $ do
         line <- contents
         let pair = (head line, (head . tail) line)
@@ -292,5 +291,5 @@ getRoleListIndex r = do
 -- which is also the only file name that mustn't be edited.
 getAssignMessageIds :: IO [MessageId]
 getAssignMessageIds = do
-    lines <- readCSV assignFilePath
+    lines <- readDB assignOverviewDB
     pure $ map (read . takeWhile isDigit . T.unpack . head) lines

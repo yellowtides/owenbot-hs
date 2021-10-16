@@ -4,11 +4,11 @@ module BinancePriceFetcher (fetchADADetails, fetchTicker, commands) where
 
 import Data.Aeson
 import qualified Data.ByteString.Lazy as B
-import GHC.Generics
-import Network.HTTP.Conduit (simpleHttp)
 import qualified Data.Text as T (pack, unpack)
 import Discord (DiscordHandler)
 import Discord.Types (Message, messageChannel)
+import GHC.Generics
+import Network.HTTP.Conduit (simpleHttp)
 import UnliftIO (liftIO)
 
 import Command
@@ -17,29 +17,30 @@ import Owoifier (owoify)
 commands :: [Command DiscordHandler]
 commands = [handleTicker, handleAda24h]
 
-data Ticker = Ticker {
-    symbol              :: String,
-    priceChange         :: String,
-    priceChangePercent  :: String,
-    weightedAvgPrice    :: String,
-    prevClosePrice      :: String,
-    lastPrice           :: String,
-    lastQty             :: String,
-    bidPrice            :: String,
-    bidQty              :: String,
-    askPrice            :: String,
-    askQty              :: String,
-    openPrice           :: String,
-    highPrice           :: String,
-    lowPrice            :: String,
-    volume              :: String,
-    quoteVolume         :: String,
-    openTime            :: Integer,
-    closeTime           :: Integer,
-    firstId             :: Integer,
-    lastId              :: Integer,
-    count               :: Integer
-} deriving (Show, Generic)
+data Ticker = Ticker
+    { symbol             :: String
+    , priceChange        :: String
+    , priceChangePercent :: String
+    , weightedAvgPrice   :: String
+    , prevClosePrice     :: String
+    , lastPrice          :: String
+    , lastQty            :: String
+    , bidPrice           :: String
+    , bidQty             :: String
+    , askPrice           :: String
+    , askQty             :: String
+    , openPrice          :: String
+    , highPrice          :: String
+    , lowPrice           :: String
+    , volume             :: String
+    , quoteVolume        :: String
+    , openTime           :: Integer
+    , closeTime          :: Integer
+    , firstId            :: Integer
+    , lastId             :: Integer
+    , count              :: Integer
+    }
+    deriving (Show, Generic)
 
 instance FromJSON Ticker
 instance ToJSON Ticker

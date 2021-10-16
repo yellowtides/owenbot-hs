@@ -2,24 +2,24 @@
 
 module AprilFools (messageReceivers, reactionReceivers) where
 
-import Control.Monad (guard, when, unless)
-import qualified Data.ByteString.Lazy as BL
+import Control.Monad (guard, unless, when)
 import qualified Data.ByteString as B
-import Data.Maybe (isNothing, isJust)
+import qualified Data.ByteString.Lazy as BL
+import Data.Maybe (isJust, isNothing)
 import qualified Data.Text as T
-import Discord (restCall, DiscordHandler, def)
+import Discord (DiscordHandler, def, restCall)
 import qualified Discord.Requests as R
 import Discord.Types (Attachment(..), Message(..), ReactionInfo(..), User(..), UserId)
 import Network.HTTP.Conduit (simpleHttp)
 import UnliftIO (liftIO)
 
 import Utils
-    ( sendMessageChanPingsDisabled
-    , pingUser
+    ( emojiToUsableText
     , pingRole
-    , stripAllPings
+    , pingUser
     , pingWithUsername
-    , emojiToUsableText
+    , sendMessageChanPingsDisabled
+    , stripAllPings
     )
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]

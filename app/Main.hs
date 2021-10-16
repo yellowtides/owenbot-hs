@@ -1,60 +1,56 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
+import Control.Monad
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Control.Monad
 import Discord
-    ( runDiscord
+    ( DiscordHandler
+    , RunDiscordOpts(discordOnEvent, discordOnLog, discordOnStart, discordToken)
     , def
-    , DiscordHandler
-    , RunDiscordOpts(discordToken, discordOnStart, discordOnEvent, discordOnLog)
     , restCall
+    , runDiscord
     )
 import Discord.Types
 import System.Directory (createDirectoryIfMissing)
 
-import CSV (configDir)
-import DB (dbDir)
-import Command
-import EventHandler (handleEvent)
 import Admin (sendGitInfoChan, sendInstanceInfoChan)
-import Status (setStatusFromFile)
-import Utils (sendMessageChan)
+import Command
+import Config
+import DB (initGlobalDatabase)
+import EventHandler (handleEvent)
 import Misc (changePronouns)
+import Status (setStatusFromFile)
 import UnliftIO
-
--- | Channel to post startup message into
-startupChan :: ChannelId
-startupChan = 801763198792368129
+import Utils (sendMessageChan)
 
 -- | UWU
-owen :: String -> IO ()
-owen t = do
+owen :: OwenConfig -> IO ()
+owen cfg = do
     userFacingError <- runDiscord $ def
-        { discordToken   = T.pack t
-        , discordOnStart = startHandler
+        { discordToken   = owenConfigToken cfg
+        , discordOnStart = startHandler cfg
         , discordOnEvent = handleEvent
         , discordOnLog   = \s -> putStrLn ("[Info] " ++ T.unpack s)
         }
     TIO.putStrLn userFacingError
 
-startHandler :: DiscordHandler ()
-startHandler = do
+startHandler :: OwenConfig -> DiscordHandler ()
+startHandler cfg = do
+    let startupChan = owenConfigStartupChan cfg
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
     sendGitInfoChan startupChan
     sendInstanceInfoChan startupChan
     changePronouns
-    liftIO $ putStrLn $ "UserName: " <> T.unpack (userName owenId)
+    liftIO $ putStrLn $ "[Info] UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
 main :: IO ()
 main = do
     putStrLn "starting Owen"
-    cfg <- configDir
-    db  <- dbDir
-    createDirectoryIfMissing True cfg
-    createDirectoryIfMissing True db
-    tok <- readFile (cfg <> "token.txt")
-    putStrLn ("[Info] Token: " ++ tok)
-    owen tok
+    cfg <- readConfig
+    initGlobalDatabase
+    TIO.putStrLn $ "[Info] Token: " <> owenConfigToken cfg
+    owen cfg

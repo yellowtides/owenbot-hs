@@ -1,32 +1,26 @@
 {-# LANGUAGE OverloadedStrings
            , StandaloneDeriving
-           , DeriveGeneric #-}
+           , DeriveAnyClass #-}
 
 module Status (writeStatusFile, setStatusFromFile, updateStatus) where
 
-import Control.Monad (when)
 import Control.Exception.Safe (onException)
+import Control.Monad (when)
+import Data.Aeson (FromJSON, ToJSON)
 import qualified Data.Text as T
 import GHC.Generics
 import Text.Read (readMaybe)
-
-import Data.Aeson (FromJSON, ToJSON)
-import Discord.Types
-import Discord (sendCommand, DiscordHandler)
 import UnliftIO (liftIO)
 
-import CSV (readCSV, writeCSV)
+import Discord (DiscordHandler, sendCommand)
+import Discord.Types
+
 import Command
 import DB
 
--- | Instances to allow us to read/write these ADTs
-deriving instance Generic UpdateStatusType
-instance ToJSON           UpdateStatusType
-instance FromJSON         UpdateStatusType
-
-deriving instance Generic ActivityType
-instance ToJSON           ActivityType
-instance FromJSON         ActivityType
+-- | Instances to allow us to read these ADTs
+deriving instance Read UpdateStatusType
+deriving instance Read ActivityType
 
 -- | 'updateStatus' updates the status through the Discord gateway.
 -- Therefore, it requires DiscordHandler and is not polymorphic.
@@ -51,13 +45,26 @@ setStatusFromFile :: DiscordHandler ()
 setStatusFromFile = do
     status <- liftIO readStatusFile
     case status of
-        Nothing        -> liftIO $ putStrLn "Incorrect status format, ignoring."
+        Nothing ->
+            liftIO
+                $  putStrLn
+                $  "[Info] Incorrect status file format, ignoring. "
+                <> "Use :status to fix this."
         Just (s, a, n) -> updateStatus s a n
 
 -- | @writeStatusFile@ puts the status values into the status db.
 writeStatusFile :: UpdateStatusType -> ActivityType -> T.Text -> IO ()
-writeStatusFile status activity name = writeDB "status" (status, activity, name)
+writeStatusFile status activity name =
+    writeListDB (GlobalDB "status") [T.pack (show status), T.pack (show activity), name]
 
 -- | @readStatusFile@ gets the saved status info from the db.
 readStatusFile :: IO (Maybe (UpdateStatusType, ActivityType, T.Text))
-readStatusFile = readDB "status"
+readStatusFile = do
+    contents <- readListDB (GlobalDB "status")
+    if length contents /= 3
+        then return Nothing
+        else pure $ do
+            let [statusS, activityS, name] = contents
+            statusType   <- readMaybe $ T.unpack statusS
+            activityType <- readMaybe $ T.unpack activityS
+            pure (statusType, activityType, name)

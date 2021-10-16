@@ -5,8 +5,7 @@
     Description : A module containing all sorts of useful macros and functions. The Appendix of owenbot.
 -}
 module Utils
-    ( getRepoDir
-    , emojiToUsableText
+    ( emojiToUsableText
     , sendMessageChan
     , sendReply
     , sendMessageChanEmbed
@@ -40,39 +39,30 @@ module Utils
     , isEmojiValid
     , isRoleInGuild
     , toMaybe
-    )
-where
+    ) where
 
-import qualified Discord.Requests as R
-import Discord.Types
-import Discord
-import Control.Exception (catch, IOException)
-import Control.Monad (unless, join, void)
+import Control.Exception (IOException, catch)
+import Control.Monad (join, unless, void)
 import qualified Data.ByteString as B
+import Data.Char (isDigit)
 import Data.Function (on)
 import Data.List.Split (splitOn)
+import Data.Maybe (fromJust, fromMaybe, listToMaybe)
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
-
-import System.Directory (getXdgDirectory, XdgDirectory(XdgData))
-import System.Exit (ExitCode(ExitSuccess, ExitFailure))
+import Discord
+import qualified Discord.Requests as R
+import Discord.Types
+import System.Directory (XdgDirectory(XdgData), getXdgDirectory)
+import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.Process as Process
+import Text.Regex.TDFA ((=~))
 import UnliftIO (liftIO)
 
-import Text.Regex.TDFA ((=~))
-
-import Owoifier (owoify, weakOwoify)
-import CSV (readSingleColCSV)
-import DB (readDB)
-
-import Data.Maybe (fromJust, listToMaybe, fromMaybe)
-
-import Data.Char (isDigit)
 import Command
-
--- | A db file containing the git repo for the bot. Used for live updating.
-getRepoDir :: IO (Maybe FilePath)
-getRepoDir = readDB "repo"
+import Config
+import DB
+import Owoifier (owoify, weakOwoify)
 
 -- | The `FilePath` representing the location of the assets.
 -- TODO: Move into a saner place than Utils
@@ -130,8 +120,9 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 isRoleInGuild :: (MonadDiscord m) => T.Text -> GuildId -> m (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
     roles <- getGuildRoles gid
-    let matchingRoles =
-            filter ((T.toUpper roleFragment `T.isInfixOf`) . T.toUpper . roleName) roles
+    let matchingRoles = filter
+            ((T.toUpper roleFragment `T.isInfixOf`) . T.toUpper . roleName)
+            roles
     pure $ roleId <$> listToMaybe matchingRoles
 
 -- | `discordEmojiTextToId` takes a Text ending in a Discord <::0-9> formatted emoji string
@@ -301,11 +292,11 @@ hasRoleByID = hasRole roleId
 -- | `checkAllIDs` checks every role of the provided message's author against every role in the
 -- global `devIDs` file, returning an exhaustive list of booleans as a result.
 checkAllIDs :: (MonadDiscord m) => Message -> IO [m Bool]
-checkAllIDs m = fmap (hasRoleByID m . read . T.unpack) <$> (fromJust <$> readDB "devs")
+checkAllIDs m = fmap (hasRoleByID m . read . T.unpack) . owenConfigDevs <$> readConfig
 
 -- | Gets the list of dev roles from the db.
 getDevs :: IO [RoleId]
-getDevs = fromMaybe [] <$> readDB "devs"
+getDevs = map (read . T.unpack) . owenConfigDevs <$> readConfig
 
 -- | `isSenderDeveloper` checks whether the provided message's author is a dev.
 isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
@@ -355,18 +346,19 @@ getTimestampFromMessage =
 -- | `captureCommandOutput` creates a new process from the desired command provided as a `String`.
 -- Then, it waits for the command to finish executing, returning its output as a `Text`.
 captureCommandOutput :: String -> IO T.Text
-captureCommandOutput command = T.pack
-    <$> Process.readCreateProcess ((Process.proc executable args) { cwd = Just "." }) ""
+captureCommandOutput command = T.pack <$> Process.readCreateProcess
+    ((Process.proc executable args) { cwd = Just "." })
+    ""
     where (executable : args) = splitOn " " command
 
 -- | `update` calls a shell script that updates the bot's repo
 update :: IO ExitCode
 update = do
-    repoDir <- getRepoDir
-    case repoDir of
-        Nothing  -> return $ ExitFailure 0
-        Just dir -> Process.waitForProcess =<< Process.spawnCommand
-            ("cd " <> dir <> " && git reset --hard @{u} && git pull && stack install")
+    dir <- owenConfigRepoDir <$> readConfig
+    case dir of
+        Nothing   -> return $ ExitFailure 0
+        Just path -> Process.waitForProcess =<< Process.spawnCommand
+            ("cd " <> path <> " && git reset --hard @{u} && git pull && stack install")
 
 -- | Converts Discord-Haskells Snowflake type to an integer
 snowflakeToInt :: Snowflake -> Integer

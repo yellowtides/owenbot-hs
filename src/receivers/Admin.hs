@@ -2,29 +2,27 @@
 
 module Admin (commands, sendGitInfoChan, sendInstanceInfoChan) where
 
-import qualified Data.Text as T
-import Discord.Types
-import Discord
-import Discord.Requests as R
-import UnliftIO (liftIO)
+import Control.Monad (join, unless, void)
 import Data.Char (isSpace)
 import Data.Maybe (fromJust)
-import Control.Monad (unless, void)
+import qualified Data.Text as T
+import Discord
+import Discord.Requests as R
+import Discord.Types
 import Network.BSD (getHostName)
+import UnliftIO (liftIO)
 
 import System.Directory (doesPathExist)
+import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import qualified System.Process as Process
-import System.Exit (ExitCode(ExitSuccess, ExitFailure))
 
 import Command
 import Owoifier (owoify)
 
-import Utils
-    (getRepoDir, sendMessageChan, captureCommandOutput, update, modPerms, devPerms)
+import Config
 import Process (getMyProcessId)
-import Status (writeStatusFile, updateStatus)
-import CSV (readSingleColCSV, writeSingleColCSV)
-import DB (readDB, writeDB)
+import Status (updateStatus, writeStatusFile)
+import Utils (captureCommandOutput, devPerms, modPerms, sendMessageChan, update)
 
 commands :: [Command DiscordHandler]
 commands =
@@ -77,8 +75,8 @@ commitsAhead dir = T.pack <$> Process.readCreateProcess
 -- | Sends the git info to a specific channel
 sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendGitInfoChan chan = do
-    repo <- liftIO getRepoDir
-    case repo of
+    dir <- liftIO $ owenConfigRepoDir <$> readConfig
+    case dir of
         Nothing  -> sendMessageChan chan $ owoify "No git repo specified in the config!"
         Just dir -> do
             localStatus <- liftIO $ gitInfo dir
@@ -169,39 +167,21 @@ upgradeOwen =
 
 ------- DEV COMMANDS
 -- | Gets the list of developer role IDs
-getDevs :: IO (Maybe [T.Text])
-getDevs = readDB "devs"
-
--- | Updates the list of developer role IDs
-setDevs :: [T.Text] -> IO ()
-setDevs = writeDB "devs"
+getDevs :: IO [T.Text]
+getDevs = owenConfigDevs <$> readConfig
 
 -- | Allows manipulating the list of dev roles without restarting the bot.
 -- If the format is wrong, the bot will crash from `fromJust`
 devs :: Command DiscordHandler
 devs =
-    requires devPerms
-        . help
-            (  "List/add/remove registered developer role IDs:\n"
-            <> "`:devs` alone lists all developer roles.\n"
-            <> "`:devs add <roleID>` sets a given role ID to dev status.\n"
-            <> "`:devs remove <roleID>` removes dev status from a given role ID.\n"
-            <> "To get role IDs, enable Developer Mode in Discord options "
-            <> "and right-click a role."
+    help
+            (  "List registered developer role IDs. Edit the config and "
+            <> "restart the bot if you want to change this."
             )
-        . command "devs"
-        $ \m maybeActionValue -> do
-            contents <- fromJust <$> liftIO getDevs
-            case maybeActionValue :: Maybe (T.Text, RoleId) of
-                Nothing -> do
-                    unless (null contents) $ respond m $ T.intercalate "\n" contents
-                Just ("add", roleId) -> do
-                    liftIO $ setDevs (T.pack (show roleId) : contents)
-                    respond m "Added!"
-                Just ("remove", roleId) -> do
-                    liftIO $ setDevs (filter (/= T.pack (show roleId)) contents)
-                    respond m "Removed!"
-                Just _ -> respond m "Usage: `:devs {add|remove} <roleId>"
+        . command "listDevs"
+        $ \m -> do
+            contents <- liftIO getDevs
+            unless (null contents) $ respond m $ T.intercalate "\n" contents
 
 -- | This can't be polymorphic because updateStatus requires gateway specific
 -- things.

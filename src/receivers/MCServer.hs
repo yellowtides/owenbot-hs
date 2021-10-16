@@ -4,47 +4,50 @@ module MCServer (commands) where
 
 import Data.Aeson
 import qualified Data.ByteString.Lazy as B
-import qualified Data.Text as T
 import Data.Maybe (fromJust)
+import qualified Data.Text as T
 import Discord (DiscordHandler)
-import Discord.Types (Message(messageChannel))
+import Discord.Types (GuildId, Message(messageChannel, messageGuild))
 import GHC.Generics
 import Network.HTTP.Conduit (simpleHttp)
 import UnliftIO (liftIO)
 
 import Command
-import CSV (writeSingleColCSV, readSingleColCSV)
-import Utils (modPerms)
+import DB
 import Owoifier (owoify)
+import Utils (modPerms)
 
 commands :: [Command DiscordHandler]
 commands = [getStatus, setServer]
 
-data ServerStatus = ServerStatus {
-    ip              :: String,
-    online          :: Bool,
-    motd            :: Maybe ServerMOTD,
-    players         :: Maybe ServerPlayers,
-    version         :: Maybe String,
-    software        :: Maybe String
-} deriving (Show, Generic)
+data ServerStatus = ServerStatus
+    { ip       :: String
+    , online   :: Bool
+    , motd     :: Maybe ServerMOTD
+    , players  :: Maybe ServerPlayers
+    , version  :: Maybe String
+    , software :: Maybe String
+    }
+    deriving (Show, Generic)
 
 instance FromJSON ServerStatus
 instance ToJSON ServerStatus
 
-data ServerMOTD = ServerMOTD {
-    raw             :: [String],
-    clean           :: [String],
-    html            :: [String]
-} deriving (Show, Generic)
+data ServerMOTD = ServerMOTD
+    { raw   :: [String]
+    , clean :: [String]
+    , html  :: [String]
+    }
+    deriving (Show, Generic)
 
 instance FromJSON ServerMOTD
 instance ToJSON ServerMOTD
 
-data ServerPlayers = ServerPlayers {
-    players_online  :: Integer,
-    players_max     :: Integer
-} deriving (Show, Generic)
+data ServerPlayers = ServerPlayers
+    { players_online :: Integer
+    , players_max    :: Integer
+    }
+    deriving (Show, Generic)
 
 instance FromJSON ServerPlayers where
     parseJSON =
@@ -108,21 +111,27 @@ alwaysHead (a : as) = a
 
 getStatus :: (MonadDiscord m, MonadIO m) => Command m
 getStatus = command "minecraft" $ \m -> do
-    server_ip <- liftIO readServerIP
-    deets     <- liftIO $ fetchServerDetails server_ip
-    case deets of
-        Left  err  -> liftIO (print err) >> respond m (T.pack err)
-        Right nice -> respond m $ owoify $ T.pack nice
+    case messageGuild m of
+        Nothing  -> respond m "You have to be in a server to do this!"
+        Just gid -> do
+            server_ip <- liftIO $ readServerIP gid
+            deets     <- liftIO $ fetchServerDetails server_ip
+            case deets of
+                Left  err  -> liftIO (print err) >> respond m (T.pack err)
+                Right nice -> respond m $ owoify $ T.pack nice
 
-readServerIP :: IO T.Text
-readServerIP = do
-    server_ip <- readSingleColCSV "mcServer.csv"
+readServerIP :: GuildId -> IO T.Text
+readServerIP gid = do
+    server_ip <- readListDB (GuildDB gid "mcServer")
     if null server_ip
-        then writeSingleColCSV "mcServer.csv" ["123.456.789.123"]
+        then writeListDB (GuildDB gid "mcServer") ["123.456.789.123"]
             >> pure "123.456.789.123"
         else pure $ head server_ip
 
 setServer :: (MonadDiscord m, MonadIO m) => Command m
 setServer = requires modPerms $ command "setMinecraft" $ \m server_ip -> do
-    liftIO $ writeSingleColCSV "mcServer.csv" [server_ip]
-    respond m "Success!"
+    case messageGuild m of
+        Nothing  -> respond m "You have to be in a server to do this!"
+        Just gid -> do
+            liftIO $ writeListDB (GuildDB gid "mcServer") [server_ip]
+            respond m "Success!"

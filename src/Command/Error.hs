@@ -9,8 +9,8 @@ Its usage is mainly internal, to be used from "Command.Command".
 -}
 module Command.Error (CommandError(..)) where
 
+import Control.Exception.Safe (Exception, SomeException)
 import qualified Data.Text as T
-import Control.Exception.Safe (SomeException, Exception)
 import Text.Parsec.Error (ParseError)
 
 import Discord (RestCallErrorCode)

@@ -3,7 +3,7 @@
 
 </div>
 
-# owenbot-hs 
+# owenbot-hs
 ![](https://tokei.rs/b1/github/yellowtides/owenbot-hs)
 
 A neat Discord bot written in Haskell. Use with caution.
@@ -22,6 +22,11 @@ A neat Discord bot written in Haskell. Use with caution.
 Place a text file called `token.txt` containing your bot's Discord token in `~/.config/owen` (or `%APP_DATA%/owen` on Windows).
 
 All source code is formatted using [brittany](https://hackage.haskell.org/package/brittany).
+
+```
+cd src
+find . -type f -name "*.hs" -exec brittany --write-mode=inplace --config-file ../brittany.yaml {} \;
+```
 
 ### Cabal
 

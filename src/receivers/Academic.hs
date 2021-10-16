@@ -4,15 +4,15 @@ module Academic (commands) where
 
 import Control.Monad (void)
 import Data.Char (isDigit)
-import qualified Data.Text as T
 import Data.List (intercalate)
-import Text.Parsec (label, many1, sepBy1, digit, char, try)
+import qualified Data.Text as T
+import Text.Parsec (char, digit, label, many1, sepBy1, try)
 
-import Discord.Types
 import Discord
+import Discord.Types
 
-import Command.Parser
 import Command
+import Command.Parser
 import Utils (respondAsset)
 
 commands :: [Command DiscordHandler]

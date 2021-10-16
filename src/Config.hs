@@ -1,7 +1,52 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Config where
 
-import CSV
+import Control.Exception (IOException, try)
+import Data.Aeson (FromJSON, ToJSON, decode, encode)
+import qualified Data.ByteString as BS (ByteString, readFile, writeFile)
+import qualified Data.ByteString.Lazy as BL (ByteString, fromStrict, toStrict)
+import qualified Data.HashMap.Strict as HM
+import qualified Data.Text as T
+import GHC.Generics
+import System.Directory
+    (XdgDirectory(XdgConfig), createDirectoryIfMissing, getXdgDirectory)
 
--- TODO: Implement config handling (using Dhall)
--- this is to be a separate interface to the KeyValue one, as
--- opposed to the current paradigm of using CSV for everything.
+import Discord.Types (ChannelId)
+
+-- | OwenConfig represents the configuration of Owenbot!
+-- These are read from config.json on startup, and never read nor written to
+-- after.
+data OwenConfig = OwenConfig
+    { owenConfigToken       :: T.Text
+    , owenConfigDevs        :: [T.Text]
+    , owenConfigOwoFreq     :: Int
+    , owenConfigDadFreq     :: Int
+    , owenConfigRepoDir     :: Maybe FilePath
+    , owenConfigStartupChan :: ChannelId
+    }
+    deriving (Generic, Show)
+
+instance FromJSON OwenConfig
+instance ToJSON OwenConfig
+
+getConfigDir :: IO FilePath
+getConfigDir = getXdgDirectory XdgConfig "owen"
+
+-- | Takes a filename and reads json from it into a data structure.
+readConfig :: IO OwenConfig
+readConfig = do
+    createDirectoryIfMissing True <$> getConfigDir
+    fp   <- (<> "/config.json") <$> getConfigDir
+    json <- BS.readFile fp
+    case decode (BL.fromStrict json) of
+        Nothing  -> error "Incorrect config format, can't continue running Owen."
+        Just cfg -> pure cfg
+
+
+-- (commented since writing to config is never necessary and goes against rules)
+-- | Takes a filename (with no suffix) and a data structure, and writes a json
+-- file to that location.
+-- writeConfig :: ToJSON a => String -> a -> IO ()
+-- writeConfig file db = do
+--     fp <- mkPath file
+--     BS.writeFile fp $ BL.toStrict $ encode db
