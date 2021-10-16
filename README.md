@@ -19,7 +19,7 @@ A neat Discord bot written in Haskell. Use with caution.
 
 ## Running/Developing Locally
 
-Place a text file called `token.txt` containing your bot's Discord token in `~/.config/owen` (or `%APP_DATA%/owen` on Windows).
+Place a "config.json" file in `~/.config/owen` (or `%APP_DATA%/owen` on Windows). Format is as given in "Config.hs".
 
 All source code is formatted using [brittany](https://hackage.haskell.org/package/brittany).
 
