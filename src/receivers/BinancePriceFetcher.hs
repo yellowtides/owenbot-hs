@@ -137,20 +137,31 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat
 
 
 handleTicker :: Command DiscordHandler
-handleTicker = command "binance" $ \m base quote -> do
-    announcementM <- liftIO $ fetchTicker base quote
-    case announcementM of
-        Left err -> do
-            liftIO $ putStrLn $ "[DEBUG] Cannot get ticker from Binance: " ++ err
-            respond m $ owoify "Couldn't get the data! Sorry!"
-        Right announcement ->
-            respond m $ owoify . T.pack $ base <> "/" <> quote <> " is " <> announcement
+handleTicker =
+    help "Usage: `:binance <ticker> <ticker>`" . command "binance" $ \m base quote -> do
+        announcementM <- liftIO $ fetchTicker base quote
+        case announcementM of
+            Left err -> do
+                respond m $ owoify "Couldn't get the data! Sorry!"
+            Right announcement ->
+                respond m
+                    $  owoify
+                    .  T.pack
+                    $  base
+                    <> "/"
+                    <> quote
+                    <> " is "
+                    <> announcement
 
 handleAda24h :: Command DiscordHandler
-handleAda24h = alias "ada24h" . command "ada" $ \m -> do
-    adaAnnouncementM <- liftIO fetchADADetails
-    case adaAnnouncementM of
-        Left err -> do
-            liftIO $ putStrLn $ "[DEBUG] Cannot fetch ADA details from Binance: " ++ err
-            respond m $ owoify "Couldn't get the data! Sorry!"
-        Right announcement -> respond m $ owoify $ T.pack announcement
+handleAda24h =
+    alias "ada24h" . help "Print current philcoin status." . command "ada" $ \m -> do
+        adaAnnouncementM <- liftIO fetchADADetails
+        case adaAnnouncementM of
+            Left err -> do
+                liftIO
+                    $  putStrLn
+                    $  "[DEBUG] Cannot fetch ADA details from Binance: "
+                    ++ err
+                respond m $ owoify "Couldn't get the data! Sorry!"
+            Right announcement -> respond m $ owoify $ T.pack announcement
