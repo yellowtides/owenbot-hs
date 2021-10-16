@@ -78,7 +78,10 @@ codeblock lang = (("```" ++ lang ++ "\n") ++) . (++ "```")
 -- >>> :pf inlineCode str = "`" ++ str ++ "`"
 -- inlineCode = ("``" ++) . (++ "``")
 pointfree :: (MonadDiscord m) => Command m
-pointfree = command "pf" $ \m (Remaining code) -> respond m $ pf code
+pointfree =
+    help ("How would you write it point-free?\n" <> "Usage: `:pf <haskell expression>`")
+        . command "pf"
+        $ \m (Remaining code) -> respond m $ pf code
   where
     pf =
         T.pack
@@ -113,9 +116,12 @@ formatHoogleEntry r =
 
 -- | Searches hoogle for matching entries
 hoogle :: (MonadDiscord m, MonadIO m) => Command m
-hoogle = command "hoogle" $ \m (Remaining name) -> do
-    hdocs <- liftIO $ getHoogle maxHoogleItems name
-    respond m $ T.intercalate "\n" $ map formatHoogleEntry hdocs
+hoogle =
+    help ("See the top " <> T.pack (show maxHoogleItems) <> " results from hoogle.")
+        . command "hoogle"
+        $ \m (Remaining name) -> do
+            hdocs <- liftIO $ getHoogle maxHoogleItems name
+            respond m $ T.intercalate "\n" $ map formatHoogleEntry hdocs
 
 
 -- | Formats a 'HoogleResp' into a nice markdown representation
@@ -125,6 +131,9 @@ formatDoc r = formatHoogleEntry r <> "\n" <> T.pack (codeblock "hs" $ docs r)
 -- | Gives the documentation for a given Haskell function (from online Hoogle)
 -- >>> :doc map
 doc :: (MonadDiscord m, MonadIO m) => Command m
-doc = command "doc" $ \m (Remaining name) -> do
-    hdoc <- liftIO $ getHoogle 1 name
-    respond m $ formatDoc $ head hdoc
+doc =
+    help "See the documentation for the Haskell function."
+        . command "doc"
+        $ \m (Remaining name) -> do
+            hdoc <- liftIO $ getHoogle 1 name
+            respond m $ formatDoc $ head hdoc
