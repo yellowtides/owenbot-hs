@@ -3,6 +3,7 @@
 module QuoteSystem (commands) where
 
 import qualified Data.HashMap.Strict as HM
+import Data.Maybe (fromMaybe, isNothing)
 import qualified Data.Text as T
 import Discord
 import Discord.Types
@@ -12,7 +13,7 @@ import Command
 import DB
 import Owoifier (owoify)
 import Text.Parsec (anyChar, many1)
-import Utils (modPerms, sendMessageChan)
+import Utils (modPerms, sendMessageChan, sentInServer)
 
 commands :: [Command DiscordHandler]
 commands = [receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
@@ -54,23 +55,27 @@ receiveQuote = command "quote" $ \m (Remaining name) -> do
         Just text -> text
 
 addQuote :: (MonadDiscord m, MonadIO m) => Command m
-addQuote = command "addquote" $ \m name (Remaining content) -> case messageGuild m of
-    Nothing -> respond m "Only possible in a server!"
-    Just _  -> do
-        textM <- liftIO $ fetchQuote name
-        case textM of
-            Nothing -> if T.length name <= maxNameLen
-                -- do a length check because this is no longer regex
-                then do
-                    liftIO $ storeQuote name content
+addQuote = requires sentInServer $ command "addquote" $ \m name mbContent -> do
+    textM <- liftIO $ fetchQuote name
+    case textM of
+        Nothing -> if T.length name > maxNameLen
+            then respond m "Please make the name less than 32 chars!"
+            else if isNothing mbContent && null (messageAttachments m)
+                then respond m "You need to provide a quote content or an attachment!"
+                else do
+                    -- There is either an attachment, a content, or both guaranteed
+                    let (Remaining content) = fromMaybe (Remaining "") mbContent
+                        attachmentUrlPart   = if null (messageAttachments m)
+                            then ""
+                            else "\n" <> attachmentUrl (head (messageAttachments m))
+                    liftIO $ storeQuote name $ content <> attachmentUrlPart
                     respond m $ "New quote registered under `:quote " <> name <> "`."
-                else respond m "Please make the name less than 32 chars!"
-            Just _ ->
-                respond m
-                    .  owoify
-                    $  "Quote already exists my dude, try `:quote "
-                    <> name
-                    <> "`."
+        Just _ ->
+            respond m
+                .  owoify
+                $  "Quote already exists my dude, try `:quote "
+                <> name
+                <> "`."
 
 rmQuote :: (MonadDiscord m, MonadIO m) => Command m
 rmQuote = requires modPerms $ command "rmquote" $ \m name -> do
