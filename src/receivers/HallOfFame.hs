@@ -44,8 +44,6 @@ attemptHallOfFame r = case reactionGuildId r of
                     check1    = isHallOfFameEmote (reactionEmoji r)
                     check2    = reactionChannelId r /= hofChanId
                 check3 <- isEligibleForHallOfFame fameTable limitTable m
-                respond m $ "checks: " <> (T.pack . concatMap show)
-                    [check1, check2, check3]
                 when (check1 && check2 && check3)
                     $ putInHallOfFame fameTable hofChanId m
             _ -> respond
