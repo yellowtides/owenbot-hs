@@ -1,6 +1,6 @@
 h-hello, i'm here to help you
 here's a lil list of **commands** that ou can use on me:
-```m
+```md
 [-1]: :helpme                           # whenever you need me <3
 
 # Academics
