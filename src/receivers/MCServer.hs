@@ -112,13 +112,20 @@ alwaysHead []       = ""
 alwaysHead (a : as) = a
 
 getStatus :: (MonadDiscord m, MonadIO m) => Command m
-getStatus = requires sentInServer $ command "minecraft" $ \m -> do
-    let gid = fromJust (messageGuild m)
-    server_ip <- liftIO $ readServerIP gid
-    deets     <- liftIO $ fetchServerDetails server_ip
-    case deets of
-        Left  err  -> liftIO (print err) >> respond m (T.pack err)
-        Right nice -> respond m $ owoify $ T.pack nice
+getStatus =
+    requires sentInServer
+        . help
+            (  "See the current status of the associated Minecraft server.\n"
+            <> "Usage: `:minecraft`"
+            )
+        $ command "minecraft"
+        $ \m -> do
+            let gid = fromJust (messageGuild m)
+            server_ip <- liftIO $ readServerIP gid
+            deets     <- liftIO $ fetchServerDetails server_ip
+            case deets of
+                Left  err  -> liftIO (print err) >> respond m (T.pack err)
+                Right nice -> respond m $ owoify $ T.pack nice
 
 readServerIP :: GuildId -> IO T.Text
 readServerIP gid = do
@@ -131,8 +138,12 @@ readServerIP gid = do
 setServer :: (MonadDiscord m, MonadIO m) => Command m
 setServer =
     requires sentInServer
-        $ requires modPerms
-        $ command "setMinecraft"
+        . requires modPerms
+        . help
+            (  "Set the IP of the associated Minecraft server.\n"
+            <> "Usage: `:setMinecraft <ip>`"
+            )
+        . command "setMinecraft"
         $ \m server_ip -> do
             let gid = fromJust (messageGuild m)
             liftIO $ writeListDB (GuildDB gid "mcServer") [server_ip]

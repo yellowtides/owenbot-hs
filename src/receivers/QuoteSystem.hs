@@ -41,7 +41,7 @@ receiveQuoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name ->
 
 receiveQuote :: (MonadDiscord m, MonadIO m) => Command m
 receiveQuote =
-    help "Call a registered quote. Usage: `:quote <name>` or alias `::<name>`"
+    help "Call a registered quote.\nUsage: `:quote <name>` or the alias `::<name>`"
         . command "quote"
         $ \m (Remaining name) -> do
             textM <- liftIO $ fetchQuote name
@@ -58,7 +58,7 @@ addQuote :: (MonadDiscord m, MonadIO m) => Command m
 addQuote =
     requires sentInServer
         . help
-            (  "Register a new quote. Up to one attachment accepted. "
+            (  "Register a new quote. Up to one attachment accepted.\n"
             <> "Usage: `:addquote <name> [content|attachment]` "
             )
         . command "addquote"
@@ -95,7 +95,7 @@ addQuote =
 rmQuote :: (MonadDiscord m, MonadIO m) => Command m
 rmQuote =
     requires modPerms
-        . help "Removes a quote. Usage: `:rmquote <name>`"
+        . help "Removes a quote.\nUsage: `:rmquote <name>`"
         . command "rmquote"
         $ \m name -> do
             textM <- liftIO $ fetchQuote name
