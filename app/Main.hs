@@ -2,6 +2,7 @@
 
 module Main where
 
+import Control.Exception (SomeException)
 import Control.Monad
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
@@ -40,10 +41,18 @@ startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
     let startupChan = owenConfigStartupChan cfg
     owenId <- getCurrentUser
-    createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
-    sendGitInfoChan startupChan
-    sendInstanceInfoChan startupChan
-    changePronouns
+    handle
+            (\e -> do
+                liftIO
+                    $  putStrLn
+                    $  "[Info] Encountered error during startup, ignoring: "
+                    <> show (e :: SomeException)
+            )
+        $ do
+            createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
+            sendGitInfoChan startupChan
+            sendInstanceInfoChan startupChan
+            changePronouns
     liftIO $ putStrLn $ "[Info] UserName: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
