@@ -25,7 +25,7 @@ import Pointfree (pointfree')
 import UnliftIO (liftIO)
 
 commands :: [Command DiscordHandler]
-commands = [pointfree, doc, hoogle, eval]
+commands = [pointfree, doc, hoogle, hoogType, eval]
 
 -- | Maximum number of items to return from a Hoogle search
 maxHoogleItems :: Int
@@ -143,8 +143,19 @@ doc =
     help "See the documentation for the Haskell function."
         . command "doc"
         $ \m (Remaining name) -> do
-            hdoc <- liftIO $ getHoogle 1 name
-            respond m $ formatDoc $ head hdoc
+            hdoc <- liftIO $ head <$> getHoogle 1 name
+            respond m $ formatDoc hdoc
+
+-- | Gives the type of a given Haskell function (from online Hoogle, top entry)
+-- >>> :type map
+hoogType :: (MonadDiscord m, MonadIO m) => Command m
+hoogType =
+    help "See the type of the Haskell function."
+        . alias "t"
+        . command "type"
+        $ \m (Remaining name) -> do
+            hdoc <- liftIO $ head <$> getHoogle 1 name
+            respond m $ formatHoogleEntry hdoc
 
 data TryHaskellResponse = TryHaskellSuccessResponse
     { thExpr :: String
