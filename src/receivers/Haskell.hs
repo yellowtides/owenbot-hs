@@ -216,7 +216,7 @@ eval =
                 req = setRequestMethod "POST" $ setRequestBodyURLEncoded
                     [ ("exp", encodeUtf8 expression)
                     , ( "args"
-                      , "[[],{\"whatsthis.txt\":\"https://www.youtube.com/watch?v=DLzxrzFCyOs\",\"admin/password.txt\":\"ceasar salad\"}]"
+                      , "[[],{\"/whatsthis.txt\":\"https://www.youtube.com/watch?v=DLzxrzFCyOs\",\"/admin/password.txt\":\"ceasar salad\"}]"
                       )
                     ]
                     initReq
