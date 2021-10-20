@@ -9,7 +9,10 @@ import Discord
 import Discord.Types
 import UnliftIO (liftIO)
 
+import Command
 import qualified DB
+import Owoifier (owoify)
+import Utils (sendMessageDM)
 
 --import qualified AprilFools
 import qualified Academic
@@ -22,10 +25,6 @@ import qualified Misc
 import qualified ModifyEventsChannel
 import qualified QuoteSystem
 import qualified RoleSelfAssign
-
-import Command
-import Owoifier (owoify)
-import Utils (sendMessageDM)
 
 commands :: [Command DiscordHandler]
 commands = concat
