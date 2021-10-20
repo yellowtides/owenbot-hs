@@ -2,22 +2,30 @@
 
 module Haskell (commands) where
 
-import Data.Aeson ((.:), FromJSON, eitherDecode, parseJSON, withObject)
+import Data.Aeson ((.:), FromJSON, Value(Object), eitherDecode, parseJSON, withObject)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 
 import Command
+import Data.Aeson.Types
+import qualified Data.HashMap.Strict as HM
 import Discord (DiscordHandler)
 import Discord.Types (Message)
 import GHC.Generics
 import Network.HTTP.Simple
-    (getResponseBody, httpLBS, parseRequest, setRequestQueryString)
+    ( getResponseBody
+    , httpLBS
+    , parseRequest
+    , setRequestBodyURLEncoded
+    , setRequestMethod
+    , setRequestQueryString
+    )
 import Pointfree (pointfree')
 import UnliftIO (liftIO)
 
 commands :: [Command DiscordHandler]
-commands = [pointfree, doc, hoogle]
+commands = [pointfree, doc, hoogle, eval]
 
 -- | Maximum number of items to return from a Hoogle search
 maxHoogleItems :: Int
@@ -137,3 +145,83 @@ doc =
         $ \m (Remaining name) -> do
             hdoc <- liftIO $ getHoogle 1 name
             respond m $ formatDoc $ head hdoc
+
+data TryHaskellResponse = TryHaskellSuccessResponse
+    { thExpr :: String
+    , thStdout :: [String]
+    , thValue :: String
+    , thType :: String
+    }
+    | TryHaskellErrorResponse
+    { thError :: String
+    } deriving Show
+
+instance FromJSON TryHaskellResponse where
+    parseJSON = withObject "TryHaskellResponse" $ \v -> case HM.lookup "success" v of
+        Nothing -> do
+            TryHaskellErrorResponse <$> v .: "error"
+        Just _ -> do
+            s <- v .: "success"
+            TryHaskellSuccessResponse
+                <$> s
+                .:  "expr"
+                <*> s
+                .:  "stdout"
+                <*> s
+                .:  "value"
+                <*> s
+                .:  "type"
+
+-- | Evaluates a Haskell expression using (Chris Done's) TryHaskell backend.
+-- For more complexity (and loss of security), this can be implemented using
+-- the GHC modules to parse the expression. However this can be dangerous and is
+-- reinventing the wheel, so we entirely offload the concern to TryHaskell.
+--
+-- Uses https://haskellmooc.co.uk/ instead of https://tryhaskell.org/ since
+-- it supports IO and looks like it's more updated.
+-- >>> :eval 1 + 1
+eval :: (MonadDiscord m, MonadIO m) => Command m
+eval =
+    help "Evaluate a Haskell expression."
+        . command "eval"
+        $ \m (Remaining expression) -> do
+            initReq <- liftIO $ parseRequest "https://haskellmooc.co.uk/eval"
+            let
+                req = setRequestMethod "POST" $ setRequestBodyURLEncoded
+                    [ ("exp", encodeUtf8 expression)
+                    , ( "args"
+                      , "[[],{\"/hello\":\"Hello, World!\",\"/functions\":\"You can also check out removeFile, writeFile, appendFile\",\"/files\":\"Your file system changes will stick around in your browser's local storage!\",\"/welcome\":\"Welcome to your mini filesystem! Try playing with this function: getDirectoryContents\"}]"
+                      )
+                    ]
+                    initReq
+            resp <- liftIO $ getResponseBody <$> httpLBS req
+
+            let
+                parsedADT = do
+                    decodedValue  <- eitherDecode resp
+                    decodedValue' <- case decodedValue of
+                        (Object o) -> Right decodedValue
+                        ds ->
+                            Left
+                                $  "TryHaskell didn't respond with an JSON Object: "
+                                <> show ds
+                    parseEither parseJSON decodedValue'
+            case parsedADT of
+                Left e -> do
+                    respond
+                        m
+                        "The command failed unexpectedly. Try again later, or contact an OwenDev if it persists."
+                    liftIO $ putStrLn $ "[WARN] " <> e
+                Right r@TryHaskellSuccessResponse{} ->
+                    respond m
+                        $  T.pack
+                        $  codeblock
+                             "hs"
+                             ("λ " <> thExpr r <> "\n" <> thValue r <> " :: " <> thType r
+                             )
+                        <> (if not (null $ thStdout r)
+                             then "\nOutput:\n" <> codeblock "" (unlines (thStdout r))
+                             else ""
+                           )
+                Right r@TryHaskellErrorResponse{} ->
+                    respond m $ T.pack $ "!!! " <> codeblock "hs" (thError r)
