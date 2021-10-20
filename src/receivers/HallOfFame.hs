@@ -134,7 +134,7 @@ createHallOfFameEmbed m = do
 reactLimit :: (MonadDiscord m, MonadIO m) => Command m
 reactLimit =
     requires sentInServer
-        . requires devPerms
+        . requires modPerms
         . help
             "Specify a new limit for this server, or leave empty to see the current limit."
         $ command "reactLimit"
