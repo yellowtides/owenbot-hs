@@ -3,6 +3,7 @@
 module Academic (commands) where
 
 import Control.Monad (void)
+import Control.Exception.Safe (catchAny)
 import Data.Char (isDigit)
 import Data.List (intercalate)
 import qualified Data.Text as T
@@ -58,7 +59,8 @@ theorem =
             x@TwoDotSeparated{} -> do
                 let path = "ila/theorems/" <> show x <> ".png"
                 let name = show x <> ".png"
-                respondAsset m ("Theorem " <> T.pack name) path
+                catchAny (respondAsset m ("Theorem " <> T.pack name) path) $ \e -> do
+                    respond m "Theorem not found."
             _ -> respond m "ILA theorems have the format: XX.YY.ZZ!"
 
 -- | Definition.
@@ -72,7 +74,8 @@ definition =
                 x@OneDotSeparated{} -> do
                     let path = "ila/definitions/" <> show x <> ".png"
                     let name = show x <> ".png"
-                    respondAsset m ("Definition " <> T.pack name) path
+                    catchAny (respondAsset m ("Definition " <> T.pack name) path) $ \e -> do
+                        respond m "Definition not found."
                 _ -> respond m "ILA definitions have the format: XX.YY!"
 
 -- | Lemma.
@@ -86,7 +89,8 @@ lemma =
                 x@TwoDotSeparated{} -> do
                     let path = "ila/lemmas/" <> show x <> ".png"
                     let name = show x <> ".png"
-                    respondAsset m ("Lemma " <> T.pack name) path
+                    catchAny (respondAsset m ("Lemma " <> T.pack name) path) $ \e -> do
+                        respond m "Lemma not found."
                 _ -> respond m "ILA lemmas have the format: XX.YY.ZZ!"
 
 -- | Textbook.

@@ -42,7 +42,7 @@ module Utils
     , toMaybe
     ) where
 
-import Control.Exception (IOException, catch)
+import Control.Exception (IOException)
 import Control.Monad (join, unless, void)
 import qualified Data.ByteString as B
 import Data.Char (isDigit)
