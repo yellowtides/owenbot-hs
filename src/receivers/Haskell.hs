@@ -246,7 +246,7 @@ eval =
                              ("λ " <> thExpr r <> "\n" <> thValue r <> " :: " <> thType r
                              )
                         <> (if not (null $ thStdout r)
-                             then "\nOutput:\n" <> codeblock "" (unlines (thStdout r))
+                             then "\nOutput:\n" <> codeblock "" (concat (thStdout r))
                              else ""
                            )
                 Right r@TryHaskellErrorResponse{} ->
