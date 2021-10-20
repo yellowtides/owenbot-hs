@@ -125,7 +125,12 @@ formatHoogleEntry r =
 -- | Searches hoogle for matching entries
 hoogle :: (MonadDiscord m, MonadIO m) => Command m
 hoogle =
-    help ("See the top " <> T.pack (show maxHoogleItems) <> " results from hoogle.")
+    help
+            (  "See the top "
+            <> T.pack (show maxHoogleItems)
+            <> " results from hoogle.\n"
+            <> "Usage: `:hoogle <query>`"
+            )
         . command "hoogle"
         $ \m (Remaining name) -> do
             hdocs <- liftIO $ getHoogle maxHoogleItems name
@@ -140,7 +145,10 @@ formatDoc r = formatHoogleEntry r <> "\n" <> T.pack (codeblock "hs" $ docs r)
 -- >>> :doc map
 doc :: (MonadDiscord m, MonadIO m) => Command m
 doc =
-    help "See the documentation for the Haskell function."
+    help
+            (  "See the documentation for the Haskell function.\n"
+            <> "Usage: `:doc <function>`"
+            )
         . command "doc"
         $ \m (Remaining name) -> do
             hdoc <- liftIO $ head <$> getHoogle 1 name
@@ -150,7 +158,10 @@ doc =
 -- >>> :type map
 hoogType :: (MonadDiscord m, MonadIO m) => Command m
 hoogType =
-    help "See the type of the Haskell function."
+    help
+            (  "See the type of the Haskell function.\n"
+            <> "Usage: `:type <function>` or `:t <function>`"
+            )
         . alias "t"
         . command "type"
         $ \m (Remaining name) -> do
@@ -193,7 +204,11 @@ instance FromJSON TryHaskellResponse where
 -- >>> :eval 1 + 1
 eval :: (MonadDiscord m, MonadIO m) => Command m
 eval =
-    help "Evaluate a Haskell expression."
+    help
+            (  "Evaluate a Haskell expression.\n"
+            <> "Usage: `:eval <expression>` or `:e <expression>`"
+            )
+        . alias "e"
         . command "eval"
         $ \m (Remaining expression) -> do
             initReq <- liftIO $ parseRequest "https://haskellmooc.co.uk/eval"
