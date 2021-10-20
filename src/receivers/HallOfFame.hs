@@ -47,9 +47,10 @@ attemptHallOfFame r = case reactionGuildId r of
                 when (check1 && check2 && check3)
                     $ putInHallOfFame fameTable hofChanId m
             _ ->
-                respond m
-                    $  "Hall of Fame has not been set up in this server! "
-                    <> "Use :setFameChan to set a channel ID."
+                -- respond m
+                --     $  "Hall of Fame has not been set up in this server! "
+                --     <> "Use :setFameChan to set a channel ID."
+                pure ()
 
 
 hallOfFameEmotes :: [T.Text]
