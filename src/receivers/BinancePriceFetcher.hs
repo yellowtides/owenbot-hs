@@ -51,7 +51,7 @@ adaEmoji = "<:ada:805934431071371305>"
 -- TODO: allow server to choose emoji through :config
 
 validCurrencyRegex :: String
-validCurrencyRegex = "^[A-Z0-9-_.]{1,20}$"
+validCurrencyRegex = "^[A-Z0-9\\-_.]{1,20}$"
 
 jsonURL :: String -> String -> String
 jsonURL base quote =
