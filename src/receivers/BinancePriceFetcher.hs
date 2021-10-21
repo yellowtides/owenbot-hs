@@ -9,7 +9,7 @@ import Discord (DiscordHandler)
 import Discord.Types (Message, messageChannel)
 import GHC.Generics
 import Network.HTTP.Conduit (simpleHttp)
-import Text.Regex.TDFA (=~)
+import Text.Regex.TDFA ((=~))
 import UnliftIO (liftIO)
 
 import Command
