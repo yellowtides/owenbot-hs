@@ -42,6 +42,14 @@ Alternatively, build and run with `stack run owenbot-exe`.
 
 Run tests with `stack test`.
 
+### Nix
+
+If you have nix installed,
+running `stack install --nix`
+will automatically ensure you get an environment with the correct
+system-level dependencies (namely zlib).
+
+
 ### Docker
 
 There is a `Dockerfile` included in this repo that basically runs the Stack build/exec process.
