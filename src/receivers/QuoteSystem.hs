@@ -48,7 +48,7 @@ receiveQuote =
             respond m $ case textM of
                 Nothing ->
                     owoify
-                        $ T.concat
+                        $ mconcat
                             [ "Nope, nothing there. "
                             , "Maybe consider `:addquote [quote] [quote_message]`"
                             ]
