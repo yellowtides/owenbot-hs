@@ -222,6 +222,11 @@ instance (Monad m) => Applicative (Requirement m) where
 -- only be called if both @a@ and @b@ return @Right ()@ (i.e. pass).
 instance (Monad m) => Monad (Requirement m) where
     return = pure
+    Requirement a >>= f = Requirement $ \m -> do
+        a' <- a m
+        case a' of
+            Left err -> pure $ Left err
+            Right a'' -> unRequirement (f a'') m
     Requirement a >> Requirement b = Requirement $ \m -> do
         a' <- a m
         b' <- b m
