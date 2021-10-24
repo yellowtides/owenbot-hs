@@ -216,7 +216,7 @@ eval =
                 req = setRequestMethod "POST" $ setRequestBodyURLEncoded
                     [ ("exp", encodeUtf8 expression)
                     , ( "args"
-                      , "[[],{\"/hello\":\"Hello, World!\",\"/functions\":\"You can also check out removeFile, writeFile, appendFile\",\"/files\":\"Your file system changes will stick around in your browser's local storage!\",\"/welcome\":\"Welcome to your mini filesystem! Try playing with this function: getDirectoryContents\"}]"
+                      , "[[],{\"/whatsthis.txt\":\"https://www.youtube.com/watch?v=DLzxrzFCyOs\",\"/admin/password.txt\":\"ceasar salad\"}]"
                       )
                     ]
                     initReq
