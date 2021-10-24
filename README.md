@@ -24,8 +24,7 @@ Place a "config.json" file in `~/.config/owen` (or `%APP_DATA%/owen` on Windows)
 All source code is formatted using [brittany](https://hackage.haskell.org/package/brittany).
 
 ```
-cd src
-find . -type f -name "*.hs" -exec brittany --write-mode=inplace --config-file ../brittany.yaml {} \;
+find src -type f -name "*.hs" -exec brittany --write-mode=inplace --config-file ./brittany.yaml {} \;
 ```
 
 ### Cabal
