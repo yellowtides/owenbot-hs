@@ -57,6 +57,7 @@ mkRules defs = do
 -- | Depending on what type of segment it is, it inserts a Y or y
 insertionRules :: [(T.Text, Char)]
 insertionRules = mkRules [('y', segmentsSmallY), ('Y', segmentsBigY)]
+
 -- | If it the word comes as a tuple with a Y then it is interpersed in the word and then replaces the og
 applyRule :: (T.Text, Char) -> T.Text -> T.Text
 applyRule rule =
