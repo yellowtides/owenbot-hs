@@ -13,7 +13,7 @@ import Command
 import DB
 import Owoifier (owoify)
 import Text.Parsec (anyChar, many1)
-import Utils (modPerms, sendMessageChan, sentInServer)
+import Utils (devPerms, modPerms, sendMessageChan, sentInServer)
 
 commands :: [Command DiscordHandler]
 commands = [receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
@@ -94,7 +94,7 @@ addQuote =
 
 rmQuote :: (MonadDiscord m, MonadIO m) => Command m
 rmQuote =
-    requires modPerms
+    requires (modPerms <|> devPerms)
         . help "Removes a quote.\nUsage: `:rmquote <name>`"
         . command "rmquote"
         $ \m name -> do

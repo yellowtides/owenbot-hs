@@ -21,7 +21,15 @@ import Command
 import DB
 import Owoifier (owoify)
 import Utils
-    (addReaction, isEmojiValid, isRoleInGuild, modPerms, sendMessageChan, sendMessageDM)
+    ( addReaction
+    , devPerms
+    , isEmojiValid
+    , isRoleInGuild
+    , modPerms
+    , sendMessageChan
+    , sendMessageDM
+    , sentInServer
+    )
 
 type EmojiRoleMap = [(String, RoleId)]
 -- emoji --> snowflake.
@@ -57,7 +65,7 @@ assignOverviewDB = GuildDB serverID "idAssign"
 
 addRoleToStation :: Command DiscordHandler
 addRoleToStation =
-    requires modPerms
+    requires (sentInServer <> (modPerms <|> devPerms))
         $ help
             (  "Syntax: `:addRoleToStation <prependText> <appendText>\" "
             <> "<stationID> <channelID> <emoji> <roleText>`"
@@ -133,7 +141,7 @@ jsonTxtToMap = eitherDecode . fromStrict . encodeUtf8
 
 createAssignStation :: Command DiscordHandler
 createAssignStation =
-    requires modPerms
+    requires (sentInServer <> (modPerms <|> devPerms))
         $ help
             (  "Syntax: `:createSelfAssign <prependText> <appendText> "
             <> "{\"emoji1\": \"roleText1\", \"emoji2\": \"roleText2\", ...}`"

@@ -311,18 +311,18 @@ channelRequirement cid = Requirement $ \msg ->
         True  -> Right ()
         False -> Left $ "Need to be in the channel " <> T.pack cid
 
-permCheck :: (MonadDiscord m, MonadIO m) => m Bool -> T.Text -> m (Either T.Text ())
+permCheck :: (MonadDiscord m) => m Bool -> T.Text -> m (Either T.Text ())
 permCheck check reason = do
     result <- check
     pure $ if result then Right () else Left reason
 
-roleNameIn :: (MonadDiscord m, MonadIO m) => [T.Text] -> Requirement m ()
+roleNameIn :: (MonadDiscord m) => [T.Text] -> Requirement m ()
 roleNameIn names = Requirement $ \msg -> do
     triggerTypingIndicator (messageChannel msg)
     let check = or <$> mapM (hasRoleByName msg) names
     permCheck check $ "Need to have one of: " <> (T.pack . show) names
 
-modPerms :: (MonadDiscord m, MonadIO m) => Requirement m ()
+modPerms :: (MonadDiscord m) => Requirement m ()
 modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
 
 -- | Command requirement for sender being a registered developer.

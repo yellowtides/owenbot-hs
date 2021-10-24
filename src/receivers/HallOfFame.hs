@@ -13,7 +13,8 @@ import Command
 import DB
 import Owoifier (owoify)
 import Utils
-    ( getMessageLink
+    ( devPerms
+    , getMessageLink
     , getTimestampFromMessage
     , linkChannel
     , messageFromReaction
@@ -167,8 +168,7 @@ readLimit limitTable = do
 
 setFameChan :: (MonadDiscord m, MonadIO m) => Command m
 setFameChan =
-    requires sentInServer
-        . requires modPerms
+    requires (sentInServer <> (modPerms <|> devPerms))
         . help "Set the channel for Hall of Fame in this server."
         $ command "setFameChan"
         $ \m chanId -> do

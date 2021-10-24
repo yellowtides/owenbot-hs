@@ -22,7 +22,8 @@ import Owoifier (owoify)
 import Config
 import Process (getMyProcessId)
 import Status (updateStatus, writeStatusFile)
-import Utils (captureCommandOutput, devPerms, modPerms, sendMessageChan, update)
+import Utils
+    (captureCommandOutput, devPerms, modPerms, sendMessageChan, sentInServer, update)
 
 commands :: [Command DiscordHandler]
 commands =
@@ -204,7 +205,7 @@ data Lock = Lockdown | Unlock deriving (Show, Eq)
 -- | Locks @everyone-level posting permissions in a given channel
 lockdown :: Command DiscordHandler
 lockdown =
-    requires modPerms
+    requires (sentInServer <> modPerms)
         . help
             (  "`:lockdown` locks posting permissions for the `everyone` role in "
             <> "this channel."
@@ -224,7 +225,7 @@ lockdown =
 -- | Unlocks a locked channel.
 unlock :: Command DiscordHandler
 unlock =
-    requires modPerms
+    requires (sentInServer <> modPerms)
         . help "`:unlock` reverses a `:lockdown`."
         . command "unlock"
         $ \m -> do
@@ -257,7 +258,7 @@ lockdownChan chan guild b = do
 -- https://discordapi.com/permissions.html#2251673153
 unlockAll :: Command DiscordHandler
 unlockAll =
-    requires modPerms
+    requires (sentInServer <> modPerms)
         . help "`:unlock` for every channel"
         . command "unlockAll"
         $ \m -> do
@@ -277,7 +278,7 @@ unlockAll =
 -- https://discordapi.com/permissions.html#2251671105
 lockAll :: Command DiscordHandler
 lockAll =
-    requires modPerms
+    requires (sentInServer <> modPerms)
         . help "`:lockdown` for every channel"
         . command "lockAll"
         $ \m -> do
