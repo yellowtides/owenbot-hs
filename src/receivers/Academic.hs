@@ -2,8 +2,8 @@
 
 module Academic (commands) where
 
-import Control.Monad (void)
 import Control.Exception.Safe (catchAny)
+import Control.Monad (void)
 import Data.Char (isDigit)
 import Data.List (intercalate)
 import qualified Data.Text as T
@@ -74,8 +74,9 @@ definition =
                 x@OneDotSeparated{} -> do
                     let path = "ila/definitions/" <> show x <> ".png"
                     let name = show x <> ".png"
-                    catchAny (respondAsset m ("Definition " <> T.pack name) path) $ \e -> do
-                        respond m "Definition not found."
+                    catchAny (respondAsset m ("Definition " <> T.pack name) path)
+                        $ \e -> do
+                            respond m "Definition not found."
                 _ -> respond m "ILA definitions have the format: XX.YY!"
 
 -- | Lemma.
