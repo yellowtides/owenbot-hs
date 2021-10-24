@@ -134,10 +134,9 @@ module Command.Command
     ) where
 
 import Control.Applicative (Alternative(..), Applicative(liftA2))
-import Control.Arrow (left)
 import Control.Exception.Safe
     (Exception, MonadCatch, MonadThrow, SomeException, catch, throwM)
-import Control.Monad (MonadPlus(..), guard, unless, void, when)
+import Control.Monad (guard, unless, void, when)
 import Control.Monad.IO.Class (MonadIO)
 import Data.List (nub)
 import Data.Maybe (catMaybes)
@@ -195,9 +194,9 @@ data Command m = Command
     , commandHelp         :: T.Text
     -- ^ The help for this command. Displayed when 'helpCommand' is used.
     , commandRequires     :: Requirement m ()
-    -- ^ A list of requirements that need to pass (Nothing) for the command to
-    -- be processed. Just contains the reason. They will be passed to
-    -- commandErrorHandler as a 'RequirementError'.
+    -- ^ Requirements that need to pass for the command to be processed. You can
+    -- use the Semigroup @(<>)@ for requirement conjunction, and the Alternative
+    -- @(<|>)@ for requirement disjunction.
     }
 
 {- | A @Requirement@ is a representation of a command requirement, often used
@@ -250,7 +249,7 @@ instance (Monad m, Monoid a) => Monoid (Requirement m a) where
 -- | The Alternative instance of @Requirement@ is used to combine multiple
 -- checks in a disjunctive form. That is, if a @Command@ has the requirement
 -- @(a <|> b)@ where a and b are both @Requirement@s, then the @Command@ will
--- be called if either @a@ and @b@ return Nothing (i.e. pass).
+-- be called if either @a@ and @b@ return @Right ()@ (i.e. pass).
 instance (Monad m) => Alternative (Requirement m) where
     -- The empty definition of Alternative is the identity on <|>. Thinking this
     -- as OR disjunction, it is a requirement that always fails.
