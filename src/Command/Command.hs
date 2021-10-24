@@ -199,9 +199,9 @@ data Command m = Command
     -- @(<|>)@ for requirement disjunction.
     }
 
-{- | A @Requirement@ is a representation of a command requirement, often used
+{- | A @Requirement@ is a representation of a command requirement, often used in
 the case commands are moderator-only, or to be used in a specific context.
-@Either a ()@ is isomorphic to @Maybe ()@, but it is used to make it easier to
+@Either a ()@ is isomorphic to @Maybe a@, but it is used to make it easier to
 understand that the @a@ field is for providing an error reason.
  -}
 newtype Requirement m a = Requirement {unRequirement :: Message -> m (Either T.Text a)}
