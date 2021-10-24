@@ -15,7 +15,7 @@ import UnliftIO (liftIO)
 import Command
 import DB
 import Owoifier (owoify)
-import Utils (modPerms, sentInServer)
+import Utils (devPerms, modPerms, sentInServer)
 
 commands :: [Command DiscordHandler]
 commands = [getStatus, setServer]
@@ -137,8 +137,7 @@ readServerIP gid = do
 
 setServer :: (MonadDiscord m, MonadIO m) => Command m
 setServer =
-    requires sentInServer
-        . requires modPerms
+    requires (sentInServer <> (modPerms <|> devPerms))
         . help
             (  "Set the IP of the associated Minecraft server.\n"
             <> "Usage: `:setMinecraft <ip>`"

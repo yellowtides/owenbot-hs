@@ -65,15 +65,15 @@ roll n = getStdRandom $ randomR (1, n)
 select :: [a] -> IO a
 select xs = (xs !!) . subtract 1 <$> roll (length xs)
 
-rollCheck :: MonadIO m => Int -> m (Maybe T.Text)
-rollCheck chance = (`toMaybe` "") <$> ((/= 1) <$> liftIO (roll chance))
+rollCheck :: MonadIO m => Int -> Requirement m ()
+rollCheck chance = Requirement $ \msg -> do
+    welp <- ((/= 1) <$> liftIO (roll chance))
+    pure $ if welp then Left "" else Right ()
 
 owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 owoifyIfPossible =
-    requires (const $ rollCheck owoifyChance)
-        $ regexCommand "[lLrR]|[nNmM][oO]"
-        $ \m _ -> do
-            sendReply m True $ owoify (messageText m)
+    requires (rollCheck owoifyChance) $ regexCommand "[lLrR]|[nNmM][oO]" $ \m _ -> do
+        sendReply m True $ owoify (messageText m)
 
 -- | Emote names for which to trigger force owoify on. Use All Caps.
 forceOwoifyEmotes :: [T.Text]
@@ -120,7 +120,7 @@ thatcherIsAlive = regexCommand (thatcherRE <> "[Aa]live")
 
 dadJokeIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 dadJokeIfPossible =
-    requires (const $ rollCheck dadJokeChance)
+    requires (rollCheck dadJokeChance)
         $ regexCommand "^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)"
         $ \m (name : _) -> when (T.length name >= 3) $ respond m $ owoify
             ("hello " <> name <> ", i'm owen")

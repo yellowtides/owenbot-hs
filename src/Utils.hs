@@ -305,32 +305,36 @@ isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
 isSenderDeveloper m = liftIO getDevs >>= fmap or . mapM (hasRoleByID m)
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
-channelRequirement :: (MonadDiscord m) => String -> Message -> m (Maybe T.Text)
-channelRequirement cid msg =
-    pure $ toMaybe (messageChannel msg == read cid) "need to be in channel"
+channelRequirement :: (MonadDiscord m) => String -> Requirement m ()
+channelRequirement cid = Requirement $ \msg ->
+    pure $ case (messageChannel msg == read cid) of
+        True  -> Right ()
+        False -> Left $ "Need to be in the channel " <> T.pack cid
 
--- | Command requirement for sender being a registered developer.
-permCheck
-    :: (MonadDiscord m, MonadIO m) => m Bool -> T.Text -> Message -> m (Maybe T.Text)
-permCheck check help msg =
-    triggerTypingIndicator (messageChannel msg) >> flip toMaybe help . not <$> check
+permCheck :: (MonadDiscord m, MonadIO m) => m Bool -> T.Text -> m (Either T.Text ())
+permCheck check reason = do
+    result <- check
+    pure $ if result then Right () else Left reason
 
-roleNameIn :: (MonadDiscord m, MonadIO m) => [T.Text] -> Message -> m (Maybe T.Text)
-roleNameIn names msg = permCheck
-    (or <$> mapM (hasRoleByName msg) names)
-    ("Need to have one of: " <> (T.pack . show) names)
-    msg
+roleNameIn :: (MonadDiscord m, MonadIO m) => [T.Text] -> Requirement m ()
+roleNameIn names = Requirement $ \msg -> do
+    triggerTypingIndicator (messageChannel msg)
+    let check = or <$> mapM (hasRoleByName msg) names
+    permCheck check $ "Need to have one of: " <> (T.pack . show) names
 
-modPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
+modPerms :: (MonadDiscord m, MonadIO m) => Requirement m ()
 modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
 
 -- | Command requirement for sender being a registered developer.
-devPerms :: (MonadDiscord m, MonadIO m) => Message -> m (Maybe T.Text)
-devPerms msg = permCheck (isSenderDeveloper msg) "Need to be an OwenDev" msg
+devPerms :: (MonadDiscord m, MonadIO m) => Requirement m ()
+devPerms =
+    Requirement $ \msg -> permCheck (isSenderDeveloper msg) "Need to be an OwenDev"
 
-sentInServer :: (MonadDiscord m) => Message -> m (Maybe T.Text)
-sentInServer msg =
-    pure $ maybe (Just "Need to be sent in server!") (const Nothing) $ messageGuild msg
+sentInServer :: (MonadDiscord m) => Requirement m ()
+sentInServer = Requirement $ \msg ->
+    pure $ maybe (Left "Need to be sent in server!") (const $ Right ()) $ messageGuild
+        msg
+
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.

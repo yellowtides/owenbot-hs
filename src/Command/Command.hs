@@ -92,6 +92,9 @@ module Command.Command
     , prefix
     , defaultErrorHandler
     , requires
+    -- ** Requirements
+    , Requirement(..)
+    , (<|>)
       -- ** Errors
     , CommandError(..)
       -- ** Parsing arguments
@@ -130,10 +133,11 @@ module Command.Command
       -- $commonerrors
     ) where
 
-import Control.Applicative (Alternative(..))
+import Control.Applicative (Alternative(..), Applicative(liftA2))
+import Control.Arrow (left)
 import Control.Exception.Safe
     (Exception, MonadCatch, MonadThrow, SomeException, catch, throwM)
-import Control.Monad (guard, unless, void, when)
+import Control.Monad (MonadPlus(..), guard, unless, void, when)
 import Control.Monad.IO.Class (MonadIO)
 import Data.List (nub)
 import Data.Maybe (catMaybes)
@@ -190,12 +194,67 @@ data Command m = Command
     -- of a command.
     , commandHelp         :: T.Text
     -- ^ The help for this command. Displayed when 'helpCommand' is used.
-    , commandRequires     :: [Message -> m (Maybe T.Text)]
+    , commandRequires     :: Requirement m ()
     -- ^ A list of requirements that need to pass (Nothing) for the command to
     -- be processed. Just contains the reason. They will be passed to
     -- commandErrorHandler as a 'RequirementError'.
     }
 
+{- | A @Requirement@ is a representation of a command requirement, often used
+the case commands are moderator-only, or to be used in a specific context.
+@Either a ()@ is isomorphic to @Maybe ()@, but it is used to make it easier to
+understand that the @a@ field is for providing an error reason.
+ -}
+newtype Requirement m a = Requirement {unRequirement :: Message -> m (Either T.Text a)}
+
+instance (Monad m) => Functor (Requirement m) where
+    fmap f (Requirement r) = Requirement $ \m -> do
+        result <- r m
+        pure $ f <$> result
+
+instance (Monad m) => Applicative (Requirement m) where
+    pure a = Requirement $ \_ -> pure (Right a)
+    liftA2 f x = (<*>) (fmap f x)
+
+-- | The Monad instance of @Requirement@ is used to combine multiple checks
+-- in in a conjunctive form. That is, if a @Command@ has the requirement
+-- @(a <*> b)@ where a and b are both @Requirement@s, then the @Command@ will
+-- only be called if both @a@ and @b@ return @Right ()@ (i.e. pass).
+instance (Monad m) => Monad (Requirement m) where
+    return = pure
+    Requirement a >> Requirement b = Requirement $ \m -> do
+        a' <- a m
+        b' <- b m
+        pure $ a' >> b'
+
+-- | The Semigroup and Monoid instance of @Requirement@ is used in the same way
+-- as the Monad instances. They are conjunctive combinations of requirements.
+instance (Monad m) => Semigroup (Requirement m a) where
+    Requirement a <> Requirement b = Requirement $ \m -> do
+        a' <- a m
+        b' <- b m
+        pure $ a' >> b'
+
+-- | The @mempty@ definition represents a requirement that always passes. It is
+-- the identity for the conjunctive combination of requirements, used with @>>@
+-- and/or @<>@.
+instance (Monad m, Monoid a) => Monoid (Requirement m a) where
+    mempty  = Requirement $ \_ -> pure $ Right mempty
+    mappend = (<>)
+
+-- | The Alternative instance of @Requirement@ is used to combine multiple
+-- checks in a disjunctive form. That is, if a @Command@ has the requirement
+-- @(a <|> b)@ where a and b are both @Requirement@s, then the @Command@ will
+-- be called if either @a@ and @b@ return Nothing (i.e. pass).
+instance (Monad m) => Alternative (Requirement m) where
+    -- The empty definition of Alternative is the identity on <|>. Thinking this
+    -- as OR disjunction, it is a requirement that always fails.
+    empty = Requirement $ \m -> pure $ Left undefined
+    (Requirement a) <|> (Requirement b) = Requirement $ \m -> do
+        a' <- a m
+        case a' of
+            Left  _ -> b m
+            Right _ -> pure a'
 
 {- | @command name handler@ creates a 'Command' named @name@, which upon
 receiving a message will run @handler@. The @name@ cannot contain any spaces,
@@ -266,7 +325,7 @@ command name commandHandler = Command
     , commandApplier      = \x y -> applyArgs commandHandler x (head y)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
-    , commandRequires     = []
+    , commandRequires     = mempty
     }
 
 {- | @onError@ overwrites the default error handler of a command with a custom
@@ -308,8 +367,8 @@ any additional information from Discord as necessary.
 
 Commands default to having no requirements.
 -}
-requires :: (Message -> m (Maybe T.Text)) -> Command m -> Command m
-requires requirement cmd = cmd { commandRequires = requirement : commandRequires cmd }
+requires :: Requirement m () -> Command m -> Command m
+requires requirement cmd = cmd { commandRequires = requirement }
 
 {- | @help@ sets the help message for the command. The default is "Help not
 available."
@@ -370,7 +429,7 @@ parsecCommand parserFunc commandHandler = Command
     , commandApplier      = \x y -> commandHandler x (T.unpack $ head y)
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
-    , commandRequires     = []
+    , commandRequires     = mempty
     }
 
 {- | @regexCommand@ defines a command that has no name, and has a custom
@@ -401,7 +460,7 @@ regexCommand regex commandHandler = Command
     , commandApplier      = commandHandler
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."
-    , commandRequires     = []
+    , commandRequires     = mempty
     }
 
 {- | @runCommand command msg@ runs the specified 'Command' with the given
@@ -438,17 +497,18 @@ runCommand cmd@Command { commandInitialMatch, commandApplier, commandErrorHandle
         Nothing      -> pure ()
         Just results -> do
             -- Check for requirements, keep only Just values
-            failedChecks <- catMaybes <$> mapM ($ msg) commandRequires
-            if null failedChecks
-                then
+            checkResult <- (unRequirement commandRequires) msg
+            case checkResult of
+                Left err -> basicErrorCatcher (RequirementError err)
+                Right () ->
+                    do
                 -- Apply the arguments on the handler
-                    commandApplier msg results
+                            commandApplier msg results
                     -- Asynchronous errors are not caught (they are propagated)
                     -- because this `catch` comes from Control.Exception.Safe.
-                    `catch` discordErrorCatcher
-                    `catch` basicErrorCatcher
-                    `catch` allErrorCatcher
-                else basicErrorCatcher (RequirementError $ head failedChecks)
+                        `catch` discordErrorCatcher
+                        `catch` basicErrorCatcher
+                        `catch` allErrorCatcher
   where
     discordErrorCatcher :: RestCallErrorCode -> m ()
     discordErrorCatcher = commandErrorHandler msg . DiscordError
