@@ -261,5 +261,5 @@ eval =
                         respond m
                         $  T.pack
                         $  "!!! "
-                        <> codeblock "hs" (thError r)
                         <> smartHelp
+                        <> codeblock "hs" (thError r)
