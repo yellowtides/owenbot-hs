@@ -3,6 +3,7 @@
 module Haskell (commands) where
 
 import Data.Aeson ((.:), FromJSON, Value(Object), eitherDecode, parseJSON, withObject)
+import Data.List (isInfixOf)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
@@ -234,9 +235,9 @@ eval =
                     parseEither parseJSON decodedValue'
             case parsedADT of
                 Left e -> do
-                    respond
-                        m
-                        "The command failed unexpectedly. Try again later, or contact an OwenDev if it persists."
+                    respond m
+                        $  "The command failed unexpectedly. "
+                        <> "Try again later, or contact an OwenDev if it persists."
                     liftIO $ putStrLn $ "[WARN] " <> e
                 Right r@TryHaskellSuccessResponse{} ->
                     respond m
@@ -250,4 +251,15 @@ eval =
                              else ""
                            )
                 Right r@TryHaskellErrorResponse{} ->
-                    respond m $ T.pack $ "!!! " <> codeblock "hs" (thError r)
+                    let
+                        smartHelp
+                            | "'\\8220'" `isInfixOf` (thError r)
+                            = "Maybe: Try using \" characters instead of smart quotes (“”)."
+                            | otherwise
+                            = ""
+                    in
+                        respond m
+                        $  T.pack
+                        $  "!!! "
+                        <> codeblock "hs" (thError r)
+                        <> smartHelp
