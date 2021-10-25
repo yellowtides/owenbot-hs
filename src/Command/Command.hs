@@ -224,7 +224,7 @@ instance (Monad m) => Monad (Requirement m) where
     Requirement a >>= f = Requirement $ \m -> do
         a' <- a m
         case a' of
-            Left err -> pure $ Left err
+            Left  err -> pure $ Left err
             Right a'' -> unRequirement (f a'') m
     Requirement a >> Requirement b = Requirement $ \m -> do
         a' <- a m

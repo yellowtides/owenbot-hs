@@ -142,22 +142,26 @@ tickerAnnounce base quote percentChange curPrice lowPrice highPrice = concat
 
 handleTicker :: Command DiscordHandler
 handleTicker =
-    help "Usage: `:binance <ticker> <ticker>`"
-    . command "binance" $ \m base quote -> do
+    help "Usage: `:binance <ticker> <ticker>`" . command "binance" $ \m base quote -> do
         case base =~ validCurrencyRegex && quote =~ validCurrencyRegex of
-             False -> respond m $ owoify "One of your currencies was invalid!"
-             True  -> do
+            False -> respond m $ owoify "One of your currencies was invalid!"
+            True  -> do
                 announcementM <- liftIO $ fetchTicker base quote
                 case announcementM of
                     Left _ -> respond m $ owoify "Couldn't get the data! Sorry!"
-                    Right ann -> respond m $ owoify . T.pack
-                            $  base <> "/" <> quote <> " is " <> ann
+                    Right ann ->
+                        respond m
+                            $  owoify
+                            .  T.pack
+                            $  base
+                            <> "/"
+                            <> quote
+                            <> " is "
+                            <> ann
 
 handleAda24h :: Command DiscordHandler
 handleAda24h =
-    alias "ada24h"
-    . help "Print current philcoin status."
-    . command "ada" $ \m -> do
+    alias "ada24h" . help "Print current philcoin status." . command "ada" $ \m -> do
         adaAnnouncementM <- liftIO fetchADADetails
         case adaAnnouncementM of
             Left err -> do
