@@ -237,6 +237,7 @@ eval =
                 Left e -> do
                     respond m
                         $  "The command failed unexpectedly. "
+                        <> "An error may have been printed to server logs.\n"
                         <> "Try again later, or contact an OwenDev if it persists."
                     liftIO $ putStrLn $ "[WARN] " <> e
                 Right r@TryHaskellSuccessResponse{} ->
@@ -251,15 +252,15 @@ eval =
                              else ""
                            )
                 Right r@TryHaskellErrorResponse{} ->
-                    let
-                        smartHelp
-                            | "'\\8220'" `isInfixOf` (thError r)
-                            = "Maybe: Try using \" characters instead of smart quotes (“”)."
-                            | otherwise
-                            = ""
-                    in
-                        respond m
-                        $  T.pack
-                        $  "!!! "
-                        <> smartHelp
-                        <> codeblock "hs" (thError r)
+                    respond m $ T.pack $ "!!! " <> smartHelp (thError r) <> codeblock
+                        "hs"
+                        (thError r)
+
+-- | Given a TryHaskell error message, returns a "smart" help message that can
+-- help users understand the error better. Leave empty for no smartness.
+smartHelp :: String -> String
+smartHelp e
+    | "'\\8220'" `isInfixOf` e || "'\\8221'" `isInfixOf` e
+    = "Maybe: Try using \" characters instead of smart quotes (“”)."
+    | otherwise
+    = ""
