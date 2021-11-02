@@ -34,7 +34,7 @@ commands =
     , updateOwen
     , upgradeOwen
     , setStatus
-    , devs
+    , listDevs
     , lockdown
     , unlock
     , lockAll
@@ -171,10 +171,9 @@ upgradeOwen =
 getDevs :: IO [T.Text]
 getDevs = owenConfigDevs <$> readConfig
 
--- | Allows manipulating the list of dev roles without restarting the bot.
--- If the format is wrong, the bot will crash from `fromJust`
-devs :: Command DiscordHandler
-devs =
+-- | Get all the devs.
+listDevs :: Command DiscordHandler
+listDevs =
     help
             (  "List registered developer role IDs. Edit the config and "
             <> "restart the bot if you want to change this."
