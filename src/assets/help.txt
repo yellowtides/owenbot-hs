@@ -1,14 +1,15 @@
 h-hello, i'm here to help you
 here's a lil list of **commands** that ou can use on me:
 ```md
-[-1]: :helpme                           # whenever you need me <3
+[-2]: :helpme                           # whenever you need me <3
+[-1]: :helpme {query}                   # get usage and descwiption of any command
 
 # Academics
 
 [0] :textbook     ila|inf1a|calc        # which fetches the course textbook
-[1] :th(eore)m    ila {number}          # which fetches the desired thm
-[2] :lem(ma)      ila {number}          # which fetches the desired lem
-[3] :def(inition) ila {number}          # which fetches the desired def
+[1] :th(eore)m        {number}          # which fetches the desired ila thm
+[2] :lem(ma)          {number}          # which fetches the desired ila lem
+[3] :def(inition)     {number}          # which fetches the desired ila def
 [4] :syl(logisms)                       # fetches the aristotelian syls
 [5] :bool(ean)                          # fetches the boolean laws
 
@@ -19,18 +20,18 @@ here's a lil list of **commands** that ou can use on me:
 [2] :minecraft                          # to see minecraft
 [3] :binance {ticker} {ticker}          # to see some non-phil coin stats
 [4] :quote                              # to see a quote
-[5] :addquote "name" "value"            # add a quote
+[5] :addquote {name} {value|attachment} # add a quote
+[6] :listQuotes                         # see all quotes
 
 # Admin
 
 [0] :reactLimit   {number}              # you will not be able to use them
 [1] :instance                           # but these are here because the
 [2] :repo                               # devs/mods constantly forget them
-[3] :devs         add|remove {id}       #
-[4] :status                             #
-[5] :rmquote "name"                     #
-[6] :createSelfAssign "prependText"     # generates a new role self-assig-
-    "appendText" "emote->role json"     # ning station
+[3] :status                             #
+[4] :rmquote "name"                     #
+[5] :createSelfAssign                   # generates a new role self-assig-
+                                        # ning station
 
 by the way, i am now [open-source](https://github.com/yellowtides/owenbot-hs)!1!
 ..maybe you can spot some secret features? :o
