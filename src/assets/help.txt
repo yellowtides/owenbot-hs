@@ -6,10 +6,10 @@ here's a lil list of **commands** that ou can use on me:
 
 # Academics
 
-[0] :textbook     ila|inf1a|calc        # which fetches the course textbook
-[1] :th(eore)m        {number}          # which fetches the desired ila thm
-[2] :lem(ma)          {number}          # which fetches the desired ila lem
-[3] :def(inition)     {number}          # which fetches the desired ila def
+[0] :textbook                           # which fetches the course textbook
+[1] :th(eore)m                          # which fetches the desired thm
+[2] :lem(ma)                            # which fetches the desired lem
+[3] :def(inition)                       # which fetches the desired def
 [4] :syl(logisms)                       # fetches the aristotelian syls
 [5] :bool(ean)                          # fetches the boolean laws
 
@@ -28,8 +28,9 @@ here's a lil list of **commands** that ou can use on me:
 [0] :reactLimit   {number}              # you will not be able to use them
 [1] :instance                           # but these are here because the
 [2] :repo                               # devs/mods constantly forget them
-[3] :status                             #
-[4] :rmquote "name"                     #
+[3] :listDevs
+[3] :status
+[4] :rmquote "name"
 [5] :createSelfAssign                   # generates a new role self-assig-
                                         # ning station
 
