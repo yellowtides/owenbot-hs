@@ -43,7 +43,7 @@ commands = concat
 -- | This command executes the handler if there are no arguments. If there are
 -- arguments, it replies with the help message set in each command.
 generatedHelp :: Command DiscordHandler
-generatedHelp = helpCommand (T.pack "helpme") commands $ \m ->
+generatedHelp = alias (T.pack "help") $ helpCommand (T.pack "helpme") commands $ \m ->
     liftIO (TIO.readFile "./src/assets/help.txt")
         >>= sendMessageDM (userId $ messageAuthor m)
         .   owoify
