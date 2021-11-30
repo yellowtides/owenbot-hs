@@ -25,6 +25,7 @@ import qualified Misc
 import qualified ModifyEventsChannel
 import qualified QuoteSystem
 import qualified RoleSelfAssign
+import qualified TTS
 
 commands :: [Command DiscordHandler]
 commands = concat
@@ -38,6 +39,7 @@ commands = concat
     , QuoteSystem.commands
     , ModifyEventsChannel.commands
     , RoleSelfAssign.commands
+    , TTS.commands
     ]
 
 -- | This command executes the handler if there are no arguments. If there are

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 312425efc12026f2c4451b2f6b14d35f980fa259fb6a0fed1e701fb4eb822942
+-- hash: 84e614293c140cee7223423e14322a40a7c6ae464bceedabc940668373584b2a
 
 name:           owenbot
 version:        0.1.0.0
@@ -48,6 +48,7 @@ library
       ModifyEventsChannel
       QuoteSystem
       RoleSelfAssign
+      TTS
   other-modules:
       Paths_owenbot
   hs-source-dirs:
