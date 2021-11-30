@@ -19,6 +19,7 @@ description:         A neat Discord bot written in Haskell.
 dependencies:
 - aeson # comes with discord-haskell
 - base >= 4.7 && < 5
+- base64 # for decoding base64 audio in ipa tts
 - bytestring # comes with discord-haskell
 - containers # comes with discord-haskell
 - discord-haskell
