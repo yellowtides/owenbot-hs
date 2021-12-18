@@ -114,9 +114,9 @@ getHoogle n name = do
             ]
             initReq
     resp <- getResponseBody <$> httpLBS req
-    return $ case eitherDecode resp of
+    case eitherDecode resp of
         Left  e -> error $ "[WARN] Malformed Hoogle response: " <> e
-        Right r -> r
+        Right r -> pure $ r
 
 -- | Pretty-prints the function name and its module
 formatHoogleEntry :: HoogleResp -> T.Text
