@@ -90,7 +90,7 @@ pointfree :: (MonadDiscord m) => Command m
 pointfree =
     help ("How would you write it point-free?\n" <> "Usage: `:pf <haskell expression>`")
         . command "pf"
-        $ \m (Remaining code) -> respond m $ pf code
+        $ \m (Remaining code) -> respond m $! pf code
   where
     pf =
         T.pack
