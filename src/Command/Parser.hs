@@ -22,6 +22,7 @@ module Command.Parser
     ) where
 
 import Control.Monad (void)
+import Data.String (IsString(fromString))
 import qualified Data.Text as T
 import Text.Parsec
 import Text.Parsec.Combinator
@@ -102,8 +103,8 @@ instance ParsableArgument Int where
 --     parserForArg msg =
 
 -- | Datatype wrapper for the remaining text in the input. Handy for capturing
--- everything remaining. The accessor function @getDeez@ isn't really meant to be
--- used since pattern matching can do everything. Open to renaming.
+-- everything remaining. Any type that is an instance of @IsString@ can be used
+-- as the content.
 --
 -- Example usage:
 --
@@ -113,15 +114,18 @@ instance ParsableArgument Int where
 --     $ \\msg newStatus newType (Remaining newName) -> do
 --         ...
 -- @
-newtype RemainingText = Remaining { getDeez :: T.Text }
+newtype RemainingText a = Remaining a
 
 -- | The rest of the arguments. It may be quoted in its entirety. Spaces are
 -- preserved as-is, unlike concatting after parsing [@Text@].
 -- At least one character is required within the quotes, or on its own.
-instance ParsableArgument RemainingText where
+instance (IsString a) => ParsableArgument (RemainingText a) where
     parserForArg =
         -- try quoted text first. if it failed, then return input
-        Remaining <$> ((quotedText <?> "some quoted") <|> (normal <?> "unquoted text"))
+        Remaining
+            .   fromString
+            .   T.unpack
+            <$> ((quotedText <?> "some quoted") <|> (normal <?> "unquoted text"))
       where
         quotedText = try $ do -- backtrack if failed
             char '"'
@@ -159,6 +163,9 @@ instance (ParsableArgument a) => ParsableArgument (Maybe a) where
 instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (a, b) where
     parserForArg = (,) <$> (parserForArg <* endOrSpaces) <*> parserForArg
 
+-- | An argument that can be either of two types.
+instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (Either a b) where
+    parserForArg = Left <$> parserForArg <|> Right <$> parserForArg
 
 
 
