@@ -204,7 +204,7 @@ the case commands are moderator-only, or to be used in a specific context.
 @Either a ()@ is isomorphic to @Maybe a@, but it is used to make it easier to
 understand that the @a@ field is for providing an error reason.
  -}
-newtype Requirement m a = Requirement {unRequirement :: Message -> m (Either T.Text a)}
+newtype Requirement m a = Requirement {checkRequirement :: Message -> m (Either T.Text a)}
 
 instance (Monad m) => Functor (Requirement m) where
     fmap f (Requirement r) = Requirement $ \m -> do
@@ -225,7 +225,7 @@ instance (Monad m) => Monad (Requirement m) where
         a' <- a m
         case a' of
             Left  err -> pure $ Left err
-            Right a'' -> unRequirement (f a'') m
+            Right a'' -> checkRequirement (f a'') m
     Requirement a >> Requirement b = Requirement $ \m -> do
         a' <- a m
         b' <- b m
@@ -501,13 +501,12 @@ runCommand cmd@Command { commandInitialMatch, commandApplier, commandErrorHandle
         Nothing      -> pure ()
         Just results -> do
             -- Check for requirements, keep only Just values
-            checkResult <- (unRequirement commandRequires) msg
+            checkResult <- (checkRequirement commandRequires) msg
             case checkResult of
-                Left err -> basicErrorCatcher (RequirementError err)
-                Right () ->
-                    do
+                Left  err -> basicErrorCatcher (RequirementError err)
+                Right ()  -> do
                 -- Apply the arguments on the handler
-                            commandApplier msg results
+                    commandApplier msg results
                     -- Asynchronous errors are not caught (they are propagated)
                     -- because this `catch` comes from Control.Exception.Safe.
                         `catch` discordErrorCatcher
