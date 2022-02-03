@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module QuoteSystem (commands) where
 
@@ -16,7 +17,7 @@ import Text.Parsec (anyChar, many1)
 import Utils (devPerms, modPerms, sendMessageChan, sentInServer)
 
 commands :: [Command DiscordHandler]
-commands = [receiveQuote, receiveQuoteShorthand, addQuote, rmQuote, listQuotes]
+commands = [quote, quoteShorthand, quoteInText, addQuote, rmQuote, listQuotes]
 
 quotesTable :: DBTable
 quotesTable = GlobalDB "registeredQuotes"
@@ -35,13 +36,28 @@ removeQuote name = do
     newTable <- HM.delete name <$> readHashMapDB quotesTable
     writeHashMapDB quotesTable newTable
 
-receiveQuoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
-receiveQuoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name -> do
-    runCommand receiveQuote $ m { messageText = ":quote " <> T.pack name }
+-- | for quotes that appear mid-sentence, with a required space before it.
+-- only for single-word quotes. This shorthand will only trigger for the last
+-- occurrence of the regex.
+quoteInText :: (MonadDiscord m, MonadIO m) => Command m
+quoteInText = regexCommand "(.+) ::([^ \n]+)" $ \m (_ : name : _) ->
+    (liftIO . fetchQuote) name >>= \case
+        Nothing   -> pure ()
+        Just text -> respond m text
 
-receiveQuote :: (MonadDiscord m, MonadIO m) => Command m
-receiveQuote =
-    help "Call a registered quote.\nUsage: `:quote <name>` or the alias `::<name>`"
+-- | the double-colon alias for quotes, has to be in its own message to use
+-- multi-word quotes. for quotes mid-sentence, the regex one is matched.
+quoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
+quoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name ->
+    runCommand quote $ m { messageText = ":quote " <> T.pack name }
+
+quote :: (MonadDiscord m, MonadIO m) => Command m
+quote =
+    help
+            ("Call a registered quote.\nUsage: `:quote <name>`."
+            <> "The alias for the command is `::<name>`. The alias can also be used "
+            <> "inline for single-word quotes but will fail silently if it doesn't exist."
+            )
         . command "quote"
         $ \m (Remaining name) -> do
             textM <- liftIO $ fetchQuote name
@@ -112,4 +128,4 @@ rmQuote =
 listQuotes :: (MonadDiscord m, MonadIO m) => Command m
 listQuotes = help "Lists all quotes" $ command "listQuotes" $ \m -> do
     quoteNames <- liftIO $ HM.keys <$> readHashMapDB quotesTable
-    respond m $ T.unlines $ map (\x -> "`" <> x <> "`") quoteNames
+    respond m $ T.intercalate ", " $ map (\x -> "`" <> x <> "`") quoteNames
