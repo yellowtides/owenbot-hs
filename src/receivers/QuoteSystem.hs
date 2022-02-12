@@ -49,7 +49,7 @@ quoteInText = regexCommand "(.+) ::([^ \n]+)" $ \m (_ : name : _) ->
 -- multi-word quotes. for quotes mid-sentence, the regex one is matched.
 quoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
 quoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name ->
-    runCommand quote $ m { messageText = ":quote " <> T.pack name }
+    runCommand quote $ m { messageContent = ":quote " <> T.pack name }
 
 quote :: (MonadDiscord m, MonadIO m) => Command m
 quote =

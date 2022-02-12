@@ -95,8 +95,8 @@ putInHallOfFame table hofChan m = do
 
 createDescription :: Message -> T.Text
 createDescription m =
-    messageText m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel
-        (messageChannel m)
+    messageContent m <> "\n- " <> pingAuthorOf m <> " in " <> linkChannel
+        (messageChannelId m)
 
 getImageFromMessage :: Message -> T.Text
 getImageFromMessage m
@@ -107,30 +107,13 @@ getImageFromMessage m
 createHallOfFameEmbed :: Message -> DiscordHandler CreateEmbed
 createHallOfFameEmbed m = do
     messLink <- getMessageLink m
-    let authorName     = ""
-        authorUrl      = ""
-        authorIcon     = Nothing
-        embedTitle     = "👑 best of ouw buwwshit"
-        embedUrl       = ""
-        embedThumbnail = Nothing
-        embedDescription =
-            createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
-        embedFields     = []
-        embedImage      = Just $ CreateEmbedImageUrl $ getImageFromMessage m
-        embedFooterText = getTimestampFromMessage m
-        embedFooterIcon = Nothing
-    pure $ CreateEmbed
-        authorName
-        authorUrl
-        authorIcon
-        embedTitle
-        embedUrl
-        embedThumbnail
-        embedDescription
-        embedFields
-        embedImage
-        embedFooterText
-        embedFooterIcon
+    pure $ def
+        { createEmbedTitle = "👑 best of ouw buwwshit"
+        , createEmbedDescription = createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
+        , createEmbedImage = Just $ CreateEmbedImageUrl $ getImageFromMessage m
+        , createEmbedColor = Just DiscordColorGold
+        , createEmbedTimestamp = Just $ messageTimestamp m
+        }
 
 reactLimit :: (MonadDiscord m, MonadIO m) => Command m
 reactLimit =
@@ -140,7 +123,7 @@ reactLimit =
             "Specify a new limit for this server, or leave empty to see the current limit."
         $ command "reactLimit"
         $ \m mbI -> do
-            let gid        = fromJust (messageGuild m)
+            let gid        = fromJust (messageGuildId m)
             let limitTable = GuildDB gid "reactLimit"
             case mbI of
                 Nothing -> do
@@ -172,7 +155,7 @@ setFameChan =
         . help "Set the channel for Hall of Fame in this server."
         $ command "setFameChan"
         $ \m chanId -> do
-            let gid = fromJust (messageGuild m)
+            let gid = fromJust (messageGuildId m)
             c <- getChannel chanId
             liftIO $ writeListDB (GuildDB gid "fameChannel") [T.pack $ show chanId]
             respond m

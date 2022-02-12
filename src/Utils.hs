@@ -52,7 +52,7 @@ import Data.Maybe (fromJust, fromMaybe, listToMaybe)
 import qualified Data.Text as T
 import qualified Data.Time.Format as TF
 import Discord
-import qualified Discord.Requests as R
+import Discord.Requests
 import Discord.Types
 import System.Directory (XdgDirectory(XdgData), getXdgDirectory)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
@@ -94,14 +94,14 @@ pingAuthorOf = pingUser . messageAuthor
 -- users, returns an empty Text.
 pingWithUsername :: T.Text -> GuildId -> DiscordHandler T.Text
 pingWithUsername uname gid = do
-    let timing = R.GuildMembersTiming (Just 1000) Nothing
+    let timing = GuildMembersTiming (Just 1000) Nothing
     -- number of users to fetch, maximum is 1000
     -- "Nothing" seems to default to (Just 1)
-    membersM <- restCall $ R.ListGuildMembers gid timing
+    membersM <- restCall $ ListGuildMembers gid timing
     let members = case membersM of
             Right ms -> ms
             Left  _  -> []
-    let users             = memberUser <$> members
+    let users             = fromJust . memberUser <$> members
     --_ <- liftIO $ print (userName <$> users)
     let usersWithUsername = filter ((uname ==) . userName) users
     --_ <- liftIO $ print usersWithUsername
@@ -182,11 +182,11 @@ linkChannel c = "<#" <> T.pack (show c) <> ">"
 -- | `getMessageLink` attempts to construct the Discord URL of the given message, as a `Text`.
 getMessageLink :: Message -> DiscordHandler T.Text
 getMessageLink m = do
-    chan <- getChannel (messageChannel m)
+    chan <- getChannel (messageChannelId m)
     -- the ID of the server containing the channel, as a `Text`
     let serverIDT  = T.pack . show $ channelGuild chan
     -- the ID of the channel the message was sent in, as a `Text`
-    let channelIDT = T.pack . show $ messageChannel m
+    let channelIDT = T.pack . show $ messageChannelId m
     -- the messageID, as a `Text`
     let messageIDT = T.pack . show $ messageId m
     pure
@@ -217,28 +217,32 @@ sendMessageChanPingsDisabled :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
 sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
     cid
     def
-        { R.messageDetailedContent         = t
-        , R.messageDetailedAllowedMentions = Just $ def
-            { R.mentionEveryone = False
-            , R.mentionUsers    = False
-            , R.mentionRoles    = False
+        { messageDetailedContent         = t
+        , messageDetailedAllowedMentions = Just $ def
+            { mentionEveryone = False
+            , mentionUsers    = False
+            , mentionRoles    = False
             }
         }
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
 sendReply :: (MonadDiscord m) => Message -> Bool -> T.Text -> m ()
-sendReply m mention xs = void $ createMessageDetailed (messageChannel m) $ def
-    { R.messageDetailedContent         = xs
-    , R.messageDetailedReference       = Just
+sendReply m mention xs = void $ createMessageDetailed (messageChannelId m) $ def
+    { messageDetailedContent         = xs
+    , messageDetailedReference       = Just
         $ def { referenceMessageId = Just $ messageId m }
-    , R.messageDetailedAllowedMentions = Just $ def { R.mentionRepliedUser = mention }
+    , messageDetailedAllowedMentions = Just $ def { mentionRepliedUser = mention }
     }
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: (MonadDiscord m) => ChannelId -> T.Text -> CreateEmbed -> m ()
-sendMessageChanEmbed c xs e = void $ createMessageEmbed c xs e
+sendMessageChanEmbed c xs e = void $ createMessageDetailed c $ def
+    { messageDetailedContent = xs
+    , messageDetailedEmbeds  = Just [e]
+    }
+
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
@@ -256,7 +260,7 @@ sendFileChan c name fp =
 respondAsset :: (MonadDiscord m, MonadIO m) => Message -> T.Text -> FilePath -> m ()
 respondAsset m name path = do
     base <- liftIO assetDir
-    sendFileChan (messageChannel m) name (base <> path)
+    sendFileChan (messageChannelId m) name (base <> path)
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
@@ -265,7 +269,7 @@ messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageI
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
 -- error message(s), returning `()`.
 addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
-addReaction c m t = restCall (R.CreateReaction (c, m) t) >> pure ()
+addReaction c m t = restCall (CreateReaction (c, m) t) >> pure ()
 
 -- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
 isMod :: Message -> DiscordHandler Bool
@@ -274,7 +278,7 @@ isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
 -- | `hasRole` checks whether the provided message was sent by a user that has
 -- a role matching the value from the provided checking function
 hasRole :: (MonadDiscord m, Eq a) => (Role -> a) -> Message -> a -> m Bool
-hasRole f m r = case messageGuild m of
+hasRole f m r = case messageGuildId m of
     Nothing -> pure False
     Just g  -> do
         filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
@@ -307,7 +311,7 @@ isSenderDeveloper m = liftIO getDevs >>= fmap or . mapM (hasRoleByID m)
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
 channelRequirement :: (MonadDiscord m) => String -> Requirement m ()
 channelRequirement cid = Requirement $ \msg ->
-    pure $ case (messageChannel msg == read cid) of
+    pure $ case (messageChannelId msg == read cid) of
         True  -> Right ()
         False -> Left $ "Need to be in the channel " <> T.pack cid
 
@@ -318,7 +322,7 @@ permCheck check reason = do
 
 roleNameIn :: (MonadDiscord m) => [T.Text] -> Requirement m ()
 roleNameIn names = Requirement $ \msg -> do
-    triggerTypingIndicator (messageChannel msg)
+    triggerTypingIndicator (messageChannelId msg)
     let check = or <$> mapM (hasRoleByName msg) names
     permCheck check $ "Need to have one of: " <> (T.pack . show) names
 
@@ -332,7 +336,7 @@ devPerms =
 
 sentInServer :: (MonadDiscord m) => Requirement m ()
 sentInServer = Requirement $ \msg ->
-    pure $ maybe (Left "Need to be sent in server!") (const $ Right ()) $ messageGuild
+    pure $ maybe (Left "Need to be sent in server!") (const $ Right ()) $ messageGuildId
         msg
 
 

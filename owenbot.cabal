@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 753c85562b10ec8ab2534dad93a9752fedb9199620a480ac6b71a80af4e61eec
+-- hash: daa069ea39147a894d9347b8837869114ba64da2cbeefcbf503fbcc678eef71d
 
 name:           owenbot
 version:        0.1.0.0
@@ -13,7 +13,7 @@ homepage:       https://github.com/yellowtides/owenbot-hs#readme
 bug-reports:    https://github.com/yellowtides/owenbot-hs/issues
 author:         Infowmatics Devs
 maintainer:     Infowmatics Devs
-copyright:      2020 Infowmatics Devs
+copyright:      2022 Infowmatics Devs
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple

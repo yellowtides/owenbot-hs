@@ -323,7 +323,7 @@ command name commandHandler = Command
     , commandPrefix       = ":"
     , commandAliases      = []
     , commandInitialMatch = \msg cmd ->
-        case parse (parseCommandName cmd) "" (messageText msg) of
+        case parse (parseCommandName cmd) "" (messageContent msg) of
             Left  e    -> Nothing
             Right args -> Just [args]
     , commandApplier      = \x y -> applyArgs commandHandler x (head y)
@@ -423,7 +423,7 @@ parsecCommand parserFunc commandHandler = Command
     , commandInitialMatch = \msg cmd ->
         let parser = string (T.unpack $ commandPrefix cmd) *> parserFunc
         in
-            case parse parser "" (messageText msg) of
+            case parse parser "" (messageContent msg) of
                 Left  e      -> Nothing
                 Right result -> Just [T.pack result]
             -- has to be packed and unpacked, which is not really good.
@@ -458,7 +458,7 @@ regexCommand regex commandHandler = Command
     { commandName         = "<<custom regex>>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandInitialMatch = \msg cmd -> case messageText msg =~ regex :: [[T.Text]] of
+    , commandInitialMatch = \msg cmd -> case messageContent msg =~ regex :: [[T.Text]] of
         [] -> Nothing
         xs -> Just $ concatMap tail xs
     , commandApplier      = commandHandler

@@ -31,29 +31,28 @@ owen :: OwenConfig -> IO ()
 owen cfg = do
     userFacingError <- runDiscord $ def
         { discordToken   = owenConfigToken cfg
-        , discordOnStart = startHandler cfg
+        , discordOnStart = handle handleStartErrors (startHandler cfg)
         , discordOnEvent = handleEvent
         , discordOnLog   = \s -> putStrLn ("[Info] " ++ T.unpack s)
         }
     TIO.putStrLn userFacingError
 
+handleStartErrors :: SomeException -> DiscordHandler ()
+handleStartErrors e = do
+    liftIO
+        $  putStrLn
+        $  "[Info] Encountered error during startup, ignoring: "
+        <> show e
+
 startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
     let startupChan = owenConfigStartupChan cfg
     owenId <- getCurrentUser
-    handle
-            (\e -> do
-                liftIO
-                    $  putStrLn
-                    $  "[Info] Encountered error during startup, ignoring: "
-                    <> show (e :: SomeException)
-            )
-        $ do
-            createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
-            sendGitInfoChan startupChan
-            sendInstanceInfoChan startupChan
-            changePronouns
-    liftIO $ putStrLn $ "[Info] UserName: " <> T.unpack (userName owenId)
+    -- createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
+    -- sendGitInfoChan startupChan
+    -- sendInstanceInfoChan startupChan
+    -- changePronouns
+    liftIO $ putStrLn $ "[Info] Username: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
 main :: IO ()

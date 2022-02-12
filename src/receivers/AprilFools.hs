@@ -33,10 +33,10 @@ ircMessageToUsername =
     T.drop 1                   -- finally, drop the remaining <
         . T.dropWhile (/= '<')     -- drop until < (usually **)
         . T.takeWhile (/= '>')     -- take until >**
-        . messageText              -- everything that's left is inbetween!
+        . messageContent              -- everything that's left is inbetween!
 
 isLikelyIRCMessage :: Message -> Bool
-isLikelyIRCMessage m = T.take 3 (messageText m) == "**<"
+isLikelyIRCMessage m = T.take 3 (messageContent m) == "**<"
 
 botIdM :: DiscordHandler UserId
 botIdM = do
@@ -48,7 +48,7 @@ rewriteReactionAsIRC r = do
     Right user    <- restCall $ R.GetUser uid
     Right message <- restCall $ R.GetChannelMessage (cid, mid)
     _             <- restCall $ R.DeleteAllReactions (cid, mid)
-    let reactedMessageT = messageText message
+    let reactedMessageT = messageContent message
     let reacterUsername = userName user
     let maxMessageLen   = 69
     let ellipses = if T.length reactedMessageT > maxMessageLen then "[...]" else ""
@@ -56,7 +56,7 @@ rewriteReactionAsIRC r = do
             [ "*"
             , reacterUsername
             , " reacted to \""
-            , T.take maxMessageLen $ messageText message
+            , T.take maxMessageLen $ messageContent message
             , ellipses
             , "\" with "
             , emojiT
@@ -71,7 +71,7 @@ rewriteReactionAsIRC r = do
 
 -- | Returns false only if it a crosspost, new pin add, announcement follow added, boost, etc.
 isProperMessage :: Message -> Bool
-isProperMessage m = isNothing (messageReference m) && isJust (referencedMessage m)
+isProperMessage m = isNothing (messageReference m) && isJust (messageReferencedMessage m)
 
 rewriteMessageAsIRC :: Message -> DiscordHandler ()
 rewriteMessageAsIRC m = do
@@ -84,9 +84,9 @@ rewriteMessageAsIRC m = do
     excludeThisPing <- botIdM
     let userPings = pingUser <$> filter ((/= excludeThisPing) . userId) mentionU
     let rolePings     = pingRole <$> mentionR
-    let replyUsername = maybe "" ircMessageToUsername (referencedMessage m)
+    let replyUsername = maybe "" ircMessageToUsername (messageReferencedMessage m)
     -- _ <- liftIO . print $ replyUsername
-    replyPing <- case messageGuild m of
+    replyPing <- case messageGuildId m of
         Just guildId -> pingWithUsername replyUsername guildId
         Nothing      -> pure ""
     -- _ <- liftIO . print $ replyPing
@@ -124,10 +124,10 @@ rewriteMessageAsIRC m = do
 
 
   where
-    cid      = messageChannel m
+    cid      = messageChannelId m
     mid      = messageId m
     author   = messageAuthor m
-    messageT = messageText m
+    messageT = messageContent m
     attach   = messageAttachments m
     mentionU = messageMentions m
     mentionR = messageMentionRoles m

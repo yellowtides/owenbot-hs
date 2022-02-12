@@ -42,7 +42,7 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 extra-deps:
-  - discord-haskell-1.8.8
+  - discord-haskell-1.12.0
   - emoji-0.1.0.2
   - hspec-2.7.8
   - pointfree-1.1.1.8
@@ -50,7 +50,7 @@ extra-deps:
   - unliftio-0.2.18 # this is higher than what is included in stackage for 17.14, but is required for HMock
   - constraints-0.13 # same here
   - git: https://github.com/yutotakano/discord-haskell-monad.git
-    commit: dc847f0a82c1da7f284d81debd14f225b832ba3f
+    commit: f85852d53e9ff3aea4403999a06833701f59938d
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

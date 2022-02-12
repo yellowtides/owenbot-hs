@@ -2,7 +2,7 @@ name:                owenbot
 version:             0.1.0.0
 github:              "yellowtides/owenbot-hs"
 author:              "Infowmatics Devs"
-copyright:           "2020 Infowmatics Devs"
+copyright:           "2022 Infowmatics Devs"
 
 extra-source-files:
 - README.md

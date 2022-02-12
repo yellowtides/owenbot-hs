@@ -96,7 +96,7 @@ sendGitInfoChan chan = do
 -- | Responds to a message with the git info
 sendGitInfo :: Command DiscordHandler
 sendGitInfo =
-    requires devPerms . command "repo" $ \m -> sendGitInfoChan $ messageChannel m
+    requires devPerms . command "repo" $ \m -> sendGitInfoChan $ messageChannelId m
 
 -- | Sends process instance info to a given channel
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
@@ -116,7 +116,7 @@ sendInstanceInfoChan chan = do
 -- | Responds to a message with the instance info
 sendInstanceInfo :: Command DiscordHandler
 sendInstanceInfo = requires devPerms . command "instance" $ \m ->
-    sendInstanceInfoChan $ messageChannel m
+    sendInstanceInfoChan $ messageChannelId m
 
 -- | Kills the bot and spawns a new process.
 -- The new process is spawned in the same cwd (at least on linux)
@@ -163,8 +163,8 @@ upgradeOwen =
         . help "Updates and restarts the bot in one go."
         . command "upgrade"
         $ \m -> do
-            runCommand updateOwen $ m { messageText = ":update" }
-            runCommand restartOwen $ m { messageText = ":restart" }
+            runCommand updateOwen $ m { messageContent = ":update" }
+            runCommand restartOwen $ m { messageContent = ":restart" }
 
 ------- DEV COMMANDS
 -- | Gets the list of developer role IDs
@@ -211,8 +211,8 @@ lockdown =
             )
         . command "lockdown"
         $ \m -> do
-            let chan = messageChannel m
-            channel <- getChannel (messageChannel m)
+            let chan = messageChannelId m
+            channel <- getChannel (messageChannelId m)
             case channel of
                 ChannelText _ guild _ _ _ _ _ _ _ _ -> do
                     -- Guild is used in place of role ID as guildID == @everyone rID
@@ -228,7 +228,7 @@ unlock =
         . help "`:unlock` reverses a `:lockdown`."
         . command "unlock"
         $ \m -> do
-            let chan = messageChannel m
+            let chan = messageChannelId m
             channel <- getChannel chan
             case channel of
                 ChannelText _ guild _ _ _ _ _ _ _ _ -> do
@@ -264,12 +264,12 @@ unlockAll =
             let
                 opts = ModifyGuildRoleOpts
                     Nothing
-                    (Just 2251673153)
+                    (Just "2251673153")
                     Nothing
                     Nothing
                     Nothing
 
-            let g = fromJust $ messageGuild m
+            let g = fromJust $ messageGuildId m
             modifyGuildRole g g opts
             respond m "unlocked"
 
@@ -284,11 +284,11 @@ lockAll =
             let
                 opts = ModifyGuildRoleOpts
                     Nothing
-                    (Just 2251671105)
+                    (Just "2251671105")
                     Nothing
                     Nothing
                     Nothing
 
-            let g = fromJust $ messageGuild m
+            let g = fromJust $ messageGuildId m
             modifyGuildRole g g opts
             respond m "locked"

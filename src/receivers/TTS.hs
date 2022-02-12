@@ -46,7 +46,7 @@ tts =
                             owoify $ "Amazing sounds by " <> userName (messageAuthor m)
                     let extension = if isIPA then ".mp3" else ".wav"
                     void $ createMessageUploadFile
-                        (messageChannel m)
+                        (messageChannelId m)
                         (filename <> extension)
                         audio
 

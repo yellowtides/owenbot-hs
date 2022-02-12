@@ -6,7 +6,7 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import qualified Data.Text as T (pack, unpack)
 import Discord (DiscordHandler)
-import Discord.Types (Message, messageChannel)
+import Discord.Types (Message, messageChannelId)
 import GHC.Generics
 import Network.HTTP.Conduit (simpleHttp)
 import Text.Regex.TDFA ((=~))

@@ -20,7 +20,7 @@ spec = do
                     |-> Message { }
 
                 sendHelpDM $ Message
-                    { messageText = ":helpme"
+                    { messageContent = ":helpme"
                     , messageAuthor = User { userId = uid }
                     }
         it "sends an owoified message" $ do
@@ -33,6 +33,6 @@ spec = do
                     |-> Message {}
 
                 sendHelpDM $ Message
-                    { messageText = ":helpme"
+                    { messageContent = ":helpme"
                     , messageAuthor = User { userId = uid }
                     }

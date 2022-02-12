@@ -73,7 +73,7 @@ rollCheck chance = Requirement $ \msg -> do
 owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
 owoifyIfPossible =
     requires (rollCheck owoifyChance) $ regexCommand "[lLrR]|[nNmM][oO]" $ \m _ -> do
-        sendReply m True $ owoify (messageText m)
+        sendReply m True $ owoify (messageContent m)
 
 -- | Emote names for which to trigger force owoify on. Use All Caps.
 forceOwoifyEmotes :: [T.Text]
@@ -99,7 +99,7 @@ forceOwoify r = do
     unless (any blockCond reactions || not (any fulfillCond reactions)) $ do
         addReaction (reactionChannelId r) (reactionMessageId r) owoifiedEmoji
         -- Send reply without pinging (this isn't as ping-worthy as random trigger)
-        sendReply mess False $ owoify (messageText mess)
+        sendReply mess False $ owoify (messageContent mess)
 
 godIsDead :: (MonadDiscord m, MonadIO m) => Command m
 godIsDead = regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do

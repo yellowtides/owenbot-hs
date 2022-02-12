@@ -1,6 +1,4 @@
-{-# LANGUAGE OverloadedStrings
-           , StandaloneDeriving
-           , DeriveAnyClass #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Status (writeStatusFile, setStatusFromFile, updateStatus) where
 
@@ -17,10 +15,6 @@ import Discord.Types
 
 import Command
 import DB
-
--- | Instances to allow us to read these ADTs
-deriving instance Read UpdateStatusType
-deriving instance Read ActivityType
 
 -- | 'updateStatus' updates the status through the Discord gateway.
 -- Therefore, it requires DiscordHandler and is not polymorphic.

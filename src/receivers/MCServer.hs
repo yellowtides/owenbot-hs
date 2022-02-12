@@ -7,7 +7,7 @@ import qualified Data.ByteString.Lazy as B
 import Data.Maybe (fromJust)
 import qualified Data.Text as T
 import Discord (DiscordHandler)
-import Discord.Types (GuildId, Message(messageChannel, messageGuild))
+import Discord.Types (GuildId, Message(..))
 import GHC.Generics
 import Network.HTTP.Conduit (simpleHttp)
 import UnliftIO (liftIO)
@@ -120,7 +120,7 @@ getStatus =
             )
         $ command "minecraft"
         $ \m -> do
-            let gid = fromJust (messageGuild m)
+            let gid = fromJust (messageGuildId m)
             server_ip <- liftIO $ readServerIP gid
             deets     <- liftIO $ fetchServerDetails server_ip
             case deets of
@@ -144,6 +144,6 @@ setServer =
             )
         . command "setMinecraft"
         $ \m server_ip -> do
-            let gid = fromJust (messageGuild m)
+            let gid = fromJust (messageGuildId m)
             liftIO $ writeListDB (GuildDB gid "mcServer") [server_ip]
             respond m "Success!"

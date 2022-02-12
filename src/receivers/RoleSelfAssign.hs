@@ -200,7 +200,7 @@ handleRoleMapping
 handleRoleMapping prependT appendT m emojiRoleIDMap = do
     -- Post the assignment station text.
     assignStationT <- formatAssignStation prependT appendT emojiRoleIDMap
-    newMessage     <- createMessage (messageChannel m) assignStationT
+    newMessage     <- createMessage (messageChannelId m) assignStationT
     let assignStationID = messageId newMessage
 
     -- Hence, the map is fine. Write the mapping to the idAssign file :)
@@ -214,7 +214,7 @@ handleRoleMapping prependT appendT m emojiRoleIDMap = do
 
     -- Make Owen react to the self-assignment station.
     let emojiList = fst <$> emojiRoleIDMap
-    forM_ emojiList (addReaction (messageChannel newMessage) assignStationID)
+    forM_ emojiList (addReaction (messageChannelId newMessage) assignStationID)
 
     -- Add the new assign file to the CSV
     liftIO $ appendDB
