@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: daa069ea39147a894d9347b8837869114ba64da2cbeefcbf503fbcc678eef71d
+-- hash: cdc64c13c436ab09c597756797317669622b1ee855ac864fd0b273b929501de3
 
 name:           owenbot
 version:        0.1.0.0
@@ -34,7 +34,6 @@ library
       DB
       EventHandler
       Owoifier
-      Process
       Status
       Utils
       Academic
@@ -80,13 +79,6 @@ library
     , unliftio
     , unordered-containers
     , vector
-  if os(windows)
-    cpp-options: -DWINDOWS
-    build-depends:
-        Win32
-  else
-    build-depends:
-        unix
   default-language: Haskell2010
 
 executable owenbot-exe
@@ -123,13 +115,6 @@ executable owenbot-exe
     , unliftio
     , unordered-containers
     , vector
-  if os(windows)
-    cpp-options: -DWINDOWS
-    build-depends:
-        Win32
-  else
-    build-depends:
-        unix
   default-language: Haskell2010
 
 test-suite owenbot-test
@@ -175,11 +160,4 @@ test-suite owenbot-test
     , unliftio
     , unordered-containers
     , vector
-  if os(windows)
-    cpp-options: -DWINDOWS
-    build-depends:
-        Win32
-  else
-    build-depends:
-        unix
   default-language: Haskell2010

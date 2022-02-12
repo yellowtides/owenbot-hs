@@ -20,7 +20,6 @@ import Command
 import Owoifier (owoify)
 
 import Config
-import Process (getMyProcessId)
 import Status (updateStatus, writeStatusFile)
 import Utils
     (captureCommandOutput, devPerms, modPerms, sendMessageChan, sentInServer, update)
@@ -102,7 +101,7 @@ sendGitInfo =
 sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
-    pid  <- liftIO getMyProcessId
+    pid  <- liftIO Process.getCurrentPid
     sendMessageChan
         chan
         (  "Instance Info: \n"

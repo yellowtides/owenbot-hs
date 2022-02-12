@@ -42,15 +42,6 @@ dependencies:
 - unliftio # comes with discord-haskell
 - unordered-containers # comes with discord-haskell
 - vector # comes with discord-haskell
-when:
-  - condition: os(windows)
-    then:
-      dependencies:
-        - Win32
-      cpp-options: -DWINDOWS
-    else:
-      dependencies:
-        - unix
 
 library:
   source-dirs:
