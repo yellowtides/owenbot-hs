@@ -48,10 +48,10 @@ startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
     let startupChan = owenConfigStartupChan cfg
     owenId <- getCurrentUser
-    -- createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
-    -- sendGitInfoChan startupChan
-    -- sendInstanceInfoChan startupChan
-    -- changePronouns
+    createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
+    sendGitInfoChan startupChan
+    sendInstanceInfoChan startupChan
+    changePronouns
     liftIO $ putStrLn $ "[Info] Username: " <> T.unpack (userName owenId)
     void setStatusFromFile
 
