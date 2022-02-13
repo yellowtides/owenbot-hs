@@ -1,9 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-} -- (allows type sig in lambda, e.g. \(e :: SomeException) -> ..)
 
 module Misc (commands, reactionReceivers, changePronouns) where
 
 import Control.Concurrent (threadDelay)
-import Control.Monad (forM_, unless, when)
+import Control.Monad (forM_, unless, when, void)
+import Control.Exception.Safe (handle)
 import Data.Char (toUpper)
 import qualified Data.Maybe as M
 import qualified Data.Text as T
@@ -12,13 +14,13 @@ import qualified Data.Text.IO as TIO
 import qualified Network.HTTP.Types as W (renderQuery)
 import qualified System.Process as SP
 import System.Random (getStdRandom, randomR, randomRIO)
+import Text.Parsec hiding (try)
+import qualified Text.Parsec.Text as T
 import Text.Regex.TDFA ((=~))
 import UnliftIO (UnliftIO(unliftIO), liftIO)
 
 import Discord
 import Discord.Types
-import Text.Parsec
-import qualified Text.Parsec.Text as T
 
 import Command
 import Owoifier (owoify)
@@ -164,17 +166,19 @@ changePronouns = do
     -- remove guilds without pronoun roles
     let guildPronounMap = filter (not . null . snd) guildPronounMapUnfiltered
 
-    -- remove current pronoun roles
-    let simplifiedMap   = concat $ sequence <$> guildPronounMap
-    forM_ simplifiedMap (uncurry (`removeGuildMemberRole` userId u))
+    -- remove current pronoun roles, and add the new one.
+    -- wrap in try to silently ignore when we don't have permissions to do either
+    void $ handle (\(e :: RestCallErrorCode) -> pure ()) $ do
+        let simplifiedMap   = concat $ sequence <$> guildPronounMap
+        forM_ simplifiedMap (uncurry (`removeGuildMemberRole` userId u))
 
-    chosenPronouns <- sequence $ do
-        (gid, roles) <- guildPronounMap
-        pure $ do
-            role <- liftIO $ M.fromJust <$> randomChoice roles
-            pure (gid, role)
+        chosenPronouns <- sequence $ do
+            (gid, roles) <- guildPronounMap
+            pure $ do
+                role <- liftIO $ M.fromJust <$> randomChoice roles
+                pure (gid, role)
 
-    forM_ chosenPronouns (uncurry (`addGuildMemberRole` userId u))
+        forM_ chosenPronouns (uncurry (`addGuildMemberRole` userId u))
 
   where
     randomChoice :: [a] -> IO (Maybe a)
