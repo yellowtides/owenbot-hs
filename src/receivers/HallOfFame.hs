@@ -108,11 +108,12 @@ createHallOfFameEmbed :: Message -> DiscordHandler CreateEmbed
 createHallOfFameEmbed m = do
     messLink <- getMessageLink m
     pure $ def
-        { createEmbedTitle = "👑 best of ouw buwwshit"
-        , createEmbedDescription = createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
-        , createEmbedImage = Just $ CreateEmbedImageUrl $ getImageFromMessage m
-        , createEmbedColor = Just DiscordColorGold
-        , createEmbedTimestamp = Just $ messageTimestamp m
+        { createEmbedTitle       = "👑 best of ouw buwwshit"
+        , createEmbedDescription =
+            createDescription m <> "\n\n[Original Message](" <> messLink <> ")"
+        , createEmbedImage       = Just $ CreateEmbedImageUrl $ getImageFromMessage m
+        , createEmbedColor       = Just DiscordColorGold
+        , createEmbedTimestamp   = Just $ messageTimestamp m
         }
 
 reactLimit :: (MonadDiscord m, MonadIO m) => Command m

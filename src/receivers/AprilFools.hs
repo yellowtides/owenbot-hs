@@ -71,7 +71,8 @@ rewriteReactionAsIRC r = do
 
 -- | Returns false only if it a crosspost, new pin add, announcement follow added, boost, etc.
 isProperMessage :: Message -> Bool
-isProperMessage m = isNothing (messageReference m) && isJust (messageReferencedMessage m)
+isProperMessage m =
+    isNothing (messageReference m) && isJust (messageReferencedMessage m)
 
 rewriteMessageAsIRC :: Message -> DiscordHandler ()
 rewriteMessageAsIRC m = do

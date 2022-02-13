@@ -4,8 +4,8 @@
 module Misc (commands, reactionReceivers, changePronouns) where
 
 import Control.Concurrent (threadDelay)
-import Control.Monad (forM_, unless, when, void)
 import Control.Exception.Safe (handle)
+import Control.Monad (forM_, unless, void, when)
 import Data.Char (toUpper)
 import qualified Data.Maybe as M
 import qualified Data.Text as T
@@ -169,7 +169,7 @@ changePronouns = do
     -- remove current pronoun roles, and add the new one.
     -- wrap in try to silently ignore when we don't have permissions to do either
     void $ handle (\(e :: RestCallErrorCode) -> pure ()) $ do
-        let simplifiedMap   = concat $ sequence <$> guildPronounMap
+        let simplifiedMap = concat $ sequence <$> guildPronounMap
         forM_ simplifiedMap (uncurry (`removeGuildMemberRole` userId u))
 
         chosenPronouns <- sequence $ do

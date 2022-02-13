@@ -6,8 +6,8 @@ import Data.Foldable (for_)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Discord
-import Discord.Types
 import Discord.Interactions
+import Discord.Types
 import UnliftIO (liftIO)
 
 import Command

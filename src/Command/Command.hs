@@ -458,9 +458,10 @@ regexCommand regex commandHandler = Command
     { commandName         = "<<custom regex>>"
     , commandPrefix       = ""
     , commandAliases      = []
-    , commandInitialMatch = \msg cmd -> case messageContent msg =~ regex :: [[T.Text]] of
-        [] -> Nothing
-        xs -> Just $ concatMap tail xs
+    , commandInitialMatch = \msg cmd ->
+        case messageContent msg =~ regex :: [[T.Text]] of
+            [] -> Nothing
+            xs -> Just $ concatMap tail xs
     , commandApplier      = commandHandler
     , commandErrorHandler = defaultErrorHandler
     , commandHelp         = "Help not available."

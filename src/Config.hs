@@ -38,7 +38,10 @@ readConfig = do
     fp   <- (<> "/config.json") <$> getConfigDir
     json <- BS.readFile fp
     case eitherDecode (BL.fromStrict json) of
-        Left e    -> error $ "Incorrect config format, can't continue running Owen:\n[ERROR] " <> e
+        Left e ->
+            error
+                $  "Incorrect config format, can't continue running Owen:\n[ERROR] "
+                <> e
         Right cfg -> pure cfg
 
 

@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Quiz where
 
-import Control.Monad (void)
-import Control.Monad.Reader (runReaderT, ReaderT)
 import Control.Concurrent
+import Control.Monad (void)
+import Control.Monad.Reader (ReaderT, runReaderT)
 import Data.Aeson
 import Data.Function ((&))
-import Data.Maybe (fromMaybe, fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as T (toStrict)
 import qualified Data.Text.Lazy.Builder as T
@@ -18,9 +18,9 @@ import System.Random (getStdRandom, randomR)
 import Text.Printf (printf)
 
 import Discord
-import Discord.Types
-import Discord.Requests
 import Discord.Interactions
+import Discord.Requests
+import Discord.Types
 
 import Command
 import Config
@@ -33,15 +33,13 @@ randomQuizScheduler cfg = do
     threadDelay $ minutes * 60 * 10 ^ (6 :: Int)
     -- check time is not in the first 6 hours of UTC, since no one's awake
     UTCTime d t <- getCurrentTime
-    if t < (6 * 3600) then
-        threadDelay $ 6 * 3600 * 10 ^ (6 :: Int)
-    else
-        pure ()
+    if t < (6 * 3600) then threadDelay $ 6 * 3600 * 10 ^ (6 :: Int) else pure ()
     quiz <- getQuiz
     let quizChannel = owenConfigQuizChan cfg
     case quiz of
         Left s -> print $ "Error while getting scheduled quiz: " <> s
-        Right quiz -> runReaderT (sendQuiz quizChannel quiz) (Auth $ owenConfigToken cfg)
+        Right quiz ->
+            runReaderT (sendQuiz quizChannel quiz) (Auth $ owenConfigToken cfg)
     randomQuizScheduler cfg
 
 interactionReceivers :: [Interaction -> DiscordHandler ()]
@@ -51,39 +49,43 @@ selectListener :: Interaction -> DiscordHandler ()
 selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
     InteractionDataComponentSelectMenu "uwu_quiz" [chosenOption] -> do
         let idOfUser = case interactionUser i of
-                MemberOrUser (Left gm) -> userId $ fromJust $ memberUser gm
-                MemberOrUser (Right u) -> userId u
+                MemberOrUser (Left  gm) -> userId $ fromJust $ memberUser gm
+                MemberOrUser (Right u ) -> userId u
         case T.take 9 chosenOption of
-            "incorrect" -> createInteractionResponse (interactionId i) (interactionToken i)
+            "incorrect" -> createInteractionResponse
+                (interactionId i)
+                (interactionToken i)
                 InteractionResponseDeferUpdateMessage
             _ -> do
                 let ogContent = messageContent $ interactionMessage i
-                let ogTime = messageTimestamp $ interactionMessage i
+                let ogTime    = messageTimestamp $ interactionMessage i
                 diffTime <- (flip diffUTCTime ogTime) <$> liftIO getCurrentTime
                 let timeTaken = (realToFrac diffTime :: Double) & printf "%.2f seconds"
-                createInteractionResponse (interactionId i) (interactionToken i) $
-                    InteractionResponseUpdateMessage $ InteractionResponseMessage
-                        { interactionResponseMessageTTS = Nothing
-                        , interactionResponseMessageContent = Just $ mconcat
-                            [ ogContent, "\n"
+                createInteractionResponse (interactionId i) (interactionToken i)
+                    $ InteractionResponseUpdateMessage
+                    $ InteractionResponseMessage
+                        { interactionResponseMessageTTS             = Nothing
+                        , interactionResponseMessageContent         = Just $ mconcat
+                            [ ogContent
+                            , "\n"
                             , chosenOption
                             , weakOwoify " - Correctly answered by <@"
                             , T.pack $ show idOfUser
                             , "> in "
                             , T.pack timeTaken
                             ]
-                        , interactionResponseMessageEmbeds = Nothing
+                        , interactionResponseMessageEmbeds          = Nothing
                         , interactionResponseMessageAllowedMentions = Nothing
-                        , interactionResponseMessageFlags = Nothing
-                        , interactionResponseMessageComponents = Just []
-                        , interactionResponseMessageAttachments = Nothing
+                        , interactionResponseMessageFlags           = Nothing
+                        , interactionResponseMessageComponents      = Just []
+                        , interactionResponseMessageAttachments     = Nothing
                         }
     _ -> pure ()
 
 data Quiz = Quiz
-    { quizQuestion :: T.Text
+    { quizQuestion         :: T.Text
     , quizIncorrectAnswers :: [T.Text]
-    , quizCorrectAnswer :: T.Text
+    , quizCorrectAnswer    :: T.Text
     }
 
 instance FromJSON Quiz where
@@ -94,9 +96,9 @@ instance FromJSON Quiz where
                 action <- o .: "results"
                 case action of
                     [result] -> do
-                        question <- result .: "question"
+                        question         <- result .: "question"
                         incorrectAnswers <- result .: "incorrect_answers"
-                        correctAnswer <- result .: "correct_answer"
+                        correctAnswer    <- result .: "correct_answer"
                         pure $ Quiz question incorrectAnswers correctAnswer
                     _ -> fail "Expected one result"
             _ -> fail "Expected response_code 0"
@@ -116,10 +118,15 @@ decodeHTMLChars = T.toStrict . T.toLazyText . htmlEncodedText
 sendQuiz :: ChannelId -> Quiz -> ReaderT Auth IO ()
 sendQuiz channelId q = do
     -- label all of the incorrect answers as "incorrect0", "incorrect1", etc.
-    let incorrects = zip (quizIncorrectAnswers q) [0..] &
-            map (\(a, i) ->
-                mkSelectOption (decodeHTMLChars a) $ "incorrect" <> (T.pack . show) i
-                )
+    let
+        incorrects =
+            zip (quizIncorrectAnswers q) [0 ..]
+                & map
+                    (\(a, i) ->
+                        mkSelectOption (decodeHTMLChars a)
+                            $  "incorrect"
+                            <> (T.pack . show) i
+                    )
     -- the correct answer has the correct answer as its value as well, so we can
     -- show it later.
     let correct = mkSelectOption (quizCorrectAnswer q) (quizCorrectAnswer q)
@@ -127,11 +134,9 @@ sendQuiz channelId q = do
 
     let decodedQ = decodeHTMLChars $ quizQuestion q
     void $ createMessageDetailed channelId $ def
-        { messageDetailedContent = "**Random Trivia: " <> weakOwoify decodedQ <> "**"
+        { messageDetailedContent    = "**Random Trivia: " <> weakOwoify decodedQ <> "**"
         , messageDetailedComponents = Just
-            [ ComponentActionRowSelectMenu $
-                mkSelectMenu "uwu_quiz" answers
-            ]
+            [ComponentActionRowSelectMenu $ mkSelectMenu "uwu_quiz" answers]
         }
 
 getQuiz :: IO (Either String Quiz)
@@ -139,9 +144,16 @@ getQuiz = do
     i <- roll 9
     -- 20% chance of Science: Mathematics, 30% chance of Science: Computers,
     -- and 50% chance of general trivia.
-    let category = if i < 2 then "&category=19" else if i < 5 then "&category=18" else ""
+    let category =
+            if i < 2 then "&category=19" else if i < 5 then "&category=18" else ""
     j <- roll 9
     -- 50% chance of medium difficulty, 40% of hard, and 10% of easy.
-    let difficulty = if j < 5 then "&difficulty=medium" else if i < 9 then "&difficulty=hard" else "&difficulty=easy"
-    r <- simpleHttp $ "https://opentdb.com/api.php?amount=1&type=multiple" <> category <> difficulty
+    let difficulty = if j < 5
+            then "&difficulty=medium"
+            else if i < 9 then "&difficulty=hard" else "&difficulty=easy"
+    r <-
+        simpleHttp
+        $  "https://opentdb.com/api.php?amount=1&type=multiple"
+        <> category
+        <> difficulty
     pure $ eitherDecode r

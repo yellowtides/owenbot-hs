@@ -229,9 +229,8 @@ sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
 -- message(s), returning `()`.
 sendReply :: (MonadDiscord m) => Message -> Bool -> T.Text -> m ()
 sendReply m mention xs = void $ createMessageDetailed (messageChannelId m) $ def
-    { messageDetailedContent         = xs
-    , messageDetailedReference       = Just
-        $ def { referenceMessageId = Just $ messageId m }
+    { messageDetailedContent = xs
+    , messageDetailedReference = Just $ def { referenceMessageId = Just $ messageId m }
     , messageDetailedAllowedMentions = Just $ def { mentionRepliedUser = mention }
     }
 
