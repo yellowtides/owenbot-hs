@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5be3eae7c7196228d73448d956e6c8c867cc47ac85d76dbe3b10d390813d5098
+-- hash: e06dd2811d92703fae35a5bb5a7c0feb8248e8d34875beb6f625225b25659fe5
 
 name:           owenbot
 version:        0.1.0.0
@@ -45,6 +45,7 @@ library
       MCServer
       Misc
       ModifyEventsChannel
+      Quiz
       QuoteSystem
       RoleSelfAssign
       TTS
@@ -62,6 +63,7 @@ library
     , directory
     , discord-haskell ==1.12.0
     , discord-haskell-monad ==1.1.0
+    , html-entities
     , http-conduit
     , http-types
     , mtl
@@ -97,6 +99,7 @@ executable owenbot-exe
     , directory
     , discord-haskell ==1.12.0
     , discord-haskell-monad ==1.1.0
+    , html-entities
     , http-conduit
     , http-types
     , mtl
@@ -141,6 +144,7 @@ test-suite owenbot-test
     , discord-haskell ==1.12.0
     , discord-haskell-monad ==1.1.0
     , hspec
+    , html-entities
     , http-conduit
     , http-types
     , mtl

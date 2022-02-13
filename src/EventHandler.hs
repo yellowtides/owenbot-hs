@@ -7,6 +7,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Discord
 import Discord.Types
+import Discord.Interactions
 import UnliftIO (liftIO)
 
 import Command
@@ -23,6 +24,7 @@ import qualified Haskell
 import qualified MCServer
 import qualified Misc
 import qualified ModifyEventsChannel
+import qualified Quiz
 import qualified QuoteSystem
 import qualified RoleSelfAssign
 import qualified TTS
@@ -36,6 +38,7 @@ commands = concat
     , Haskell.commands
     , HallOfFame.commands
     , MCServer.commands
+    , Quiz.commands
     , QuoteSystem.commands
     , ModifyEventsChannel.commands
     , RoleSelfAssign.commands
@@ -67,6 +70,9 @@ reactionAddReceivers = concat
 reactionRemoveReceivers :: [ReactionInfo -> DiscordHandler ()]
 reactionRemoveReceivers = concat [RoleSelfAssign.reactionRemReceivers]
 
+interactionReceivers :: [Interaction -> DiscordHandler ()]
+interactionReceivers = concat [Quiz.interactionReceivers]
+
 isFromBot :: Message -> Bool
 isFromBot m = userIsBot (messageAuthor m)
 
@@ -79,4 +85,5 @@ handleEvent event = case event of
         runCommands (generatedHelp : commands) m
     MessageReactionAdd    r -> for_ reactionAddReceivers ($ r) <|> pure ()
     MessageReactionRemove r -> for_ reactionRemoveReceivers ($ r) <|> pure ()
+    InteractionCreate     i -> for_ interactionReceivers ($ i) <|> pure ()
     _                       -> pure ()

@@ -25,6 +25,7 @@ dependencies:
 - discord-haskell == 1.12.0
 - discord-haskell-monad == 1.1.0
 - directory
+- html-entities
 - http-conduit
 - http-types # comes with http-conduit
 - mtl # comes with discord-haskell
