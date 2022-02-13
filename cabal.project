@@ -1,0 +1,8 @@
+packages: .
+
+source-repository-package
+    type: git
+    location: https://github.com/yutotakano/discord-haskell-monad.git
+    tag: f85852d53e9ff3aea4403999a06833701f59938d
+
+-- This is the equivalent of stack.yaml for Cabal.
