@@ -2,7 +2,7 @@
 
 module Main where
 
-import Control.Concurrent (forkIO)
+import Control.Concurrent (forkIO, killThread)
 import Control.Exception (SomeException)
 import Control.Monad
 import qualified Data.Text as T
@@ -48,7 +48,6 @@ handleStartErrors e = do
 
 startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
-    liftIO . forkIO $ randomQuizScheduler cfg
     let startupChan = owenConfigStartupChan cfg
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
@@ -64,4 +63,8 @@ main = do
     cfg <- readConfig
     initGlobalDatabase
     TIO.putStrLn $ "[Info] Token: " <> owenConfigToken cfg
+    -- launch a thread to schedule and send quizzes
+    id <- liftIO . forkIO $ randomQuizScheduler cfg
     owen cfg
+    -- make sure we kill the random quiz scheduler, otherwise it'll keep running after spawning more owens
+    killThread id
