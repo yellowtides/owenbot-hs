@@ -38,7 +38,6 @@ commands = concat
     , Haskell.commands
     , HallOfFame.commands
     , MCServer.commands
-    , Quiz.commands
     , QuoteSystem.commands
     , ModifyEventsChannel.commands
     , RoleSelfAssign.commands

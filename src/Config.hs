@@ -2,7 +2,7 @@
 module Config where
 
 import Control.Exception (IOException, try)
-import Data.Aeson (FromJSON, ToJSON, decode, encode)
+import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
 import qualified Data.ByteString as BS (ByteString, readFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (ByteString, fromStrict, toStrict)
 import qualified Data.HashMap.Strict as HM
@@ -21,6 +21,7 @@ data OwenConfig = OwenConfig
     , owenConfigDadFreq     :: Int -- because reading values every time is slow and a solution can't be thought of
     , owenConfigRepoDir     :: Maybe FilePath
     , owenConfigStartupChan :: ChannelId
+    , owenConfigQuizChan    :: ChannelId -- maybe move this into a per-guild db
     }
     deriving (Generic, Show)
 
@@ -36,9 +37,9 @@ readConfig = do
     createDirectoryIfMissing True <$> getConfigDir
     fp   <- (<> "/config.json") <$> getConfigDir
     json <- BS.readFile fp
-    case decode (BL.fromStrict json) of
-        Nothing  -> error "Incorrect config format, can't continue running Owen."
-        Just cfg -> pure cfg
+    case eitherDecode (BL.fromStrict json) of
+        Left e    -> error $ "Incorrect config format, can't continue running Owen:\n[ERROR] " <> e
+        Right cfg -> pure cfg
 
 
 -- (commented since writing to config is never necessary and goes against rules)

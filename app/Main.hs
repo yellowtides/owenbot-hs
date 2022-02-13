@@ -2,6 +2,7 @@
 
 module Main where
 
+import Control.Concurrent (forkIO)
 import Control.Exception (SomeException)
 import Control.Monad
 import qualified Data.Text as T
@@ -25,6 +26,7 @@ import Misc (changePronouns)
 import Status (setStatusFromFile)
 import UnliftIO
 import Utils (sendMessageChan)
+import Quiz (randomQuizScheduler)
 
 -- | UWU
 owen :: OwenConfig -> IO ()
@@ -46,6 +48,7 @@ handleStartErrors e = do
 
 startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
+    liftIO . forkIO $ randomQuizScheduler cfg
     let startupChan = owenConfigStartupChan cfg
     owenId <- getCurrentUser
     createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"

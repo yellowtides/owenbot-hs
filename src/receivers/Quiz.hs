@@ -2,6 +2,8 @@
 module Quiz where
 
 import Control.Monad (void)
+import Control.Monad.Reader (runReaderT, ReaderT)
+import Control.Concurrent
 import Data.Aeson
 import Data.Function ((&))
 import Data.Maybe (fromMaybe, fromJust)
@@ -21,44 +23,51 @@ import Discord.Requests
 import Discord.Interactions
 
 import Command
+import Config
+import Owoifier
 
-commands :: [Command DiscordHandler]
-commands = [
-    quiz
-    ]
+randomQuizScheduler :: OwenConfig -> IO ()
+randomQuizScheduler cfg = do
+    -- once every 2 - 4 days, random
+    minutes <- getStdRandom $ randomR (1440 * 2, 1440 * 4)
+    threadDelay $ minutes * 60 * 10 ^ (6 :: Int)
+    -- check time is not in the first 6 hours of UTC, since no one's awake
+    UTCTime d t <- getCurrentTime
+    if t < (6 * 3600) then
+        threadDelay $ 6 * 3600 * 10 ^ (6 :: Int)
+    else
+        pure ()
+    quiz <- getQuiz
+    let quizChannel = owenConfigQuizChan cfg
+    case quiz of
+        Left s -> print $ "Error while getting scheduled quiz: " <> s
+        Right quiz -> runReaderT (sendQuiz quizChannel quiz) (Auth $ owenConfigToken cfg)
+    randomQuizScheduler cfg
 
 interactionReceivers :: [Interaction -> DiscordHandler ()]
 interactionReceivers = [selectListener]
 
-quiz :: Command DiscordHandler
-quiz = command "quiz" $ \m -> do
-    quiz <- liftIO $ getQuiz
-    case quiz of
-        Left s -> respond m $ T.pack s
-        Right quiz -> sendQuiz (messageChannelId m) quiz
-
 selectListener :: Interaction -> DiscordHandler ()
 selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
-    InteractionDataComponentSelectMenu "uwu_quiz" [option] -> do
-        let mOru = interactionUser i
-        let idOfUser = case mOru of
+    InteractionDataComponentSelectMenu "uwu_quiz" [chosenOption] -> do
+        let idOfUser = case interactionUser i of
                 MemberOrUser (Left gm) -> userId $ fromJust $ memberUser gm
                 MemberOrUser (Right u) -> userId u
-        case T.take 9 option of
+        case T.take 9 chosenOption of
             "incorrect" -> createInteractionResponse (interactionId i) (interactionToken i)
                 InteractionResponseDeferUpdateMessage
             _ -> do
                 let ogContent = messageContent $ interactionMessage i
                 let ogTime = messageTimestamp $ interactionMessage i
                 diffTime <- (flip diffUTCTime ogTime) <$> liftIO getCurrentTime
-                let timeTaken = (realToFrac diffTime :: Double) & printf "%.4f seconds"
+                let timeTaken = (realToFrac diffTime :: Double) & printf "%.2f seconds"
                 createInteractionResponse (interactionId i) (interactionToken i) $
                     InteractionResponseUpdateMessage $ InteractionResponseMessage
                         { interactionResponseMessageTTS = Nothing
                         , interactionResponseMessageContent = Just $ mconcat
                             [ ogContent, "\n"
-                            , option
-                            , " - Correctly answered by <@"
+                            , chosenOption
+                            , weakOwoify " - Correctly answered by <@"
                             , T.pack $ show idOfUser
                             , "> in "
                             , T.pack timeTaken
@@ -104,7 +113,7 @@ insertRandomly x xs = do
 decodeHTMLChars :: T.Text -> T.Text
 decodeHTMLChars = T.toStrict . T.toLazyText . htmlEncodedText
 
-sendQuiz :: ChannelId -> Quiz -> DiscordHandler ()
+sendQuiz :: ChannelId -> Quiz -> ReaderT Auth IO ()
 sendQuiz channelId q = do
     -- label all of the incorrect answers as "incorrect0", "incorrect1", etc.
     let incorrects = zip (quizIncorrectAnswers q) [0..] &
@@ -118,7 +127,7 @@ sendQuiz channelId q = do
 
     let decodedQ = decodeHTMLChars $ quizQuestion q
     void $ createMessageDetailed channelId $ def
-        { messageDetailedContent = "**Random Trivia: " <> decodedQ <> "**"
+        { messageDetailedContent = "**Random Trivia: " <> weakOwoify decodedQ <> "**"
         , messageDetailedComponents = Just
             [ ComponentActionRowSelectMenu $
                 mkSelectMenu "uwu_quiz" answers
