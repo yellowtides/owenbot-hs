@@ -40,13 +40,6 @@ packages:
   original:
     hackage: HMock-0.2.0.0
 - completed:
-    hackage: unliftio-0.2.18@sha256:87fb541127d21939d3efc49ed9bc3df6eadc9eb06ffa7755fc857f62e15daf20,3395
-    pantry-tree:
-      size: 2423
-      sha256: 05c77d0992eb1a9008f0fb9aa5a8b6869881cccca8b9b531faab172f426960b5
-  original:
-    hackage: unliftio-0.2.18
-- completed:
     hackage: constraints-0.13@sha256:d341eb4adbf712f928706928d23a173fb3d0976f0dfaf6a274958975d5fc9e75,2338
     pantry-tree:
       size: 867

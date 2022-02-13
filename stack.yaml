@@ -47,7 +47,6 @@ extra-deps:
   - hspec-2.7.8
   - pointfree-1.1.1.8
   - HMock-0.2.0.0
-  - unliftio-0.2.18 # this is higher than what is included in stackage for 17.14, but is required for HMock
   - constraints-0.13 # same here
   - git: https://github.com/yutotakano/discord-haskell-monad.git
     commit: f85852d53e9ff3aea4403999a06833701f59938d
