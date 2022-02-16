@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e06dd2811d92703fae35a5bb5a7c0feb8248e8d34875beb6f625225b25659fe5
+-- hash: e7769e9993163718fdc36b90449f3822abd9ea904a8e95268804a5b3e479c81a
 
 name:           owenbot
 version:        0.1.0.0
@@ -53,7 +53,7 @@ library
       Paths_owenbot
   hs-source-dirs:
       src
-      src/receivers
+      src/listeners
   build-depends:
       aeson ==1.5.6.0
     , base >=4.7 && <5

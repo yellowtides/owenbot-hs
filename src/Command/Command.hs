@@ -70,7 +70,7 @@ module Command.Command
       -- functions are 'command' and 'runCommand'.
       --
       --     * 'command' creates a 'Command'
-      --     * 'runCommand' converts the 'Command' to a normal receiver.
+      --     * 'runCommand' converts the 'Command' to a normal listener.
       --
       -- If your command demands a special syntax that is impossible with the
       -- existing 'command' function, use 'parsecCommand' (Parsec) or 'regexCommand'
@@ -279,7 +279,7 @@ pong :: (MonadDiscord m) => Command m
 pong = command "ping" $ \\msg -> respond msg "pong!"
 @
 
-@pong2@ shows that @runCommand@ can be composed to create a normal receiver.
+@pong2@ shows that @runCommand@ can be composed to create a normal listener.
 That is, it takes a Message and returns a unit action in the desired monad.
 
 @
