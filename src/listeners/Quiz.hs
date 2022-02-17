@@ -81,6 +81,7 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
                         , interactionResponseMessageAttachments     = Nothing
                         }
     _ -> pure ()
+selectListener _ = pure ()
 
 data Quiz = Quiz
     { quizQuestion         :: T.Text
