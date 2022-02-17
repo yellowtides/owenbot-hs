@@ -29,7 +29,6 @@ module Utils
     , modPerms
     , devPerms
     , sentInServer
-    , isMod
     , assetDir
     , (=~=)
     , getTimestampFromMessage
@@ -270,33 +269,20 @@ messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageI
 addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
 addReaction c m t = restCall (CreateReaction (c, m) t) >> pure ()
 
--- | `isMod` checks whether the provided message was sent by a user with the `Moderator` role.
-isMod :: Message -> DiscordHandler Bool
-isMod m = or <$> mapM (hasRoleByName m) ["Mod", "Moderator"]
+-- | @hasRoleBy f roles r@ checks whether @map f roles@ contains @r@.
+hasRoleBy :: Eq a => (Role -> a) -> [Role] -> a -> Bool
+hasRoleBy f roles r = any ((== r) . f) roles
 
--- | `hasRole` checks whether the provided message was sent by a user that has
--- a role matching the value from the provided checking function
-hasRole :: (MonadDiscord m, Eq a) => (Role -> a) -> Message -> a -> m Bool
-hasRole f m r = case messageGuildId m of
-    Nothing -> pure False
-    Just g  -> do
-        filtered <- getRolesOfUserInGuild (userId $ messageAuthor m) g
-        return $ r `elem` map f filtered
+hasRoleByName :: [Role] -> T.Text -> Bool
+hasRoleByName = hasRoleBy roleName
 
--- | `hasRoleByName` checks whether the provided message was sent by a user that has a role matching
--- the provided `Text` exactly.
-hasRoleByName :: (MonadDiscord m) => Message -> T.Text -> m Bool
-hasRoleByName = hasRole roleName
+hasRoleByID :: [Role] -> RoleId -> Bool
+hasRoleByID = hasRoleBy roleId
 
--- | `hasRoleByID` checks whether the provided message was sent by a user that has a role matching
--- the provided `RoleId`.
-hasRoleByID :: (MonadDiscord m) => Message -> RoleId -> m Bool
-hasRoleByID = hasRole roleId
-
--- | `checkAllIDs` checks every role of the provided message's author against every role in the
--- global `devIDs` file, returning an exhaustive list of booleans as a result.
-checkAllIDs :: (MonadDiscord m) => Message -> IO [m Bool]
-checkAllIDs m = fmap (hasRoleByID m . read . T.unpack) . owenConfigDevs <$> readConfig
+getRoles :: (MonadDiscord m) => Message -> m [Role]
+getRoles m = case messageGuildId m of
+    Nothing -> pure []
+    Just g  -> getRolesOfUserInGuild (userId $ messageAuthor m) g
 
 -- | Gets the list of dev roles from the db.
 getDevs :: IO [RoleId]
@@ -304,8 +290,10 @@ getDevs = map (read . T.unpack) . owenConfigDevs <$> readConfig
 
 -- | `isSenderDeveloper` checks whether the provided message's author is a dev.
 isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
---isSenderDeveloper m = fmap or . join . liftIO $ sequence <$> checkAllIDs m
-isSenderDeveloper m = liftIO getDevs >>= fmap or . mapM (hasRoleByID m)
+isSenderDeveloper m = do
+    d <- liftIO getDevs
+    rs <- getRoles m
+    pure $ any (hasRoleByID rs) d
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
 channelRequirement :: (MonadDiscord m) => String -> Requirement m ()
@@ -322,7 +310,7 @@ permCheck check reason = do
 roleNameIn :: (MonadDiscord m) => [T.Text] -> Requirement m ()
 roleNameIn names = Requirement $ \msg -> do
     triggerTypingIndicator (messageChannelId msg)
-    let check = or <$> mapM (hasRoleByName msg) names
+    let check = getRoles msg >>= \rs -> pure $ any (hasRoleByName rs) names
     permCheck check $ "Need to have one of: " <> (T.pack . show) names
 
 modPerms :: (MonadDiscord m) => Requirement m ()
