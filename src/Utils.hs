@@ -291,7 +291,7 @@ getDevs = map (read . T.unpack) . owenConfigDevs <$> readConfig
 -- | `isSenderDeveloper` checks whether the provided message's author is a dev.
 isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
 isSenderDeveloper m = do
-    d <- liftIO getDevs
+    d  <- liftIO getDevs
     rs <- getRoles m
     pure $ any (hasRoleByID rs) d
 
