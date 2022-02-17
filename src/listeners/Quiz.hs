@@ -83,12 +83,14 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
     _ -> pure ()
 selectListener _ = pure ()
 
+-- | A datatype for a quiz.
 data Quiz = Quiz
     { quizQuestion         :: T.Text
     , quizIncorrectAnswers :: [T.Text]
     , quizCorrectAnswer    :: T.Text
     }
 
+-- | how it parses the JSON from the API
 instance FromJSON Quiz where
     parseJSON = withObject "Whole Result" $ \o -> do
         response_code <- o .: "response_code"
@@ -104,18 +106,22 @@ instance FromJSON Quiz where
                     _ -> fail "Expected one result"
             _ -> fail "Expected response_code 0"
 
--- | Generates a random Int from 0 to n
+-- | Generates a random Int from 0 to n inclusive
 roll :: Int -> IO Int
 roll n = getStdRandom $ randomR (0, n)
 
+-- | Insert an element at a random position within a list.
+-- This isn't as effective as a random permutation but it's straightforward.
 insertRandomly :: a -> [a] -> IO [a]
 insertRandomly x xs = do
     i <- roll $ length xs
     pure $ take i xs ++ [x] ++ drop i xs
 
+-- | Decode things like &#1234; into the actual character.
 decodeHTMLChars :: T.Text -> T.Text
 decodeHTMLChars = T.toStrict . T.toLazyText . htmlEncodedText
 
+-- | Send a given quiz to the given channel.
 sendQuiz :: ChannelId -> Quiz -> ReaderT Auth IO ()
 sendQuiz channelId q = do
     -- label all of the incorrect answers as "incorrect0", "incorrect1", etc.
@@ -140,6 +146,7 @@ sendQuiz channelId q = do
             [ComponentActionRowSelectMenu $ mkSelectMenu "uwu_quiz" answers]
         }
 
+-- | Download a quiz with some tendency towards certain difficulties or categories.
 getQuiz :: IO (Either String Quiz)
 getQuiz = do
     i <- roll 9
