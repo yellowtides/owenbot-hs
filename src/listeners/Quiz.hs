@@ -28,8 +28,8 @@ import Owoifier
 
 randomQuizScheduler :: OwenConfig -> IO ()
 randomQuizScheduler cfg = do
-    -- once every 2 - 4 days, random
-    minutes <- getStdRandom $ randomR (1440 * 2, 1440 * 4)
+    -- once every 1 - 4 days, random
+    minutes <- getStdRandom $ randomR (1440 * 1, 1440 * 4)
     threadDelay $ minutes * 60 * 10 ^ (6 :: Int)
     -- check time is not in the first 6 hours of UTC, since no one's awake
     UTCTime d t <- getCurrentTime
