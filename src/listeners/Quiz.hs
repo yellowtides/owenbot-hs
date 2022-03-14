@@ -25,6 +25,7 @@ import Discord.Types
 
 import Command
 import Config
+import DB
 import Owoifier
 
 randomQuizScheduler :: OwenConfig -> IO ()
@@ -46,43 +47,80 @@ randomQuizScheduler cfg = do
 interactionReceivers :: [Interaction -> DiscordHandler ()]
 interactionReceivers = [selectListener]
 
+
+-- This is an absolutely blasphemous function that abuses so many things that I
+-- (Yuto) am too embarrassed to look over, plus it's a goddamn monolith, but it
+-- works so i'm not gonna touch it.
+--
+-- Assumptions:
+--   there is only one quiz running at any time (hence the use of GlobalDB)
+--   state is not tracked with mvars (hence the abuse of DB and dropdown values)
+--   quiz is only ever sent in the inf server, nowhere else
+--
+-- if we ever rewrite owen to have a central mvar threading through, maintaining
+-- a Set of userids or even HashMap<GuildId, Set<UserId>> is a much better
+-- solution than this.
 selectListener :: Interaction -> DiscordHandler ()
 selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
     InteractionDataComponentSelectMenu "uwu_quiz" [chosenOption] -> do
+        -- get user id regardless of guild or not (mostly for easier debugging)
         let idOfUser = case interactionUser i of
                 MemberOrUser (Left  gm) -> userId $ fromJust $ memberUser gm
                 MemberOrUser (Right u ) -> userId u
-        case T.take 9 chosenOption of
-            "incorrect" -> createInteractionResponse
-                (interactionId i)
-                (interactionToken i)
-                InteractionResponseDeferUpdateMessage
-            _ -> do
-                let currentTime = snowflakeCreationDate $ interactionId i
-                let ogContent   = messageContent $ interactionMessage i
-                let ogTime      = messageTimestamp $ interactionMessage i
-                let diffTime    = diffUTCTime currentTime ogTime
-                let timeTaken   = (realToFrac diffTime :: Double) & printf "%.2f seconds"
+        -- get the users who answered the ongoing quiz already
+        users <- liftIO $ readListDB (GlobalDB "quiz_answerers")
+        if (T.pack $ show idOfUser) `elem` users
+            then
                 createInteractionResponse (interactionId i) (interactionToken i)
-                    $ InteractionResponseUpdateMessage
-                    $ InteractionResponseMessage
-                        { interactionResponseMessageTTS             = Nothing
-                        , interactionResponseMessageContent         = Just $ mconcat
-                            [ ogContent
-                            , "\n"
-                            , chosenOption
-                            , " - <@"
-                            , T.pack $ show idOfUser
-                            , "> correctly answered in "
-                            , T.pack timeTaken
-                            , "! (๑˃ᴗ˂)ﻭ"
-                            ]
-                        , interactionResponseMessageEmbeds          = Nothing
-                        , interactionResponseMessageAllowedMentions = Nothing
-                        , interactionResponseMessageFlags           = Nothing
-                        , interactionResponseMessageComponents      = Just []
-                        , interactionResponseMessageAttachments     = Nothing
-                        }
+                $ InteractionResponseChannelMessage
+                $ (interactionResponseMessageBasic
+                    ":rage: You've already answered this quiz!"
+                  )
+                    { interactionResponseMessageFlags =
+                        Just $ InteractionResponseMessageFlags
+                            [InteractionResponseMessageFlagEphermeral]
+                    }
+            else do
+                liftIO $ writeListDB
+                    (GlobalDB "quiz_answerers")
+                    ((T.pack $ show idOfUser) : users)
+                -- now move onto actually handling the answer
+                case T.take 9 chosenOption of
+                    "incorrect" -> do
+                        createInteractionResponse (interactionId i) (interactionToken i)
+                            $ InteractionResponseChannelMessage
+                            $ (interactionResponseMessageBasic "٩(× ×)۶ Wrong answer!!")
+                                { interactionResponseMessageFlags =
+                                    Just $ InteractionResponseMessageFlags
+                                        [InteractionResponseMessageFlagEphermeral]
+                                }
+                    _ -> do
+                        let currentTime = snowflakeCreationDate $ interactionId i
+                        let ogContent   = messageContent $ interactionMessage i
+                        let ogTime      = messageTimestamp $ interactionMessage i
+                        let diffTime    = diffUTCTime currentTime ogTime
+                        let timeTaken =
+                                (realToFrac diffTime :: Double) & printf "%.2f seconds"
+                        createInteractionResponse (interactionId i) (interactionToken i)
+                            $ InteractionResponseUpdateMessage
+                            $ InteractionResponseMessage
+                                { interactionResponseMessageTTS             = Nothing
+                                , interactionResponseMessageContent = Just $ mconcat
+                                    [ ogContent
+                                    , "\n"
+                                    , chosenOption
+                                    , " - <@"
+                                    , T.pack $ show idOfUser
+                                    , "> correctly answered in "
+                                    , T.pack timeTaken
+                                    , "! (๑˃ᴗ˂)ﻭ"
+                                    ]
+                                , interactionResponseMessageEmbeds          = Nothing
+                                , interactionResponseMessageAllowedMentions = Nothing
+                                , interactionResponseMessageFlags           = Nothing
+                                , interactionResponseMessageComponents      = Just []
+                                , interactionResponseMessageAttachments     = Nothing
+                                }
     _ -> pure ()
 selectListener _ = pure ()
 
@@ -128,22 +166,19 @@ decodeHTMLChars = T.toStrict . T.toLazyText . htmlEncodedText
 sendQuiz :: (MonadDiscord m, MonadIO m) => ChannelId -> Quiz -> m ()
 sendQuiz channelId q = do
     -- label all of the incorrect answers as "incorrect0", "incorrect1", etc.
-    let
-        incorrects =
-            zip (quizIncorrectAnswers q) [0 ..]
-                & map
-                    (\(a, i) ->
-                        mkSelectOption a
-                            $  "incorrect"
-                            <> (T.pack . show) i
-                    )
+    let incorrects = zip (quizIncorrectAnswers q) [0 ..]
+            & map (\(a, i) -> mkSelectOption a $ "incorrect" <> (T.pack . show) i)
     -- the correct answer has the correct answer as its value as well, so we can
     -- show it later.
     let correct = mkSelectOption (quizCorrectAnswer q) (quizCorrectAnswer q)
     answers <- liftIO $ insertRandomly correct incorrects
 
-    let numberedAnswers = zipWith (\o e -> o {selectOptionEmoji = Just $ mkEmoji e}) answers ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+    let numberedAnswers = zipWith
+            (\o e -> o { selectOptionEmoji = Just $ mkEmoji e })
+            answers
+            ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
 
+    liftIO $ writeListDB (GlobalDB "quiz_answerers") []
     void $ createMessageDetailed channelId $ def
         { messageDetailedContent    = "**Random Trivia: " <> quizQuestion q <> "**"
         , messageDetailedComponents = Just
@@ -169,9 +204,9 @@ getQuiz = do
         <> category
         <> difficulty
     case eitherDecode r of
-        Right Quiz{..} -> pure $ Right $ Quiz
-            { quizQuestion = decodeHTMLChars quizQuestion
-            , quizCorrectAnswer = decodeHTMLChars quizCorrectAnswer
+        Right Quiz {..} -> pure $ Right $ Quiz
+            { quizQuestion         = decodeHTMLChars quizQuestion
+            , quizCorrectAnswer    = decodeHTMLChars quizCorrectAnswer
             , quizIncorrectAnswers = map decodeHTMLChars quizIncorrectAnswers
             }
         x -> pure x
