@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 module Quiz where
 
 import Control.Concurrent
@@ -57,10 +58,11 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
                 (interactionToken i)
                 InteractionResponseDeferUpdateMessage
             _ -> do
-                let ogContent = messageContent $ interactionMessage i
-                let ogTime    = messageTimestamp $ interactionMessage i
-                diffTime <- (flip diffUTCTime ogTime) <$> liftIO getCurrentTime
-                let timeTaken = (realToFrac diffTime :: Double) & printf "%.2f seconds"
+                let currentTime = snowflakeCreationDate $ interactionId i
+                let ogContent   = messageContent $ interactionMessage i
+                let ogTime      = messageTimestamp $ interactionMessage i
+                let diffTime    = diffUTCTime currentTime ogTime
+                let timeTaken   = (realToFrac diffTime :: Double) & printf "%.2f seconds"
                 createInteractionResponse (interactionId i) (interactionToken i)
                     $ InteractionResponseUpdateMessage
                     $ InteractionResponseMessage
@@ -69,10 +71,11 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
                             [ ogContent
                             , "\n"
                             , chosenOption
-                            , weakOwoify " - Correctly answered by <@"
+                            , " - <@"
                             , T.pack $ show idOfUser
-                            , "> in "
+                            , "> correctly answered in "
                             , T.pack timeTaken
+                            , "! (๑˃ᴗ˂)ﻭ"
                             ]
                         , interactionResponseMessageEmbeds          = Nothing
                         , interactionResponseMessageAllowedMentions = Nothing
@@ -122,7 +125,7 @@ decodeHTMLChars :: T.Text -> T.Text
 decodeHTMLChars = T.toStrict . T.toLazyText . htmlEncodedText
 
 -- | Send a given quiz to the given channel.
-sendQuiz :: ChannelId -> Quiz -> ReaderT Auth IO ()
+sendQuiz :: (MonadDiscord m, MonadIO m) => ChannelId -> Quiz -> m ()
 sendQuiz channelId q = do
     -- label all of the incorrect answers as "incorrect0", "incorrect1", etc.
     let
@@ -130,7 +133,7 @@ sendQuiz channelId q = do
             zip (quizIncorrectAnswers q) [0 ..]
                 & map
                     (\(a, i) ->
-                        mkSelectOption (decodeHTMLChars a)
+                        mkSelectOption a
                             $  "incorrect"
                             <> (T.pack . show) i
                     )
@@ -139,11 +142,12 @@ sendQuiz channelId q = do
     let correct = mkSelectOption (quizCorrectAnswer q) (quizCorrectAnswer q)
     answers <- liftIO $ insertRandomly correct incorrects
 
-    let decodedQ = decodeHTMLChars $ quizQuestion q
+    let numberedAnswers = zipWith (\o e -> o {selectOptionEmoji = Just $ mkEmoji e}) answers ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+
     void $ createMessageDetailed channelId $ def
-        { messageDetailedContent    = "**Random Trivia: " <> weakOwoify decodedQ <> "**"
+        { messageDetailedContent    = "**Random Trivia: " <> quizQuestion q <> "**"
         , messageDetailedComponents = Just
-            [ComponentActionRowSelectMenu $ mkSelectMenu "uwu_quiz" answers]
+            [ComponentActionRowSelectMenu $ mkSelectMenu "uwu_quiz" numberedAnswers]
         }
 
 -- | Download a quiz with some tendency towards certain difficulties or categories.
@@ -164,4 +168,10 @@ getQuiz = do
         $  "https://opentdb.com/api.php?amount=1&type=multiple"
         <> category
         <> difficulty
-    pure $ eitherDecode r
+    case eitherDecode r of
+        Right Quiz{..} -> pure $ Right $ Quiz
+            { quizQuestion = decodeHTMLChars quizQuestion
+            , quizCorrectAnswer = decodeHTMLChars quizCorrectAnswer
+            , quizIncorrectAnswers = map decodeHTMLChars quizIncorrectAnswers
+            }
+        x -> pure x
