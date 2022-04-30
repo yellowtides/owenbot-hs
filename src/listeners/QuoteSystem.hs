@@ -19,15 +19,16 @@ import Utils (devPerms, modPerms, sendMessageChan, sentInServer)
 import Control.Monad.Random
 
 commands :: [Command DiscordHandler]
-commands =  [ quote
-            , quoteShorthand
-            , quoteInText
-            , addQuote
-            , rmQuote
-            , listQuotes
-            , randQuote
-            , randQuoteShorthand
-            ]
+commands =
+    [ quote
+    , quoteShorthand
+    , quoteInText
+    , addQuote
+    , rmQuote
+    , listQuotes
+    , randQuote
+    , randQuoteShorthand
+    ]
 
 quotesTable :: DBTable
 quotesTable = GlobalDB "registeredQuotes"
@@ -54,7 +55,7 @@ randomQuote = do
     case l of
         0 -> return ("", return Nothing)
         _ -> do
-            i <- getRandomR (0, l-1)
+            i <- getRandomR (0, l - 1)
             let key = keys !! i
             return ((key), (HM.lookup key <$> readHashMapDB quotesTable))
 
@@ -155,27 +156,19 @@ listQuotes = help "Lists all quotes" $ command "listQuotes" $ \m -> do
 
 randQuoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
 randQuoteShorthand =
-    help
-            ("Shorthand for randquote.\nUsage: `:rq`."
-            )
-        . command "rq"
-        $ \m -> do
-            runCommand randQuote $ m { messageContent = ":randquote" }
+    help ("Shorthand for randquote.\nUsage: `:rq`.") . command "rq" $ \m -> do
+        runCommand randQuote $ m { messageContent = ":randquote" }
 
 randQuote :: (MonadDiscord m, MonadIO m) => Command m
 randQuote =
-    help
-            ("Call a random quote.\nUsage: `:randquote`."
-            )
-        . command "randquote"
-        $ \m -> do
-            tuple <- liftIO $ randomQuote
-            textM <- liftIO $ snd tuple
-            respond m $ case textM of
-                Nothing ->
-                    owoify
-                        $ mconcat
-                            [ "Nope, nothing there. "
-                            , "Maybe consider `:addquote [quote] [quote_message]`"
-                            ]
-                Just text -> (fst tuple) <> ": " <> text
+    help ("Call a random quote.\nUsage: `:randquote`.") . command "randquote" $ \m -> do
+        tuple <- liftIO $ randomQuote
+        textM <- liftIO $ snd tuple
+        respond m $ case textM of
+            Nothing ->
+                owoify
+                    $ mconcat
+                        [ "Nope, nothing there. "
+                        , "Maybe consider `:addquote [quote] [quote_message]`"
+                        ]
+            Just text -> (fst tuple) <> ": " <> text
