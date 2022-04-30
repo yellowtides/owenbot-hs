@@ -67,6 +67,7 @@ library
     , http-conduit
     , http-types
     , mtl
+    , MonadRandom
     , network-bsd
     , parsec
     , pointfree ==1.1.1.8
@@ -103,6 +104,7 @@ executable owenbot-exe
     , http-conduit
     , http-types
     , mtl
+    , MonadRandom
     , network-bsd
     , owenbot
     , parsec
