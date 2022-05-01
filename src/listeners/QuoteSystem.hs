@@ -16,8 +16,19 @@ import Owoifier (owoify)
 import Text.Parsec (anyChar, many1)
 import Utils (devPerms, modPerms, sendMessageChan, sentInServer)
 
+import System.Random
+
 commands :: [Command DiscordHandler]
-commands = [quote, quoteShorthand, quoteInText, addQuote, rmQuote, listQuotes]
+commands =
+    [ quote
+    , quoteShorthand
+    , quoteInText
+    , addQuote
+    , rmQuote
+    , listQuotes
+    , randQuote
+    , randQuoteShorthand
+    ]
 
 quotesTable :: DBTable
 quotesTable = GlobalDB "registeredQuotes"
@@ -35,6 +46,18 @@ removeQuote :: T.Text -> IO ()
 removeQuote name = do
     newTable <- HM.delete name <$> readHashMapDB quotesTable
     writeHashMapDB quotesTable newTable
+
+randomQuote :: IO (T.Text, Maybe T.Text)
+randomQuote = do
+    keys <- HM.keys <$> readHashMapDB quotesTable
+    let l = length keys
+    case l of
+        0 -> return ("", Nothing)
+        _ -> do
+            i <- getStdRandom $ randomR (0, l - 1)
+            let key = keys !! i
+            quote <- HM.lookup key <$> readHashMapDB quotesTable
+            return (key, quote)
 
 -- | for quotes that appear mid-sentence, with a required space before it.
 -- only for single-word quotes. This shorthand will only trigger for the last
@@ -129,3 +152,22 @@ listQuotes :: (MonadDiscord m, MonadIO m) => Command m
 listQuotes = help "Lists all quotes" $ command "listQuotes" $ \m -> do
     quoteNames <- liftIO $ HM.keys <$> readHashMapDB quotesTable
     respond m $ T.intercalate ", " $ map (\x -> "`" <> x <> "`") quoteNames
+
+
+randQuoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
+randQuoteShorthand =
+    help ("Shorthand for randquote.\nUsage: `:rq`.") . command "rq" $ \m -> do
+        runCommand randQuote $ m { messageContent = ":randquote" }
+
+randQuote :: (MonadDiscord m, MonadIO m) => Command m
+randQuote =
+    help ("Call a random quote.\nUsage: `:randquote`.") . command "randquote" $ \m -> do
+        tuple <- liftIO $ randomQuote
+        respond m $ case snd tuple of
+            Nothing ->
+                owoify
+                    $ mconcat
+                        [ "Nope, nothing there. "
+                        , "Maybe consider `:addquote [quote] [quote_message]`"
+                        ]
+            Just text -> (fst tuple) <> ": " <> text
