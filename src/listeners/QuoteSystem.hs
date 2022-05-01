@@ -16,7 +16,7 @@ import Owoifier (owoify)
 import Text.Parsec (anyChar, many1)
 import Utils (devPerms, modPerms, sendMessageChan, sentInServer)
 
-import Control.Monad.Random
+import System.Random
 
 commands :: [Command DiscordHandler]
 commands =
@@ -47,17 +47,17 @@ removeQuote name = do
     newTable <- HM.delete name <$> readHashMapDB quotesTable
     writeHashMapDB quotesTable newTable
 
-randomQuote :: IO (T.Text, IO (Maybe T.Text))
+randomQuote :: IO (T.Text, Maybe T.Text)
 randomQuote = do
     keys <- HM.keys <$> readHashMapDB quotesTable
     let l = length keys
-    g <- getStdGen
     case l of
-        0 -> return ("", return Nothing)
+        0 -> return ("", Nothing)
         _ -> do
-            i <- getRandomR (0, l - 1)
+            i <- getStdRandom $ randomR (0, l - 1)
             let key = keys !! i
-            return ((key), (HM.lookup key <$> readHashMapDB quotesTable))
+            quote <- HM.lookup key <$> readHashMapDB quotesTable
+            return (key, quote)
 
 -- | for quotes that appear mid-sentence, with a required space before it.
 -- only for single-word quotes. This shorthand will only trigger for the last
@@ -163,8 +163,7 @@ randQuote :: (MonadDiscord m, MonadIO m) => Command m
 randQuote =
     help ("Call a random quote.\nUsage: `:randquote`.") . command "randquote" $ \m -> do
         tuple <- liftIO $ randomQuote
-        textM <- liftIO $ snd tuple
-        respond m $ case textM of
+        respond m $ case snd tuple of
             Nothing ->
                 owoify
                     $ mconcat
