@@ -19,6 +19,16 @@ import qualified Text.Parsec.Text as T
 import Text.Regex.TDFA ((=~))
 import UnliftIO (UnliftIO(unliftIO), liftIO)
 
+import Discord.Handle (discordHandleRestChan)
+import Discord.Internal.Rest (restHandleChan, RestCallInternalException(..))
+import Network.HTTP.Req ((/:))
+import qualified Network.HTTP.Req as R
+import Discord.Internal.Rest.Prelude (baseUrl, (//), JsonRequest(..))
+import Control.Monad.Reader (ask)
+import Control.Concurrent (newEmptyMVar, writeChan, readMVar)
+import Data.Aeson (object, eitherDecode, toJSON)
+
+
 import Discord
 import Discord.Types
 
@@ -46,6 +56,7 @@ commands =
     , dadJokeIfPossible
     , magic8ball
     , texRender
+    , watch
     ]
 
 reactionReceivers :: [ReactionInfo -> DiscordHandler ()]
@@ -231,3 +242,29 @@ texRender = command "tex" $ \m (Remaining text) ->
         , ("chf" , Just "bg,s,00000000")
         , ("chco", Just "d17b46")
         ]
+
+-- will delete soon cause literally raw http lmfao
+watch :: Command DiscordHandler
+watch = command "watch" $ \msg -> do
+    c <- discordHandleRestChan <$> ask
+    m <- liftIO newEmptyMVar
+    let channelId = "890617526751461407"
+    let endpoint = baseUrl /: "channels" /: channelId /: "invites"
+    let postData = object [(name, val) | (name, Just val) <-
+                         [("max_age",   Just $ toJSON (0 :: Integer)),
+                          ("target_type", Just $ toJSON (2 :: Integer)),
+                          ("target_application_id", Just $ toJSON (880218394199220334 :: Integer)) ] ] 
+    let req = Post endpoint (pure (R.ReqBodyJson postData)) mempty
+    liftIO $ writeChan (restHandleChan c) ("invites", req, m)
+    r <- liftIO $ readMVar m
+    result <- pure $ case eitherDecode <$> r of
+        Right (Right o) -> Right o
+        (Right (Left er)) -> Left (RestCallInternalNoParse er (case r of
+            Right x -> x
+            Left _ -> ""))
+        Left e -> Left e
+
+    case result of
+        Left e -> liftIO $ print e
+        Right invite -> respond msg $ "https://discord.gg/" <> inviteCode invite
+
