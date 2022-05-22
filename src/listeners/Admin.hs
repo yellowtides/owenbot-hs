@@ -73,7 +73,7 @@ commitsAhead dir = T.pack <$> Process.readCreateProcess
     ""
 
 -- | Sends the git info to a specific channel
-sendGitInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
+sendGitInfoChan :: ChannelId -> DiscordHandler ()
 sendGitInfoChan chan = do
     dir <- liftIO $ owenConfigRepoDir <$> readConfig
     case dir of
@@ -98,7 +98,7 @@ sendGitInfo =
     requires devPerms . command "repo" $ \m -> sendGitInfoChan $ messageChannelId m
 
 -- | Sends process instance info to a given channel
-sendInstanceInfoChan :: (MonadDiscord m, MonadIO m) => ChannelId -> m ()
+sendInstanceInfoChan :: ChannelId -> DiscordHandler ()
 sendInstanceInfoChan chan = do
     host <- liftIO getHostName
     pid  <- liftIO Process.getCurrentPid
@@ -240,7 +240,7 @@ unlock =
                             "channel is not a valid Channel (How the fuck did you pull that off?)"
 
 -- | Toggles the locking of a specified channel
-lockdownChan :: (MonadDiscord m) => ChannelId -> OverwriteId -> Lock -> m ()
+lockdownChan :: ChannelId -> OverwriteId -> Lock -> DiscordHandler ()
 lockdownChan chan guild b = do
     let switch = case b of
             Lockdown -> fst

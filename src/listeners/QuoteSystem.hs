@@ -62,7 +62,7 @@ randomQuote = do
 -- | for quotes that appear mid-sentence, with a required space before it.
 -- only for single-word quotes. This shorthand will only trigger for the last
 -- occurrence of the regex.
-quoteInText :: (MonadDiscord m, MonadIO m) => Command m
+quoteInText :: Command DiscordHandler
 quoteInText = regexCommand "(.+) ::([^ \n]+)" $ \m (_ : name : _) ->
     (liftIO . fetchQuote) name >>= \case
         Nothing   -> pure ()
@@ -70,11 +70,11 @@ quoteInText = regexCommand "(.+) ::([^ \n]+)" $ \m (_ : name : _) ->
 
 -- | the double-colon alias for quotes, has to be in its own message to use
 -- multi-word quotes. for quotes mid-sentence, the regex one is matched.
-quoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
+quoteShorthand :: Command DiscordHandler
 quoteShorthand = prefix "::" $ parsecCommand (many1 anyChar) $ \m name ->
     runCommand quote $ m { messageContent = ":quote " <> T.pack name }
 
-quote :: (MonadDiscord m, MonadIO m) => Command m
+quote :: Command DiscordHandler
 quote =
     help
             ("Call a registered quote.\nUsage: `:quote <name>`."
@@ -93,7 +93,7 @@ quote =
                             ]
                 Just text -> text
 
-addQuote :: (MonadDiscord m, MonadIO m) => Command m
+addQuote :: Command DiscordHandler
 addQuote =
     requires sentInServer
         . help
@@ -131,7 +131,7 @@ addQuote =
                         <> name
                         <> "`."
 
-rmQuote :: (MonadDiscord m, MonadIO m) => Command m
+rmQuote :: Command DiscordHandler
 rmQuote =
     requires (modPerms <|> devPerms)
         . help "Removes a quote.\nUsage: `:rmquote <name>`"
@@ -148,18 +148,18 @@ rmQuote =
                         <> name
                         <> "`, was super bad anyways."
 
-listQuotes :: (MonadDiscord m, MonadIO m) => Command m
+listQuotes :: Command DiscordHandler
 listQuotes = help "Lists all quotes" $ command "listQuotes" $ \m -> do
     quoteNames <- liftIO $ HM.keys <$> readHashMapDB quotesTable
     respond m $ T.intercalate ", " $ map (\x -> "`" <> x <> "`") quoteNames
 
 
-randQuoteShorthand :: (MonadDiscord m, MonadIO m) => Command m
+randQuoteShorthand :: Command DiscordHandler
 randQuoteShorthand =
     help ("Shorthand for randquote.\nUsage: `:rq`.") . command "rq" $ \m -> do
         runCommand randQuote $ m { messageContent = ":randquote" }
 
-randQuote :: (MonadDiscord m, MonadIO m) => Command m
+randQuote :: Command DiscordHandler
 randQuote =
     help ("Call a random quote.\nUsage: `:randquote`.") . command "randquote" $ \m -> do
         tuple <- liftIO $ randomQuote

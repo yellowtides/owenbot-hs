@@ -116,7 +116,7 @@ createHallOfFameEmbed m = do
         , createEmbedTimestamp   = Just $ messageTimestamp m
         }
 
-reactLimit :: (MonadDiscord m, MonadIO m) => Command m
+reactLimit :: Command DiscordHandler
 reactLimit =
     requires sentInServer
         . requires modPerms
@@ -150,7 +150,7 @@ readLimit limitTable = do
         then writeListDB limitTable ["1"] >> pure 1
         else pure $ read $ T.unpack $ head contents
 
-setFameChan :: (MonadDiscord m, MonadIO m) => Command m
+setFameChan :: Command DiscordHandler
 setFameChan =
     requires (sentInServer <> (modPerms <|> devPerms))
         . help "Set the channel for Hall of Fame in this server."
