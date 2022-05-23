@@ -22,8 +22,8 @@ dependencies:
 - base64 # for decoding base64 audio in ipa tts
 - bytestring # comes with discord-haskell
 - containers # comes with discord-haskell
-- discord-haskell == 1.12.0
-- discord-haskell-monad == 1.1.0
+- discord-haskell == 1.13.0
+- discord-haskell-monad == 1.2.0
 - directory
 - html-entities
 - http-conduit

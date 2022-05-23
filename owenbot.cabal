@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: e7769e9993163718fdc36b90449f3822abd9ea904a8e95268804a5b3e479c81a
 
 name:           owenbot
 version:        0.1.0.0
@@ -61,8 +59,8 @@ library
     , bytestring
     , containers
     , directory
-    , discord-haskell ==1.12.0
-    , discord-haskell-monad ==1.1.0
+    , discord-haskell ==1.13.0
+    , discord-haskell-monad ==1.2.0
     , html-entities
     , http-conduit
     , http-types
@@ -97,8 +95,8 @@ executable owenbot-exe
     , bytestring
     , containers
     , directory
-    , discord-haskell ==1.12.0
-    , discord-haskell-monad ==1.1.0
+    , discord-haskell ==1.13.0
+    , discord-haskell-monad ==1.2.0
     , html-entities
     , http-conduit
     , http-types
@@ -141,8 +139,8 @@ test-suite owenbot-test
     , bytestring
     , containers
     , directory
-    , discord-haskell ==1.12.0
-    , discord-haskell-monad ==1.1.0
+    , discord-haskell ==1.13.0
+    , discord-haskell-monad ==1.2.0
     , hspec
     , html-entities
     , http-conduit

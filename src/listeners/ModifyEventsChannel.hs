@@ -9,7 +9,7 @@ import UnliftIO (MonadIO(liftIO))
 
 import Command
 import Owoifier (owoify)
-import Utils (modPerms, moveChannel, sendMessageChan, sentInServer)
+import Utils (modPerms, moveChannel, sendMessageChan, sentInServer, respond)
 
 commands :: [Command DiscordHandler]
 commands = [moveEventsChannel]
@@ -23,20 +23,19 @@ moveEventsChannel = requires (sentInServer <> modPerms) $ command "showEvents" $
     do
         respond m $ owoify "Moving Events Channel."
 
-        channel <- getChannel eventsChannelId
+        channel <- call $ GetChannel eventsChannelId
         case channel of
-            ChannelGuildCategory _ guild _ position _ -> do
+            ChannelGuildCategory _ guildId _ position _ -> do
                 -- Selects the first value if the category is at the top of the channel.
                 let selector     = if position == 0 then fst else snd
                     swapPermOpts = ChannelPermissionsOpts
                         { channelPermissionsOptsAllow = selector (0, 0x000000400)
                         , channelPermissionsOptsDeny  = selector (0x000000400, 0)
-                        , channelPermissionsOptsType  = ChannelPermissionsOptsRole
                         }
 
                 -- Guild is used in place of role ID as guildID == @everyone role ID
-                editChannelPermissions eventsChannelId guild swapPermOpts
+                call $ EditChannelPermissions eventsChannelId (Left $ DiscordId $ unId guildId) swapPermOpts
                 -- Shift to opposite of current location (99 is arbitrarily large to shift to the bottom)
-                moveChannel guild eventsChannelId $ selector (99, 0)
+                moveChannel guildId eventsChannelId $ selector (99, 0)
 
             _ -> respond m $ owoify "eventsChannelId is not a valid ChannelCategory"

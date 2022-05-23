@@ -22,7 +22,7 @@ import Owoifier (owoify)
 import Config
 import Status (updateStatus, writeStatusFile)
 import Utils
-    (captureCommandOutput, devPerms, modPerms, sendMessageChan, sentInServer, update)
+    (captureCommandOutput, devPerms, modPerms, sendMessageChan, sentInServer, update, respond)
 
 commands :: [Command DiscordHandler]
 commands =
@@ -211,11 +211,11 @@ lockdown =
         . command "lockdown"
         $ \m -> do
             let chan = messageChannelId m
-            channel <- getChannel (messageChannelId m)
+            channel <- call $ GetChannel (messageChannelId m)
             case channel of
-                ChannelText _ guild _ _ _ _ _ _ _ _ -> do
+                ChannelText _ guildId _ _ _ _ _ _ _ _ -> do
                     -- Guild is used in place of role ID as guildID == @everyone rID
-                    lockdownChan chan guild Lockdown
+                    lockdownChan chan (Left $ DiscordId $ unId guildId) Lockdown
                     respond m $ owoify "Locking Channel. To unlock use :unlock"
 
                 _ -> respond m $ owoify "Channel is not a valid Channel"
@@ -228,11 +228,11 @@ unlock =
         . command "unlock"
         $ \m -> do
             let chan = messageChannelId m
-            channel <- getChannel chan
+            channel <- call $ GetChannel chan
             case channel of
-                ChannelText _ guild _ _ _ _ _ _ _ _ -> do
+                ChannelText _ guildId _ _ _ _ _ _ _ _ -> do
                     -- Guild is used in place of role ID as guildID == @everyone rID
-                    lockdownChan chan guild Unlock
+                    lockdownChan chan (Left $ DiscordId $ unId guildId) Unlock
                     respond m $ owoify "Unlocking channel, GLHF!"
                 _ -> do
                     respond m
@@ -240,17 +240,16 @@ unlock =
                             "channel is not a valid Channel (How the fuck did you pull that off?)"
 
 -- | Toggles the locking of a specified channel
-lockdownChan :: ChannelId -> OverwriteId -> Lock -> DiscordHandler ()
-lockdownChan chan guild b = do
+lockdownChan :: ChannelId -> Either RoleId UserId -> Lock -> DiscordHandler ()
+lockdownChan chan overwriteId b = do
     let switch = case b of
             Lockdown -> fst
             Unlock   -> snd
     let swapPermOpts = ChannelPermissionsOpts
             { channelPermissionsOptsAllow = switch (0, 0x0000000800)
             , channelPermissionsOptsDeny  = switch (0x0000000800, 0)
-            , channelPermissionsOptsType  = ChannelPermissionsOptsRole
             }
-    editChannelPermissions chan guild swapPermOpts
+    call $ EditChannelPermissions chan overwriteId swapPermOpts
 
 -- | Locks every channel in a Guild
 -- https://discordapi.com/permissions.html#2251673153
@@ -268,8 +267,8 @@ unlockAll =
                     Nothing
                     Nothing
 
-            let g = fromJust $ messageGuildId m
-            modifyGuildRole g g opts
+            let guildId = fromJust $ messageGuildId m
+            call $ ModifyGuildRole guildId (DiscordId $ unId guildId) opts
             respond m "unlocked"
 
 -- | Unlocks every channel.
@@ -288,6 +287,6 @@ lockAll =
                     Nothing
                     Nothing
 
-            let g = fromJust $ messageGuildId m
-            modifyGuildRole g g opts
+            let guildId = fromJust $ messageGuildId m
+            call $ ModifyGuildRole guildId (DiscordId $ unId guildId) opts
             respond m "locked"

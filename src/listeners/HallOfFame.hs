@@ -6,6 +6,7 @@ import Control.Monad (when)
 import Data.Maybe (fromJust)
 import qualified Data.Text as T
 import Discord
+import Discord.Requests
 import Discord.Types
 import UnliftIO (liftIO)
 
@@ -22,6 +23,7 @@ import Utils
     , pingAuthorOf
     , sendMessageChanEmbed
     , sentInServer
+    , respond
     )
 
 
@@ -157,7 +159,7 @@ setFameChan =
         $ command "setFameChan"
         $ \m chanId -> do
             let gid = fromJust (messageGuildId m)
-            c <- getChannel chanId
+            c <- call $ GetChannel chanId
             liftIO $ writeListDB (GuildDB gid "fameChannel") [T.pack $ show chanId]
             respond m
                 $  owoify

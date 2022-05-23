@@ -77,7 +77,7 @@ isFromBot m = userIsBot (messageAuthor m)
 
 handleEvent :: Event -> DiscordHandler ()
 handleEvent event = case event of
-    GuildCreate guild guildInfo ->
+    GuildCreate guild ->
         liftIO $ DB.initGuildSpecificDatabase (guildId guild)
     MessageCreate m -> unless (isFromBot m) $ do
         for_ messageReceivers ($ m) <|> pure ()

@@ -31,6 +31,7 @@ import Data.Aeson (object, eitherDecode, toJSON)
 
 import Discord
 import Discord.Types
+import Discord.Requests
 
 import Command
 import Owoifier (owoify)
@@ -44,6 +45,7 @@ import Utils
     , sendMessageChan
     , sendReply
     , toMaybe
+    , respond
     )
 
 commands :: [Command DiscordHandler]
@@ -123,7 +125,7 @@ godIsDead = regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
 thatcherRE :: T.Text
 thatcherRE = "thatcher('s *| *[Ii]s) *"
 
-thatcherIsDead :: (MonadDiscord m) => Command m
+thatcherIsDead :: Command DiscordHandler
 thatcherIsDead = regexCommand (thatcherRE <> "[Dd]ead")
     $ \m _ -> respond m "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
@@ -138,7 +140,7 @@ dadJokeIfPossible =
         $ \m (name : _) -> when (T.length name >= 3) $ respond m $ owoify
             ("hello " <> name <> ", i'm owen")
 
-fortune :: (MonadDiscord m, MonadIO m) => Command m
+fortune :: Command DiscordHandler
 fortune = command "fortune" $ \m -> do
     cowText <- liftIO fortuneCow
     respond m $ "```" <> T.pack cowText <> "```"
@@ -161,9 +163,9 @@ fortuneCow = do
 -- cause owen is our favourite genderfluid icon.
 changePronouns :: DiscordHandler ()
 changePronouns = do
-    u       <- getCurrentUser
+    u       <- call $ GetCurrentUser
     -- get partial guilds, don't contain full information, so getId is defined below
-    pGuilds <- getCurrentUserGuilds
+    pGuilds <- call $ GetCurrentUserGuilds
     let guilds   = partialGuildId <$> pGuilds
     let pronouns = ["she/her", "he/him", "they/them"]
 
@@ -181,7 +183,7 @@ changePronouns = do
     -- wrap in try to silently ignore when we don't have permissions to do either
     void $ handle (\(e :: RestCallErrorCode) -> pure ()) $ do
         let simplifiedMap = concat $ sequence <$> guildPronounMap
-        forM_ simplifiedMap (uncurry (`removeGuildMemberRole` userId u))
+        forM_ simplifiedMap (call . uncurry (`RemoveGuildMemberRole` userId u))
 
         chosenPronouns <- sequence $ do
             (gid, roles) <- guildPronounMap
@@ -189,7 +191,7 @@ changePronouns = do
                 role <- liftIO $ M.fromJust <$> randomChoice roles
                 pure (gid, role)
 
-        forM_ chosenPronouns (uncurry (`addGuildMemberRole` userId u))
+        forM_ chosenPronouns (call . uncurry (`AddGuildMemberRole` userId u))
 
   where
     randomChoice :: [a] -> IO (Maybe a)

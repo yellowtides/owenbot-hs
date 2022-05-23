@@ -5,12 +5,16 @@
 
 packages:
 - completed:
-    hackage: discord-haskell-1.12.0@sha256:aa427494f6c1f646c9bba81b15330557b972cae4d32ff329262ce30d13b77e3e,4527
+    name: discord-haskell
+    version: 1.13.0
+    git: https://github.com/aquarial/discord-haskell.git
     pantry-tree:
-      size: 2681
-      sha256: 35edd22a7cfec04a512c1fdd7b2620674349904451d303a5cf3823ff75c45b80
+      size: 4287
+      sha256: e970cd3dddaf8a5db300263820576c29d2d4061c50b65547fd26823753dd820c
+    commit: 54479e07983775522ec751289b90926bf87eab1f
   original:
-    hackage: discord-haskell-1.12.0
+    git: https://github.com/aquarial/discord-haskell.git
+    commit: 54479e07983775522ec751289b90926bf87eab1f
 - completed:
     hackage: emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
     pantry-tree:
@@ -48,15 +52,15 @@ packages:
     hackage: constraints-0.13
 - completed:
     name: discord-haskell-monad
-    version: 1.1.0
+    version: 1.2.0
     git: https://github.com/yutotakano/discord-haskell-monad.git
     pantry-tree:
-      size: 506
-      sha256: c38654057f28f9f0814bd3d21626c886c974099edaa2f5447b0b96c9279521cb
-    commit: f85852d53e9ff3aea4403999a06833701f59938d
+      size: 557
+      sha256: 7cb9116f86636354357f6c8f4ee1a1c456316bc18891c5826b827ca58a1187cf
+    commit: e8b9d41d1d41cd296140fdfc73924fa74f9a4ef2
   original:
     git: https://github.com/yutotakano/discord-haskell-monad.git
-    commit: f85852d53e9ff3aea4403999a06833701f59938d
+    commit: e8b9d41d1d41cd296140fdfc73924fa74f9a4ef2
 snapshots:
 - completed:
     size: 587821

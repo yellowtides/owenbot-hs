@@ -15,7 +15,7 @@ import UnliftIO (liftIO)
 import Command
 import DB
 import Owoifier (owoify)
-import Utils (devPerms, modPerms, sentInServer)
+import Utils (devPerms, modPerms, sentInServer, respond)
 
 commands :: [Command DiscordHandler]
 commands = [getStatus, setServer]

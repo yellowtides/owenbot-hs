@@ -61,8 +61,8 @@ interactionReceivers = [selectListener]
 -- a Set of userids or even HashMap<GuildId, Set<UserId>> is a much better
 -- solution than this.
 selectListener :: Interaction -> DiscordHandler ()
-selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
-    InteractionDataComponentSelectMenu "uwu_quiz" [chosenOption] -> do
+selectListener i@(InteractionComponent{}) = case componentData i of
+    SelectMenuData "uwu_quiz" [chosenOption] -> do
         -- get user id regardless of guild or not (mostly for easier debugging)
         let idOfUser = case interactionUser i of
                 MemberOrUser (Left  gm) -> userId $ fromJust $ memberUser gm
@@ -71,7 +71,7 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
         users <- liftIO $ readListDB (GlobalDB "quiz_answerers")
         if (T.pack $ show idOfUser) `elem` users
             then
-                createInteractionResponse (interactionId i) (interactionToken i)
+                call $ CreateInteractionResponse (interactionId i) (interactionToken i)
                 $ InteractionResponseChannelMessage
                 $ (interactionResponseMessageBasic
                     ":rage: You've already answered this quiz!"
@@ -87,7 +87,7 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
                 -- now move onto actually handling the answer
                 case T.take 9 chosenOption of
                     "incorrect" -> do
-                        createInteractionResponse (interactionId i) (interactionToken i)
+                        call $ CreateInteractionResponse (interactionId i) (interactionToken i)
                             $ InteractionResponseChannelMessage
                             $ (interactionResponseMessageBasic "٩(× ×)۶ Wrong answer!!")
                                 { interactionResponseMessageFlags =
@@ -95,13 +95,13 @@ selectListener i@(InteractionComponent{}) = case interactionDataComponent i of
                                         [InteractionResponseMessageFlagEphermeral]
                                 }
                     _ -> do
-                        let currentTime = snowflakeCreationDate $ interactionId i
+                        let currentTime = snowflakeCreationDate $ unId $ interactionId i
                         let ogContent   = messageContent $ interactionMessage i
                         let ogTime      = messageTimestamp $ interactionMessage i
                         let diffTime    = diffUTCTime currentTime ogTime
                         let timeTaken =
                                 (realToFrac diffTime :: Double) & printf "%.2f seconds"
-                        createInteractionResponse (interactionId i) (interactionToken i)
+                        call $ CreateInteractionResponse (interactionId i) (interactionToken i)
                             $ InteractionResponseUpdateMessage
                             $ InteractionResponseMessage
                                 { interactionResponseMessageTTS             = Nothing
@@ -179,10 +179,10 @@ sendQuiz channelId q = do
             ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
 
     liftIO $ writeListDB (GlobalDB "quiz_answerers") []
-    void $ createMessageDetailed channelId $ def
+    void $ call $ CreateMessageDetailed channelId $ def
         { messageDetailedContent    = "**Random Trivia: " <> quizQuestion q <> "**"
         , messageDetailedComponents = Just
-            [ComponentActionRowSelectMenu $ mkSelectMenu "uwu_quiz" numberedAnswers]
+            [ActionRowSelectMenu $ mkSelectMenu "uwu_quiz" numberedAnswers]
         }
 
 -- | Download a quiz with some tendency towards certain difficulties or categories.
