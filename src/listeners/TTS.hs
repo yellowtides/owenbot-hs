@@ -29,7 +29,7 @@ import Owoifier
 commands :: [Command DiscordHandler]
 commands = [tts]
 
-tts :: (MonadDiscord m, MonadIO m) => Command m
+tts :: Command DiscordHandler
 tts =
     help "Speak stuff outwoud. Enclose with / to use IPA.\nUsage: `:tts <stuff>`"
         . command "tts"

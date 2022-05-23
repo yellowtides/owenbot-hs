@@ -47,7 +47,7 @@ padZeroes :: Int -> String -> String
 padZeroes newLen digits = replicate (newLen - length digits) '0' <> digits
 
 -- | Theorem.
-theorem :: (MonadDiscord m, MonadIO m) => Command m
+theorem :: Command DiscordHandler
 theorem =
     alias "thm"
         . help "Call an ILA theorem.\nUsage: `:theorem <theorem number>`"
@@ -64,7 +64,7 @@ theorem =
             _ -> respond m "ILA theorems have the format: XX.YY.ZZ!"
 
 -- | Definition.
-definition :: (MonadDiscord m, MonadIO m) => Command m
+definition :: Command DiscordHandler
 definition =
     alias "def"
         . help "Call an ILA definition.\nUsage: `:definition <def number>`"
@@ -80,7 +80,7 @@ definition =
                 _ -> respond m "ILA definitions have the format: XX.YY!"
 
 -- | Lemma.
-lemma :: (MonadDiscord m, MonadIO m) => Command m
+lemma :: Command DiscordHandler
 lemma =
     alias "lem"
         . help "Call an ILA lemma.\nUsage: `:lemma <lemma number>`"
@@ -95,7 +95,7 @@ lemma =
                 _ -> respond m "ILA lemmas have the format: XX.YY.ZZ!"
 
 -- | Textbook.
-textbook :: (MonadDiscord m, MonadIO m) => Command m
+textbook :: Command DiscordHandler
 textbook =
     alias "tb"
         . help
@@ -129,7 +129,7 @@ textbook =
             _ -> respond m $ "No textbook registered for `" <> subject <> "`!"
 
 -- | Syllogisms.
-syllogisms :: (MonadDiscord m, MonadIO m) => Command m
+syllogisms :: Command DiscordHandler
 syllogisms =
     alias "syl"
         . help "See the list of aristotle syllogisms!"
@@ -137,7 +137,7 @@ syllogisms =
         $ \m -> respondAsset m "id-smash-aristotle.png" "cl/syllogisms.png"
 
 -- | Booleans.
-booleans :: (MonadDiscord m, MonadIO m) => Command m
+booleans :: Command DiscordHandler
 booleans =
     alias "bool"
         . help "See the list of boolean algebra rules!"

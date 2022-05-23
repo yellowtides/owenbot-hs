@@ -18,7 +18,7 @@ eventsChannelId :: ChannelId
 eventsChannelId = 837700461192151120
 
 -- | Move a registered events channel to the top of the server.
-moveEventsChannel :: (MonadDiscord m) => Command m
+moveEventsChannel :: Command DiscordHandler
 moveEventsChannel = requires (sentInServer <> modPerms) $ command "showEvents" $ \m ->
     do
         respond m $ owoify "Moving Events Channel."

@@ -83,7 +83,7 @@ rollCheck chance = Requirement $ \msg -> do
     welp <- ((/= 1) <$> liftIO (roll chance))
     pure $ if welp then Left "" else Right ()
 
-owoifyIfPossible :: (MonadDiscord m, MonadIO m) => Command m
+owoifyIfPossible :: Command DiscordHandler
 owoifyIfPossible =
     requires (rollCheck owoifyChance) $ regexCommand "[lLrR]|[nNmM][oO]" $ \m _ -> do
         sendReply m True $ owoify (messageContent m)
@@ -114,7 +114,7 @@ forceOwoify r = do
         -- Send reply without pinging (this isn't as ping-worthy as random trigger)
         sendReply mess False $ owoify (messageContent mess)
 
-godIsDead :: (MonadDiscord m, MonadIO m) => Command m
+godIsDead :: Command DiscordHandler
 godIsDead = regexCommand "[gG]od *[iI]s *[dD]ead" $ \m _ -> do
     base     <- liftIO assetDir
     contents <- liftIO (TIO.readFile $ base <> "nietzsche.txt")
@@ -127,11 +127,11 @@ thatcherIsDead :: (MonadDiscord m) => Command m
 thatcherIsDead = regexCommand (thatcherRE <> "[Dd]ead")
     $ \m _ -> respond m "https://www.youtube.com/watch?v=ILvd5buCEnU"
 
-thatcherIsAlive :: (MonadDiscord m, MonadIO m) => Command m
+thatcherIsAlive :: Command DiscordHandler
 thatcherIsAlive = regexCommand (thatcherRE <> "[Aa]live")
     $ \m _ -> respondAsset m "god_help_us_all.mp4" "god_help_us_all.mp4"
 
-dadJokeIfPossible :: (MonadDiscord m, MonadIO m) => Command m
+dadJokeIfPossible :: Command DiscordHandler
 dadJokeIfPossible =
     requires (rollCheck dadJokeChance)
         $ regexCommand "^[iI] ?[aA]?'?[mM] +([a-zA-Z'*]+)([!;:.,?~-]+| *$)"
@@ -159,7 +159,7 @@ fortuneCow = do
 
 -- | "Joke" function to change owen's pronouns randomly in servers on startup,
 -- cause owen is our favourite genderfluid icon.
-changePronouns :: (MonadDiscord m, MonadIO m) => m ()
+changePronouns :: DiscordHandler ()
 changePronouns = do
     u       <- getCurrentUser
     -- get partial guilds, don't contain full information, so getId is defined below
@@ -228,11 +228,11 @@ ballAnswers = map
     , "Very doubtful. "
     ]
 
-magic8ball :: (MonadDiscord m, MonadIO m) => Command m
+magic8ball :: Command DiscordHandler
 magic8ball =
     regexCommand "^:8ball.*" $ \m _ -> liftIO (select ballAnswers) >>= respond m
 
-texRender :: (MonadDiscord m) => Command m
+texRender :: Command DiscordHandler
 texRender = command "tex" $ \m (Remaining text) ->
     respond m $ (<>) "https://chart.googleapis.com/chart" $ E.decodeUtf8 $ W.renderQuery
         True

@@ -86,7 +86,7 @@ codeblock lang = (("```" ++ lang ++ "\n") ++) . (++ "```")
 --
 -- >>> :pf inlineCode str = "`" ++ str ++ "`"
 -- inlineCode = ("``" ++) . (++ "``")
-pointfree :: (MonadDiscord m) => Command m
+pointfree :: Command DiscordHandler
 pointfree =
     help ("How would you write it point-free?\n" <> "Usage: `:pf <haskell expression>`")
         . command "pf"
@@ -124,7 +124,7 @@ formatHoogleEntry r =
     T.pack $ inlineCode (item r) <> " from module " <> inlineCode (name $ mdl r)
 
 -- | Searches hoogle for matching entries
-hoogle :: (MonadDiscord m, MonadIO m) => Command m
+hoogle :: Command DiscordHandler
 hoogle =
     help
             (  "See the top "

@@ -111,7 +111,7 @@ alwaysHead :: [String] -> String
 alwaysHead []       = ""
 alwaysHead (a : as) = a
 
-getStatus :: (MonadDiscord m, MonadIO m) => Command m
+getStatus :: Command DiscordHandler
 getStatus =
     requires sentInServer
         . help
@@ -135,7 +135,7 @@ readServerIP gid = do
             >> pure "123.456.789.123"
         else pure $ head server_ip
 
-setServer :: (MonadDiscord m, MonadIO m) => Command m
+setServer :: Command DiscordHandler
 setServer =
     requires (sentInServer <> (modPerms <|> devPerms))
         . help

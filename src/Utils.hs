@@ -117,7 +117,7 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 -- | `isRoleInGuild` determines whether a role containing the given text exists
 -- in the guild (case insensitive). If it does, then it returns the role's ID.
 -- Otherwise, `Nothing` is returned.
-isRoleInGuild :: (MonadDiscord m) => T.Text -> GuildId -> m (Maybe RoleId)
+isRoleInGuild :: T.Text -> GuildId -> DiscordHandler (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
     roles <- getGuildRoles gid
     let matchingRoles = filter
@@ -207,12 +207,12 @@ emojiToUsableText r = case emojiId r of
 
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
-sendMessageChan :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
+sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChan c xs = void $ createMessage c xs
 
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
-sendMessageChanPingsDisabled :: (MonadDiscord m) => ChannelId -> T.Text -> m ()
+sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler ()
 sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
     cid
     def
@@ -226,7 +226,7 @@ sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
 
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
-sendReply :: (MonadDiscord m) => Message -> Bool -> T.Text -> m ()
+sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
 sendReply m mention xs = void $ createMessageDetailed (messageChannelId m) $ def
     { messageDetailedContent = xs
     , messageDetailedReference = Just $ def { referenceMessageId = Just $ messageId m }
@@ -235,7 +235,7 @@ sendReply m mention xs = void $ createMessageDetailed (messageChannelId m) $ def
 
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
-sendMessageChanEmbed :: (MonadDiscord m) => ChannelId -> T.Text -> CreateEmbed -> m ()
+sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
 sendMessageChanEmbed c xs e = void $ createMessageDetailed c $ def
     { messageDetailedContent = xs
     , messageDetailedEmbeds  = Just [e]
@@ -244,24 +244,24 @@ sendMessageChanEmbed c xs e = void $ createMessageDetailed c $ def
 
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
-sendMessageDM :: (MonadDiscord m) => UserId -> T.Text -> m ()
+sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
 sendMessageDM u t = createDM u >>= (flip sendMessageChan t . channelId)
 
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`.
-sendFileChan :: (MonadDiscord m, MonadIO m) => ChannelId -> T.Text -> FilePath -> m ()
+sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
 sendFileChan c name fp =
     liftIO (B.readFile fp) >>= (void . createMessageUploadFile c name)
 
 -- | @respondAsset m name path@ responds to the message @m@ with the file at
 -- @path@, with the name overridden as @name@.
-respondAsset :: (MonadDiscord m, MonadIO m) => Message -> T.Text -> FilePath -> m ()
+respondAsset :: Message -> T.Text -> FilePath -> DiscordHandler ()
 respondAsset m name path = do
     base <- liftIO assetDir
     sendFileChan (messageChannelId m) name (base <> path)
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
-messageFromReaction :: (MonadDiscord m) => ReactionInfo -> m Message
+messageFromReaction :: ReactionInfo -> DiscordHandler Message
 messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageId r)
 
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
@@ -279,7 +279,7 @@ hasRoleByName = hasRoleBy roleName
 hasRoleByID :: [Role] -> RoleId -> Bool
 hasRoleByID = hasRoleBy roleId
 
-getRoles :: (MonadDiscord m) => Message -> m [Role]
+getRoles :: Message -> DiscordHandler [Role]
 getRoles m = case messageGuildId m of
     Nothing -> pure []
     Just g  -> getRolesOfUserInGuild (userId $ messageAuthor m) g
@@ -289,39 +289,39 @@ getDevs :: IO [RoleId]
 getDevs = map (read . T.unpack) . owenConfigDevs <$> readConfig
 
 -- | `isSenderDeveloper` checks whether the provided message's author is a dev.
-isSenderDeveloper :: (MonadDiscord m, MonadIO m) => Message -> m Bool
+isSenderDeveloper :: Message -> DiscordHandler Bool
 isSenderDeveloper m = do
     d  <- liftIO getDevs
     rs <- getRoles m
     pure $ any (hasRoleByID rs) d
 
 -- | channelRequirement is a requirement for a Command to be in a certain channel.
-channelRequirement :: (MonadDiscord m) => String -> Requirement m ()
+channelRequirement :: String -> Requirement DiscordHandler ()
 channelRequirement cid = Requirement $ \msg ->
     pure $ case (messageChannelId msg == read cid) of
         True  -> Right ()
         False -> Left $ "Need to be in the channel " <> T.pack cid
 
-permCheck :: (MonadDiscord m) => m Bool -> T.Text -> m (Either T.Text ())
+permCheck :: DiscordHandler Bool -> T.Text -> DiscordHandler (Either T.Text ())
 permCheck check reason = do
     result <- check
     pure $ if result then Right () else Left reason
 
-roleNameIn :: (MonadDiscord m) => [T.Text] -> Requirement m ()
+roleNameIn :: [T.Text] -> Requirement DiscordHandler ()
 roleNameIn names = Requirement $ \msg -> do
     triggerTypingIndicator (messageChannelId msg)
     let check = getRoles msg >>= \rs -> pure $ any (hasRoleByName rs) names
     permCheck check $ "Need to have one of: " <> (T.pack . show) names
 
-modPerms :: (MonadDiscord m) => Requirement m ()
+modPerms :: Requirement DiscordHandler ()
 modPerms = roleNameIn ["Admin", "Mod", "Moderator"]
 
 -- | Command requirement for sender being a registered developer.
-devPerms :: (MonadDiscord m, MonadIO m) => Requirement m ()
+devPerms :: Requirement DiscordHandler ()
 devPerms =
     Requirement $ \msg -> permCheck (isSenderDeveloper msg) "Need to be an OwenDev"
 
-sentInServer :: (MonadDiscord m) => Requirement m ()
+sentInServer :: Requirement DiscordHandler ()
 sentInServer = Requirement $ \msg ->
     pure $ maybe (Left "Need to be sent in server!") (const $ Right ()) $ messageGuildId
         msg
@@ -329,7 +329,7 @@ sentInServer = Requirement $ \msg ->
 
 -- | `getRolesOfUserInGuild` fetches a list of roles partaining to the user with the given `UserId`
 -- within the guild with the given `GuildId`.
-getRolesOfUserInGuild :: (MonadDiscord m) => UserId -> GuildId -> m [Role]
+getRolesOfUserInGuild :: UserId -> GuildId -> DiscordHandler [Role]
 getRolesOfUserInGuild uid g = do
     allGuildRoles <- getGuildRoles g
     user          <- getGuildMember g uid
@@ -365,6 +365,6 @@ snowflakeToInt :: Snowflake -> Integer
 snowflakeToInt (Snowflake w) = toInteger w
 
 -- | Moves channel position in guild
-moveChannel :: (MonadDiscord m) => GuildId -> ChannelId -> Int -> m ()
+moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
 moveChannel guild chan location =
     void $ modifyGuildChannelPositions guild [(chan, location)]
