@@ -25,17 +25,11 @@ module Utils
     , getMessageLink
     , hasRoleByName
     , hasRoleByID
-    , channelRequirement
     , roleNameIn
     , modPerms
     , devPerms
     , sentInServer
     , assetDir
-    , (=~=)
-    , getTimestampFromMessage
-    , captureCommandOutput
-    , update
-    , snowflakeToInt
     , moveChannel
     , isEmojiValid
     , isRoleInGuild
@@ -69,10 +63,6 @@ import Owoifier (owoify, weakOwoify)
 -- TODO: Move into a saner place than Utils
 assetDir :: IO FilePath
 assetDir = liftIO $ getXdgDirectory XdgData "owen/assets/"
-
--- | The `(=~=)` function matches a given `Text` again a regex. Case-less in terms of owoifying.
-(=~=) :: T.Text -> T.Text -> Bool
-(=~=) = (=~) `on` weakOwoify
 
 toMaybe :: Bool -> a -> Maybe a
 toMaybe cond a = if cond then Just a else Nothing
@@ -276,7 +266,7 @@ messageFromReaction r = call $ GetChannelMessage (reactionChannelId r, reactionM
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
 -- error message(s), returning `()`.
 addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
-addReaction c m t = call (CreateReaction (c, m) t) >> pure ()
+addReaction c m t = void $ call $ CreateReaction (c, m) t
 
 -- | @hasRoleBy f roles r@ checks whether @map f roles@ contains @r@.
 hasRoleBy :: Eq a => (Role -> a) -> [Role] -> a -> Bool
@@ -303,13 +293,6 @@ isSenderDeveloper m = do
     d  <- liftIO getDevs
     rs <- getRoles m
     pure $ any (hasRoleByID rs) d
-
--- | channelRequirement is a requirement for a Command to be in a certain channel.
-channelRequirement :: String -> Requirement DiscordHandler ()
-channelRequirement cid = Requirement $ \msg ->
-    pure $ case (messageChannelId msg == read cid) of
-        True  -> Right ()
-        False -> Left $ "Need to be in the channel " <> T.pack cid
 
 permCheck :: DiscordHandler Bool -> T.Text -> DiscordHandler (Either T.Text ())
 permCheck check reason = do
@@ -343,35 +326,6 @@ getRolesOfUserInGuild uid g = do
     allGuildRoles <- call $ GetGuildRoles g
     user          <- call $ GetGuildMember g uid
     pure $ filter ((`elem` memberRoles user) . roleId) allGuildRoles
-
--- | `getTimestampFromMessages` returns the given message's timestamp as `Text`, in the format
--- `yyyy-mm-dd | hh:mm:ss`.
-getTimestampFromMessage :: Message -> T.Text
-getTimestampFromMessage =
-    T.pack
-        . TF.formatTime TF.defaultTimeLocale "%Y-%m-%d %H:%M:%S %Z"
-        . messageTimestamp
-
--- | `captureCommandOutput` creates a new process from the desired command provided as a `String`.
--- Then, it waits for the command to finish executing, returning its output as a `Text`.
-captureCommandOutput :: String -> IO T.Text
-captureCommandOutput command = T.pack <$> Process.readCreateProcess
-    ((Process.proc executable args) { cwd = Just "." })
-    ""
-    where (executable : args) = splitOn " " command
-
--- | `update` calls a shell script that updates the bot's repo
-update :: IO ExitCode
-update = do
-    dir <- owenConfigRepoDir <$> readConfig
-    case dir of
-        Nothing   -> return $ ExitFailure 0
-        Just path -> Process.waitForProcess =<< Process.spawnCommand
-            ("cd " <> path <> " && git reset --hard @{u} && git pull && stack install")
-
--- | Converts Discord-Haskells Snowflake type to an integer
-snowflakeToInt :: Snowflake -> Integer
-snowflakeToInt (Snowflake w) = toInteger w
 
 -- | Moves channel position in guild
 moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()

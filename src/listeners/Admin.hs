@@ -22,7 +22,7 @@ import Owoifier (owoify)
 import Config
 import Status (updateStatus, writeStatusFile)
 import Utils
-    (captureCommandOutput, devPerms, modPerms, sendMessageChan, sentInServer, update, respond)
+    (devPerms, modPerms, sendMessageChan, sentInServer, respond)
 
 commands :: [Command DiscordHandler]
 commands =
@@ -45,8 +45,6 @@ rstrip = T.reverse . T.dropWhile isSpace . T.reverse
 
 gitInfo :: FilePath -> IO T.Text
 gitInfo dir = do
-    -- can't use captureCommandOutput because --format would be broken into
-    -- separate args (as it splits on space).
     let args =
             [ "log"
             , "-n"
@@ -154,6 +152,15 @@ updateOwen =
             respond m $ owoify $ case result of
                 ExitSuccess   -> "Finished update"
                 ExitFailure _ -> "Failed to update! Please check the logs"
+
+-- | `update` calls a shell script that updates the bot's repo
+update :: IO ExitCode
+update = do
+    dir <- owenConfigRepoDir <$> readConfig
+    case dir of
+        Nothing   -> return $ ExitFailure 0
+        Just path -> Process.waitForProcess =<< Process.spawnCommand
+            ("cd " <> path <> " && git reset --hard @{u} && git pull && stack install")
 
 -- | Simple hack to run :update and :restart in one go.
 upgradeOwen :: Command DiscordHandler

@@ -16,7 +16,6 @@ import Owoifier (owoify)
 import Utils
     ( devPerms
     , getMessageLink
-    , getTimestampFromMessage
     , linkChannel
     , messageFromReaction
     , modPerms
