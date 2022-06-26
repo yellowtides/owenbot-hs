@@ -36,8 +36,7 @@ import Discord.Requests
 import Command
 import Owoifier (owoify)
 import Utils
-    ( (=~=)
-    , addReaction
+    ( addReaction
     , assetDir
     , isRoleInGuild
     , messageFromReaction
