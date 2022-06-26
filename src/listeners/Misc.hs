@@ -23,7 +23,7 @@ import Discord.Handle (discordHandleRestChan)
 import Discord.Internal.Rest (restHandleChan, RestCallInternalException(..))
 import Network.HTTP.Req ((/:))
 import qualified Network.HTTP.Req as R
-import Discord.Internal.Rest.Prelude (baseUrl, (//), JsonRequest(..))
+import Discord.Internal.Rest.Prelude (baseUrl, JsonRequest(..))
 import Control.Monad.Reader (ask)
 import Control.Concurrent (newEmptyMVar, writeChan, readMVar)
 import Data.Aeson (object, eitherDecode, toJSON)

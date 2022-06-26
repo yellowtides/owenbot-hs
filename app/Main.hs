@@ -46,7 +46,7 @@ startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
     let startupChan = owenConfigStartupChan cfg
     owenId <- call $ GetCurrentUser
-    createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
+    call $ CreateMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
     sendGitInfoChan startupChan
     sendInstanceInfoChan startupChan
     changePronouns
