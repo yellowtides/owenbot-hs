@@ -7,15 +7,11 @@ import Control.Exception (SomeException)
 import Control.Monad
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Discord
-    ( DiscordHandler
-    , RunDiscordOpts(discordOnEvent, discordOnLog, discordOnStart, discordToken)
-    , def
-    , restCall
-    , runDiscord
-    )
-import Discord.Types
 import System.Directory (createDirectoryIfMissing)
+
+import Discord
+import Discord.Requests
+import Discord.Types
 
 import Admin (sendGitInfoChan, sendInstanceInfoChan)
 import Command
@@ -49,8 +45,8 @@ handleStartErrors e = do
 startHandler :: OwenConfig -> DiscordHandler ()
 startHandler cfg = do
     let startupChan = owenConfigStartupChan cfg
-    owenId <- getCurrentUser
-    createMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
+    owenId <- call $ GetCurrentUser
+    call $ CreateMessage startupChan $ T.pack "Hewwo, I am bawck! UwU"
     sendGitInfoChan startupChan
     sendInstanceInfoChan startupChan
     changePronouns

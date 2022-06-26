@@ -11,6 +11,7 @@ module Utils
     , sendMessageChanEmbed
     , sendMessageChanPingsDisabled
     , sendMessageDM
+    , respond
     , sendFileChan
     , respondAsset
     , addReaction
@@ -119,7 +120,7 @@ isUnicodeEmoji emojiT = all isInEmojiBlock (filter (/= ' ') $ T.unpack emojiT)
 -- Otherwise, `Nothing` is returned.
 isRoleInGuild :: T.Text -> GuildId -> DiscordHandler (Maybe RoleId)
 isRoleInGuild roleFragment gid = do
-    roles <- getGuildRoles gid
+    roles <- call $ GetGuildRoles gid
     let matchingRoles = filter
             ((T.toUpper roleFragment `T.isInfixOf`) . T.toUpper . roleName)
             roles
@@ -145,7 +146,7 @@ discordEmojiTextToId emojiT = case idT of
 -- guild (or is a default emoji). Case insensitive.
 isEmojiValid :: T.Text -> GuildId -> DiscordHandler Bool
 isEmojiValid emojiT gid = do
-    guild <- getGuild gid
+    guild <- call $ GetGuild gid
     let emojis         = guildEmojis guild
     let emojiID        = discordEmojiTextToId emojiT
     let matchingEmojis = filter ((emojiID ==) . fromJust . emojiId) emojis
@@ -181,7 +182,7 @@ linkChannel c = "<#" <> T.pack (show c) <> ">"
 -- | `getMessageLink` attempts to construct the Discord URL of the given message, as a `Text`.
 getMessageLink :: Message -> DiscordHandler T.Text
 getMessageLink m = do
-    chan <- getChannel (messageChannelId m)
+    chan <- call $ GetChannel (messageChannelId m)
     -- the ID of the server containing the channel, as a `Text`
     let serverIDT  = T.pack . show $ channelGuild chan
     -- the ID of the channel the message was sent in, as a `Text`
@@ -208,12 +209,17 @@ emojiToUsableText r = case emojiId r of
 -- | `sendMessageChan` attempts to send the given `Text` in the channel with the given
 -- `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChan :: ChannelId -> T.Text -> DiscordHandler ()
-sendMessageChan c xs = void $ createMessage c xs
+sendMessageChan c xs = void $ call $ CreateMessage c xs
+
+-- | @respond@ responds to a message. It does not use the Reply feature. For that,
+-- use 'sendReply'.
+respond :: Message -> T.Text -> DiscordHandler ()
+respond m = void . call . CreateMessage (messageChannelId m)
 
 -- | `sendMessageChanPingsDisabled` acts in the same way as `sendMessageChan`, but disables
 -- all pings (@everyone, @user, @role) pings from the message.
 sendMessageChanPingsDisabled :: ChannelId -> T.Text -> DiscordHandler ()
-sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
+sendMessageChanPingsDisabled cid t = void $ call $ CreateMessageDetailed
     cid
     def
         { messageDetailedContent         = t
@@ -227,7 +233,7 @@ sendMessageChanPingsDisabled cid t = void $ createMessageDetailed
 -- | `sendReply` attempts to send a reply to the given `Message`. Suppresses any error
 -- message(s), returning `()`.
 sendReply :: Message -> Bool -> T.Text -> DiscordHandler ()
-sendReply m mention xs = void $ createMessageDetailed (messageChannelId m) $ def
+sendReply m mention xs = void $ call $ CreateMessageDetailed (messageChannelId m) $ def
     { messageDetailedContent = xs
     , messageDetailedReference = Just $ def { referenceMessageId = Just $ messageId m }
     , messageDetailedAllowedMentions = Just $ def { mentionRepliedUser = mention }
@@ -236,7 +242,7 @@ sendReply m mention xs = void $ createMessageDetailed (messageChannelId m) $ def
 -- | `sendMessageChanEmbed` attempts to send the given embed with the given `Text` in the
 -- channel with the given `channelID`. Surpesses any error message(s), returning `()`.
 sendMessageChanEmbed :: ChannelId -> T.Text -> CreateEmbed -> DiscordHandler ()
-sendMessageChanEmbed c xs e = void $ createMessageDetailed c $ def
+sendMessageChanEmbed c xs e = void $ call $ CreateMessageDetailed c $ def
     { messageDetailedContent = xs
     , messageDetailedEmbeds  = Just [e]
     }
@@ -245,13 +251,16 @@ sendMessageChanEmbed c xs e = void $ createMessageDetailed c $ def
 -- | `sendMessageDM` attempts to send the given `Text` as a direct message to the user with the
 -- given `UserId`. Surpresses any error message(s), returning `()`.
 sendMessageDM :: UserId -> T.Text -> DiscordHandler ()
-sendMessageDM u t = createDM u >>= (flip sendMessageChan t . channelId)
+sendMessageDM u t = call (CreateDM u) >>= (flip sendMessageChan t . channelId)
 
 -- | `sendFileChan` attempts to send the file at the provided `FilePath` in the channel with the
 -- provided `ChannelId`. The file attachment is annotated by the given `Text`.
 sendFileChan :: ChannelId -> T.Text -> FilePath -> DiscordHandler ()
-sendFileChan c name fp =
-    liftIO (B.readFile fp) >>= (void . createMessageUploadFile c name)
+sendFileChan c name fp = do
+    bytes <- liftIO $ B.readFile fp
+    void . call $ CreateMessageDetailed c $ def
+        { messageDetailedFile = Just (name, bytes)
+        }
 
 -- | @respondAsset m name path@ responds to the message @m@ with the file at
 -- @path@, with the name overridden as @name@.
@@ -262,12 +271,12 @@ respondAsset m name path = do
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: ReactionInfo -> DiscordHandler Message
-messageFromReaction r = getChannelMessage (reactionChannelId r, reactionMessageId r)
+messageFromReaction r = call $ GetChannelMessage (reactionChannelId r, reactionMessageId r)
 
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
 -- error message(s), returning `()`.
 addReaction :: ChannelId -> MessageId -> T.Text -> DiscordHandler ()
-addReaction c m t = restCall (CreateReaction (c, m) t) >> pure ()
+addReaction c m t = call (CreateReaction (c, m) t) >> pure ()
 
 -- | @hasRoleBy f roles r@ checks whether @map f roles@ contains @r@.
 hasRoleBy :: Eq a => (Role -> a) -> [Role] -> a -> Bool
@@ -309,7 +318,7 @@ permCheck check reason = do
 
 roleNameIn :: [T.Text] -> Requirement DiscordHandler ()
 roleNameIn names = Requirement $ \msg -> do
-    triggerTypingIndicator (messageChannelId msg)
+    call $ TriggerTypingIndicator (messageChannelId msg)
     let check = getRoles msg >>= \rs -> pure $ any (hasRoleByName rs) names
     permCheck check $ "Need to have one of: " <> (T.pack . show) names
 
@@ -331,8 +340,8 @@ sentInServer = Requirement $ \msg ->
 -- within the guild with the given `GuildId`.
 getRolesOfUserInGuild :: UserId -> GuildId -> DiscordHandler [Role]
 getRolesOfUserInGuild uid g = do
-    allGuildRoles <- getGuildRoles g
-    user          <- getGuildMember g uid
+    allGuildRoles <- call $ GetGuildRoles g
+    user          <- call $ GetGuildMember g uid
     pure $ filter ((`elem` memberRoles user) . roleId) allGuildRoles
 
 -- | `getTimestampFromMessages` returns the given message's timestamp as `Text`, in the format
@@ -367,4 +376,5 @@ snowflakeToInt (Snowflake w) = toInteger w
 -- | Moves channel position in guild
 moveChannel :: GuildId -> ChannelId -> Int -> DiscordHandler ()
 moveChannel guild chan location =
-    void $ modifyGuildChannelPositions guild [(chan, location)]
+    void $ call $ ModifyGuildChannelPositions guild [(chan, location)]
+

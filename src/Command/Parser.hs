@@ -175,6 +175,9 @@ instance (ParsableArgument a, ParsableArgument b) => ParsableArgument (Either a 
 -----------------------------------------------------------------------------
 
 
+instance ParsableArgument (DiscordId a) where
+    parserForArg = read <$> (many1 digit <?> "a snowflake ID")
+
 instance ParsableArgument Snowflake where
     parserForArg = read <$> (many1 digit <?> "a snowflake ID")
 

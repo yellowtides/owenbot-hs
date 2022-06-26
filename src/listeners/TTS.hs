@@ -21,10 +21,12 @@ import Network.HTTP.Simple
     , setRequestQueryString
     )
 
-import Command
 import Discord
+import Discord.Requests
 import Discord.Types
+import Command
 import Owoifier
+import Utils (respond)
 
 commands :: [Command DiscordHandler]
 commands = [tts]
@@ -45,10 +47,9 @@ tts =
                     let filename =
                             owoify $ "Amazing sounds by " <> userName (messageAuthor m)
                     let extension = if isIPA then ".mp3" else ".wav"
-                    void $ createMessageUploadFile
-                        (messageChannelId m)
-                        (filename <> extension)
-                        audio
+                    void . call $ CreateMessageDetailed (messageChannelId m) $ def
+                        { messageDetailedFile = Just (filename <> extension, audio)
+                        }
 
 -- | Download the TTS audio.
 downloadTTS :: T.Text -> IO (Maybe B.ByteString)

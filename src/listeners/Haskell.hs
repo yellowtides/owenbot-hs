@@ -24,6 +24,7 @@ import Network.HTTP.Simple
     )
 import Pointfree (pointfree')
 import UnliftIO (liftIO)
+import Utils (respond)
 
 commands :: [Command DiscordHandler]
 commands = [pointfree, doc, hoogle, hoogType, eval]
@@ -144,7 +145,7 @@ formatDoc r = formatHoogleEntry r <> "\n" <> T.pack (codeblock "hs" $ docs r)
 
 -- | Gives the documentation for a given Haskell function (from online Hoogle)
 -- >>> :doc map
-doc :: (MonadDiscord m, MonadIO m) => Command m
+doc :: Command DiscordHandler
 doc =
     help
             (  "See the documentation for the Haskell function.\n"
@@ -157,7 +158,7 @@ doc =
 
 -- | Gives the type of a given Haskell function (from online Hoogle, top entry)
 -- >>> :type map
-hoogType :: (MonadDiscord m, MonadIO m) => Command m
+hoogType :: Command DiscordHandler
 hoogType =
     help
             (  "See the type of the Haskell function.\n"
@@ -203,7 +204,7 @@ instance FromJSON TryHaskellResponse where
 -- Uses https://haskellmooc.co.uk/ instead of https://tryhaskell.org/ since
 -- it supports IO and looks like it's more updated.
 -- >>> :eval 1 + 1
-eval :: (MonadDiscord m, MonadIO m) => Command m
+eval :: Command DiscordHandler
 eval =
     help
             (  "Evaluate a Haskell expression.\n"

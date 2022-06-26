@@ -14,6 +14,7 @@ import UnliftIO (liftIO)
 
 import Command
 import Owoifier (owoify)
+import Utils (respond)
 
 commands :: [Command DiscordHandler]
 commands = [handleTicker, handleAda24h]
