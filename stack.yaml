@@ -42,17 +42,14 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 extra-deps:
-  # - discord-haskell-1.13.0
-  # TODO update this when Hackage gets the latest updates
-  - git: https://github.com/aquarial/discord-haskell.git
-    commit: 54479e07983775522ec751289b90926bf87eab1f
+  - discord-haskell-1.14.0
   - emoji-0.1.0.2
   - hspec-2.7.8
   - pointfree-1.1.1.8
   - HMock-0.2.0.0
   - constraints-0.13 # same here
   - git: https://github.com/yutotakano/discord-haskell-monad.git
-    commit: e8b9d41d1d41cd296140fdfc73924fa74f9a4ef2
+    commit: 0170fcc178842a2f58b1d10bc81903498cb8b948
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

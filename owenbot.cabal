@@ -59,8 +59,8 @@ library
     , bytestring
     , containers
     , directory
-    , discord-haskell ==1.13.0
-    , discord-haskell-monad ==1.2.0
+    , discord-haskell ==1.14.0
+    , discord-haskell-monad ==1.2.1
     , html-entities
     , http-conduit
     , http-types
@@ -95,8 +95,8 @@ executable owenbot-exe
     , bytestring
     , containers
     , directory
-    , discord-haskell ==1.13.0
-    , discord-haskell-monad ==1.2.0
+    , discord-haskell ==1.14.0
+    , discord-haskell-monad ==1.2.1
     , html-entities
     , http-conduit
     , http-types
@@ -139,8 +139,8 @@ test-suite owenbot-test
     , bytestring
     , containers
     , directory
-    , discord-haskell ==1.13.0
-    , discord-haskell-monad ==1.2.0
+    , discord-haskell ==1.14.0
+    , discord-haskell-monad ==1.2.1
     , hspec
     , html-entities
     , http-conduit
