@@ -1,4 +1,4 @@
-FROM haskell:8
+FROM haskell:8.10.7
 
 WORKDIR /owen
 COPY ./ .
