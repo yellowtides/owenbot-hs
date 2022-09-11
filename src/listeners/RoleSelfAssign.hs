@@ -90,7 +90,7 @@ addRoleToStation =
                     m
                     "The role provided is invalid. Please make sure you use the role's name!"
                 Just roleID -> do
-                    let stationDB = (GuildDB serverID) . getAssignFile . show $ stationId
+                    let stationDB = (GuildDB serverID) . getAssignFile $ stationId
 
                     -- The old emote role mapping, read from the CSV.
                     roleEmoteMatrix <- liftIO $ readDB stationDB
