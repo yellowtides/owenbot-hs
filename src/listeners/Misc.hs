@@ -19,19 +19,19 @@ import qualified Text.Parsec.Text as T
 import Text.Regex.TDFA ((=~))
 import UnliftIO (UnliftIO(unliftIO), liftIO)
 
+import Control.Concurrent (newEmptyMVar, readMVar, writeChan)
+import Control.Monad.Reader (ask)
+import Data.Aeson (eitherDecode, object, toJSON)
 import Discord.Handle (discordHandleRestChan)
-import Discord.Internal.Rest (restHandleChan, RestCallInternalException(..))
+import Discord.Internal.Rest (RestCallInternalException(..), restHandleChan)
+import Discord.Internal.Rest.Prelude (JsonRequest(..), baseUrl)
 import Network.HTTP.Req ((/:))
 import qualified Network.HTTP.Req as R
-import Discord.Internal.Rest.Prelude (baseUrl, JsonRequest(..))
-import Control.Monad.Reader (ask)
-import Control.Concurrent (newEmptyMVar, writeChan, readMVar)
-import Data.Aeson (object, eitherDecode, toJSON)
 
 
 import Discord
-import Discord.Types
 import Discord.Requests
+import Discord.Types
 
 import Command
 import Owoifier (owoify)
@@ -40,11 +40,11 @@ import Utils
     , assetDir
     , isRoleInGuild
     , messageFromReaction
+    , respond
     , respondAsset
     , sendMessageChan
     , sendReply
     , toMaybe
-    , respond
     )
 
 commands :: [Command DiscordHandler]
@@ -250,22 +250,34 @@ watch = command "watch" $ \msg -> do
     c <- discordHandleRestChan <$> ask
     m <- liftIO newEmptyMVar
     let channelId = "890617526751461407"
-    let endpoint = baseUrl /: "channels" /: channelId /: "invites"
-    let postData = object [(name, val) | (name, Just val) <-
-                         [("max_age",   Just $ toJSON (0 :: Integer)),
-                          ("target_type", Just $ toJSON (2 :: Integer)),
-                          ("target_application_id", Just $ toJSON (880218394199220334 :: Integer)) ] ] 
+    let endpoint  = baseUrl /: "channels" /: channelId /: "invites"
+    let
+        postData = object
+            [ (name, val)
+            | (name, Just val) <-
+                [ ("max_age"    , Just $ toJSON (0 :: Integer))
+                , ("target_type", Just $ toJSON (2 :: Integer))
+                , ( "target_application_id"
+                  , Just $ toJSON (880218394199220334 :: Integer)
+                  )
+                ]
+            ]
     let req = Post endpoint (pure (R.ReqBodyJson postData)) mempty
     liftIO $ writeChan (restHandleChan c) ("invites", req, m)
-    r <- liftIO $ readMVar m
+    r      <- liftIO $ readMVar m
     result <- pure $ case eitherDecode <$> r of
-        Right (Right o) -> Right o
-        (Right (Left er)) -> Left (RestCallInternalNoParse er (case r of
-            Right x -> x
-            Left _ -> ""))
+        Right (Right o)   -> Right o
+        (Right (Left er)) -> Left
+            (RestCallInternalNoParse
+                er
+                (case r of
+                    Right x -> x
+                    Left  _ -> ""
+                )
+            )
         Left e -> Left e
 
     case result of
-        Left e -> liftIO $ print e
+        Left  e      -> liftIO $ print e
         Right invite -> respond msg $ "https://discord.gg/" <> inviteCode invite
 

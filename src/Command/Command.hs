@@ -151,8 +151,8 @@ import UnliftIO (liftIO)
 
 import Discord
 import Discord.Monad
-import Discord.Types
 import qualified Discord.Requests as R
+import Discord.Types
 
 import Command.Error (CommandError(..))
 import Command.Parser (ParsableArgument(..), RemainingText(..), endOrSpaces, manyTill1)
@@ -552,7 +552,9 @@ helpCommand helpName cmds onEmptyHandler = command helpName $ \msg mbName -> do
         Nothing               -> onEmptyHandler msg
         Just (Remaining name) -> if name == helpName || name == ":" <> helpName
             then
-                void $ call $ R.CreateMessage (messageChannelId msg)
+                void
+                $  call
+                $  R.CreateMessage (messageChannelId msg)
                 $  "**:"
                 <> helpName
                 <> "**\n"
@@ -562,7 +564,11 @@ helpCommand helpName cmds onEmptyHandler = command helpName $ \msg mbName -> do
             else do
                 let helps =
                         (map createCommandHelp . filter (cmdMatches name)) normalCmds
-                unless (null helps) $ void $ call $ R.CreateMessage (messageChannelId msg) $ T.intercalate "\n" helps
+                unless (null helps)
+                    $ void
+                    $ call
+                    $ R.CreateMessage (messageChannelId msg)
+                    $ T.intercalate "\n" helps
 
   where
     grabHelp :: Command m -> T.Text
@@ -599,14 +605,26 @@ for legibility.
 defaultErrorHandler :: (MonadDiscord m) => Message -> CommandError -> m ()
 defaultErrorHandler m e = case e of
     ArgumentParseError x ->
-        void $ call $ R.CreateMessage (messageChannelId m) $ x <> "\nCheck if `:helpme (optional command name)` can help you!"
+        void
+            $  call
+            $  R.CreateMessage (messageChannelId m)
+            $  x
+            <> "\nCheck if `:helpme (optional command name)` can help you!"
     RequirementError x -> unless (x == "") $ do
         chan <- call $ R.CreateDM (userId $ messageAuthor m)
         void $ call $ R.CreateMessage (channelId chan) x
     ProcessingError x -> void $ call $ R.CreateMessage (messageChannelId m) x
-    DiscordError    x -> void $ call $ R.CreateMessage (messageChannelId m) $ T.pack $ "Discord request failed with a " <> show x
+    DiscordError x ->
+        void
+            $  call
+            $  R.CreateMessage (messageChannelId m)
+            $  T.pack
+            $  "Discord request failed with a "
+            <> show x
     HaskellError x ->
-        void $ call $ R.CreateMessage (messageChannelId m)
+        void
+            $  call
+            $  R.CreateMessage (messageChannelId m)
             $  owoify
             $  T.pack
             $  "Runtime error (contact OwenDev, this is a bug): "

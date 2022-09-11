@@ -21,7 +21,7 @@ A neat Discord bot written in Haskell. Use with caution.
 
 Place a "config.json" file in `~/.config/owen` (or `%APP_DATA%/owen` on Windows). Format is as given in "Config.hs".
 
-All source code is formatted using [brittany](https://hackage.haskell.org/package/brittany).
+All source code is formatted using [brittany](https://hackage.haskell.org/package/brittany) Version 0.13.1.2.
 
 ```
 find src -type f -name "*.hs" -exec brittany --write-mode=inplace --config-file ./brittany.yaml {} \;

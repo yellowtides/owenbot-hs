@@ -27,10 +27,10 @@ import Utils
     , isEmojiValid
     , isRoleInGuild
     , modPerms
+    , respond
     , sendMessageChan
     , sendMessageDM
     , sentInServer
-    , respond
     )
 
 type EmojiRoleMap = [(String, RoleId)]
@@ -75,12 +75,10 @@ addRoleToStation =
         $ command "addRoleToStation"
         $ \m prependT appendT stationId channelId emoji role -> do
             doesEmojiExist <- isEmojiValid emoji serverID
-            unless
-                doesEmojiExist
-                (respond
-                    m
-                    "The emoji provided is invalid. Perhaps you used one from another server?"
-                )
+            unless doesEmojiExist $ respond
+                m
+                "The emoji provided is invalid. Perhaps you used one from another server?"
+
             guard doesEmojiExist
             -- Emoji's fine!
 
@@ -118,6 +116,7 @@ addRoleToStation =
 
                     -- React!
                     addReaction channelId stationId emoji
+                    respond m "Done!"
 
 getAssignFile :: MessageId -> FilePath
 getAssignFile = getAssignFile' . show

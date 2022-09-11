@@ -21,8 +21,7 @@ import Owoifier (owoify)
 
 import Config
 import Status (updateStatus, writeStatusFile)
-import Utils
-    (devPerms, modPerms, sendMessageChan, sentInServer, respond)
+import Utils (devPerms, modPerms, respond, sendMessageChan, sentInServer)
 
 commands :: [Command DiscordHandler]
 commands =

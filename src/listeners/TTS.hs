@@ -21,10 +21,10 @@ import Network.HTTP.Simple
     , setRequestQueryString
     )
 
+import Command
 import Discord
 import Discord.Requests
 import Discord.Types
-import Command
 import Owoifier
 import Utils (respond)
 

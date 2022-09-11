@@ -14,7 +14,7 @@ import Discord.Types
 
 import Command
 import Command.Parser
-import Utils (respondAsset, respond)
+import Utils (respond, respondAsset)
 
 commands :: [Command DiscordHandler]
 commands = [textbook, theorem, definition, lemma, syllogisms, booleans]

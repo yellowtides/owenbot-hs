@@ -71,7 +71,8 @@ selectListener i@(InteractionComponent{}) = case componentData i of
         users <- liftIO $ readListDB (GlobalDB "quiz_answerers")
         if (T.pack $ show idOfUser) `elem` users
             then
-                call $ CreateInteractionResponse (interactionId i) (interactionToken i)
+                call
+                $ CreateInteractionResponse (interactionId i) (interactionToken i)
                 $ InteractionResponseChannelMessage
                 $ (interactionResponseMessageBasic
                     ":rage: You've already answered this quiz!"
@@ -87,7 +88,10 @@ selectListener i@(InteractionComponent{}) = case componentData i of
                 -- now move onto actually handling the answer
                 case T.take 9 chosenOption of
                     "incorrect" -> do
-                        call $ CreateInteractionResponse (interactionId i) (interactionToken i)
+                        call
+                            $ CreateInteractionResponse
+                                (interactionId i)
+                                (interactionToken i)
                             $ InteractionResponseChannelMessage
                             $ (interactionResponseMessageBasic "٩(× ×)۶ Wrong answer!!")
                                 { interactionResponseMessageFlags =
@@ -95,13 +99,17 @@ selectListener i@(InteractionComponent{}) = case componentData i of
                                         [InteractionResponseMessageFlagEphermeral]
                                 }
                     _ -> do
-                        let currentTime = snowflakeCreationDate $ unId $ interactionId i
-                        let ogContent   = messageContent $ interactionMessage i
-                        let ogTime      = messageTimestamp $ interactionMessage i
-                        let diffTime    = diffUTCTime currentTime ogTime
+                        let currentTime =
+                                snowflakeCreationDate $ unId $ interactionId i
+                        let ogContent = messageContent $ interactionMessage i
+                        let ogTime    = messageTimestamp $ interactionMessage i
+                        let diffTime  = diffUTCTime currentTime ogTime
                         let timeTaken =
                                 (realToFrac diffTime :: Double) & printf "%.2f seconds"
-                        call $ CreateInteractionResponse (interactionId i) (interactionToken i)
+                        call
+                            $ CreateInteractionResponse
+                                (interactionId i)
+                                (interactionToken i)
                             $ InteractionResponseUpdateMessage
                             $ InteractionResponseMessage
                                 { interactionResponseMessageTTS             = Nothing

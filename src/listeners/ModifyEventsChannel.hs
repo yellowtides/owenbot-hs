@@ -9,7 +9,7 @@ import UnliftIO (MonadIO(liftIO))
 
 import Command
 import Owoifier (owoify)
-import Utils (modPerms, moveChannel, sendMessageChan, sentInServer, respond)
+import Utils (modPerms, moveChannel, respond, sendMessageChan, sentInServer)
 
 commands :: [Command DiscordHandler]
 commands = [moveEventsChannel]
@@ -34,7 +34,10 @@ moveEventsChannel = requires (sentInServer <> modPerms) $ command "showEvents" $
                         }
 
                 -- Guild is used in place of role ID as guildID == @everyone role ID
-                call $ EditChannelPermissions eventsChannelId (Left $ DiscordId $ unId guildId) swapPermOpts
+                call $ EditChannelPermissions
+                    eventsChannelId
+                    (Left $ DiscordId $ unId guildId)
+                    swapPermOpts
                 -- Shift to opposite of current location (99 is arbitrarily large to shift to the bottom)
                 moveChannel guildId eventsChannelId $ selector (99, 0)
 

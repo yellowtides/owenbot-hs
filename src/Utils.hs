@@ -261,7 +261,8 @@ respondAsset m name path = do
 
 -- | `messageFromReaction` attempts to get the Message instance from a reaction.
 messageFromReaction :: ReactionInfo -> DiscordHandler Message
-messageFromReaction r = call $ GetChannelMessage (reactionChannelId r, reactionMessageId r)
+messageFromReaction r =
+    call $ GetChannelMessage (reactionChannelId r, reactionMessageId r)
 
 -- | `addReaction` attempts to add a reaction to the given message ID. Supresses any
 -- error message(s), returning `()`.

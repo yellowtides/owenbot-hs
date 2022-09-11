@@ -14,7 +14,7 @@ import Command
 import DB
 import Owoifier (owoify)
 import Text.Parsec (anyChar, many1)
-import Utils (devPerms, modPerms, sendMessageChan, sentInServer, respond)
+import Utils (devPerms, modPerms, respond, sendMessageChan, sentInServer)
 
 import System.Random
 

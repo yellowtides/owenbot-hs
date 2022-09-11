@@ -20,9 +20,9 @@ import Utils
     , messageFromReaction
     , modPerms
     , pingAuthorOf
+    , respond
     , sendMessageChanEmbed
     , sentInServer
-    , respond
     )
 
 
