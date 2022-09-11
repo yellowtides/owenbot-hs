@@ -90,10 +90,10 @@ addRoleToStation =
                     m
                     "The role provided is invalid. Please make sure you use the role's name!"
                 Just roleID -> do
-                    let assignFilePath = getAssignFile' (show stationId)
+                    let stationDB = (GuildDB serverID) . getAssignFile . show $ stationId
 
                     -- The old emote role mapping, read from the CSV.
-                    roleEmoteMatrix <- liftIO $ readDB assignOverviewDB
+                    roleEmoteMatrix <- liftIO $ readDB stationDB
                     -- The new emote role map! Cons the emoji and role at the front.
                     let emojiRoleIDMap = (emoji, roleID) : map
                             (read . T.unpack <$>)
@@ -111,7 +111,7 @@ addRoleToStation =
                     -- Write the new mapping to the old CSV
                     _ <-
                         liftIO
-                        .   writeDB (GuildDB serverID "idAssign")
+                        .   writeDB stationDB
                         .   mapToMatrix
                         $   fmap (T.pack . show)
                         <$> emojiRoleIDMap
